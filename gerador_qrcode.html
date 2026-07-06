@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de QR Code — Cardápio Parque São Caetano</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --verde-tropa:#4b5b2e; --verde-tropa-escuro:#37451f;
+    --laranja:#ee7d32; --creme:#f7f0dc; --marrom:#3b2f1e;
+  }
+  body{
+    font-family:'Nunito',sans-serif; background:var(--verde-tropa);
+    color:var(--creme); margin:0; padding:24px 16px 60px;
+    display:flex; flex-direction:column; align-items:center; min-height:100vh;
+  }
+  h1{
+    font-family:'Fredoka',sans-serif; color:var(--laranja); text-align:center;
+    font-size:1.4rem; margin-bottom:4px;
+  }
+  p.sub{opacity:.85; font-size:.9rem; text-align:center; max-width:420px; margin-bottom:24px;}
+  .painel{
+    background:var(--creme); color:var(--marrom); border-radius:16px;
+    padding:24px; max-width:420px; width:100%; box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  label{font-weight:700; font-size:.85rem; display:block; margin-bottom:6px;}
+  input[type=text]{
+    width:100%; padding:10px 14px; border-radius:10px; border:1px solid #cbb98f;
+    font-size:.95rem; margin-bottom:14px; font-family:'Nunito',sans-serif;
+  }
+  button{
+    font-family:'Fredoka',sans-serif; background:var(--laranja); color:#2b1d0e;
+    border:none; padding:11px 20px; border-radius:24px; font-weight:600;
+    font-size:.95rem; cursor:pointer; width:100%; margin-bottom:8px;
+  }
+  button:hover{background:#d4671f;}
+  button.secundario{background:transparent; border:2px solid var(--verde-tropa); color:var(--verde-tropa);}
+  #qrcode{display:flex; justify-content:center; margin:18px 0; min-height:216px;}
+  #qrcode img, #qrcode canvas{border-radius:8px;}
+  .aviso{font-size:.78rem; color:#6b5c3e; text-align:center; margin-top:6px;}
+</style>
+</head>
+<body>
+  <h1>Gerador de QR Code do Cardápio</h1>
+  <p class="sub">Cole aqui o link do cardápio depois de hospedá-lo (site, GitHub Pages, Google Drive, etc.) e gere o QR code para imprimir nas mesas.</p>
+
+  <div class="painel">
+    <label for="url">Link do cardápio</label>
+    <input type="text" id="url" value="https://seudominio.com/cardapio.html" placeholder="https://...">
+    <button onclick="gerar()">Gerar QR Code</button>
+    <button class="secundario" onclick="baixar()">Baixar PNG</button>
+    <div id="qrcode"></div>
+    <div class="aviso">Dica: teste o QR com o celular antes de imprimir.</div>
+  </div>
+
+<script>
+  let qr;
+  function gerar(){
+    const url = document.getElementById('url').value.trim();
+    if(!url) return;
+    document.getElementById('qrcode').innerHTML = '';
+    qr = new QRCode(document.getElementById('qrcode'), {
+      text: url,
+      width: 220,
+      height: 220,
+      colorDark: '#37451f',
+      colorLight: '#f7f0dc',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+  function baixar(){
+    const canvas = document.querySelector('#qrcode canvas');
+    const img = document.querySelector('#qrcode img');
+    const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : null);
+    if(!src){ gerar(); return; }
+    const a = document.createElement('a');
+    a.href = src;
+    a.download = 'qrcode-cardapio-parque-sao-caetano.png';
+    a.click();
+  }
+  window.onload = gerar;
+</script>
+</body>
+</html>

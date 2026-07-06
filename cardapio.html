@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rest & Bar Parque São Caetano — Cardápio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --verde-tropa: #4b5b2e;
+    --verde-tropa-escuro: #37451f;
+    --verde-tropa-claro: #6b7d45;
+    --laranja: #ee7d32;
+    --laranja-escuro: #d4671f;
+    --creme: #f7f0dc;
+    --creme-escuro: #ecdfc0;
+    --marrom: #3b2f1e;
+    --texto-claro: #fdf9ee;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--verde-tropa);
+    background-image:
+      radial-gradient(circle at 10% 15%, rgba(255,255,255,0.05) 0, transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(0,0,0,0.12) 0, transparent 45%);
+    color:var(--marrom);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  header{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg, var(--verde-tropa-escuro), var(--verde-tropa));
+    padding:18px 16px 12px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    text-align:center;
+  }
+  header .brand-mark{
+    font-family:'Fredoka',sans-serif;
+    color:var(--laranja);
+    font-size:1.9rem;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-shadow:1px 2px 0 rgba(0,0,0,0.25);
+  }
+  header .brand-sub{
+    color:var(--texto-claro);
+    font-size:0.85rem;
+    font-style:italic;
+    opacity:0.9;
+    margin-top:2px;
+  }
+  .search-wrap{
+    margin:14px auto 4px; max-width:520px;
+  }
+  .search-wrap input{
+    width:100%;
+    padding:11px 16px;
+    border-radius:30px;
+    border:none;
+    background:var(--creme);
+    font-family:'Nunito',sans-serif;
+    font-size:0.95rem;
+    color:var(--marrom);
+    outline:none;
+    box-shadow:inset 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .search-wrap input::placeholder{color:#8a7c5c;}
+
+  nav.tabs{
+    display:flex; gap:8px; overflow-x:auto;
+    padding:14px 12px 4px;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs button{
+    flex:0 0 auto;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.85rem;
+    font-weight:600;
+    padding:9px 16px;
+    border-radius:20px;
+    border:2px solid var(--laranja);
+    background:transparent;
+    color:var(--texto-claro);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .2s ease;
+  }
+  nav.tabs button.active, nav.tabs button:hover{
+    background:var(--laranja);
+    color:#2b1d0e;
+    border-color:var(--laranja);
+  }
+
+  main{max-width:720px;margin:0 auto;padding:10px 14px 0;}
+
+  .banner{
+    background:var(--laranja);
+    color:#2b1d0e;
+    font-weight:700;
+    font-size:0.82rem;
+    text-align:center;
+    padding:8px 14px;
+    border-radius:12px;
+    margin:10px 0 4px;
+  }
+
+  section.categoria{margin-top:26px;}
+  section.categoria h2{
+    font-family:'Fredoka',sans-serif;
+    color:var(--creme);
+    background:var(--laranja-escuro);
+    display:inline-block;
+    padding:6px 18px;
+    border-radius:8px 8px 0 0;
+    font-size:1.05rem;
+    letter-spacing:1px;
+    text-transform:uppercase;
+  }
+  section.categoria .subtitulo{
+    color:var(--texto-claro);
+    font-size:0.8rem;
+    margin:4px 0 8px 4px;
+    opacity:0.85;
+  }
+  .card-lista{
+    background:var(--creme);
+    border-radius:4px 14px 14px 14px;
+    padding:6px 4px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.2);
+  }
+  .item{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:10px;
+    padding:12px 14px;
+    border-bottom:1px dashed var(--creme-escuro);
+  }
+  .item:last-child{border-bottom:none;}
+  .item .nome{font-weight:700; font-size:0.98rem; color:var(--marrom);}
+  .item .desc{font-size:0.82rem; color:#6b5c3e; margin-top:2px; font-style:italic;}
+  .item .preco{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    color:var(--laranja-escuro);
+    white-space:nowrap;
+    font-size:0.95rem;
+    padding-top:2px;
+  }
+  .item.hidden{display:none;}
+  section.categoria.hidden{display:none;}
+
+  .grupo-vinho{margin-top:10px;}
+  .grupo-vinho summary{
+    cursor:pointer;
+    font-family:'Fredoka',sans-serif;
+    background:var(--verde-tropa-claro);
+    color:var(--texto-claro);
+    padding:9px 14px;
+    border-radius:10px;
+    font-size:0.92rem;
+    letter-spacing:0.5px;
+    list-style:none;
+  }
+  .grupo-vinho summary::-webkit-details-marker{display:none;}
+  .grupo-vinho summary::after{content:" ▾"; float:right;}
+  .grupo-vinho[open] summary::after{content:" ▴";}
+  .grupo-vinho .card-lista{margin-top:6px;}
+
+  .tabela-doses{width:100%; border-collapse:collapse; text-align:center; margin:4px 0;}
+  .tabela-doses td{padding:6px 4px; font-size:0.85rem;}
+  .tabela-doses .dose{color:#6b5c3e; font-size:0.78rem;}
+  .tabela-doses .preco-dose{font-weight:700; color:var(--laranja-escuro); font-family:'Fredoka',sans-serif;}
+
+  footer{
+    text-align:center;
+    color:var(--texto-claro);
+    font-size:0.8rem;
+    margin-top:40px;
+    padding:20px 16px;
+    opacity:0.9;
+  }
+  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--laranja); font-size:1rem; margin-bottom:4px;}
+  footer a{color:var(--texto-claro);}
+
+  .sem-resultado{
+    text-align:center; color:var(--creme); padding:40px 10px; display:none; font-style:italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-mark">Rest & Bar Parque São Caetano</div>
+  <div class="brand-sub">Tradição, sabor e conforto à mesa</div>
+  <div class="search-wrap">
+    <input type="text" id="busca" placeholder="🔍 Procurar prato, petisco ou vinho...">
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-target="infantil" class="active">Infantil</button>
+  <button data-target="partilhados">Partilhados</button>
+  <button data-target="individuais">Pratos</button>
+  <button data-target="peixe">Peixe</button>
+  <button data-target="carne">Carne</button>
+  <button data-target="snacks">Snacks</button>
+  <button data-target="sandes">Sandes</button>
+  <button data-target="domingo">Domingo</button>
+  <button data-target="vinhos">Vinhos & Bebidas</button>
+</nav>
+
+<main>
+  <div class="banner">💶 Preços dos pratos em atualização — em breve disponíveis por aqui</div>
+
+  <section class="categoria" id="infantil">
+    <h2>Menu Infantil</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Cachorro Kid</div></div>
+      <div class="item"><div class="nome">Hambúrguer Kid</div></div>
+      <div class="item"><div class="nome">Mini Prego</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="partilhados">
+    <h2>Grelhados e Pratos Partilhados</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Costelinhas s/ Guarnição</div></div>
+      <div class="item">
+        <div>
+          <div class="nome">Grelhado Misto (2 ou 4 pessoas)</div>
+          <div class="desc">Frango, costelinha, picanha e salsicha criola</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="categoria" id="individuais">
+    <h2>Pratos Individuais</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Bife na Púcara</div></div>
+      <div class="item"><div class="nome">Mini Posta</div></div>
+      <div class="item"><div class="nome">Mini Braga</div></div>
+      <div class="item"><div class="nome">Alheira</div></div>
+      <div class="item"><div class="nome">Omelete Mista</div></div>
+      <div class="item"><div class="nome">Bife de Frango</div></div>
+      <div class="item"><div class="nome">Pica-Pau</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="peixe">
+    <h2>Peixe</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Filetes de Pescada com Arroz de Camarão</div></div>
+      <div class="item"><div class="nome">Robalo Grelhado</div></div>
+      <div class="item"><div class="nome">Dourada Grelhada</div></div>
+      <div class="item"><div class="nome">Bacalhau à Braga</div></div>
+      <div class="item"><div><div class="nome">Bacalhau à São Caetano</div><div class="desc">Batata à rodela com maionese</div></div></div>
+      <div class="item"><div><div class="nome">Bacalhau à Zé do Pipo</div><div class="desc">Puré com maionese</div></div></div>
+      <div class="item"><div class="nome">Bacalhau com Broa</div></div>
+      <div class="item"><div class="nome">Polvo à Lagareiro</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="carne">
+    <h2>Carne</h2>
+    <div class="card-lista">
+      <div class="item"><div><div class="nome">Bife São Caetano</div><div class="desc">Batata às rodelas, molho da casa</div></div></div>
+      <div class="item"><div><div class="nome">Posta Tropical</div><div class="desc">Salada, fruta, batata às rodelas e molho</div></div></div>
+      <div class="item"><div><div class="nome">Posta à Casa</div><div class="desc">Batata a murro, grelos</div></div></div>
+      <div class="item"><div class="nome">Bifinhos c/ Cogumelos</div></div>
+      <div class="item"><div><div class="nome">Bife na Telha</div><div class="desc">Batata às rodelas, grelos e queijo brie</div></div></div>
+      <div class="item"><div class="nome">Brasa na Mesa</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="snacks">
+    <h2>Snacks</h2>
+    <div class="subtitulo">Francesinhas e Cachorros</div>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Francesinha no Forno s/ Ovo</div></div>
+      <div class="item"><div class="nome">Francesinha no Forno c/ Ovo</div></div>
+      <div class="item"><div class="nome">1/2 Francesinha c/ ou s/ Ovo</div></div>
+      <div class="item"><div class="nome">Francesinha em Massa Folhada</div></div>
+      <div class="item"><div class="nome">Cachorro Normal</div></div>
+      <div class="item"><div><div class="nome">Cachorro à São Caetano</div><div class="desc">Linguiça e salsicha fresca</div></div></div>
+      <div class="item"><div class="nome">Cachorro em Massa Folhada</div></div>
+      <div class="item"><div class="nome">Hambúrguer à São Caetano</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="sandes">
+    <h2>Sandes & Tostas</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Americana</div></div>
+      <div class="item"><div class="nome">Prego no Prato</div></div>
+      <div class="item"><div class="nome">Prego no Pão</div></div>
+      <div class="item"><div class="nome">Tosta Mista</div></div>
+      <div class="item"><div class="nome">Tosta Mista Especial</div></div>
+      <div class="item"><div class="nome">Tosta de Atum c/ Ananás</div></div>
+      <div class="item"><div class="nome">Prego no Pão Especial</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="domingo">
+    <h2>Menu de Domingo</h2>
+    <div class="card-lista">
+      <div class="item"><div class="nome">Cabrito</div></div>
+      <div class="item"><div class="nome">Lombo</div></div>
+      <div class="item"><div class="nome">Vitela Assada</div></div>
+      <div class="item"><div class="nome">Cozido à Portuguesa</div></div>
+      <div class="item"><div class="nome">Tripas à Moda do Porto</div></div>
+    </div>
+  </section>
+
+  <section class="categoria" id="vinhos">
+    <h2>Vinhos & Bebidas</h2>
+    <div class="subtitulo">Carta de Vinhos — Parque São Caetano</div>
+
+    <details class="grupo-vinho" open>
+      <summary>Vinho da Casa</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Caneca</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,25 L</td><td class="dose">0,50 L</td><td class="dose">1 L</td></tr>
+          <tr><td class="preco-dose">2,50€</td><td class="preco-dose">3,50€</td><td class="preco-dose">7,50€</td></tr>
+        </table>
+        <div class="item"><div class="nome">Garrafa Maduro Branco</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,37 L</td><td class="dose">0,75 L</td></tr>
+          <tr><td class="preco-dose">4,00€</td><td class="preco-dose">8,00€</td></tr>
+        </table>
+        <div class="item"><div class="nome">Garrafa Maduro Tinto</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,37 L</td><td class="dose">0,75 L</td></tr>
+          <tr><td class="preco-dose">4,50€</td><td class="preco-dose">8,50€</td></tr>
+        </table>
+        <div class="item"><div class="nome">Outras Garrafas — Verde</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome">Outras Garrafas — Espadal</div><div class="preco">9,00€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Maduro Branco</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Almotriga</div><div class="preco">20,00€</div></div>
+        <div class="item"><div class="nome">Planalto</div><div class="preco">15,00€</div></div>
+        <div class="item"><div class="nome">Dona Ermelinda</div><div class="preco">22,50€</div></div>
+        <div class="item"><div class="nome">Alandra 0,75 L</div><div class="preco">8,00€</div></div>
+        <div class="item"><div class="nome">Alandra 0,37 L</div><div class="preco">4,50€</div></div>
+        <div class="item"><div class="nome">Assobio</div><div class="preco">21,00€</div></div>
+        <div class="item"><div class="nome">Carm Reserva</div><div class="preco">33,00€</div></div>
+        <div class="item"><div class="nome">Almotriga Premium</div><div class="preco">39,00€</div></div>
+        <div class="item"><div class="nome">Duas Quintas</div><div class="preco">30,00€</div></div>
+        <div class="item"><div class="nome">Adega de Borba 0,75 L</div><div class="preco">13,00€</div></div>
+        <div class="item"><div class="nome">Adega de Borba 0,37 L</div><div class="preco">7,50€</div></div>
+        <div class="item"><div class="nome">Pouca Terra</div><div class="preco">20,00€</div></div>
+        <div class="item"><div class="nome">Bom Malandro</div><div class="preco">21,50€</div></div>
+        <div class="item"><div class="nome">Conde de Monsul</div><div class="preco">13,50€</div></div>
+        <div class="item"><div class="nome">Fagote</div><div class="preco">21,50€</div></div>
+        <div class="item"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">18,00€</div></div>
+        <div class="item"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">9,00€</div></div>
+        <div class="item"><div class="nome">Monte Velho 0,75 L</div><div class="preco">12,50€</div></div>
+        <div class="item"><div class="nome">Monte Velho 0,37 L</div><div class="preco">7,50€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Maduro Tinto</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Almotriga</div><div class="preco">21,00€</div></div>
+        <div class="item"><div class="nome">Assobio</div><div class="preco">22,00€</div></div>
+        <div class="item"><div class="nome">Dona Ermelinda</div><div class="preco">23,50€</div></div>
+        <div class="item"><div class="nome">Adega de Borba</div><div class="preco">14,00€</div></div>
+        <div class="item"><div class="nome">Carm Reserva</div><div class="preco">40,00€</div></div>
+        <div class="item"><div class="nome">Almotriga Premium</div><div class="preco">38,50€</div></div>
+        <div class="item"><div class="nome">Duas Quintas</div><div class="preco">31,00€</div></div>
+        <div class="item"><div class="nome">Pouca Terra</div><div class="preco">21,00€</div></div>
+        <div class="item"><div class="nome">Bom Malandro</div><div class="preco">19,50€</div></div>
+        <div class="item"><div class="nome">Conde de Monsul</div><div class="preco">14,50€</div></div>
+        <div class="item"><div class="nome">Monte Perdigões</div><div class="preco">23,50€</div></div>
+        <div class="item"><div class="nome">Chaminé (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item"><div class="nome">Fagote (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">19,00€</div></div>
+        <div class="item"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">10,00€</div></div>
+        <div class="item"><div class="nome">Monte Velho 0,75 L</div><div class="preco">13,50€</div></div>
+        <div class="item"><div class="nome">Monte Velho 0,37 L</div><div class="preco">8,50€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Verdes</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Casal Garcia</div><div class="preco">10,50€</div></div>
+        <div class="item"><div class="nome">Quinta Aveleda</div><div class="preco">11,50€</div></div>
+        <div class="item"><div class="nome">Aveleda Alvarinho</div><div class="preco">16,00€</div></div>
+        <div class="item"><div class="nome">Tamariz Alvarinho</div><div class="preco">18,00€</div></div>
+        <div class="item"><div class="nome">Muralhas</div><div class="preco">18,00€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Espumantes</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Corte Real</div><div class="preco">9,00€</div></div>
+        <div class="item"><div class="nome">Terras do Demo Bruto</div><div class="preco">28,00€</div></div>
+        <div class="item"><div class="nome">Fita Azul Doce</div><div class="preco">15,00€</div></div>
+        <div class="item"><div class="nome">Raposeira Meio Seco</div><div class="preco">24,00€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Rosés</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Mateus Rosé 0,75 L</div><div class="preco">12,75€</div></div>
+        <div class="item"><div class="nome">Mateus Rosé 0,37 L</div><div class="preco">8,50€</div></div>
+      </div>
+    </details>
+
+    <details class="grupo-vinho">
+      <summary>Sangrias</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome">Tinta / Branca</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
+          <tr><td class="preco-dose">7,50€</td><td class="preco-dose">14,00€</td><td class="preco-dose">26,00€</td></tr>
+        </table>
+        <div class="item"><div class="nome">Frutos Vermelhos</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
+          <tr><td class="preco-dose">9,50€</td><td class="preco-dose">18,00€</td><td class="preco-dose">34,00€</td></tr>
+        </table>
+        <div class="item"><div class="nome">Maracujá</div></div>
+        <table class="tabela-doses">
+          <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
+          <tr><td class="preco-dose">9,00€</td><td class="preco-dose">17,00€</td><td class="preco-dose">32,00€</td></tr>
+        </table>
+      </div>
+    </details>
+
+    <div class="subtitulo" style="margin-top:10px;">IVA incluído à taxa legal em vigor.</div>
+  </section>
+
+  <div class="sem-resultado" id="semResultado">Nenhum item encontrado 🍷🍽️</div>
+</main>
+
+<footer>
+  <div class="nome-rest">Rest & Bar Parque São Caetano</div>
+  <div>Avenida de São Caetano, nº17</div>
+  <div>📞 962 202 622 / 227 130 614</div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('nav.tabs button');
+  const categorias = document.querySelectorAll('section.categoria');
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(btn.dataset.target);
+      target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
+      document.getElementById('busca').value='';
+      filtrar('');
+    });
+  });
+
+  const busca = document.getElementById('busca');
+  const semResultado = document.getElementById('semResultado');
+
+  function filtrar(termo){
+    termo = termo.trim().toLowerCase();
+    let totalVisivel = 0;
+
+    categorias.forEach(cat => {
+      let algumVisivelNaCategoria = false;
+      const itens = cat.querySelectorAll('.item');
+      itens.forEach(item => {
+        const texto = item.textContent.toLowerCase();
+        const bate = termo === '' || texto.includes(termo);
+        item.classList.toggle('hidden', !bate);
+        if(bate){ algumVisivelNaCategoria = true; totalVisivel++; }
+      });
+
+      if(termo === ''){
+        cat.classList.remove('hidden');
+      } else {
+        cat.classList.toggle('hidden', !algumVisivelNaCategoria);
+      }
+    });
+
+    semResultado.style.display = (termo !== '' && totalVisivel === 0) ? 'block' : 'none';
+  }
+
+  busca.addEventListener('input', (e) => filtrar(e.target.value));
+</script>
+
+</body>
+</html>
