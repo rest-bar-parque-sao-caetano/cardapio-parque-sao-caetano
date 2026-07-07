@@ -480,13 +480,25 @@
 </header>
 
 <div class="categoria-grid" id="categoriaGrid">
-  <button class="tile" data-target="infantil" type="button">
-    <span class="tile-emoji">🧑‍🤝‍🧑</span>
-    <span class="tile-label" data-en="Kids" data-fr="Enfants">Infantil</span>
+  <button class="tile" data-target="entradas" type="button">
+    <span class="tile-emoji">🥖</span>
+    <span class="tile-label" data-en="Starters" data-fr="Entrées">Entradas</span>
+  </button>
+  <button class="tile" data-target="sopas-saladas" type="button">
+    <span class="tile-emoji">🥗</span>
+    <span class="tile-label" data-en="Soups & Salads" data-fr="Soupes et Salades">Sopas e Saladas</span>
+  </button>
+  <button class="tile" data-target="brasa" type="button">
+    <span class="tile-emoji">🔥</span>
+    <span class="tile-label" data-en="Charcoal Grill Specialties" data-fr="Spécialités à la Braise">Especialidades na Brasa</span>
   </button>
   <button class="tile" data-target="partilhados" type="button">
     <span class="tile-emoji">🍖</span>
     <span class="tile-label" data-en="Sharing" data-fr="À partager">Partilhados</span>
+  </button>
+  <button class="tile" data-target="infantil" type="button">
+    <span class="tile-emoji">🧑‍🤝‍🧑</span>
+    <span class="tile-label" data-en="Kids" data-fr="Enfants">Infantil</span>
   </button>
   <button class="tile" data-target="individuais" type="button">
     <span class="tile-emoji">🍽️</span>
@@ -499,6 +511,10 @@
   <button class="tile" data-target="carne" type="button">
     <span class="tile-emoji">🥩</span>
     <span class="tile-label" data-en="Meat" data-fr="Viande">Carne</span>
+  </button>
+  <button class="tile" data-target="vegetariana" type="button">
+    <span class="tile-emoji">🥦</span>
+    <span class="tile-label" data-en="Vegetarian" data-fr="Végétarien">Vegetariana</span>
   </button>
   <button class="tile" data-target="snacks" type="button">
     <span class="tile-emoji">🌭</span>
@@ -519,6 +535,52 @@
 </div>
 
 <main>
+  <section class="categoria" id="entradas">
+    <details class="grupo-prato">
+      <summary data-en="Starters" data-fr="Entrées">Entradas</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome" data-en="Bread" data-fr="Pain">Pão</div><div class="preco">2,00€</div></div>
+        <div class="item"><div class="nome" data-en="Pâté" data-fr="Pâté">Paté</div><div class="preco">2,00€</div></div>
+        <div class="item"><div class="nome" data-en="Olives" data-fr="Olives">Azeitonas</div><div class="preco">2,00€</div></div>
+        <div class="item"><div class="nome" data-en="Butter (each)" data-fr="Beurre (chacun)">Manteiga</div><div class="preco">(cada) 0,20€</div></div>
+        <div class="item"><div class="nome" data-en="Broken Eggs (fries with fried eggs)" data-fr="Œufs Cassés (frites et œufs frits)">Ovos Rotos</div><div class="preco">10,00€</div></div>
+        <div class="item"><div class="nome" data-en="Alheira Sausage with Cornbread" data-fr="Saucisse Alheira avec Pain de Maïs">Alheira com Broa</div><div class="preco">10,50€</div></div>
+        <div class="item"><div class="nome" data-en="São Caetano-Style Shrimp" data-fr="Crevettes à la São Caetano">Gambas São Caetano</div><div class="preco">10,00€</div></div>
+        <div class="item"><div class="nome" data-en="Padrón Peppers" data-fr="Piments Padrón">Pimentos Padrón</div><div class="preco">8,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="São Caetano Board" data-fr="Planche à la São Caetano">Tábua à São Caetano</div><div class="desc" data-en="Charcuterie, ham, melon, fried cornbread, shrimp" data-fr="Charcuterie, jambon, melon, pain de maïs frit, crevettes">Enchidos, presunto, melão, broa frita, camarão</div></div><div class="preco">28,00€</div></div>
+        <div class="item"><div class="nome" data-en="Half São Caetano Board" data-fr="Demi-Planche São Caetano">½ Tábua São Caetano</div><div class="preco">18,00€</div></div>
+        <div class="item"><div class="nome" data-en="Roasted Chouriço" data-fr="Chorizo Rôti">Chouriço Assado</div><div class="preco">8,00€</div></div>
+        <div class="item"><div class="nome" data-en="Ham Board" data-fr="Planche de Jambon">Tábua de Presunto</div><div class="preco">15,00€</div></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="categoria" id="sopas-saladas">
+    <details class="grupo-prato">
+      <summary data-en="Soups & Salads" data-fr="Soupes et Salades">Sopas e Saladas</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome" data-en="Soup of the Day" data-fr="Soupe du Jour">Sopa do Dia</div><div class="preco">1,80€</div></div>
+        <div class="item"><div class="nome" data-en="Chef's Salad" data-fr="Salade du Chef">Salada à Chef</div><div class="preco">12,50€</div></div>
+        <div class="item"><div class="nome" data-en="Tuna Salad" data-fr="Salade de Thon">Salada de Atum</div><div class="preco">11,50€</div></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="categoria" id="brasa">
+    <details class="grupo-prato">
+      <summary data-en="Charcoal Grill Specialties" data-fr="Spécialités à la Braise">Especialidades na Brasa</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome" data-en="Grilled Squid" data-fr="Calamars Grillés">Lulas grelhadas</div><div class="preco">16,50€ / 32,00€</div></div>
+        <div class="item"><div class="nome" data-en="Squid and Shrimp Skewer" data-fr="Brochette de Calamars et Crevettes">Espetada de Lulas e Gambas</div><div class="preco">23,50€ / 39,50€</div></div>
+        <div class="item"><div class="nome" data-en="Octopus Skewer" data-fr="Brochette de Poulpe">Espetada de Polvo</div><div class="preco">28,50€ / 41,50€</div></div>
+        <div class="item"><div class="nome" data-en="Octopus, Squid and Shrimp Skewer" data-fr="Brochette de Poulpe, Calamars et Crevettes">Espetada de Polvo, Lulas e Gambas</div><div class="preco">31,00€ / 46,00€</div></div>
+        <div class="item"><div class="nome" data-en="Surf and Turf Skewer" data-fr="Brochette Terre et Mer">Espetada Terra e Mar</div><div class="preco">28,50€ / 48,50€</div></div>
+        <div class="item"><div class="nome" data-en="Picanha Steak" data-fr="Picanha">Picanha</div><div class="preco">19,80€ / 27,00€</div></div>
+        <div class="item"><div class="nome" data-en="Chicken without Side Dish" data-fr="Poulet sans Accompagnement">Frango s/ guarnição</div><div class="preco">4,50€ / 17,50€</div></div>
+      </div>
+    </details>
+  </section>
+
   <section class="categoria" id="infantil">
     <details class="grupo-prato">
       <summary data-en="Kids Menu" data-fr="Menu Enfants">Menu Infantil</summary>
@@ -534,14 +596,15 @@
     <details class="grupo-prato">
       <summary data-en="Grilled Dishes & Sharing Plates" data-fr="Grillades et Plats à Partager">Grelhados e Pratos Partilhados</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome" data-en="Ribs without Side Dish" data-fr="Travers de Porc sans Accompagnement">Costelinhas s/ Guarnição</div><div class="preco">14,50€ / 25,00€</div></div>
+        <div class="item"><div class="nome" data-en="Ribs without Side Dish" data-fr="Travers de Porc sans Accompagnement">Costelinhas s/ Guarnição</div><div class="preco">7,50€ / 15,00€</div></div>
         <div class="item">
           <div>
-            <div class="nome" data-en="Mixed Grill (2 or 4 people)" data-fr="Grillade Mixte (2 ou 4 personnes)">Grelhado Misto (2 ou 4 pessoas)</div>
-            <div class="desc" data-en="Chicken, ribs, picanha steak and creole sausage" data-fr="Poulet, travers de porc, picanha et saucisse créole">Frango, costelinha, picanha e salsicha criola</div>
+            <div class="nome" data-en="Mixed Grill – 2 people" data-fr="Grillade Mixte – 2 personnes">Grelhado Misto – 2 pessoas</div>
+            <div class="desc" data-en="Chicken, ribs, picanha steak and creole sausage" data-fr="Poulet, travers de porc, picanha et saucisse créole">Frango, costelinhas, picanha, salsicha criola</div>
           </div>
-          <div class="preco">19,50€ / 29,50€</div>
+          <div class="preco">19,50€</div>
         </div>
+        <div class="item"><div class="nome" data-en="Mixed Grill – 4 people" data-fr="Grillade Mixte – 4 personnes">Grelhado Misto – 4 pessoas</div><div class="preco">29,50€</div></div>
       </div>
     </details>
   </section>
@@ -568,11 +631,11 @@
         <div class="item"><div class="nome" data-en="Hake Fillets with Shrimp Rice" data-fr="Filets de Merlu au Riz de Crevettes">Filetes de Pescada com Arroz de Camarão</div><div class="preco">17,50€ / 28,00€</div></div>
         <div class="item"><div class="nome" data-en="Grilled Sea Bass" data-fr="Bar Grillé">Robalo Grelhado</div><div class="preco">11,50€</div></div>
         <div class="item"><div class="nome" data-en="Grilled Sea Bream" data-fr="Daurade Grillée">Dourada Grelhada</div><div class="preco">11,50€</div></div>
-        <div class="item"><div class="nome" data-en="Braga-Style Codfish" data-fr="Morue à la Braga">Bacalhau à Braga</div><div class="preco">22,50€ / 42,00€</div></div>
-        <div class="item"><div><div class="nome" data-en="São Caetano-Style Codfish" data-fr="Morue à la São Caetano">Bacalhau à São Caetano</div><div class="desc" data-en="Sliced potatoes with mayonnaise" data-fr="Pommes de terre en rondelles avec mayonnaise">Batata à rodela com maionese</div></div><div class="preco">21,00€ / 41,00€</div></div>
-        <div class="item"><div><div class="nome" data-en="Zé do Pipo-Style Codfish" data-fr="Morue à la Zé do Pipo">Bacalhau à Zé do Pipo</div><div class="desc" data-en="Mashed potato with mayonnaise" data-fr="Purée avec mayonnaise">Puré com maionese</div></div><div class="preco">25,00€ / 43,00€</div></div>
-        <div class="item"><div class="nome" data-en="Codfish with Cornbread Crust" data-fr="Morue à la Croûte de Maïs">Bacalhau com Broa</div><div class="preco">26,00€ / 44,00€</div></div>
-        <div class="item"><div class="nome" data-en="Charcoal-Grilled Codfish" data-fr="Morue Grillée au Charbon">Bacalhau na Brasa</div><div class="preco">28,00€ / 46,00€</div></div>
+        <div class="item"><div class="nome" data-en="Braga-Style Codfish" data-fr="Morue à la Braga">Bacalhau à Braga</div><div class="preco">22,50€ / 32,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="São Caetano-Style Codfish" data-fr="Morue à la São Caetano">Bacalhau à São Caetano</div><div class="desc" data-en="Sliced potatoes with mayonnaise" data-fr="Pommes de terre en rondelles avec mayonnaise">Batata à rodela com maionese</div></div><div class="preco">21,00€ / 31,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="Zé do Pipo-Style Codfish" data-fr="Morue à la Zé do Pipo">Bacalhau à Zé do Pipo</div><div class="desc" data-en="Mashed potato with mayonnaise" data-fr="Purée avec mayonnaise">Puré com maionese</div></div><div class="preco">25,00€ / 33,00€</div></div>
+        <div class="item"><div class="nome" data-en="Codfish with Cornbread Crust" data-fr="Morue à la Croûte de Maïs">Bacalhau com Broa</div><div class="preco">26,00€ / 34,00€</div></div>
+        <div class="item"><div class="nome" data-en="Charcoal-Grilled Codfish" data-fr="Morue Grillée au Charbon">Bacalhau na Brasa</div><div class="preco">28,00€ / 36,00€</div></div>
         <div class="item"><div class="nome" data-en="Octopus Lagareiro-Style" data-fr="Poulpe à la Lagareiro">Polvo à Lagareiro</div><div class="preco">25,50€ / 38,00€</div></div>
         <div class="item"><div class="nome" data-en="Smashed Octopus with Potatoes" data-fr="Poulpe Écrasé aux Pommes de Terre">Escangalhado de Polvo</div><div class="preco">27,00€ / 40,00€</div></div>
       </div>
@@ -593,6 +656,16 @@
     </details>
   </section>
 
+  <section class="categoria" id="vegetariana">
+    <details class="grupo-prato">
+      <summary data-en="Vegetarian" data-fr="Végétarien">Vegetariana</summary>
+      <div class="card-lista">
+        <div class="item"><div class="nome" data-en="Vegetable Puff Pastry" data-fr="Feuilleté de Légumes">Folhado de Legumes</div><div class="preco">11,50€</div></div>
+        <div class="item"><div class="nome" data-en="Sautéed Pasta with Mixed Vegetables" data-fr="Pâtes Sautées aux Légumes Variés">Massa Salteada c/ Variedade de Legumes</div><div class="preco">10,50€</div></div>
+      </div>
+    </details>
+  </section>
+
   <section class="categoria" id="snacks">
     <details class="grupo-prato">
       <summary data-en="Snacks" data-fr="Snacks">Snacks</summary>
@@ -602,7 +675,7 @@
         <div class="item prato-clicavel" data-foto="francesinha-forno-com-ovo"><div class="nome" data-en="Oven-Baked Francesinha with Egg" data-fr="Francesinha au Four avec Œuf">Francesinha no Forno c/ Ovo</div><div class="preco">12,50€</div></div>
         <div class="item"><div class="nome" data-en="Half Francesinha with or without Egg" data-fr="Demi-Francesinha avec ou sans Œuf">1/2 Francesinha c/ ou s/ Ovo</div><div class="preco">9,50€</div></div>
         <div class="item"><div class="nome" data-en="Francesinha in Puff Pastry" data-fr="Francesinha en Pâte Feuilletée">Francesinha em Massa Folhada</div><div class="preco">13,50€</div></div>
-        <div class="item"><div class="nome" data-en="Regular Hot Dog" data-fr="Hot-Dog Nature">Cachorro Normal</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome" data-en="Regular Hot Dog" data-fr="Hot-Dog Nature">Cachorro Normal</div><div class="preco">6,50€</div></div>
         <div class="item"><div><div class="nome" data-en="Hot Dog São Caetano-Style" data-fr="Hot-Dog à la São Caetano">Cachorro à São Caetano</div><div class="desc" data-en="Smoked sausage and fresh sausage" data-fr="Chorizo et saucisse fraîche">Linguiça e salsicha fresca</div></div><div class="preco">9,50€</div></div>
         <div class="item"><div class="nome" data-en="Special Hot Dog" data-fr="Hot-Dog Spécial">Cachorro Especial</div><div class="preco">10,50€</div></div>
         <div class="item"><div class="nome" data-en="Hot Dog in Puff Pastry" data-fr="Hot-Dog en Pâte Feuilletée">Cachorro em Massa Folhada</div><div class="preco">12,50€</div></div>
