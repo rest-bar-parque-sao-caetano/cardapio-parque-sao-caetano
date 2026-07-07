@@ -81,33 +81,44 @@
   }
   .social-links svg{width:17px;height:17px;fill:currentColor;}
 
-  nav.tabs{
-    display:flex; gap:8px; overflow-x:auto;
-    padding:14px 12px;
+  .categoria-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    padding:16px 14px;
     background:var(--branco);
     border-bottom:1px solid var(--linha);
-    scrollbar-width:none;
+    max-width:640px;
+    margin:0 auto;
   }
-  nav.tabs::-webkit-scrollbar{display:none;}
-  nav.tabs button{
-    flex:0 0 auto;
-    font-family:'Fredoka',sans-serif;
-    font-size:0.8rem;
-    font-weight:600;
-    padding:8px 16px;
-    border-radius:20px;
-    border:1px solid var(--linha);
+  .tile{
+    aspect-ratio:1/1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:4px;
     background:var(--bege);
-    color:var(--castanho-suave);
+    border:1px solid var(--linha);
+    border-radius:14px;
     cursor:pointer;
-    white-space:nowrap;
     transition:all .2s ease;
+    padding:6px;
   }
-  nav.tabs button.active, nav.tabs button:hover{
+  .tile:hover{border-color:var(--dourado);}
+  .tile.active{
     background:var(--castanho);
-    color:var(--branco);
     border-color:var(--castanho);
   }
+  .tile-emoji{font-size:1.8rem; line-height:1;}
+  .tile-label{
+    font-family:'Fredoka',sans-serif;
+    font-size:0.62rem;
+    font-weight:600;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    text-align:center;
+    color:var(--castanho-suave);
+    line-height:1.15;
+  }
+  .tile.active .tile-label{color:var(--branco);}
 
   main{max-width:640px;margin:0 auto;padding:18px 14px 0;}
 
@@ -123,7 +134,12 @@
     border:1px solid var(--linha);
   }
 
-  section.categoria{margin-top:30px;}
+  section.categoria{margin-top:30px; display:none;}
+  section.categoria.ativa{display:block; animation:categoriaAbre .25s ease;}
+  @keyframes categoriaAbre{
+    from{opacity:0; transform:translateY(-6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
   section.categoria h2{
     font-family:'Fredoka',sans-serif;
     color:var(--dourado);
@@ -463,17 +479,44 @@
   </div>
 </header>
 
-<nav class="tabs" id="tabs">
-  <button data-target="infantil" class="active" data-en="Kids" data-fr="Enfants">Infantil</button>
-  <button data-target="partilhados" data-en="Sharing" data-fr="À partager">Partilhados</button>
-  <button data-target="individuais" data-en="Mains" data-fr="Plats">Pratos</button>
-  <button data-target="peixe" data-en="Fish" data-fr="Poisson">Peixe</button>
-  <button data-target="carne" data-en="Meat" data-fr="Viande">Carne</button>
-  <button data-target="snacks" data-en="Snacks" data-fr="Snacks">Snacks</button>
-  <button data-target="sandes" data-en="Sandwiches" data-fr="Sandwichs">Sandes</button>
-  <button data-target="domingo" data-en="Sunday" data-fr="Dimanche">Domingo</button>
-  <button data-target="vinhos" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</button>
-</nav>
+<div class="categoria-grid" id="categoriaGrid">
+  <button class="tile" data-target="infantil" type="button">
+    <span class="tile-emoji">🧑‍🤝‍🧑</span>
+    <span class="tile-label" data-en="Kids" data-fr="Enfants">Infantil</span>
+  </button>
+  <button class="tile" data-target="partilhados" type="button">
+    <span class="tile-emoji">🍖</span>
+    <span class="tile-label" data-en="Sharing" data-fr="À partager">Partilhados</span>
+  </button>
+  <button class="tile" data-target="individuais" type="button">
+    <span class="tile-emoji">🍽️</span>
+    <span class="tile-label" data-en="Mains" data-fr="Plats">Pratos</span>
+  </button>
+  <button class="tile" data-target="peixe" type="button">
+    <span class="tile-emoji">🐟</span>
+    <span class="tile-label" data-en="Fish" data-fr="Poisson">Peixe</span>
+  </button>
+  <button class="tile" data-target="carne" type="button">
+    <span class="tile-emoji">🥩</span>
+    <span class="tile-label" data-en="Meat" data-fr="Viande">Carne</span>
+  </button>
+  <button class="tile" data-target="snacks" type="button">
+    <span class="tile-emoji">🌭</span>
+    <span class="tile-label" data-en="Snacks" data-fr="Snacks">Snacks</span>
+  </button>
+  <button class="tile" data-target="sandes" type="button">
+    <span class="tile-emoji">🥪</span>
+    <span class="tile-label" data-en="Sandwiches" data-fr="Sandwichs">Sandes</span>
+  </button>
+  <button class="tile" data-target="domingo" type="button">
+    <span class="tile-emoji">🍲</span>
+    <span class="tile-label" data-en="Sunday" data-fr="Dimanche">Domingo</span>
+  </button>
+  <button class="tile" data-target="vinhos" type="button">
+    <span class="tile-emoji">🍷</span>
+    <span class="tile-label" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</span>
+  </button>
+</div>
 
 <main>
   <section class="categoria" id="infantil">
@@ -833,21 +876,32 @@
 
   aplicarIdioma(idiomaAtual);
 
-  const tabs = document.querySelectorAll('nav.tabs button');
+  const tiles = document.querySelectorAll('.tile');
   const categorias = document.querySelectorAll('section.categoria');
 
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabs.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const target = document.getElementById(btn.dataset.target);
+  tiles.forEach(tile => {
+    tile.addEventListener('click', () => {
+      const target = document.getElementById(tile.dataset.target);
+      const jaAtivo = tile.classList.contains('active');
 
-      // acordeão: fecha todas as categorias de pratos e abre só a da aba clicada
+      // fecha tudo primeiro
+      tiles.forEach(t => t.classList.remove('active'));
+      categorias.forEach(c => c.classList.remove('ativa'));
+
+      if(jaAtivo){
+        // clicar de novo no mesmo quadrado fecha a categoria
+        return;
+      }
+
+      tile.classList.add('active');
+      target.classList.add('ativa');
+
+      // acordeão: fecha todos os grupos de pratos e abre só o primeiro da categoria clicada
       document.querySelectorAll('.grupo-prato').forEach(det => { det.open = false; });
       const grupo = target.querySelector('.grupo-prato');
       if (grupo) grupo.open = true;
 
-      target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
+      target.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
     });
   });
 
