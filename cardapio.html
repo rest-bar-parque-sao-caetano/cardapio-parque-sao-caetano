@@ -187,6 +187,73 @@
   .sem-resultado{
     text-align:center; color:var(--creme); padding:40px 10px; display:none; font-style:italic;
   }
+
+  .item.vinho-clicavel{
+    cursor:pointer;
+    transition:background .15s ease;
+    position:relative;
+  }
+  .item.vinho-clicavel:hover, .item.vinho-clicavel:active{
+    background:var(--creme-escuro);
+  }
+  .item.vinho-clicavel .nome::after{
+    content:" ⓘ";
+    font-size:.72rem;
+    color:var(--laranja-escuro);
+    font-weight:400;
+  }
+
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(30,24,12,0.55);
+    z-index:200;
+    align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.aberto{display:flex;}
+  .modal-vinho{
+    background:var(--creme);
+    border-radius:16px;
+    max-width:380px; width:100%;
+    padding:22px 22px 20px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.35);
+    position:relative;
+    animation:modalPop .18s ease;
+  }
+  @keyframes modalPop{
+    from{transform:scale(.92); opacity:0;}
+    to{transform:scale(1); opacity:1;}
+  }
+  .modal-vinho .fechar{
+    position:absolute; top:10px; right:12px;
+    background:none; border:none;
+    font-size:1.3rem; line-height:1;
+    color:#8a7c5c; cursor:pointer;
+    padding:4px;
+  }
+  .modal-vinho h3{
+    font-family:'Fredoka',sans-serif;
+    color:var(--laranja-escuro);
+    font-size:1.15rem;
+    margin-bottom:10px;
+    padding-right:20px;
+  }
+  .modal-vinho .campo{margin-top:10px;}
+  .modal-vinho .campo .rotulo{
+    font-family:'Fredoka',sans-serif;
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--verde-tropa-claro);
+    display:block;
+    margin-bottom:2px;
+  }
+  .modal-vinho .campo .valor{
+    font-size:.92rem;
+    color:var(--marrom);
+    line-height:1.35;
+  }
 </style>
 </head>
 <body>
@@ -344,77 +411,77 @@
     <details class="grupo-vinho">
       <summary>Maduro Branco</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Almotriga</div><div class="preco">20,00€</div></div>
-        <div class="item"><div class="nome">Planalto</div><div class="preco">15,00€</div></div>
-        <div class="item"><div class="nome">Dona Ermelinda</div><div class="preco">22,50€</div></div>
-        <div class="item"><div class="nome">Alandra 0,75 L</div><div class="preco">8,00€</div></div>
-        <div class="item"><div class="nome">Alandra 0,37 L</div><div class="preco">4,50€</div></div>
-        <div class="item"><div class="nome">Assobio</div><div class="preco">21,00€</div></div>
-        <div class="item"><div class="nome">Carm Reserva</div><div class="preco">33,00€</div></div>
-        <div class="item"><div class="nome">Almotriga Premium</div><div class="preco">39,00€</div></div>
-        <div class="item"><div class="nome">Duas Quintas</div><div class="preco">30,00€</div></div>
-        <div class="item"><div class="nome">Adega de Borba 0,75 L</div><div class="preco">13,00€</div></div>
-        <div class="item"><div class="nome">Adega de Borba 0,37 L</div><div class="preco">7,50€</div></div>
-        <div class="item"><div class="nome">Pouca Terra</div><div class="preco">20,00€</div></div>
-        <div class="item"><div class="nome">Bom Malandro</div><div class="preco">21,50€</div></div>
-        <div class="item"><div class="nome">Conde de Monsul</div><div class="preco">13,50€</div></div>
-        <div class="item"><div class="nome">Fagote</div><div class="preco">21,50€</div></div>
-        <div class="item"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">18,00€</div></div>
-        <div class="item"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">9,00€</div></div>
-        <div class="item"><div class="nome">Monte Velho 0,75 L</div><div class="preco">12,50€</div></div>
-        <div class="item"><div class="nome">Monte Velho 0,37 L</div><div class="preco">7,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="almotriga-branco"><div class="nome">Almotriga</div><div class="preco">20,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="planalto"><div class="nome">Planalto</div><div class="preco">15,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="dona-ermelinda-branco"><div class="nome">Dona Ermelinda</div><div class="preco">22,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="alandra"><div class="nome">Alandra 0,75 L</div><div class="preco">8,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="alandra"><div class="nome">Alandra 0,37 L</div><div class="preco">4,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="assobio-branco"><div class="nome">Assobio</div><div class="preco">21,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="carm-reserva"><div class="nome">Carm Reserva</div><div class="preco">33,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="almotriga-premium"><div class="nome">Almotriga Premium</div><div class="preco">39,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="duas-quintas-branco"><div class="nome">Duas Quintas</div><div class="preco">30,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="adega-de-borba"><div class="nome">Adega de Borba 0,75 L</div><div class="preco">13,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="adega-de-borba"><div class="nome">Adega de Borba 0,37 L</div><div class="preco">7,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="pouca-terra"><div class="nome">Pouca Terra</div><div class="preco">20,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="bom-malandro"><div class="nome">Bom Malandro</div><div class="preco">21,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="conde-de-monsul"><div class="nome">Conde de Monsul</div><div class="preco">13,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="fagote"><div class="nome">Fagote</div><div class="preco">21,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="ea-cartuxa"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">18,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="ea-cartuxa"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">9,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="monte-velho-branco"><div class="nome">Monte Velho 0,75 L</div><div class="preco">12,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="monte-velho-branco"><div class="nome">Monte Velho 0,37 L</div><div class="preco">7,50€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
       <summary>Maduro Tinto</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Almotriga</div><div class="preco">21,00€</div></div>
-        <div class="item"><div class="nome">Assobio</div><div class="preco">22,00€</div></div>
-        <div class="item"><div class="nome">Dona Ermelinda</div><div class="preco">23,50€</div></div>
-        <div class="item"><div class="nome">Adega de Borba</div><div class="preco">14,00€</div></div>
-        <div class="item"><div class="nome">Carm Reserva</div><div class="preco">40,00€</div></div>
-        <div class="item"><div class="nome">Almotriga Premium</div><div class="preco">38,50€</div></div>
-        <div class="item"><div class="nome">Duas Quintas</div><div class="preco">31,00€</div></div>
-        <div class="item"><div class="nome">Pouca Terra</div><div class="preco">21,00€</div></div>
-        <div class="item"><div class="nome">Bom Malandro</div><div class="preco">19,50€</div></div>
-        <div class="item"><div class="nome">Conde de Monsul</div><div class="preco">14,50€</div></div>
-        <div class="item"><div class="nome">Monte Perdigões</div><div class="preco">23,50€</div></div>
-        <div class="item"><div class="nome">Chaminé (Tinto)</div><div class="preco">22,50€</div></div>
-        <div class="item"><div class="nome">Fagote (Tinto)</div><div class="preco">22,50€</div></div>
-        <div class="item"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">19,00€</div></div>
-        <div class="item"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">10,00€</div></div>
-        <div class="item"><div class="nome">Monte Velho 0,75 L</div><div class="preco">13,50€</div></div>
-        <div class="item"><div class="nome">Monte Velho 0,37 L</div><div class="preco">8,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="almotriga-tinto"><div class="nome">Almotriga</div><div class="preco">21,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="assobio-tinto"><div class="nome">Assobio</div><div class="preco">22,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="dona-ermelinda-tinto"><div class="nome">Dona Ermelinda</div><div class="preco">23,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="adega-de-borba"><div class="nome">Adega de Borba</div><div class="preco">14,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="carm-reserva"><div class="nome">Carm Reserva</div><div class="preco">40,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="almotriga-premium"><div class="nome">Almotriga Premium</div><div class="preco">38,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="duas-quintas-tinto"><div class="nome">Duas Quintas</div><div class="preco">31,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="pouca-terra"><div class="nome">Pouca Terra</div><div class="preco">21,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="bom-malandro"><div class="nome">Bom Malandro</div><div class="preco">19,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="conde-de-monsul"><div class="nome">Conde de Monsul</div><div class="preco">14,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="monte-perdigoes"><div class="nome">Monte Perdigões</div><div class="preco">23,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="chamine"><div class="nome">Chaminé (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="fagote"><div class="nome">Fagote (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="ea-cartuxa"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">19,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="ea-cartuxa"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">10,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="monte-velho-tinto"><div class="nome">Monte Velho 0,75 L</div><div class="preco">13,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="monte-velho-tinto"><div class="nome">Monte Velho 0,37 L</div><div class="preco">8,50€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
       <summary>Verdes</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Casal Garcia</div><div class="preco">10,50€</div></div>
-        <div class="item"><div class="nome">Quinta Aveleda</div><div class="preco">11,50€</div></div>
-        <div class="item"><div class="nome">Aveleda Alvarinho</div><div class="preco">16,00€</div></div>
-        <div class="item"><div class="nome">Tamariz Alvarinho</div><div class="preco">18,00€</div></div>
-        <div class="item"><div class="nome">Muralhas</div><div class="preco">18,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="casal-garcia"><div class="nome">Casal Garcia</div><div class="preco">10,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="quinta-aveleda"><div class="nome">Quinta Aveleda</div><div class="preco">11,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="aveleda-alvarinho"><div class="nome">Aveleda Alvarinho</div><div class="preco">16,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="tamariz-alvarinho"><div class="nome">Tamariz Alvarinho</div><div class="preco">18,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="muralhas"><div class="nome">Muralhas</div><div class="preco">18,00€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
       <summary>Espumantes</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Corte Real</div><div class="preco">9,00€</div></div>
-        <div class="item"><div class="nome">Terras do Demo Bruto</div><div class="preco">28,00€</div></div>
-        <div class="item"><div class="nome">Fita Azul Doce</div><div class="preco">15,00€</div></div>
-        <div class="item"><div class="nome">Raposeira Meio Seco</div><div class="preco">24,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="corte-real"><div class="nome">Corte Real</div><div class="preco">9,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="terras-do-demo"><div class="nome">Terras do Demo Bruto</div><div class="preco">28,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="fita-azul"><div class="nome">Fita Azul Doce</div><div class="preco">15,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="raposeira"><div class="nome">Raposeira Meio Seco</div><div class="preco">24,00€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
       <summary>Rosés</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Mateus Rosé 0,75 L</div><div class="preco">12,75€</div></div>
-        <div class="item"><div class="nome">Mateus Rosé 0,37 L</div><div class="preco">8,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="mateus-rose"><div class="nome">Mateus Rosé 0,75 L</div><div class="preco">12,75€</div></div>
+        <div class="item vinho-clicavel" data-vinho="mateus-rose"><div class="nome">Mateus Rosé 0,37 L</div><div class="preco">8,50€</div></div>
       </div>
     </details>
 
@@ -444,6 +511,21 @@
 
   <div class="sem-resultado" id="semResultado">Nenhum item encontrado 🍷🍽️</div>
 </main>
+
+<div class="modal-overlay" id="modalVinho">
+  <div class="modal-vinho">
+    <button class="fechar" id="fecharModal" aria-label="Fechar">✕</button>
+    <h3 id="modalNome">Nome do vinho</h3>
+    <div class="campo">
+      <span class="rotulo">Origem</span>
+      <span class="valor" id="modalOrigem">—</span>
+    </div>
+    <div class="campo">
+      <span class="rotulo">Tipo</span>
+      <span class="valor" id="modalTipo">—</span>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="nome-rest">Rest & Bar Parque São Caetano</div>
@@ -494,6 +576,64 @@
   }
 
   busca.addEventListener('input', (e) => filtrar(e.target.value));
+
+  // ---- Info dos vinhos (origem e tipo) ----
+  const infoVinhos = {
+    'almotriga-branco': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Branco jovem e frutado, fácil de beber' },
+    'almotriga-tinto': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Tinto frutado e macio, taninos suaves' },
+    'almotriga-premium': { nome:'Almotriga Premium', origem:'Alentejo — Borba', tipo:'Linha premium da Almotriga, mais encorpada e complexa' },
+    'planalto': { nome:'Planalto', origem:'Douro', tipo:'Branco fresco e elegante (Real Companhia Velha)' },
+    'dona-ermelinda-branco': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Branco fresco e frutado' },
+    'dona-ermelinda-tinto': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Tinto elegante, notas de fruta madura' },
+    'alandra': { nome:'Alandra', origem:'Alentejo (Esporão)', tipo:'Vinho jovem, leve e frutado' },
+    'assobio-branco': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Branco fresco e mineral' },
+    'assobio-tinto': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Tinto encorpado, fruta madura e especiarias' },
+    'carm-reserva': { nome:'Carm Reserva', origem:'Douro Superior (Casa Agrícola Roboredo Madeira)', tipo:'Encorpado, envelhecido em carvalho francês e americano' },
+    'duas-quintas-branco': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Branco fresco e aromático' },
+    'duas-quintas-tinto': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Tinto clássico duriense, fruta madura' },
+    'adega-de-borba': { nome:'Adega de Borba', origem:'Alentejo — Borba', tipo:'Vinho cooperativo, clássico da região' },
+    'pouca-terra': { nome:'Pouca Terra', origem:'Douro', tipo:'Vinho fresco e mineral, produção em pequena escala' },
+    'bom-malandro': { nome:'Bom Malandro', origem:'Douro', tipo:'Vinho fácil de beber, frutado e acessível' },
+    'conde-de-monsul': { nome:'Conde de Monsul', origem:'Douro', tipo:'Vinho floral e frutado' },
+    'fagote': { nome:'Fagote', origem:'Douro — Tabuaço', tipo:'Vinho encorpado, com passagem por carvalho' },
+    'ea-cartuxa': { nome:'E.A (Cartuxa)', origem:'Alentejo — Évora (Fundação Eugénio de Almeida)', tipo:'Branco: Roupeiro, Antão Vaz e Arinto · Tinto: Aragonez, Trincadeira e Tinta Caiada' },
+    'monte-velho-branco': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Branco leve e frutado, clássico alentejano' },
+    'monte-velho-tinto': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Tinto macio e frutado, clássico alentejano' },
+    'monte-perdigoes': { nome:'Monte Perdigões', origem:'Alentejo — Reguengos de Monsaraz', tipo:'Tinto encorpado, Aragonez, Trincadeira e Alicante Bouschet' },
+    'chamine': { nome:'Chaminé', origem:'Alentejo (Cortes de Cima)', tipo:'Tinto especiado, blend com Syrah e castas alentejanas' },
+    'casal-garcia': { nome:'Casal Garcia', origem:'Vinho Verde (Aveleda)', tipo:'Leve, fresco e ligeiramente frisante' },
+    'quinta-aveleda': { nome:'Quinta da Aveleda', origem:'Vinho Verde (Aveleda)', tipo:'Branco floral, blend de Loureiro e Alvarinho' },
+    'aveleda-alvarinho': { nome:'Aveleda Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'100% Alvarinho, encorpado e mineral' },
+    'tamariz-alvarinho': { nome:'Tamariz Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho floral e salino, boa acidez' },
+    'muralhas': { nome:'Muralhas', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho frutado e frisante' },
+    'corte-real': { nome:'Corte Real', origem:'Bairrada', tipo:'Espumante bruto, fresco e leve' },
+    'terras-do-demo': { nome:'Terras do Demo Bruto', origem:'Távora-Varosa', tipo:'Espumante método tradicional, seco e mineral' },
+    'fita-azul': { nome:'Fita Azul Doce', origem:'Borges Vinhos', tipo:'Espumante doce, aromas de fruta madura' },
+    'raposeira': { nome:'Raposeira Meio Seco', origem:'Lamego — Távora-Varosa', tipo:'Espumante método clássico, meio seco' },
+    'mateus-rose': { nome:'Mateus Rosé', origem:'Bairrada (Sogrape)', tipo:'Rosé clássico português, leve e frisante' }
+  };
+
+  const modal = document.getElementById('modalVinho');
+  const modalNome = document.getElementById('modalNome');
+  const modalOrigem = document.getElementById('modalOrigem');
+  const modalTipo = document.getElementById('modalTipo');
+
+  document.querySelectorAll('.vinho-clicavel').forEach(el => {
+    el.addEventListener('click', () => {
+      const chave = el.dataset.vinho;
+      const info = infoVinhos[chave];
+      if(!info) return;
+      modalNome.textContent = info.nome;
+      modalOrigem.textContent = info.origem;
+      modalTipo.textContent = info.tipo;
+      modal.classList.add('aberto');
+    });
+  });
+
+  function fecharModalVinho(){ modal.classList.remove('aberto'); }
+  document.getElementById('fecharModal').addEventListener('click', fecharModalVinho);
+  modal.addEventListener('click', (e) => { if(e.target === modal) fecharModalVinho(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalVinho(); });
 </script>
 
 </body>
