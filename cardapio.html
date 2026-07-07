@@ -500,6 +500,84 @@
     color:var(--castanho-suave);
     line-height:1.25;
   }
+
+  .chef-mascote{
+    flex:0 0 auto;
+    width:44px; height:44px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+    position:relative;
+    animation:chefFlutuar 3.2s ease-in-out infinite;
+  }
+  .chef-mascote svg{width:100%; height:100%; display:block; overflow:visible;}
+  @keyframes chefFlutuar{
+    0%, 100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-3px) rotate(-2deg); }
+  }
+  .chef-olhos{
+    transform-origin:center;
+    animation:chefPiscar 4.5s ease-in-out infinite;
+  }
+  @keyframes chefPiscar{
+    0%, 92%, 100%{ transform:scaleY(1); }
+    95%{ transform:scaleY(0.1); }
+  }
+  .chef-braco{ transform-box:fill-box; transform-origin:center; }
+
+  .chef-mascote.a-interagir{ animation:chefSaltar .6s ease; }
+  @keyframes chefSaltar{
+    0%{ transform:translateY(0) rotate(0deg); }
+    25%{ transform:translateY(-9px) rotate(-6deg); }
+    55%{ transform:translateY(0) rotate(6deg); }
+    80%{ transform:translateY(-3px) rotate(-3deg); }
+    100%{ transform:translateY(0) rotate(0deg); }
+  }
+  .chef-mascote.a-interagir .chef-braco-esq{ animation:chefBaterPalmasEsq .6s ease; }
+  .chef-mascote.a-interagir .chef-braco-dir{ animation:chefBaterPalmasDir .6s ease; }
+  @keyframes chefBaterPalmasEsq{
+    0%, 100%{ transform:rotate(0deg); }
+    25%{ transform:rotate(35deg); }
+    50%{ transform:rotate(0deg); }
+    75%{ transform:rotate(35deg); }
+  }
+  @keyframes chefBaterPalmasDir{
+    0%, 100%{ transform:rotate(0deg); }
+    25%{ transform:rotate(-35deg); }
+    50%{ transform:rotate(0deg); }
+    75%{ transform:rotate(-35deg); }
+  }
+  .chef-balao{
+    position:absolute;
+    bottom:100%;
+    right:-10px;
+    margin-bottom:8px;
+    background:var(--branco);
+    border:1px solid var(--linha);
+    border-radius:10px;
+    padding:5px 9px;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.62rem;
+    font-weight:600;
+    color:var(--castanho);
+    white-space:nowrap;
+    box-shadow:0 4px 12px rgba(74,56,32,0.18);
+    opacity:0;
+    transform:translateY(4px) scale(0.9);
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;
+  }
+  .chef-balao::after{
+    content:"";
+    position:absolute;
+    top:100%; right:14px;
+    border:5px solid transparent;
+    border-top-color:var(--branco);
+  }
+  .chef-balao.mostrar{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
 </style>
 </head>
 <body>
@@ -946,13 +1024,13 @@
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" data-duracao="3" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
-    data-especial-ativo="true"
-    data-especial-inicio="00:13"
-    data-especial-fim="00:15"
-    data-especial-l1="4.Feira Prato do Dia"
-    data-especial-l2="Bla "
-    data-especial-l3="Bla bla"
-    data-especial-l4="Bla bla bla">
+    data-especial-ativo="false"
+    data-especial-inicio=""
+    data-especial-fim=""
+    data-especial-l1=""
+    data-especial-l2=""
+    data-especial-l3=""
+    data-especial-l4="">
     <!-- ======================================================= -->
     <!-- EDITA AQUI: muda só o texto entre ">" e "</div>".        -->
     <!-- Não apagues nada mais (as aspas, as tags, etc).          -->
@@ -964,6 +1042,27 @@
     <div class="linha" id="rodapeLinha2">De Terça a Domingo — Almoço e Jantar</div>
     <div class="linha" id="rodapeLinha3"></div>
     <div class="linha" id="rodapeLinha4"></div>
+  </div>
+  <div class="chef-mascote" id="chefMascote" role="button" aria-label="Cozinheiro" tabindex="0">
+    <div class="chef-balao" id="chefBalao"></div>
+    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18 40 Q30 34 42 40 L40 58 Q30 62 20 58 Z" fill="var(--dourado)"></path>
+      <rect x="24" y="46" width="12" height="8" rx="2" fill="var(--branco)" opacity="0.85"></rect>
+      <path class="chef-braco chef-braco-esq" d="M18 42 Q10 40 8 32" stroke="#f0c39a" stroke-width="5" fill="none" stroke-linecap="round"></path>
+      <path class="chef-braco chef-braco-dir" d="M42 42 Q50 40 52 32" stroke="#f0c39a" stroke-width="5" fill="none" stroke-linecap="round"></path>
+      <circle cx="30" cy="26" r="12" fill="#f0c39a"></circle>
+      <circle cx="22.5" cy="28" r="2" fill="#e8896a" opacity="0.35"></circle>
+      <circle cx="37.5" cy="28" r="2" fill="#e8896a" opacity="0.35"></circle>
+      <g class="chef-olhos">
+        <circle cx="25.5" cy="25" r="1.6" fill="var(--castanho)"></circle>
+        <circle cx="34.5" cy="25" r="1.6" fill="var(--castanho)"></circle>
+      </g>
+      <path d="M25 30 Q30 34 35 30" stroke="var(--castanho)" stroke-width="1.6" fill="none" stroke-linecap="round"></path>
+      <rect x="20" y="10" width="20" height="10" rx="4" fill="var(--branco)" stroke="var(--linha)" stroke-width="1"></rect>
+      <circle cx="22" cy="8" r="6" fill="var(--branco)"></circle>
+      <circle cx="30" cy="5" r="7" fill="var(--branco)"></circle>
+      <circle cx="38" cy="8" r="6" fill="var(--branco)"></circle>
+    </svg>
   </div>
 </div>
 
@@ -1037,6 +1136,33 @@
 
     atualizar();
     setInterval(atualizar, 60000);
+  })();
+
+  // ---- Cozinheiro animado (interage ao tocar) ----
+  (function(){
+    const mascote = document.getElementById('chefMascote');
+    const balao = document.getElementById('chefBalao');
+    if(!mascote || !balao) return;
+    const frases = ['Bom apetite! 😋', 'Vai correr bem! 👍', 'Quase pronto! 🔥', 'Delicioso! 🍽️', 'Olá! 👋'];
+    let aAnimar = false;
+    function interagir(){
+      if(aAnimar) return;
+      aAnimar = true;
+      mascote.classList.add('a-interagir');
+      balao.textContent = frases[Math.floor(Math.random() * frases.length)];
+      balao.classList.add('mostrar');
+      setTimeout(() => balao.classList.remove('mostrar'), 1600);
+    }
+    mascote.addEventListener('animationend', (e) => {
+      if(e.target === mascote){
+        mascote.classList.remove('a-interagir');
+        aAnimar = false;
+      }
+    });
+    mascote.addEventListener('click', interagir);
+    mascote.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); interagir(); }
+    });
   })();
 
   // ---- Popup de anúncio (placeholder) ----
