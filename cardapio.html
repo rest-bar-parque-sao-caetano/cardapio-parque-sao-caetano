@@ -945,17 +945,25 @@
   <div class="info-fixa-fotos" id="infoFixaFotos">
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
-  <div class="info-fixa-texto">
+  <div class="info-fixa-texto" id="infoFixaTexto"
+    data-especial-ativo="false"
+    data-especial-inicio=""
+    data-especial-fim=""
+    data-especial-l1=""
+    data-especial-l2=""
+    data-especial-l3=""
+    data-especial-l4="">
     <!-- ======================================================= -->
     <!-- EDITA AQUI: muda só o texto entre ">" e "</div>".        -->
     <!-- Não apagues nada mais (as aspas, as tags, etc).          -->
     <!-- A 1ª linha aparece a negrito/dourado; as outras 3 normal.-->
     <!-- Este texto NÃO muda com o idioma (fica igual em PT/EN/FR)-->
+    <!-- O texto "especial" (com horário) edita-se em editar.html.-->
     <!-- ======================================================= -->
-    <div class="linha-negrito" id="rodapeLinha1">Quarta Feira Prato do Dia</div>
-    <div class="linha" id="rodapeLinha2">Francesinha</div>
-    <div class="linha" id="rodapeLinha3">Posta à São caetano</div>
-    <div class="linha" id="rodapeLinha4">Filetes de pescada</div>
+    <div class="linha-negrito" id="rodapeLinha1">Contamos contigo!</div>
+    <div class="linha" id="rodapeLinha2">Terça a Domingo — Almoço e Jantar</div>
+    <div class="linha" id="rodapeLinha3">Reservas: 962 202 622 / 227 130 614</div>
+    <div class="linha" id="rodapeLinha4">Avenida de São Caetano, nº17</div>
   </div>
 </div>
 
@@ -970,6 +978,61 @@
       idx = (idx + 1) % fotos.length;
       fotos[idx].classList.add('ativa');
     }, 3000);
+  })();
+
+  // ---- Texto especial do rodapé com horário automático ----
+  // Configura-se em editar.html (ativar/desativar, horas, texto).
+  // Fora do horário definido, volta sempre ao texto normal acima.
+  (function(){
+    const bloco = document.getElementById('infoFixaTexto');
+    if(!bloco) return;
+    const linhas = {
+      1: document.getElementById('rodapeLinha1'),
+      2: document.getElementById('rodapeLinha2'),
+      3: document.getElementById('rodapeLinha3'),
+      4: document.getElementById('rodapeLinha4')
+    };
+    const normal = {
+      1: linhas[1].textContent,
+      2: linhas[2].textContent,
+      3: linhas[3].textContent,
+      4: linhas[4].textContent
+    };
+    const especial = {
+      1: bloco.dataset.especialL1 || '',
+      2: bloco.dataset.especialL2 || '',
+      3: bloco.dataset.especialL3 || '',
+      4: bloco.dataset.especialL4 || ''
+    };
+    const ativo = bloco.dataset.especialAtivo === 'true';
+    const inicio = bloco.dataset.especialInicio || '';
+    const fim = bloco.dataset.especialFim || '';
+    if(!ativo || !inicio || !fim) return;
+
+    function paraMinutos(hhmm){
+      const p = hhmm.split(':');
+      return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
+    }
+    function dentroIntervalo(agora, ini, f){
+      if(ini === f) return false;
+      if(ini < f) return agora >= ini && agora < f;
+      return agora >= ini || agora < f; // intervalo atravessa a meia-noite
+    }
+
+    const ini = paraMinutos(inicio);
+    const f = paraMinutos(fim);
+
+    function atualizar(){
+      const d = new Date();
+      const agora = d.getHours() * 60 + d.getMinutes();
+      const mostrarEspecial = dentroIntervalo(agora, ini, f);
+      for(const n of [1, 2, 3, 4]){
+        linhas[n].textContent = mostrarEspecial ? (especial[n] || normal[n]) : normal[n];
+      }
+    }
+
+    atualizar();
+    setInterval(atualizar, 60000);
   })();
 
   // ---- Popup de anúncio (placeholder) ----
