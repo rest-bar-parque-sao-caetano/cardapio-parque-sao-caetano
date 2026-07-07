@@ -196,10 +196,36 @@
 
   function baixar(){
     const canvas = document.getElementById('cartao');
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = 'qrcode-cardapio-parque-sao-caetano.png';
-    a.click();
+    const nomeArquivo = 'qrcode-cardapio-parque-sao-caetano.png';
+
+    // Suporta download attribute? (funciona em Chrome, Edge, Firefox e na maioria dos Android)
+    const suportaDownload = 'download' in document.createElement('a');
+
+    canvas.toBlob(function(blob){
+      if(!blob){
+        // fallback extremo: abre a imagem numa nova aba
+        window.open(canvas.toDataURL('image/png'), '_blank');
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+
+      if (suportaDownload) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nomeArquivo;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      } else {
+        // iOS Safari e outros que ignoram o atributo download:
+        // abre a imagem numa nova aba para guardar com "Mantenha premido > Guardar imagem"
+        const nova = window.open(url, '_blank');
+        if(!nova){
+          alert('O teu navegador bloqueou a abertura da imagem. Ativa os pop-ups ou tira uma captura de ecrã do cartão.');
+        }
+      }
+    }, 'image/png');
   }
 
   window.onload = gerar;
