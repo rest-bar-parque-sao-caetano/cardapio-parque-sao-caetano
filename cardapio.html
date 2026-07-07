@@ -720,6 +720,7 @@
 
 <script>
   // ---- Popup de anúncio (placeholder) ----
+  // DESATIVADO temporariamente. Para reativar, remove o "if(false)" abaixo.
   (function(){
     const adPopup = document.getElementById('adPopup');
     const fecharAd = document.getElementById('fecharAdPopup');
@@ -729,8 +730,10 @@
       escondido = true;
       adPopup.classList.remove('aberto');
     }
-    adPopup.classList.add('aberto');
-    setTimeout(esconderAd, 6000);
+    if(false){
+      adPopup.classList.add('aberto');
+      setTimeout(esconderAd, 6000);
+    }
     fecharAd.addEventListener('click', esconderAd);
     adPopup.addEventListener('click', (e) => { if(e.target === adPopup) esconderAd(); });
   })();
