@@ -8,39 +8,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
-    --verde-tropa:#4b5b2e; --verde-tropa-escuro:#37451f;
-    --laranja:#ee7d32; --creme:#f7f0dc; --marrom:#3b2f1e;
+    --castanho:#4a3820; --dourado:#a8712f; --dourado-escuro:#8a5a24;
+    --branco:#ffffff; --bege:#f5efe2; --bege-claro:#fbf8f2; --linha:#e6dcc8;
   }
   body{
-    font-family:'Nunito',sans-serif; background:var(--verde-tropa);
-    color:var(--creme); margin:0; padding:24px 16px 60px;
+    font-family:'Nunito',sans-serif; background:var(--bege);
+    color:var(--castanho); margin:0; padding:24px 16px 60px;
     display:flex; flex-direction:column; align-items:center; min-height:100vh;
   }
   h1{
-    font-family:'Fredoka',sans-serif; color:var(--laranja); text-align:center;
+    font-family:'Fredoka',sans-serif; color:var(--castanho); text-align:center;
     font-size:1.4rem; margin-bottom:4px;
   }
-  p.sub{opacity:.85; font-size:.9rem; text-align:center; max-width:420px; margin-bottom:24px;}
+  p.sub{opacity:.75; font-size:.9rem; text-align:center; max-width:420px; margin-bottom:24px;}
   .painel{
-    background:var(--creme); color:var(--marrom); border-radius:16px;
-    padding:24px; max-width:420px; width:100%; box-shadow:0 8px 24px rgba(0,0,0,.25);
+    background:var(--branco); color:var(--castanho); border-radius:16px;
+    padding:24px; max-width:420px; width:100%; border:1px solid var(--linha);
   }
   label{font-weight:700; font-size:.85rem; display:block; margin-bottom:6px;}
   input[type=text]{
-    width:100%; padding:10px 14px; border-radius:10px; border:1px solid #cbb98f;
-    font-size:.95rem; margin-bottom:14px; font-family:'Nunito',sans-serif;
+    width:100%; padding:10px 14px; border-radius:10px; border:1px solid var(--linha);
+    font-size:.95rem; margin-bottom:14px; font-family:'Nunito',sans-serif; background:var(--bege-claro); color:var(--castanho);
   }
   button{
-    font-family:'Fredoka',sans-serif; background:var(--laranja); color:#2b1d0e;
+    font-family:'Fredoka',sans-serif; background:var(--castanho); color:var(--branco);
     border:none; padding:11px 20px; border-radius:24px; font-weight:600;
     font-size:.95rem; cursor:pointer; width:100%; margin-bottom:8px;
   }
-  button:hover{background:#d4671f;}
-  button.secundario{background:transparent; border:2px solid var(--verde-tropa); color:var(--verde-tropa);}
+  button:hover{background:#38290f;}
+  button.secundario{background:transparent; border:2px solid var(--dourado); color:var(--dourado-escuro);}
   #qrcode-raw{display:none;}
   #cartaoWrap{display:flex; justify-content:center; margin:18px 0;}
-  #cartao{border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,.25); max-width:100%; height:auto;}
-  .aviso{font-size:.78rem; color:#6b5c3e; text-align:center; margin-top:6px;}
+  #cartao{border-radius:14px; box-shadow:0 6px 18px rgba(74,56,32,.2); max-width:100%; height:auto;}
+  .aviso{font-size:.78rem; color:#8a7350; text-align:center; margin-top:6px;}
 </style>
 </head>
 <body>
@@ -67,12 +67,12 @@
 
 <script>
   const CORES = {
-    verdeTropa: '#4b5b2e',
-    verdeTropaEscuro: '#37451f',
-    laranja: '#ee7d32',
-    laranjaEscuro: '#d4671f',
-    creme: '#f7f0dc',
-    marrom: '#2b1d0e'
+    castanho: '#4a3820',
+    douradoEscuro: '#8a5a24',
+    dourado: '#a8712f',
+    branco: '#ffffff',
+    begeClaro: '#fbf8f2',
+    castanhoSuave: '#8a7350'
   };
 
   function roundRectPath(ctx, x, y, w, h, r){
@@ -121,7 +121,7 @@
         text: url,
         width: 280,
         height: 280,
-        colorDark: CORES.verdeTropaEscuro,
+        colorDark: CORES.castanho,
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
       });
@@ -152,7 +152,7 @@
     ctx.clearRect(0,0,W,H);
 
     // card background
-    ctx.fillStyle = CORES.creme;
+    ctx.fillStyle = CORES.branco;
     roundRectPath(ctx, 0, 0, W, H, 22);
     ctx.fill();
 
@@ -161,11 +161,11 @@
     ctx.save();
     roundRectPath(ctx, 0, 0, W, H, 22);
     ctx.clip();
-    ctx.fillStyle = CORES.laranja;
+    ctx.fillStyle = CORES.castanho;
     ctx.fillRect(0, 0, W, headerH);
     ctx.restore();
 
-    ctx.fillStyle = CORES.marrom;
+    ctx.fillStyle = CORES.begeClaro;
     ctx.textAlign = 'center';
     ctx.font = '700 27px Fredoka, sans-serif';
     wrapText(ctx, nome, W/2, headerH/2, W - 60, 32, 2);
@@ -181,15 +181,14 @@
 
     // tagline
     if (tagline){
-      ctx.fillStyle = CORES.verdeTropaEscuro;
+      ctx.fillStyle = CORES.douradoEscuro;
       ctx.font = 'italic 600 16px Nunito, sans-serif';
       wrapText(ctx, tagline, W/2, qrY + qrSize + 46, W - 60, 22, 2);
     }
 
     // footer strip
-    ctx.fillStyle = CORES.verdeTropa;
     ctx.font = '700 13px Fredoka, sans-serif';
-    ctx.fillStyle = '#8a7c5c';
+    ctx.fillStyle = CORES.castanhoSuave;
     ctx.fillText('CARDÁPIO DIGITAL', W/2, H - 20);
   }
 

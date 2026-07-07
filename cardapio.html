@@ -8,165 +8,181 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --verde-tropa: #4b5b2e;
-    --verde-tropa-escuro: #37451f;
-    --verde-tropa-claro: #6b7d45;
-    --laranja: #ee7d32;
-    --laranja-escuro: #d4671f;
-    --creme: #f7f0dc;
-    --creme-escuro: #ecdfc0;
-    --marrom: #3b2f1e;
-    --texto-claro: #fdf9ee;
+    --branco: #ffffff;
+    --bege-claro: #fbf8f2;
+    --bege: #f5efe2;
+    --linha: #e6dcc8;
+    --linha-suave: #f0e9d8;
+    --castanho: #4a3820;
+    --castanho-suave: #8a7350;
+    --castanho-claro: #a8987a;
+    --dourado: #a8712f;
+    --dourado-escuro: #8a5a24;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
     font-family:'Nunito',sans-serif;
-    background:var(--verde-tropa);
-    background-image:
-      radial-gradient(circle at 10% 15%, rgba(255,255,255,0.05) 0, transparent 45%),
-      radial-gradient(circle at 90% 85%, rgba(0,0,0,0.12) 0, transparent 45%);
-    color:var(--marrom);
+    background:var(--bege-claro);
+    color:var(--castanho);
     min-height:100vh;
     padding-bottom:60px;
   }
   header{
     position:sticky; top:0; z-index:50;
-    background:linear-gradient(180deg, var(--verde-tropa-escuro), var(--verde-tropa));
-    padding:18px 16px 12px;
-    box-shadow:0 4px 14px rgba(0,0,0,0.25);
+    background:var(--branco);
+    padding:20px 16px 14px;
+    border-bottom:1px solid var(--linha);
     text-align:center;
   }
   header .brand-mark{
     font-family:'Fredoka',sans-serif;
-    color:var(--laranja);
-    font-size:1.9rem;
-    font-weight:700;
-    letter-spacing:0.5px;
-    text-shadow:1px 2px 0 rgba(0,0,0,0.25);
+    color:var(--castanho);
+    font-size:1.7rem;
+    font-weight:600;
+    letter-spacing:0.3px;
   }
   header .brand-sub{
-    color:var(--texto-claro);
-    font-size:0.85rem;
+    color:var(--castanho-suave);
+    font-size:0.82rem;
     font-style:italic;
-    opacity:0.9;
-    margin-top:2px;
+    margin-top:3px;
   }
   .search-wrap{
-    margin:14px auto 4px; max-width:520px;
+    margin:16px auto 4px; max-width:480px;
   }
   .search-wrap input{
     width:100%;
     padding:11px 16px;
     border-radius:30px;
-    border:none;
-    background:var(--creme);
+    border:1px solid var(--linha);
+    background:var(--bege);
     font-family:'Nunito',sans-serif;
     font-size:0.95rem;
-    color:var(--marrom);
+    color:var(--castanho);
     outline:none;
-    box-shadow:inset 0 2px 4px rgba(0,0,0,0.15);
   }
-  .search-wrap input::placeholder{color:#8a7c5c;}
+  .search-wrap input::placeholder{color:var(--castanho-claro);}
 
   nav.tabs{
     display:flex; gap:8px; overflow-x:auto;
-    padding:14px 12px 4px;
+    padding:14px 12px;
+    background:var(--branco);
+    border-bottom:1px solid var(--linha);
     scrollbar-width:none;
   }
   nav.tabs::-webkit-scrollbar{display:none;}
   nav.tabs button{
     flex:0 0 auto;
     font-family:'Fredoka',sans-serif;
-    font-size:0.85rem;
+    font-size:0.8rem;
     font-weight:600;
-    padding:9px 16px;
+    padding:8px 16px;
     border-radius:20px;
-    border:2px solid var(--laranja);
-    background:transparent;
-    color:var(--texto-claro);
+    border:1px solid var(--linha);
+    background:var(--bege);
+    color:var(--castanho-suave);
     cursor:pointer;
     white-space:nowrap;
     transition:all .2s ease;
   }
   nav.tabs button.active, nav.tabs button:hover{
-    background:var(--laranja);
-    color:#2b1d0e;
-    border-color:var(--laranja);
+    background:var(--castanho);
+    color:var(--branco);
+    border-color:var(--castanho);
   }
 
-  main{max-width:720px;margin:0 auto;padding:10px 14px 0;}
+  main{max-width:640px;margin:0 auto;padding:18px 14px 0;}
 
   .banner{
-    background:var(--laranja);
-    color:#2b1d0e;
+    background:var(--bege);
+    color:var(--dourado-escuro);
     font-weight:700;
     font-size:0.82rem;
     text-align:center;
     padding:8px 14px;
     border-radius:12px;
     margin:10px 0 4px;
+    border:1px solid var(--linha);
   }
 
-  section.categoria{margin-top:26px;}
+  section.categoria{margin-top:30px;}
   section.categoria h2{
     font-family:'Fredoka',sans-serif;
-    color:var(--creme);
-    background:var(--laranja-escuro);
-    display:inline-block;
-    padding:6px 18px;
-    border-radius:8px 8px 0 0;
-    font-size:1.05rem;
-    letter-spacing:1px;
+    color:var(--dourado);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0;
+    font-size:0.85rem;
+    letter-spacing:2px;
     text-transform:uppercase;
+    text-align:center;
+    font-weight:600;
+  }
+  section.categoria h2::before, section.categoria h2::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--linha);
   }
   section.categoria .subtitulo{
-    color:var(--texto-claro);
-    font-size:0.8rem;
-    margin:4px 0 8px 4px;
-    opacity:0.85;
+    color:var(--castanho-claro);
+    font-size:0.78rem;
+    margin:4px 0 10px;
+    text-align:center;
   }
 
   .grupo-prato summary{
     cursor:pointer;
     font-family:'Fredoka',sans-serif;
-    color:var(--creme);
-    background:var(--laranja-escuro);
+    color:var(--castanho);
+    background:var(--branco);
+    position:relative;
     display:block;
-    padding:9px 18px;
-    border-radius:10px;
-    font-size:1.05rem;
-    letter-spacing:1px;
+    padding:14px 40px;
+    border-bottom:1px solid var(--linha);
+    font-size:0.85rem;
+    letter-spacing:2px;
     text-transform:uppercase;
+    font-weight:600;
     list-style:none;
-    transition:filter .15s ease;
+    text-align:center;
+    transition:color .15s ease;
   }
-  .grupo-prato summary:hover{filter:brightness(1.08);}
+  .grupo-prato summary:hover{color:var(--dourado);}
   .grupo-prato summary::-webkit-details-marker{display:none;}
-  .grupo-prato summary::after{content:" ▾"; float:right; font-size:.95rem;}
-  .grupo-prato[open] summary::after{content:" ▴";}
-  .grupo-prato .card-lista{margin-top:8px;}
-  .grupo-prato .subtitulo{margin:8px 0 0 4px;}
+  .grupo-prato summary::after{
+    content:"▾";
+    position:absolute;
+    right:16px; top:50%;
+    transform:translateY(-50%);
+    color:var(--castanho-claro);
+    font-size:.75rem;
+  }
+  .grupo-prato[open] summary::after{content:"▴";}
+  .grupo-prato .card-lista{margin-top:10px;}
+  .grupo-prato .subtitulo{margin:8px 0 0;}
   .card-lista{
-    background:var(--creme);
-    border-radius:4px 14px 14px 14px;
-    padding:6px 4px;
-    box-shadow:0 6px 16px rgba(0,0,0,0.2);
+    background:var(--branco);
+    border-radius:12px;
+    padding:4px 6px;
+    border:1px solid var(--linha);
   }
   .item{
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:10px;
-    padding:12px 14px;
-    border-bottom:1px dashed var(--creme-escuro);
+    padding:13px 12px;
+    border-bottom:1px dotted var(--linha);
   }
   .item:last-child{border-bottom:none;}
-  .item .nome{font-weight:700; font-size:0.98rem; color:var(--marrom);}
-  .item .desc{font-size:0.82rem; color:#6b5c3e; margin-top:2px; font-style:italic;}
+  .item .nome{font-weight:500; font-size:0.96rem; color:var(--castanho);}
+  .item .desc{font-size:0.8rem; color:var(--castanho-suave); margin-top:2px; font-style:italic;}
   .item .preco{
     font-family:'Fredoka',sans-serif;
     font-weight:600;
-    color:var(--laranja-escuro);
+    color:var(--dourado);
     white-space:nowrap;
-    font-size:0.95rem;
+    font-size:0.92rem;
     padding-top:2px;
   }
   .item.hidden{display:none;}
@@ -176,12 +192,14 @@
   .grupo-vinho summary{
     cursor:pointer;
     font-family:'Fredoka',sans-serif;
-    background:var(--verde-tropa-claro);
-    color:var(--texto-claro);
+    background:var(--bege);
+    color:var(--dourado-escuro);
     padding:9px 14px;
     border-radius:10px;
-    font-size:0.92rem;
+    border:1px solid var(--linha);
+    font-size:0.88rem;
     letter-spacing:0.5px;
+    font-weight:600;
     list-style:none;
   }
   .grupo-vinho summary::-webkit-details-marker{display:none;}
@@ -191,22 +209,22 @@
 
   .tabela-doses{width:100%; border-collapse:collapse; text-align:center; margin:4px 0;}
   .tabela-doses td{padding:6px 4px; font-size:0.85rem;}
-  .tabela-doses .dose{color:#6b5c3e; font-size:0.78rem;}
-  .tabela-doses .preco-dose{font-weight:700; color:var(--laranja-escuro); font-family:'Fredoka',sans-serif;}
+  .tabela-doses .dose{color:var(--castanho-suave); font-size:0.78rem;}
+  .tabela-doses .preco-dose{font-weight:700; color:var(--dourado); font-family:'Fredoka',sans-serif;}
 
   footer{
     text-align:center;
-    color:var(--texto-claro);
+    color:var(--castanho-suave);
     font-size:0.8rem;
-    margin-top:40px;
-    padding:20px 16px;
-    opacity:0.9;
+    margin-top:44px;
+    padding:22px 16px;
+    border-top:1px solid var(--linha);
   }
-  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--laranja); font-size:1rem; margin-bottom:4px;}
-  footer a{color:var(--texto-claro);}
+  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1rem; margin-bottom:4px; font-weight:600;}
+  footer a{color:var(--castanho-suave);}
 
   .sem-resultado{
-    text-align:center; color:var(--creme); padding:40px 10px; display:none; font-style:italic;
+    text-align:center; color:var(--castanho-claro); padding:40px 10px; display:none; font-style:italic;
   }
 
   .item.vinho-clicavel{
@@ -215,30 +233,30 @@
     position:relative;
   }
   .item.vinho-clicavel:hover, .item.vinho-clicavel:active{
-    background:var(--creme-escuro);
+    background:var(--bege-claro);
   }
   .item.vinho-clicavel .nome::after{
     content:" ⓘ";
     font-size:.72rem;
-    color:var(--laranja-escuro);
+    color:var(--dourado);
     font-weight:400;
   }
 
   .modal-overlay{
     display:none;
     position:fixed; inset:0;
-    background:rgba(30,24,12,0.55);
+    background:rgba(30,24,12,0.5);
     z-index:200;
     align-items:center; justify-content:center;
     padding:20px;
   }
   .modal-overlay.aberto{display:flex;}
   .modal-vinho{
-    background:var(--creme);
+    background:var(--branco);
     border-radius:16px;
     max-width:380px; width:100%;
     padding:22px 22px 20px;
-    box-shadow:0 12px 32px rgba(0,0,0,0.35);
+    box-shadow:0 12px 32px rgba(74,56,32,0.25);
     position:relative;
     animation:modalPop .18s ease;
   }
@@ -250,12 +268,12 @@
     position:absolute; top:10px; right:12px;
     background:none; border:none;
     font-size:1.3rem; line-height:1;
-    color:#8a7c5c; cursor:pointer;
+    color:var(--castanho-claro); cursor:pointer;
     padding:4px;
   }
   .modal-vinho h3{
     font-family:'Fredoka',sans-serif;
-    color:var(--laranja-escuro);
+    color:var(--dourado);
     font-size:1.15rem;
     margin-bottom:10px;
     padding-right:20px;
@@ -266,13 +284,13 @@
     font-size:.72rem;
     text-transform:uppercase;
     letter-spacing:.5px;
-    color:var(--verde-tropa-claro);
+    color:var(--dourado-escuro);
     display:block;
     margin-bottom:2px;
   }
   .modal-vinho .campo .valor{
     font-size:.92rem;
-    color:var(--marrom);
+    color:var(--castanho);
     line-height:1.35;
   }
 
@@ -281,7 +299,7 @@
     transition:background .15s ease;
   }
   .item.prato-clicavel:hover, .item.prato-clicavel:active{
-    background:var(--creme-escuro);
+    background:var(--bege-claro);
   }
   .item.prato-clicavel .nome::after{
     content:" 📷";
@@ -289,17 +307,17 @@
   }
 
   .modal-foto{
-    background:var(--creme);
+    background:var(--branco);
     border-radius:16px;
     max-width:380px; width:100%;
     padding:16px 16px 18px;
-    box-shadow:0 12px 32px rgba(0,0,0,0.35);
+    box-shadow:0 12px 32px rgba(74,56,32,0.25);
     position:relative;
     animation:modalPop .18s ease;
   }
   .modal-foto .fechar{
     position:absolute; top:8px; right:10px;
-    background:rgba(59,47,30,0.55);
+    background:rgba(74,56,32,0.55);
     border:none; border-radius:50%;
     width:28px; height:28px;
     font-size:1rem; line-height:1;
@@ -310,7 +328,7 @@
     width:100%; aspect-ratio:4/3;
     border-radius:10px;
     overflow:hidden;
-    background:var(--creme-escuro);
+    background:var(--bege);
     display:flex; align-items:center; justify-content:center;
   }
   .modal-foto .foto-wrap img{
@@ -318,12 +336,12 @@
   }
   .modal-foto .foto-placeholder{
     display:flex; flex-direction:column; align-items:center; gap:6px;
-    color:#8a7c5c; font-size:.8rem; text-align:center; padding:20px;
+    color:var(--castanho-suave); font-size:.8rem; text-align:center; padding:20px;
   }
   .modal-foto .foto-placeholder .emoji{font-size:2.2rem;}
   .modal-foto h3{
     font-family:'Fredoka',sans-serif;
-    color:var(--laranja-escuro);
+    color:var(--dourado);
     font-size:1.1rem;
     margin-top:12px;
     text-align:center;
