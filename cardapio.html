@@ -459,6 +459,72 @@
     padding:6px;
   }
 
+  .patrocinio-popup .ad-texto{ margin:0; }
+  .patrocinio-popup .patrocinio-emoji{ font-size:clamp(2rem,8vw,3.5rem); }
+  .patrocinio-popup .patrocinio-sub{
+    font-family:'Nunito',sans-serif;
+    color:var(--castanho-suave);
+    font-size:0.85rem;
+    margin-top:2px;
+  }
+
+  .jogo-velha-caixa{
+    max-width:320px;
+    margin:14px auto 0;
+    text-align:center;
+  }
+  .jogo-velha-estado{
+    font-family:'Fredoka',sans-serif;
+    color:var(--castanho);
+    font-size:0.95rem;
+    margin-bottom:14px;
+    font-weight:600;
+    min-height:1.3em;
+  }
+  .jogo-velha-estado #jvJogadorAtual{ color:var(--dourado); }
+  .jv-resultado{ display:none; }
+  .jv-resultado.mostrar{ display:inline; }
+  #jvTurno.escondido{ display:none; }
+  .jogo-velha-tabuleiro{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    aspect-ratio:1/1;
+  }
+  .jv-casa{
+    background:var(--branco);
+    border:2px solid var(--linha);
+    border-radius:12px;
+    font-family:'Fredoka',sans-serif;
+    font-size:2.2rem;
+    font-weight:600;
+    color:var(--castanho);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .jv-casa:hover:not(:disabled){ border-color:var(--dourado); }
+  .jv-casa.jv-x{ color:var(--dourado-escuro); }
+  .jv-casa.jv-o{ color:var(--castanho-suave); }
+  .jv-casa.jv-vencedora{ background:var(--bege); border-color:var(--dourado); }
+  .jv-casa:disabled{ cursor:default; }
+  .jv-reiniciar{
+    margin-top:16px;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    padding:10px 22px;
+    border-radius:10px;
+    border:1px solid var(--castanho);
+    background:var(--castanho);
+    color:var(--branco);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .jv-reiniciar:hover{ background:var(--dourado-escuro); border-color:var(--dourado-escuro); }
+
   .info-fixa{
     position:fixed;
     bottom:0; left:0; right:0;
@@ -589,6 +655,14 @@
   </div>
 </div>
 
+<div class="ad-popup-overlay patrocinio-popup" id="patrocinioPopup">
+  <div class="ad-popup">
+    <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
+    <div class="patrocinio-emoji">🏡</div>
+    <div class="ad-texto" data-en="Sponsored by RE/MAX" data-fr="Sponsorisé par RE/MAX">Patrocinado por RE/MAX</div>
+  </div>
+</div>
+
 <header>
   <div class="brand-mark">Rest & Bar Parque São Caetano</div>
   <div class="brand-sub" data-en="Tradition, flavor and comfort at the table" data-fr="Tradition, saveur et confort à table">Tradição, sabor e conforto à mesa</div>
@@ -661,6 +735,10 @@
   <button class="tile" data-target="vinhos" type="button">
     <span class="tile-emoji">🍷</span>
     <span class="tile-label" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</span>
+  </button>
+  <button class="tile" data-target="jogo-velha" type="button">
+    <span class="tile-emoji">🎮</span>
+    <span class="tile-label" data-en="Games" data-fr="Jeux">Jogos</span>
   </button>
 </div>
 
@@ -978,6 +1056,30 @@
 
     <div class="subtitulo" style="margin-top:10px;" data-en="VAT included at the legal rate in force." data-fr="TVA incluse au taux légal en vigueur.">IVA incluído à taxa legal em vigor.</div>
   </section>
+
+  <section class="categoria" id="jogo-velha">
+    <h2 data-en="Tic-Tac-Toe" data-fr="Morpion">Jogo da Velha</h2>
+    <div class="subtitulo" data-en="Take turns and have fun while you wait!" data-fr="Jouez à tour de rôle et amusez-vous en attendant !">Joga à vez e diverte-te enquanto esperas!</div>
+
+    <div class="jogo-velha-caixa">
+      <div class="jogo-velha-estado">
+        <span id="jvTurno" data-en="Turn: " data-fr="Tour : ">Vez de: <span id="jvJogadorAtual">X</span></span>
+        <span id="jvResultado" class="jv-resultado"></span>
+      </div>
+      <div class="jogo-velha-tabuleiro" id="jvTabuleiro">
+        <button type="button" class="jv-casa" data-i="0" aria-label="Casa 1"></button>
+        <button type="button" class="jv-casa" data-i="1" aria-label="Casa 2"></button>
+        <button type="button" class="jv-casa" data-i="2" aria-label="Casa 3"></button>
+        <button type="button" class="jv-casa" data-i="3" aria-label="Casa 4"></button>
+        <button type="button" class="jv-casa" data-i="4" aria-label="Casa 5"></button>
+        <button type="button" class="jv-casa" data-i="5" aria-label="Casa 6"></button>
+        <button type="button" class="jv-casa" data-i="6" aria-label="Casa 7"></button>
+        <button type="button" class="jv-casa" data-i="7" aria-label="Casa 8"></button>
+        <button type="button" class="jv-casa" data-i="8" aria-label="Casa 9"></button>
+      </div>
+      <button type="button" class="jv-reiniciar" id="jvReiniciar" data-en="Play again" data-fr="Rejouer">Jogar de novo</button>
+    </div>
+  </section>
 </main>
 
 <div class="modal-overlay" id="modalVinho">
@@ -1136,6 +1238,109 @@
 
     atualizar();
     setInterval(atualizar, 60000);
+  })();
+
+  // ---- Jogo da Velha (com popup patrocinado no fim de cada jogo) ----
+  (function(){
+    const tabuleiro = document.getElementById('jvTabuleiro');
+    if(!tabuleiro) return;
+    const casas = Array.from(tabuleiro.querySelectorAll('.jv-casa'));
+    const jogadorEl = document.getElementById('jvJogadorAtual');
+    const turnoEl = document.getElementById('jvTurno');
+    const resultadoEl = document.getElementById('jvResultado');
+    const btnReiniciar = document.getElementById('jvReiniciar');
+    const patrocinioPopup = document.getElementById('patrocinioPopup');
+    const fecharPatrocinioBtn = document.getElementById('fecharPatrocinioPopup');
+
+    let estado = Array(9).fill(null);
+    let jogadorAtual = 'X';
+    let jogoTerminado = false;
+    let popupTimeoutId = null;
+
+    const combinacoes = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+
+    function verificarResultado(){
+      for(const combo of combinacoes){
+        const [a,b,c] = combo;
+        if(estado[a] && estado[a] === estado[b] && estado[a] === estado[c]){
+          return { vencedor: estado[a], combo };
+        }
+      }
+      if(estado.every(c => c)) return { vencedor: 'empate', combo: [] };
+      return null;
+    }
+
+    function esconderPatrocinio(){
+      if(!patrocinioPopup) return;
+      patrocinioPopup.classList.remove('aberto');
+      if(popupTimeoutId){ clearTimeout(popupTimeoutId); popupTimeoutId = null; }
+    }
+
+    function mostrarPatrocinio(){
+      if(!patrocinioPopup) return;
+      patrocinioPopup.classList.add('aberto');
+      popupTimeoutId = setTimeout(esconderPatrocinio, 5000);
+    }
+
+    if(fecharPatrocinioBtn){
+      fecharPatrocinioBtn.addEventListener('click', esconderPatrocinio);
+    }
+
+    function terminarJogo(resultado){
+      jogoTerminado = true;
+      casas.forEach(c => c.disabled = true);
+      if(turnoEl) turnoEl.classList.add('escondido');
+      if(resultadoEl){
+        resultadoEl.textContent = resultado.vencedor === 'empate'
+          ? 'Empate! 🤝'
+          : 'Ganhou o ' + resultado.vencedor + '! 🎉';
+        resultadoEl.classList.add('mostrar');
+      }
+      if(resultado.combo){
+        resultado.combo.forEach(i => casas[i].classList.add('jv-vencedora'));
+      }
+      setTimeout(mostrarPatrocinio, 600);
+    }
+
+    function jogar(i){
+      if(jogoTerminado || estado[i]) return;
+      estado[i] = jogadorAtual;
+      casas[i].textContent = jogadorAtual;
+      casas[i].classList.add(jogadorAtual === 'X' ? 'jv-x' : 'jv-o');
+      casas[i].disabled = true;
+
+      const resultado = verificarResultado();
+      if(resultado){
+        terminarJogo(resultado);
+        return;
+      }
+      jogadorAtual = jogadorAtual === 'X' ? 'O' : 'X';
+      if(jogadorEl) jogadorEl.textContent = jogadorAtual;
+    }
+
+    function reiniciar(){
+      estado = Array(9).fill(null);
+      jogadorAtual = 'X';
+      jogoTerminado = false;
+      if(jogadorEl) jogadorEl.textContent = 'X';
+      if(turnoEl) turnoEl.classList.remove('escondido');
+      if(resultadoEl){
+        resultadoEl.textContent = '';
+        resultadoEl.classList.remove('mostrar');
+      }
+      casas.forEach(c => {
+        c.textContent = '';
+        c.disabled = false;
+        c.classList.remove('jv-x', 'jv-o', 'jv-vencedora');
+      });
+    }
+
+    casas.forEach((c, i) => c.addEventListener('click', () => jogar(i)));
+    if(btnReiniciar) btnReiniciar.addEventListener('click', reiniciar);
   })();
 
   // ---- Cozinheiro animado (interage ao tocar) ----
