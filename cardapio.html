@@ -254,6 +254,59 @@
     color:var(--marrom);
     line-height:1.35;
   }
+
+  .item.prato-clicavel{
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .item.prato-clicavel:hover, .item.prato-clicavel:active{
+    background:var(--creme-escuro);
+  }
+  .item.prato-clicavel .nome::after{
+    content:" 📷";
+    font-size:.72rem;
+  }
+
+  .modal-foto{
+    background:var(--creme);
+    border-radius:16px;
+    max-width:380px; width:100%;
+    padding:16px 16px 18px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.35);
+    position:relative;
+    animation:modalPop .18s ease;
+  }
+  .modal-foto .fechar{
+    position:absolute; top:8px; right:10px;
+    background:rgba(59,47,30,0.55);
+    border:none; border-radius:50%;
+    width:28px; height:28px;
+    font-size:1rem; line-height:1;
+    color:#fff; cursor:pointer;
+    z-index:2;
+  }
+  .modal-foto .foto-wrap{
+    width:100%; aspect-ratio:4/3;
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--creme-escuro);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-foto .foto-wrap img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .modal-foto .foto-placeholder{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    color:#8a7c5c; font-size:.8rem; text-align:center; padding:20px;
+  }
+  .modal-foto .foto-placeholder .emoji{font-size:2.2rem;}
+  .modal-foto h3{
+    font-family:'Fredoka',sans-serif;
+    color:var(--laranja-escuro);
+    font-size:1.1rem;
+    margin-top:12px;
+    text-align:center;
+  }
 </style>
 </head>
 <body>
@@ -284,17 +337,17 @@
   <section class="categoria" id="infantil">
     <h2>Menu Infantil</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Cachorro Kid</div></div>
-      <div class="item"><div class="nome">Hambúrguer Kid</div></div>
-      <div class="item"><div class="nome">Mini Prego</div></div>
+      <div class="item prato-clicavel" data-foto="cachorro-kid"><div class="nome">Cachorro Kid</div></div>
+      <div class="item prato-clicavel" data-foto="hamburguer-kid"><div class="nome">Hambúrguer Kid</div></div>
+      <div class="item prato-clicavel" data-foto="mini-prego"><div class="nome">Mini Prego</div></div>
     </div>
   </section>
 
   <section class="categoria" id="partilhados">
     <h2>Grelhados e Pratos Partilhados</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Costelinhas s/ Guarnição</div></div>
-      <div class="item">
+      <div class="item prato-clicavel" data-foto="costelinhas"><div class="nome">Costelinhas s/ Guarnição</div></div>
+      <div class="item prato-clicavel" data-foto="grelhado-misto">
         <div>
           <div class="nome">Grelhado Misto (2 ou 4 pessoas)</div>
           <div class="desc">Frango, costelinha, picanha e salsicha criola</div>
@@ -306,39 +359,39 @@
   <section class="categoria" id="individuais">
     <h2>Pratos Individuais</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Bife na Púcara</div></div>
-      <div class="item"><div class="nome">Mini Posta</div></div>
-      <div class="item"><div class="nome">Mini Braga</div></div>
-      <div class="item"><div class="nome">Alheira</div></div>
-      <div class="item"><div class="nome">Omelete Mista</div></div>
-      <div class="item"><div class="nome">Bife de Frango</div></div>
-      <div class="item"><div class="nome">Pica-Pau</div></div>
+      <div class="item prato-clicavel" data-foto="bife-na-pucara"><div class="nome">Bife na Púcara</div></div>
+      <div class="item prato-clicavel" data-foto="mini-posta"><div class="nome">Mini Posta</div></div>
+      <div class="item prato-clicavel" data-foto="mini-braga"><div class="nome">Mini Braga</div></div>
+      <div class="item prato-clicavel" data-foto="alheira"><div class="nome">Alheira</div></div>
+      <div class="item prato-clicavel" data-foto="omelete-mista"><div class="nome">Omelete Mista</div></div>
+      <div class="item prato-clicavel" data-foto="bife-de-frango"><div class="nome">Bife de Frango</div></div>
+      <div class="item prato-clicavel" data-foto="pica-pau"><div class="nome">Pica-Pau</div></div>
     </div>
   </section>
 
   <section class="categoria" id="peixe">
     <h2>Peixe</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Filetes de Pescada com Arroz de Camarão</div></div>
-      <div class="item"><div class="nome">Robalo Grelhado</div></div>
-      <div class="item"><div class="nome">Dourada Grelhada</div></div>
-      <div class="item"><div class="nome">Bacalhau à Braga</div></div>
-      <div class="item"><div><div class="nome">Bacalhau à São Caetano</div><div class="desc">Batata à rodela com maionese</div></div></div>
-      <div class="item"><div><div class="nome">Bacalhau à Zé do Pipo</div><div class="desc">Puré com maionese</div></div></div>
-      <div class="item"><div class="nome">Bacalhau com Broa</div></div>
-      <div class="item"><div class="nome">Polvo à Lagareiro</div></div>
+      <div class="item prato-clicavel" data-foto="filetes-pescada-arroz-camarao"><div class="nome">Filetes de Pescada com Arroz de Camarão</div></div>
+      <div class="item prato-clicavel" data-foto="robalo-grelhado"><div class="nome">Robalo Grelhado</div></div>
+      <div class="item prato-clicavel" data-foto="dourada-grelhada"><div class="nome">Dourada Grelhada</div></div>
+      <div class="item prato-clicavel" data-foto="bacalhau-a-braga"><div class="nome">Bacalhau à Braga</div></div>
+      <div class="item prato-clicavel" data-foto="bacalhau-a-sao-caetano"><div><div class="nome">Bacalhau à São Caetano</div><div class="desc">Batata à rodela com maionese</div></div></div>
+      <div class="item prato-clicavel" data-foto="bacalhau-a-ze-do-pipo"><div><div class="nome">Bacalhau à Zé do Pipo</div><div class="desc">Puré com maionese</div></div></div>
+      <div class="item prato-clicavel" data-foto="bacalhau-com-broa"><div class="nome">Bacalhau com Broa</div></div>
+      <div class="item prato-clicavel" data-foto="polvo-a-lagareiro"><div class="nome">Polvo à Lagareiro</div></div>
     </div>
   </section>
 
   <section class="categoria" id="carne">
     <h2>Carne</h2>
     <div class="card-lista">
-      <div class="item"><div><div class="nome">Bife São Caetano</div><div class="desc">Batata às rodelas, molho da casa</div></div></div>
-      <div class="item"><div><div class="nome">Posta Tropical</div><div class="desc">Salada, fruta, batata às rodelas e molho</div></div></div>
-      <div class="item"><div><div class="nome">Posta à Casa</div><div class="desc">Batata a murro, grelos</div></div></div>
-      <div class="item"><div class="nome">Bifinhos c/ Cogumelos</div></div>
-      <div class="item"><div><div class="nome">Bife na Telha</div><div class="desc">Batata às rodelas, grelos e queijo brie</div></div></div>
-      <div class="item"><div class="nome">Brasa na Mesa</div></div>
+      <div class="item prato-clicavel" data-foto="bife-sao-caetano"><div><div class="nome">Bife São Caetano</div><div class="desc">Batata às rodelas, molho da casa</div></div></div>
+      <div class="item prato-clicavel" data-foto="posta-tropical"><div><div class="nome">Posta Tropical</div><div class="desc">Salada, fruta, batata às rodelas e molho</div></div></div>
+      <div class="item prato-clicavel" data-foto="posta-a-casa"><div><div class="nome">Posta à Casa</div><div class="desc">Batata a murro, grelos</div></div></div>
+      <div class="item prato-clicavel" data-foto="bifinhos-cogumelos"><div class="nome">Bifinhos c/ Cogumelos</div></div>
+      <div class="item prato-clicavel" data-foto="bife-na-telha"><div><div class="nome">Bife na Telha</div><div class="desc">Batata às rodelas, grelos e queijo brie</div></div></div>
+      <div class="item prato-clicavel" data-foto="brasa-na-mesa"><div class="nome">Brasa na Mesa</div></div>
     </div>
   </section>
 
@@ -346,38 +399,38 @@
     <h2>Snacks</h2>
     <div class="subtitulo">Francesinhas e Cachorros</div>
     <div class="card-lista">
-      <div class="item"><div class="nome">Francesinha no Forno s/ Ovo</div></div>
-      <div class="item"><div class="nome">Francesinha no Forno c/ Ovo</div></div>
-      <div class="item"><div class="nome">1/2 Francesinha c/ ou s/ Ovo</div></div>
-      <div class="item"><div class="nome">Francesinha em Massa Folhada</div></div>
-      <div class="item"><div class="nome">Cachorro Normal</div></div>
-      <div class="item"><div><div class="nome">Cachorro à São Caetano</div><div class="desc">Linguiça e salsicha fresca</div></div></div>
-      <div class="item"><div class="nome">Cachorro em Massa Folhada</div></div>
-      <div class="item"><div class="nome">Hambúrguer à São Caetano</div></div>
+      <div class="item prato-clicavel" data-foto="francesinha-forno-sem-ovo"><div class="nome">Francesinha no Forno s/ Ovo</div></div>
+      <div class="item prato-clicavel" data-foto="francesinha-forno-com-ovo"><div class="nome">Francesinha no Forno c/ Ovo</div></div>
+      <div class="item prato-clicavel" data-foto="meia-francesinha"><div class="nome">1/2 Francesinha c/ ou s/ Ovo</div></div>
+      <div class="item prato-clicavel" data-foto="francesinha-massa-folhada"><div class="nome">Francesinha em Massa Folhada</div></div>
+      <div class="item prato-clicavel" data-foto="cachorro-normal"><div class="nome">Cachorro Normal</div></div>
+      <div class="item prato-clicavel" data-foto="cachorro-sao-caetano"><div><div class="nome">Cachorro à São Caetano</div><div class="desc">Linguiça e salsicha fresca</div></div></div>
+      <div class="item prato-clicavel" data-foto="cachorro-massa-folhada"><div class="nome">Cachorro em Massa Folhada</div></div>
+      <div class="item prato-clicavel" data-foto="hamburguer-sao-caetano"><div class="nome">Hambúrguer à São Caetano</div></div>
     </div>
   </section>
 
   <section class="categoria" id="sandes">
     <h2>Sandes & Tostas</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Americana</div></div>
-      <div class="item"><div class="nome">Prego no Prato</div></div>
-      <div class="item"><div class="nome">Prego no Pão</div></div>
-      <div class="item"><div class="nome">Tosta Mista</div></div>
-      <div class="item"><div class="nome">Tosta Mista Especial</div></div>
-      <div class="item"><div class="nome">Tosta de Atum c/ Ananás</div></div>
-      <div class="item"><div class="nome">Prego no Pão Especial</div></div>
+      <div class="item prato-clicavel" data-foto="americana"><div class="nome">Americana</div></div>
+      <div class="item prato-clicavel" data-foto="prego-no-prato"><div class="nome">Prego no Prato</div></div>
+      <div class="item prato-clicavel" data-foto="prego-no-pao"><div class="nome">Prego no Pão</div></div>
+      <div class="item prato-clicavel" data-foto="tosta-mista"><div class="nome">Tosta Mista</div></div>
+      <div class="item prato-clicavel" data-foto="tosta-mista-especial"><div class="nome">Tosta Mista Especial</div></div>
+      <div class="item prato-clicavel" data-foto="tosta-atum-ananas"><div class="nome">Tosta de Atum c/ Ananás</div></div>
+      <div class="item prato-clicavel" data-foto="prego-no-pao-especial"><div class="nome">Prego no Pão Especial</div></div>
     </div>
   </section>
 
   <section class="categoria" id="domingo">
     <h2>Menu de Domingo</h2>
     <div class="card-lista">
-      <div class="item"><div class="nome">Cabrito</div></div>
-      <div class="item"><div class="nome">Lombo</div></div>
-      <div class="item"><div class="nome">Vitela Assada</div></div>
-      <div class="item"><div class="nome">Cozido à Portuguesa</div></div>
-      <div class="item"><div class="nome">Tripas à Moda do Porto</div></div>
+      <div class="item prato-clicavel" data-foto="cabrito"><div class="nome">Cabrito</div></div>
+      <div class="item prato-clicavel" data-foto="lombo"><div class="nome">Lombo</div></div>
+      <div class="item prato-clicavel" data-foto="vitela-assada"><div class="nome">Vitela Assada</div></div>
+      <div class="item prato-clicavel" data-foto="cozido-a-portuguesa"><div class="nome">Cozido à Portuguesa</div></div>
+      <div class="item prato-clicavel" data-foto="tripas-moda-porto"><div class="nome">Tripas à Moda do Porto</div></div>
     </div>
   </section>
 
@@ -531,6 +584,20 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="modalFoto">
+  <div class="modal-foto">
+    <button class="fechar" id="fecharModalFoto" aria-label="Fechar">✕</button>
+    <div class="foto-wrap" id="fotoWrap">
+      <img id="fotoImg" src="" alt="" style="display:none;">
+      <div class="foto-placeholder" id="fotoPlaceholder">
+        <span class="emoji">🍽️</span>
+        <span>Foto em breve</span>
+      </div>
+    </div>
+    <h3 id="modalFotoNome">Nome do prato</h3>
+  </div>
+</div>
+
 <footer>
   <div class="nome-rest">Rest & Bar Parque São Caetano</div>
   <div>Avenida de São Caetano, nº17</div>
@@ -647,6 +714,40 @@
   document.getElementById('fecharModal').addEventListener('click', fecharModalVinho);
   modal.addEventListener('click', (e) => { if(e.target === modal) fecharModalVinho(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalVinho(); });
+
+  // ---- Fotos dos pratos ----
+  const PASTA_IMAGENS = 'imagens/';
+  const modalFoto = document.getElementById('modalFoto');
+  const fotoImg = document.getElementById('fotoImg');
+  const fotoPlaceholder = document.getElementById('fotoPlaceholder');
+  const modalFotoNome = document.getElementById('modalFotoNome');
+
+  document.querySelectorAll('.prato-clicavel').forEach(el => {
+    el.addEventListener('click', () => {
+      const slug = el.dataset.foto;
+      const nomeEl = el.querySelector('.nome');
+      modalFotoNome.textContent = nomeEl ? nomeEl.textContent : '';
+
+      fotoImg.style.display = 'none';
+      fotoPlaceholder.style.display = 'flex';
+      fotoImg.onerror = () => {
+        fotoImg.style.display = 'none';
+        fotoPlaceholder.style.display = 'flex';
+      };
+      fotoImg.onload = () => {
+        fotoImg.style.display = 'block';
+        fotoPlaceholder.style.display = 'none';
+      };
+      fotoImg.src = PASTA_IMAGENS + slug + '.jpg';
+
+      modalFoto.classList.add('aberto');
+    });
+  });
+
+  function fecharModalFoto(){ modalFoto.classList.remove('aberto'); }
+  document.getElementById('fecharModalFoto').addEventListener('click', fecharModalFoto);
+  modalFoto.addEventListener('click', (e) => { if(e.target === modalFoto) fecharModalFoto(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalFoto(); });
 </script>
 
 </body>
