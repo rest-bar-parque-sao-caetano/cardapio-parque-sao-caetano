@@ -60,6 +60,15 @@
     font-style:italic;
     margin-top:3px;
   }
+  .lang-switch{
+    display:flex; justify-content:center; gap:8px; margin-top:10px;
+  }
+  .lang-switch button{
+    background:var(--bege); border:1px solid var(--linha); border-radius:16px;
+    padding:4px 10px; font-size:1rem; cursor:pointer; line-height:1.3;
+    transition:all .15s ease;
+  }
+  .lang-switch button.active{ background:var(--castanho); border-color:var(--castanho); }
   .search-wrap{
     margin:16px auto 4px; max-width:480px;
   }
@@ -374,45 +383,50 @@
   <div class="logo-crop">
     <img src="imagens/554171704_122100905673037178_5876853051959764857_n.jpg" alt="Rest & Bar Parque São Caetano" style="filter:url(#recolorCastanho);">
   </div>
-  <div class="brand-sub">Tradição, sabor e conforto à mesa</div>
+  <div class="brand-sub" data-en="Tradition, flavor and comfort at the table" data-fr="Tradition, saveur et confort à table">Tradição, sabor e conforto à mesa</div>
+  <div class="lang-switch" id="langSwitch">
+    <button type="button" data-lang="pt" class="active" aria-label="Português">🇵🇹</button>
+    <button type="button" data-lang="en" aria-label="English">🇬🇧</button>
+    <button type="button" data-lang="fr" aria-label="Français">🇫🇷</button>
+  </div>
   <div class="search-wrap">
-    <input type="text" id="busca" placeholder="🔍 Procurar prato, petisco ou vinho...">
+    <input type="text" id="busca" placeholder="🔍 Procurar prato, petisco ou vinho..." data-en="🔍 Search dish, snack or wine..." data-fr="🔍 Rechercher un plat, une entrée ou un vin...">
   </div>
 </header>
 
 <nav class="tabs" id="tabs">
-  <button data-target="infantil" class="active">Infantil</button>
-  <button data-target="partilhados">Partilhados</button>
-  <button data-target="individuais">Pratos</button>
-  <button data-target="peixe">Peixe</button>
-  <button data-target="carne">Carne</button>
-  <button data-target="snacks">Snacks</button>
-  <button data-target="sandes">Sandes</button>
-  <button data-target="domingo">Domingo</button>
-  <button data-target="vinhos">Vinhos & Bebidas</button>
+  <button data-target="infantil" class="active" data-en="Kids" data-fr="Enfants">Infantil</button>
+  <button data-target="partilhados" data-en="Sharing" data-fr="À partager">Partilhados</button>
+  <button data-target="individuais" data-en="Mains" data-fr="Plats">Pratos</button>
+  <button data-target="peixe" data-en="Fish" data-fr="Poisson">Peixe</button>
+  <button data-target="carne" data-en="Meat" data-fr="Viande">Carne</button>
+  <button data-target="snacks" data-en="Snacks" data-fr="Snacks">Snacks</button>
+  <button data-target="sandes" data-en="Sandwiches" data-fr="Sandwichs">Sandes</button>
+  <button data-target="domingo" data-en="Sunday" data-fr="Dimanche">Domingo</button>
+  <button data-target="vinhos" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</button>
 </nav>
 
 <main>
   <section class="categoria" id="infantil">
     <details class="grupo-prato">
-      <summary>Menu Infantil</summary>
+      <summary data-en="Kids Menu" data-fr="Menu Enfants">Menu Infantil</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Salsicha Kid</div><div class="preco">6,00€</div></div>
-        <div class="item"><div class="nome">Hambúrguer Kid</div><div class="preco">7,50€</div></div>
-        <div class="item"><div class="nome">Mini Prego</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome" data-en="Kids Sausage" data-fr="Saucisse Enfant">Salsicha Kid</div><div class="preco">6,00€</div></div>
+        <div class="item"><div class="nome" data-en="Kids Burger" data-fr="Hamburger Enfant">Hambúrguer Kid</div><div class="preco">7,50€</div></div>
+        <div class="item"><div class="nome" data-en="Mini Steak Sandwich" data-fr="Mini Sandwich à la Viande">Mini Prego</div><div class="preco">8,50€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="partilhados">
     <details class="grupo-prato">
-      <summary>Grelhados e Pratos Partilhados</summary>
+      <summary data-en="Grilled Dishes & Sharing Plates" data-fr="Grillades et Plats à Partager">Grelhados e Pratos Partilhados</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Costelinhas s/ Guarnição</div><div class="preco">14,50€ / 25,00€</div></div>
+        <div class="item"><div class="nome" data-en="Ribs without Side Dish" data-fr="Travers de Porc sans Accompagnement">Costelinhas s/ Guarnição</div><div class="preco">14,50€ / 25,00€</div></div>
         <div class="item">
           <div>
-            <div class="nome">Grelhado Misto (2 ou 4 pessoas)</div>
-            <div class="desc">Frango, costelinha, picanha e salsicha criola</div>
+            <div class="nome" data-en="Mixed Grill (2 or 4 people)" data-fr="Grillade Mixte (2 ou 4 personnes)">Grelhado Misto (2 ou 4 pessoas)</div>
+            <div class="desc" data-en="Chicken, ribs, picanha steak and creole sausage" data-fr="Poulet, travers de porc, picanha et saucisse créole">Frango, costelinha, picanha e salsicha criola</div>
           </div>
           <div class="preco">19,50€ / 29,50€</div>
         </div>
@@ -422,127 +436,127 @@
 
   <section class="categoria" id="individuais">
     <details class="grupo-prato">
-      <summary>Pratos Individuais</summary>
+      <summary data-en="Individual Dishes" data-fr="Plats Individuels">Pratos Individuais</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Bife na Púcara</div><div class="preco">14,00€</div></div>
-        <div class="item"><div class="nome">Mini Posta</div><div class="preco">14,00€</div></div>
-        <div class="item"><div class="nome">Mini Braga</div><div class="preco">14,00€</div></div>
-        <div class="item"><div class="nome">Alheira</div><div class="preco">9,50€</div></div>
-        <div class="item"><div class="nome">Omelete Mista</div><div class="preco">8,50€</div></div>
-        <div class="item"><div class="nome">Bife de Frango</div><div class="preco">9,50€</div></div>
-        <div class="item"><div class="nome">Pica-Pau</div><div class="preco">10,50€</div></div>
+        <div class="item"><div class="nome" data-en="Beef Stew Púcara-Style" data-fr="Bœuf en Cocotte « Púcara »">Bife na Púcara</div><div class="preco">14,00€</div></div>
+        <div class="item"><div class="nome" data-en="Mini Steak" data-fr="Mini Pavé de Bœuf">Mini Posta</div><div class="preco">14,00€</div></div>
+        <div class="item"><div class="nome" data-en="Mini Braga-Style Steak" data-fr="Mini Steak à la Braga">Mini Braga</div><div class="preco">14,00€</div></div>
+        <div class="item"><div class="nome" data-en="Alheira Sausage" data-fr="Saucisse Alheira">Alheira</div><div class="preco">9,50€</div></div>
+        <div class="item"><div class="nome" data-en="Mixed Omelette" data-fr="Omelette Mixte">Omelete Mista</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome" data-en="Chicken Steak" data-fr="Steak de Poulet">Bife de Frango</div><div class="preco">9,50€</div></div>
+        <div class="item"><div class="nome" data-en="Pica-Pau (Diced Beef Bites)" data-fr="Pica-Pau (Émincé de Bœuf)">Pica-Pau</div><div class="preco">10,50€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="peixe">
     <details class="grupo-prato">
-      <summary>Peixe</summary>
+      <summary data-en="Fish" data-fr="Poisson">Peixe</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Filetes de Pescada com Arroz de Camarão</div><div class="preco">17,50€ / 28,00€</div></div>
-        <div class="item"><div class="nome">Robalo Grelhado</div><div class="preco">11,50€</div></div>
-        <div class="item"><div class="nome">Dourada Grelhada</div><div class="preco">11,50€</div></div>
-        <div class="item"><div class="nome">Bacalhau à Braga</div><div class="preco">22,50€ / 42,00€</div></div>
-        <div class="item"><div><div class="nome">Bacalhau à São Caetano</div><div class="desc">Batata à rodela com maionese</div></div><div class="preco">21,00€ / 41,00€</div></div>
-        <div class="item"><div><div class="nome">Bacalhau à Zé do Pipo</div><div class="desc">Puré com maionese</div></div><div class="preco">25,00€ / 43,00€</div></div>
-        <div class="item"><div class="nome">Bacalhau com Broa</div><div class="preco">26,00€ / 44,00€</div></div>
-        <div class="item"><div class="nome">Bacalhau na Brasa</div><div class="preco">28,00€ / 46,00€</div></div>
-        <div class="item"><div class="nome">Polvo à Lagareiro</div><div class="preco">25,50€ / 38,00€</div></div>
-        <div class="item"><div class="nome">Escangalhado de Polvo</div><div class="preco">27,00€ / 40,00€</div></div>
+        <div class="item"><div class="nome" data-en="Hake Fillets with Shrimp Rice" data-fr="Filets de Merlu au Riz de Crevettes">Filetes de Pescada com Arroz de Camarão</div><div class="preco">17,50€ / 28,00€</div></div>
+        <div class="item"><div class="nome" data-en="Grilled Sea Bass" data-fr="Bar Grillé">Robalo Grelhado</div><div class="preco">11,50€</div></div>
+        <div class="item"><div class="nome" data-en="Grilled Sea Bream" data-fr="Daurade Grillée">Dourada Grelhada</div><div class="preco">11,50€</div></div>
+        <div class="item"><div class="nome" data-en="Braga-Style Codfish" data-fr="Morue à la Braga">Bacalhau à Braga</div><div class="preco">22,50€ / 42,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="São Caetano-Style Codfish" data-fr="Morue à la São Caetano">Bacalhau à São Caetano</div><div class="desc" data-en="Sliced potatoes with mayonnaise" data-fr="Pommes de terre en rondelles avec mayonnaise">Batata à rodela com maionese</div></div><div class="preco">21,00€ / 41,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="Zé do Pipo-Style Codfish" data-fr="Morue à la Zé do Pipo">Bacalhau à Zé do Pipo</div><div class="desc" data-en="Mashed potato with mayonnaise" data-fr="Purée avec mayonnaise">Puré com maionese</div></div><div class="preco">25,00€ / 43,00€</div></div>
+        <div class="item"><div class="nome" data-en="Codfish with Cornbread Crust" data-fr="Morue à la Croûte de Maïs">Bacalhau com Broa</div><div class="preco">26,00€ / 44,00€</div></div>
+        <div class="item"><div class="nome" data-en="Charcoal-Grilled Codfish" data-fr="Morue Grillée au Charbon">Bacalhau na Brasa</div><div class="preco">28,00€ / 46,00€</div></div>
+        <div class="item"><div class="nome" data-en="Octopus Lagareiro-Style" data-fr="Poulpe à la Lagareiro">Polvo à Lagareiro</div><div class="preco">25,50€ / 38,00€</div></div>
+        <div class="item"><div class="nome" data-en="Smashed Octopus with Potatoes" data-fr="Poulpe Écrasé aux Pommes de Terre">Escangalhado de Polvo</div><div class="preco">27,00€ / 40,00€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="carne">
     <details class="grupo-prato">
-      <summary>Carne</summary>
+      <summary data-en="Meat" data-fr="Viande">Carne</summary>
       <div class="card-lista">
-        <div class="item"><div><div class="nome">Bife São Caetano</div><div class="desc">Batata às rodelas, molho da casa</div></div><div class="preco">16,00€ / 24,00€</div></div>
-        <div class="item"><div><div class="nome">Posta Tropical</div><div class="desc">Salada, fruta, batata às rodelas e molho</div></div><div class="preco">18,50€ / 28,00€</div></div>
-        <div class="item"><div><div class="nome">Posta à Casa</div><div class="desc">Batata a murro, grelos</div></div><div class="preco">19,50€ / 29,50€</div></div>
-        <div class="item"><div class="nome">Bifinhos c/ Cogumelos</div><div class="preco">17,00€ / 24,00€</div></div>
-        <div class="item"><div><div class="nome">Bife na Telha</div><div class="desc">Batata às rodelas, grelos e queijo brie</div></div><div class="preco">16,50€ / 23,00€</div></div>
-        <div class="item"><div class="nome">Brasa na Mesa</div><div class="preco">34,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="Steak São Caetano-Style" data-fr="Steak à la São Caetano">Bife São Caetano</div><div class="desc" data-en="Sliced potatoes, house sauce" data-fr="Pommes de terre en rondelles, sauce maison">Batata às rodelas, molho da casa</div></div><div class="preco">16,00€ / 24,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="Tropical Steak" data-fr="Pavé Tropical">Posta Tropical</div><div class="desc" data-en="Salad, fruit, sliced potatoes and sauce" data-fr="Salade, fruits, pommes de terre en rondelles et sauce">Salada, fruta, batata às rodelas e molho</div></div><div class="preco">18,50€ / 28,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="House-Style Steak" data-fr="Pavé Maison">Posta à Casa</div><div class="desc" data-en="Smashed potatoes, turnip greens" data-fr="Pommes de terre écrasées, pousses de navet">Batata a murro, grelos</div></div><div class="preco">19,50€ / 29,50€</div></div>
+        <div class="item"><div class="nome" data-en="Beef Strips with Mushrooms" data-fr="Émincé de Bœuf aux Champignons">Bifinhos c/ Cogumelos</div><div class="preco">17,00€ / 24,00€</div></div>
+        <div class="item"><div><div class="nome" data-en="Steak on a Clay Tile" data-fr="Steak sur Tuile">Bife na Telha</div><div class="desc" data-en="Sliced potatoes, turnip greens and brie cheese" data-fr="Pommes de terre en rondelles, pousses de navet et fromage brie">Batata às rodelas, grelos e queijo brie</div></div><div class="preco">16,50€ / 23,00€</div></div>
+        <div class="item"><div class="nome" data-en="Charcoal Grill at the Table" data-fr="Braise à Table">Brasa na Mesa</div><div class="preco">34,00€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="snacks">
     <details class="grupo-prato">
-      <summary>Snacks</summary>
-      <div class="subtitulo">Francesinhas e Cachorros</div>
+      <summary data-en="Snacks" data-fr="Snacks">Snacks</summary>
+      <div class="subtitulo" data-en="Francesinhas & Hot Dogs" data-fr="Francesinhas et Hot-Dogs">Francesinhas e Cachorros</div>
       <div class="card-lista">
-        <div class="item"><div class="nome">Francesinha no Forno s/ Ovo</div><div class="preco">11,00€</div></div>
-        <div class="item prato-clicavel" data-foto="francesinha-forno-com-ovo"><div class="nome">Francesinha no Forno c/ Ovo</div><div class="preco">12,50€</div></div>
-        <div class="item"><div class="nome">1/2 Francesinha c/ ou s/ Ovo</div><div class="preco">9,50€</div></div>
-        <div class="item"><div class="nome">Francesinha em Massa Folhada</div><div class="preco">13,50€</div></div>
-        <div class="item"><div class="nome">Cachorro Normal</div><div class="preco">8,50€</div></div>
-        <div class="item"><div><div class="nome">Cachorro à São Caetano</div><div class="desc">Linguiça e salsicha fresca</div></div><div class="preco">9,50€</div></div>
-        <div class="item"><div class="nome">Cachorro Especial</div><div class="preco">10,50€</div></div>
-        <div class="item"><div class="nome">Cachorro em Massa Folhada</div><div class="preco">12,50€</div></div>
-        <div class="item"><div class="nome">Hambúrguer à São Caetano</div><div class="preco">12,50€</div></div>
+        <div class="item"><div class="nome" data-en="Oven-Baked Francesinha without Egg" data-fr="Francesinha au Four sans Œuf">Francesinha no Forno s/ Ovo</div><div class="preco">11,00€</div></div>
+        <div class="item prato-clicavel" data-foto="francesinha-forno-com-ovo"><div class="nome" data-en="Oven-Baked Francesinha with Egg" data-fr="Francesinha au Four avec Œuf">Francesinha no Forno c/ Ovo</div><div class="preco">12,50€</div></div>
+        <div class="item"><div class="nome" data-en="Half Francesinha with or without Egg" data-fr="Demi-Francesinha avec ou sans Œuf">1/2 Francesinha c/ ou s/ Ovo</div><div class="preco">9,50€</div></div>
+        <div class="item"><div class="nome" data-en="Francesinha in Puff Pastry" data-fr="Francesinha en Pâte Feuilletée">Francesinha em Massa Folhada</div><div class="preco">13,50€</div></div>
+        <div class="item"><div class="nome" data-en="Regular Hot Dog" data-fr="Hot-Dog Nature">Cachorro Normal</div><div class="preco">8,50€</div></div>
+        <div class="item"><div><div class="nome" data-en="Hot Dog São Caetano-Style" data-fr="Hot-Dog à la São Caetano">Cachorro à São Caetano</div><div class="desc" data-en="Smoked sausage and fresh sausage" data-fr="Chorizo et saucisse fraîche">Linguiça e salsicha fresca</div></div><div class="preco">9,50€</div></div>
+        <div class="item"><div class="nome" data-en="Special Hot Dog" data-fr="Hot-Dog Spécial">Cachorro Especial</div><div class="preco">10,50€</div></div>
+        <div class="item"><div class="nome" data-en="Hot Dog in Puff Pastry" data-fr="Hot-Dog en Pâte Feuilletée">Cachorro em Massa Folhada</div><div class="preco">12,50€</div></div>
+        <div class="item"><div class="nome" data-en="Burger São Caetano-Style" data-fr="Hamburger à la São Caetano">Hambúrguer à São Caetano</div><div class="preco">12,50€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="sandes">
     <details class="grupo-prato">
-      <summary>Sandes & Tostas</summary>
+      <summary data-en="Sandwiches & Toasts" data-fr="Sandwichs et Croque-Monsieurs">Sandes & Tostas</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Americana</div><div class="preco">7,50€</div></div>
-        <div class="item"><div class="nome">Prego no Prato</div><div class="preco">11,50€</div></div>
-        <div class="item"><div class="nome">Prego no Pão</div><div class="preco">9,50€</div></div>
-        <div class="item"><div class="nome">Tosta Mista</div><div class="preco">3,50€</div></div>
-        <div class="item"><div class="nome">Tosta Mista Especial</div><div class="preco">8,50€</div></div>
-        <div class="item"><div class="nome">Tosta de Atum c/ Ananás</div><div class="preco">7,50€</div></div>
-        <div class="item"><div class="nome">Prego no Pão Especial</div><div class="preco">15,00€</div></div>
+        <div class="item"><div class="nome" data-en="Americana Sandwich" data-fr="Sandwich Americana">Americana</div><div class="preco">7,50€</div></div>
+        <div class="item"><div class="nome" data-en="Steak Sandwich on a Plate" data-fr="Sandwich à la Viande sur Assiette">Prego no Prato</div><div class="preco">11,50€</div></div>
+        <div class="item"><div class="nome" data-en="Steak Sandwich in Bread" data-fr="Sandwich à la Viande">Prego no Pão</div><div class="preco">9,50€</div></div>
+        <div class="item"><div class="nome" data-en="Mixed Toast" data-fr="Croque-Monsieur">Tosta Mista</div><div class="preco">3,50€</div></div>
+        <div class="item"><div class="nome" data-en="Special Mixed Toast" data-fr="Croque-Monsieur Spécial">Tosta Mista Especial</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome" data-en="Tuna and Pineapple Toast" data-fr="Toast au Thon et Ananas">Tosta de Atum c/ Ananás</div><div class="preco">7,50€</div></div>
+        <div class="item"><div class="nome" data-en="Special Steak Sandwich" data-fr="Sandwich à la Viande Spécial">Prego no Pão Especial</div><div class="preco">15,00€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="domingo">
     <details class="grupo-prato">
-      <summary>Menu de Domingo</summary>
-      <div class="subtitulo">Meia dose / Dose</div>
+      <summary data-en="Sunday Menu" data-fr="Menu du Dimanche">Menu de Domingo</summary>
+      <div class="subtitulo" data-en="Half portion / Full portion" data-fr="Demi-portion / Portion">Meia dose / Dose</div>
       <div class="card-lista">
-        <div class="item"><div class="nome">Vitela Assada</div><div class="preco">14,00€ / 21,00€</div></div>
-        <div class="item"><div class="nome">Cabrito</div><div class="preco">17,00€ / 26,00€</div></div>
-        <div class="item"><div class="nome">Tripas à Moda do Porto</div><div class="preco">10,50€ / 16,00€</div></div>
-        <div class="item"><div class="nome">Lombo</div><div class="preco">12,50€ / 21,50€</div></div>
-        <div class="item"><div class="nome">Cozido à Portuguesa</div><div class="preco">15,00€ / 24,50€</div></div>
+        <div class="item"><div class="nome" data-en="Roast Veal" data-fr="Veau Rôti">Vitela Assada</div><div class="preco">14,00€ / 21,00€</div></div>
+        <div class="item"><div class="nome" data-en="Roast Kid Goat" data-fr="Chevreau Rôti">Cabrito</div><div class="preco">17,00€ / 26,00€</div></div>
+        <div class="item"><div class="nome" data-en="Porto-Style Tripe" data-fr="Tripes à la Porto">Tripas à Moda do Porto</div><div class="preco">10,50€ / 16,00€</div></div>
+        <div class="item"><div class="nome" data-en="Roast Pork Loin" data-fr="Longe de Porc Rôtie">Lombo</div><div class="preco">12,50€ / 21,50€</div></div>
+        <div class="item"><div class="nome" data-en="Portuguese Boiled Dinner" data-fr="Pot-au-Feu à la Portugaise">Cozido à Portuguesa</div><div class="preco">15,00€ / 24,50€</div></div>
       </div>
     </details>
   </section>
 
   <section class="categoria" id="vinhos">
-    <h2>Vinhos & Bebidas</h2>
-    <div class="subtitulo">Carta de Vinhos — Parque São Caetano</div>
+    <h2 data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</h2>
+    <div class="subtitulo" data-en="Wine List — Parque São Caetano" data-fr="Carte des Vins — Parque São Caetano">Carta de Vinhos — Parque São Caetano</div>
 
     <details class="grupo-vinho" open>
-      <summary>Vinho da Casa</summary>
+      <summary data-en="House Wine" data-fr="Vin de la Maison">Vinho da Casa</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Caneca</div></div>
+        <div class="item"><div class="nome" data-en="Jug" data-fr="Carafe">Caneca</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,25 L</td><td class="dose">0,50 L</td><td class="dose">1 L</td></tr>
           <tr><td class="preco-dose">2,50€</td><td class="preco-dose">3,50€</td><td class="preco-dose">7,50€</td></tr>
         </table>
-        <div class="item"><div class="nome">Garrafa Maduro Branco</div></div>
+        <div class="item"><div class="nome" data-en="Bottle — House White" data-fr="Bouteille — Vin Blanc Maison">Garrafa Maduro Branco</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,37 L</td><td class="dose">0,75 L</td></tr>
           <tr><td class="preco-dose">4,00€</td><td class="preco-dose">8,00€</td></tr>
         </table>
-        <div class="item"><div class="nome">Garrafa Maduro Tinto</div></div>
+        <div class="item"><div class="nome" data-en="Bottle — House Red" data-fr="Bouteille — Vin Rouge Maison">Garrafa Maduro Tinto</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,37 L</td><td class="dose">0,75 L</td></tr>
           <tr><td class="preco-dose">4,50€</td><td class="preco-dose">8,50€</td></tr>
         </table>
-        <div class="item"><div class="nome">Outras Garrafas — Verde</div><div class="preco">8,50€</div></div>
-        <div class="item"><div class="nome">Outras Garrafas — Espadal</div><div class="preco">9,00€</div></div>
+        <div class="item"><div class="nome" data-en="Other Bottles — Verde" data-fr="Autres Bouteilles — Verde">Outras Garrafas — Verde</div><div class="preco">8,50€</div></div>
+        <div class="item"><div class="nome" data-en="Other Bottles — Espadal" data-fr="Autres Bouteilles — Espadal">Outras Garrafas — Espadal</div><div class="preco">9,00€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
-      <summary>Maduro Branco</summary>
+      <summary data-en="White Wines" data-fr="Vins Blancs">Maduro Branco</summary>
       <div class="card-lista">
         <div class="item vinho-clicavel" data-vinho="almotriga-branco"><div class="nome">Almotriga</div><div class="preco">20,00€</div></div>
         <div class="item vinho-clicavel" data-vinho="planalto"><div class="nome">Planalto</div><div class="preco">15,00€</div></div>
@@ -567,7 +581,7 @@
     </details>
 
     <details class="grupo-vinho">
-      <summary>Maduro Tinto</summary>
+      <summary data-en="Red Wines" data-fr="Vins Rouges">Maduro Tinto</summary>
       <div class="card-lista">
         <div class="item vinho-clicavel" data-vinho="almotriga-tinto"><div class="nome">Almotriga</div><div class="preco">21,00€</div></div>
         <div class="item vinho-clicavel" data-vinho="assobio-tinto"><div class="nome">Assobio</div><div class="preco">22,00€</div></div>
@@ -580,8 +594,8 @@
         <div class="item vinho-clicavel" data-vinho="bom-malandro-tinto"><div class="nome">Bom Malandro</div><div class="preco">19,50€</div></div>
         <div class="item vinho-clicavel" data-vinho="conde-de-monsul-tinto"><div class="nome">Conde de Monsul</div><div class="preco">14,50€</div></div>
         <div class="item vinho-clicavel" data-vinho="monte-perdigoes"><div class="nome">Monte Perdigões</div><div class="preco">23,50€</div></div>
-        <div class="item vinho-clicavel" data-vinho="chamine"><div class="nome">Chaminé (Tinto)</div><div class="preco">22,50€</div></div>
-        <div class="item vinho-clicavel" data-vinho="fagote-tinto"><div class="nome">Fagote (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="chamine"><div class="nome" data-en="Chaminé (Red)" data-fr="Chaminé (Rouge)">Chaminé (Tinto)</div><div class="preco">22,50€</div></div>
+        <div class="item vinho-clicavel" data-vinho="fagote-tinto"><div class="nome" data-en="Fagote (Red)" data-fr="Fagote (Rouge)">Fagote (Tinto)</div><div class="preco">22,50€</div></div>
         <div class="item vinho-clicavel" data-vinho="ea-cartuxa-tinto"><div class="nome">E.A (Cartuxa) 0,75 L</div><div class="preco">19,00€</div></div>
         <div class="item vinho-clicavel" data-vinho="ea-cartuxa-tinto"><div class="nome">E.A (Cartuxa) 0,37 L</div><div class="preco">10,00€</div></div>
         <div class="item vinho-clicavel" data-vinho="monte-velho-tinto"><div class="nome">Monte Velho 0,75 L</div><div class="preco">13,50€</div></div>
@@ -590,7 +604,7 @@
     </details>
 
     <details class="grupo-vinho">
-      <summary>Verdes</summary>
+      <summary data-en="Vinho Verde" data-fr="Vinho Verde">Verdes</summary>
       <div class="card-lista">
         <div class="item vinho-clicavel" data-vinho="casal-garcia"><div class="nome">Casal Garcia</div><div class="preco">10,50€</div></div>
         <div class="item vinho-clicavel" data-vinho="quinta-aveleda"><div class="nome">Quinta Aveleda</div><div class="preco">11,50€</div></div>
@@ -601,17 +615,17 @@
     </details>
 
     <details class="grupo-vinho">
-      <summary>Espumantes</summary>
+      <summary data-en="Sparkling Wines" data-fr="Vins Mousseux">Espumantes</summary>
       <div class="card-lista">
         <div class="item vinho-clicavel" data-vinho="corte-real"><div class="nome">Corte Real</div><div class="preco">9,00€</div></div>
-        <div class="item vinho-clicavel" data-vinho="terras-do-demo"><div class="nome">Terras do Demo Bruto</div><div class="preco">28,00€</div></div>
-        <div class="item vinho-clicavel" data-vinho="fita-azul"><div class="nome">Fita Azul Doce</div><div class="preco">15,00€</div></div>
-        <div class="item vinho-clicavel" data-vinho="raposeira"><div class="nome">Raposeira Meio Seco</div><div class="preco">24,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="terras-do-demo"><div class="nome" data-en="Terras do Demo (Brut)" data-fr="Terras do Demo (Brut)">Terras do Demo Bruto</div><div class="preco">28,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="fita-azul"><div class="nome" data-en="Fita Azul (Sweet)" data-fr="Fita Azul (Doux)">Fita Azul Doce</div><div class="preco">15,00€</div></div>
+        <div class="item vinho-clicavel" data-vinho="raposeira"><div class="nome" data-en="Raposeira (Medium Dry)" data-fr="Raposeira (Demi-Sec)">Raposeira Meio Seco</div><div class="preco">24,00€</div></div>
       </div>
     </details>
 
     <details class="grupo-vinho">
-      <summary>Rosés</summary>
+      <summary data-en="Rosés" data-fr="Rosés">Rosés</summary>
       <div class="card-lista">
         <div class="item vinho-clicavel" data-vinho="mateus-rose"><div class="nome">Mateus Rosé 0,75 L</div><div class="preco">12,75€</div></div>
         <div class="item vinho-clicavel" data-vinho="mateus-rose"><div class="nome">Mateus Rosé 0,37 L</div><div class="preco">8,50€</div></div>
@@ -619,19 +633,19 @@
     </details>
 
     <details class="grupo-vinho">
-      <summary>Sangrias</summary>
+      <summary data-en="Sangria" data-fr="Sangria">Sangrias</summary>
       <div class="card-lista">
-        <div class="item"><div class="nome">Tinta / Branca</div></div>
+        <div class="item"><div class="nome" data-en="Red / White" data-fr="Rouge / Blanc">Tinta / Branca</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
           <tr><td class="preco-dose">7,50€</td><td class="preco-dose">14,00€</td><td class="preco-dose">26,00€</td></tr>
         </table>
-        <div class="item"><div class="nome">Frutos Vermelhos</div></div>
+        <div class="item"><div class="nome" data-en="Red Berries" data-fr="Fruits Rouges">Frutos Vermelhos</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
           <tr><td class="preco-dose">9,50€</td><td class="preco-dose">18,00€</td><td class="preco-dose">34,00€</td></tr>
         </table>
-        <div class="item"><div class="nome">Maracujá</div></div>
+        <div class="item"><div class="nome" data-en="Passion Fruit" data-fr="Fruit de la Passion">Maracujá</div></div>
         <table class="tabela-doses">
           <tr><td class="dose">0,5 L</td><td class="dose">1 L</td><td class="dose">2 L</td></tr>
           <tr><td class="preco-dose">9,00€</td><td class="preco-dose">17,00€</td><td class="preco-dose">32,00€</td></tr>
@@ -639,10 +653,10 @@
       </div>
     </details>
 
-    <div class="subtitulo" style="margin-top:10px;">IVA incluído à taxa legal em vigor.</div>
+    <div class="subtitulo" style="margin-top:10px;" data-en="VAT included at the legal rate in force." data-fr="TVA incluse au taux légal en vigueur.">IVA incluído à taxa legal em vigor.</div>
   </section>
 
-  <div class="sem-resultado" id="semResultado">Nenhum item encontrado 🍷🍽️</div>
+  <div class="sem-resultado" id="semResultado" data-en="No items found 🍷🍽️" data-fr="Aucun article trouvé 🍷🍽️">Nenhum item encontrado 🍷🍽️</div>
 </main>
 
 <div class="modal-overlay" id="modalVinho">
@@ -650,15 +664,15 @@
     <button class="fechar" id="fecharModal" aria-label="Fechar">✕</button>
     <h3 id="modalNome">Nome do vinho</h3>
     <div class="campo">
-      <span class="rotulo">Origem</span>
+      <span class="rotulo" data-en="Origin" data-fr="Origine">Origem</span>
       <span class="valor" id="modalOrigem">—</span>
     </div>
     <div class="campo">
-      <span class="rotulo">Tipo</span>
+      <span class="rotulo" data-en="Type" data-fr="Type">Tipo</span>
       <span class="valor" id="modalTipo">—</span>
     </div>
     <div class="campo">
-      <span class="rotulo">Graduação</span>
+      <span class="rotulo" data-en="ABV" data-fr="Degré d'alcool">Graduação</span>
       <span class="valor" id="modalGrad">—</span>
     </div>
   </div>
@@ -671,7 +685,7 @@
       <img id="fotoImg" src="" alt="" style="display:none;">
       <div class="foto-placeholder" id="fotoPlaceholder">
         <span class="emoji">🍽️</span>
-        <span>Foto em breve</span>
+        <span data-en="Photo coming soon" data-fr="Photo à venir">Foto em breve</span>
       </div>
     </div>
     <h3 id="modalFotoNome">Nome do prato</h3>
@@ -685,6 +699,32 @@
 </footer>
 
 <script>
+  // ---- Seletor de idioma ----
+  let idiomaAtual = localStorage.getItem('idiomaCardapio') || 'pt';
+  const elementosTraduzeis = document.querySelectorAll('[data-en]');
+  const langButtons = document.querySelectorAll('#langSwitch button');
+
+  function aplicarIdioma(lang){
+    idiomaAtual = lang;
+    localStorage.setItem('idiomaCardapio', lang);
+    document.documentElement.lang = lang === 'pt' ? 'pt-PT' : lang;
+
+    elementosTraduzeis.forEach(el => {
+      if(!el.dataset.pt) el.dataset.pt = (el.tagName === 'INPUT') ? el.placeholder : el.textContent;
+      const texto = (lang === 'pt') ? el.dataset.pt : (el.dataset[lang] || el.dataset.pt);
+      if(el.tagName === 'INPUT') el.placeholder = texto;
+      else el.textContent = texto;
+    });
+
+    langButtons.forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  }
+
+  langButtons.forEach(b => {
+    b.addEventListener('click', () => aplicarIdioma(b.dataset.lang));
+  });
+
+  aplicarIdioma(idiomaAtual);
+
   const tabs = document.querySelectorAll('nav.tabs button');
   const categorias = document.querySelectorAll('section.categoria');
 
@@ -744,45 +784,45 @@
 
   // ---- Info dos vinhos (origem, tipo e graduação) ----
   const infoVinhos = {
-    'almotriga-branco': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Branco jovem e frutado, fácil de beber', grad:'≈ 12,5%' },
-    'almotriga-tinto': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Tinto frutado e macio, taninos suaves', grad:'14%' },
-    'almotriga-premium': { nome:'Almotriga Premium', origem:'Alentejo — Borba', tipo:'Linha premium da Almotriga, mais encorpada e complexa', grad:'≈ 14%' },
-    'planalto': { nome:'Planalto', origem:'Douro', tipo:'Branco fresco e elegante (Real Companhia Velha)', grad:'12,5 – 13%' },
-    'dona-ermelinda-branco': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Branco fresco e frutado', grad:'≈ 12,5%' },
-    'dona-ermelinda-tinto': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Tinto elegante, notas de fruta madura', grad:'14,5%' },
-    'alandra': { nome:'Alandra', origem:'Alentejo (Esporão)', tipo:'Vinho jovem, leve e frutado', grad:'12,5 – 13%' },
-    'assobio-branco': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Branco fresco e mineral', grad:'12,5%' },
-    'assobio-tinto': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Tinto encorpado, fruta madura e especiarias', grad:'≈ 14%' },
-    'carm-reserva-branco': { nome:'Carm Reserva', origem:'Douro Superior (Casa Agrícola Roboredo Madeira)', tipo:'Branco encorpado, com passagem por madeira', grad:'≈ 13%' },
-    'carm-reserva-tinto': { nome:'Carm Reserva', origem:'Douro Superior (Casa Agrícola Roboredo Madeira)', tipo:'Tinto encorpado, envelhecido em carvalho francês e americano', grad:'14%' },
-    'duas-quintas-branco': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Branco fresco e aromático', grad:'13%' },
-    'duas-quintas-tinto': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Tinto clássico duriense, fruta madura', grad:'13,5%' },
-    'adega-de-borba-branco': { nome:'Adega de Borba', origem:'Alentejo — Borba', tipo:'Branco cooperativo, clássico da região', grad:'12,5%' },
-    'adega-de-borba-tinto': { nome:'Adega de Borba', origem:'Alentejo — Borba', tipo:'Tinto cooperativo, clássico da região', grad:'13,5%' },
-    'pouca-terra-branco': { nome:'Pouca Terra', origem:'Douro (Quanta Terra)', tipo:'Branco fresco e mineral, produção em pequena escala', grad:'12%' },
-    'pouca-terra-tinto': { nome:'Pouca Terra', origem:'Douro (Quanta Terra)', tipo:'Tinto fresco e mineral, produção em pequena escala', grad:'13,5%' },
-    'bom-malandro-branco': { nome:'Bom Malandro', origem:'Douro (Symington)', tipo:'Branco fácil de beber, frutado e acessível', grad:'12,5%' },
-    'bom-malandro-tinto': { nome:'Bom Malandro', origem:'Douro (Symington)', tipo:'Tinto fácil de beber, frutado e acessível', grad:'14%' },
-    'conde-de-monsul-branco': { nome:'Conde de Monsul', origem:'Douro (Rozès)', tipo:'Branco floral e frutado', grad:'12,5%' },
-    'conde-de-monsul-tinto': { nome:'Conde de Monsul', origem:'Douro (Rozès)', tipo:'Tinto floral e frutado', grad:'13,5%' },
-    'fagote-branco': { nome:'Fagote', origem:'Douro — Tabuaço', tipo:'Branco fresco, com passagem por carvalho', grad:'≈ 12,5%' },
-    'fagote-tinto': { nome:'Fagote', origem:'Douro — Tabuaço', tipo:'Tinto encorpado, com passagem por carvalho', grad:'14%' },
-    'ea-cartuxa-branco': { nome:'E.A (Cartuxa)', origem:'Alentejo — Évora (Fundação Eugénio de Almeida)', tipo:'Branco: Roupeiro, Antão Vaz e Arinto', grad:'13%' },
-    'ea-cartuxa-tinto': { nome:'E.A (Cartuxa)', origem:'Alentejo — Évora (Fundação Eugénio de Almeida)', tipo:'Tinto: Aragonez, Trincadeira e Tinta Caiada', grad:'13,5%' },
-    'monte-velho-branco': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Branco leve e frutado, clássico alentejano', grad:'13%' },
-    'monte-velho-tinto': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Tinto macio e frutado, clássico alentejano', grad:'13,5%' },
-    'monte-perdigoes': { nome:'Monte Perdigões', origem:'Alentejo — Reguengos de Monsaraz', tipo:'Tinto encorpado, Aragonez, Trincadeira e Alicante Bouschet', grad:'14%' },
-    'chamine': { nome:'Chaminé', origem:'Alentejo (Cortes de Cima)', tipo:'Tinto especiado, blend com Syrah e castas alentejanas', grad:'13 – 13,5%' },
-    'casal-garcia': { nome:'Casal Garcia', origem:'Vinho Verde (Aveleda)', tipo:'Leve, fresco e ligeiramente frisante', grad:'9,5%' },
-    'quinta-aveleda': { nome:'Quinta da Aveleda', origem:'Vinho Verde (Aveleda)', tipo:'Branco floral, blend de Loureiro e Alvarinho', grad:'12%' },
-    'aveleda-alvarinho': { nome:'Aveleda Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'100% Alvarinho, encorpado e mineral', grad:'12,5%' },
-    'tamariz-alvarinho': { nome:'Tamariz Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho floral e salino, boa acidez', grad:'≈ 12,5%' },
-    'muralhas': { nome:'Muralhas', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho frutado e frisante', grad:'12,5%' },
-    'corte-real': { nome:'Corte Real', origem:'Bairrada', tipo:'Espumante bruto, fresco e leve', grad:'11%' },
-    'terras-do-demo': { nome:'Terras do Demo Bruto', origem:'Távora-Varosa', tipo:'Espumante método tradicional, seco e mineral', grad:'12%' },
-    'fita-azul': { nome:'Fita Azul Doce', origem:'Borges Vinhos', tipo:'Espumante doce, aromas de fruta madura', grad:'12%' },
-    'raposeira': { nome:'Raposeira Meio Seco', origem:'Lamego — Távora-Varosa', tipo:'Espumante método clássico, meio seco', grad:'12,5%' },
-    'mateus-rose': { nome:'Mateus Rosé', origem:'Bairrada (Sogrape)', tipo:'Rosé clássico português, leve e frisante', grad:'11%' }
+    'almotriga-branco': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Branco jovem e frutado, fácil de beber', tipo_en:'Young and fruity white, easy to drink', tipo_fr:'Blanc jeune et fruité, facile à boire', grad:'≈ 12,5%' },
+    'almotriga-tinto': { nome:'Almotriga', origem:'Alentejo — Borba', tipo:'Tinto frutado e macio, taninos suaves', tipo_en:'Fruity and smooth red, soft tannins', tipo_fr:'Rouge fruité et souple, tanins doux', grad:'14%' },
+    'almotriga-premium': { nome:'Almotriga Premium', origem:'Alentejo — Borba', tipo:'Linha premium da Almotriga, mais encorpada e complexa', tipo_en:"Almotriga's premium line, fuller-bodied and more complex", tipo_fr:"Gamme premium d'Almotriga, plus corsée et complexe", grad:'≈ 14%' },
+    'planalto': { nome:'Planalto', origem:'Douro', tipo:'Branco fresco e elegante (Real Companhia Velha)', tipo_en:'Fresh and elegant white (Real Companhia Velha)', tipo_fr:'Blanc frais et élégant (Real Companhia Velha)', grad:'12,5 – 13%' },
+    'dona-ermelinda-branco': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Branco fresco e frutado', tipo_en:'Fresh and fruity white', tipo_fr:'Blanc frais et fruité', grad:'≈ 12,5%' },
+    'dona-ermelinda-tinto': { nome:'Dona Ermelinda', origem:'Alentejo (João Portugal Ramos)', tipo:'Tinto elegante, notas de fruta madura', tipo_en:'Elegant red, notes of ripe fruit', tipo_fr:'Rouge élégant, notes de fruits mûrs', grad:'14,5%' },
+    'alandra': { nome:'Alandra', origem:'Alentejo (Esporão)', tipo:'Vinho jovem, leve e frutado', tipo_en:'Young wine, light and fruity', tipo_fr:'Vin jeune, léger et fruité', grad:'12,5 – 13%' },
+    'assobio-branco': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Branco fresco e mineral', tipo_en:'Fresh and mineral white', tipo_fr:'Blanc frais et minéral', grad:'12,5%' },
+    'assobio-tinto': { nome:'Assobio', origem:'Douro (Quinta do Vale Meão)', tipo:'Tinto encorpado, fruta madura e especiarias', tipo_en:'Full-bodied red, ripe fruit and spices', tipo_fr:'Rouge corsé, fruits mûrs et épices', grad:'≈ 14%' },
+    'carm-reserva-branco': { nome:'Carm Reserva', origem:'Douro Superior (Casa Agrícola Roboredo Madeira)', tipo:'Branco encorpado, com passagem por madeira', tipo_en:'Full-bodied white, aged in oak', tipo_fr:'Blanc corsé, élevé en fût de chêne', grad:'≈ 13%' },
+    'carm-reserva-tinto': { nome:'Carm Reserva', origem:'Douro Superior (Casa Agrícola Roboredo Madeira)', tipo:'Tinto encorpado, envelhecido em carvalho francês e americano', tipo_en:'Full-bodied red, aged in French and American oak', tipo_fr:'Rouge corsé, vieilli en chêne français et américain', grad:'14%' },
+    'duas-quintas-branco': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Branco fresco e aromático', tipo_en:'Fresh and aromatic white', tipo_fr:'Blanc frais et aromatique', grad:'13%' },
+    'duas-quintas-tinto': { nome:'Duas Quintas', origem:'Douro (Ramos Pinto)', tipo:'Tinto clássico duriense, fruta madura', tipo_en:'Classic Douro red, ripe fruit', tipo_fr:'Rouge classique du Douro, fruits mûrs', grad:'13,5%' },
+    'adega-de-borba-branco': { nome:'Adega de Borba', origem:'Alentejo — Borba', tipo:'Branco cooperativo, clássico da região', tipo_en:'Cooperative white, a regional classic', tipo_fr:'Blanc coopératif, classique de la région', grad:'12,5%' },
+    'adega-de-borba-tinto': { nome:'Adega de Borba', origem:'Alentejo — Borba', tipo:'Tinto cooperativo, clássico da região', tipo_en:'Cooperative red, a regional classic', tipo_fr:'Rouge coopératif, classique de la région', grad:'13,5%' },
+    'pouca-terra-branco': { nome:'Pouca Terra', origem:'Douro (Quanta Terra)', tipo:'Branco fresco e mineral, produção em pequena escala', tipo_en:'Fresh and mineral white, small-scale production', tipo_fr:'Blanc frais et minéral, production à petite échelle', grad:'12%' },
+    'pouca-terra-tinto': { nome:'Pouca Terra', origem:'Douro (Quanta Terra)', tipo:'Tinto fresco e mineral, produção em pequena escala', tipo_en:'Fresh and mineral red, small-scale production', tipo_fr:'Rouge frais et minéral, production à petite échelle', grad:'13,5%' },
+    'bom-malandro-branco': { nome:'Bom Malandro', origem:'Douro (Symington)', tipo:'Branco fácil de beber, frutado e acessível', tipo_en:'Easy-drinking white, fruity and affordable', tipo_fr:'Blanc facile à boire, fruité et abordable', grad:'12,5%' },
+    'bom-malandro-tinto': { nome:'Bom Malandro', origem:'Douro (Symington)', tipo:'Tinto fácil de beber, frutado e acessível', tipo_en:'Easy-drinking red, fruity and affordable', tipo_fr:'Rouge facile à boire, fruité et abordable', grad:'14%' },
+    'conde-de-monsul-branco': { nome:'Conde de Monsul', origem:'Douro (Rozès)', tipo:'Branco floral e frutado', tipo_en:'Floral and fruity white', tipo_fr:'Blanc floral et fruité', grad:'12,5%' },
+    'conde-de-monsul-tinto': { nome:'Conde de Monsul', origem:'Douro (Rozès)', tipo:'Tinto floral e frutado', tipo_en:'Floral and fruity red', tipo_fr:'Rouge floral et fruité', grad:'13,5%' },
+    'fagote-branco': { nome:'Fagote', origem:'Douro — Tabuaço', tipo:'Branco fresco, com passagem por carvalho', tipo_en:'Fresh white, aged in oak', tipo_fr:'Blanc frais, élevé en fût de chêne', grad:'≈ 12,5%' },
+    'fagote-tinto': { nome:'Fagote', origem:'Douro — Tabuaço', tipo:'Tinto encorpado, com passagem por carvalho', tipo_en:'Full-bodied red, aged in oak', tipo_fr:'Rouge corsé, élevé en fût de chêne', grad:'14%' },
+    'ea-cartuxa-branco': { nome:'E.A (Cartuxa)', origem:'Alentejo — Évora (Fundação Eugénio de Almeida)', tipo:'Branco: Roupeiro, Antão Vaz e Arinto', tipo_en:'White: Roupeiro, Antão Vaz and Arinto', tipo_fr:'Blanc : Roupeiro, Antão Vaz et Arinto', grad:'13%' },
+    'ea-cartuxa-tinto': { nome:'E.A (Cartuxa)', origem:'Alentejo — Évora (Fundação Eugénio de Almeida)', tipo:'Tinto: Aragonez, Trincadeira e Tinta Caiada', tipo_en:'Red: Aragonez, Trincadeira and Tinta Caiada', tipo_fr:'Rouge : Aragonez, Trincadeira et Tinta Caiada', grad:'13,5%' },
+    'monte-velho-branco': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Branco leve e frutado, clássico alentejano', tipo_en:'Light and fruity white, an Alentejo classic', tipo_fr:"Blanc léger et fruité, classique de l'Alentejo", grad:'13%' },
+    'monte-velho-tinto': { nome:'Monte Velho', origem:'Alentejo (Herdade do Esporão)', tipo:'Tinto macio e frutado, clássico alentejano', tipo_en:'Smooth and fruity red, an Alentejo classic', tipo_fr:"Rouge souple et fruité, classique de l'Alentejo", grad:'13,5%' },
+    'monte-perdigoes': { nome:'Monte Perdigões', origem:'Alentejo — Reguengos de Monsaraz', tipo:'Tinto encorpado, Aragonez, Trincadeira e Alicante Bouschet', tipo_en:'Full-bodied red, Aragonez, Trincadeira and Alicante Bouschet', tipo_fr:'Rouge corsé, Aragonez, Trincadeira et Alicante Bouschet', grad:'14%' },
+    'chamine': { nome:'Chaminé', origem:'Alentejo (Cortes de Cima)', tipo:'Tinto especiado, blend com Syrah e castas alentejanas', tipo_en:'Spiced red, blend with Syrah and Alentejo grape varieties', tipo_fr:"Rouge épicé, assemblage avec Syrah et cépages de l'Alentejo", grad:'13 – 13,5%' },
+    'casal-garcia': { nome:'Casal Garcia', origem:'Vinho Verde (Aveleda)', tipo:'Leve, fresco e ligeiramente frisante', tipo_en:'Light, fresh and slightly sparkling', tipo_fr:'Léger, frais et légèrement pétillant', grad:'9,5%' },
+    'quinta-aveleda': { nome:'Quinta da Aveleda', origem:'Vinho Verde (Aveleda)', tipo:'Branco floral, blend de Loureiro e Alvarinho', tipo_en:'Floral white, blend of Loureiro and Alvarinho', tipo_fr:'Blanc floral, assemblage de Loureiro et Alvarinho', grad:'12%' },
+    'aveleda-alvarinho': { nome:'Aveleda Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'100% Alvarinho, encorpado e mineral', tipo_en:'100% Alvarinho, full-bodied and mineral', tipo_fr:'100% Alvarinho, corsé et minéral', grad:'12,5%' },
+    'tamariz-alvarinho': { nome:'Tamariz Alvarinho', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho floral e salino, boa acidez', tipo_en:'Floral and saline Alvarinho, good acidity', tipo_fr:'Alvarinho floral et salin, bonne acidité', grad:'≈ 12,5%' },
+    'muralhas': { nome:'Muralhas', origem:'Vinho Verde — Monção e Melgaço', tipo:'Alvarinho frutado e frisante', tipo_en:'Fruity and sparkling Alvarinho', tipo_fr:'Alvarinho fruité et pétillant', grad:'12,5%' },
+    'corte-real': { nome:'Corte Real', origem:'Bairrada', tipo:'Espumante bruto, fresco e leve', tipo_en:'Brut sparkling wine, fresh and light', tipo_fr:'Mousseux brut, frais et léger', grad:'11%' },
+    'terras-do-demo': { nome:'Terras do Demo Bruto', origem:'Távora-Varosa', tipo:'Espumante método tradicional, seco e mineral', tipo_en:'Traditional method sparkling wine, dry and mineral', tipo_fr:'Mousseux méthode traditionnelle, sec et minéral', grad:'12%' },
+    'fita-azul': { nome:'Fita Azul Doce', origem:'Borges Vinhos', tipo:'Espumante doce, aromas de fruta madura', tipo_en:'Sweet sparkling wine, aromas of ripe fruit', tipo_fr:'Mousseux doux, arômes de fruits mûrs', grad:'12%' },
+    'raposeira': { nome:'Raposeira Meio Seco', origem:'Lamego — Távora-Varosa', tipo:'Espumante método clássico, meio seco', tipo_en:'Classic method sparkling wine, medium dry', tipo_fr:'Mousseux méthode classique, demi-sec', grad:'12,5%' },
+    'mateus-rose': { nome:'Mateus Rosé', origem:'Bairrada (Sogrape)', tipo:'Rosé clássico português, leve e frisante', tipo_en:'Classic Portuguese rosé, light and sparkling', tipo_fr:'Rosé portugais classique, léger et pétillant', grad:'11%' }
   };
 
   const modal = document.getElementById('modalVinho');
@@ -796,9 +836,10 @@
       const chave = el.dataset.vinho;
       const info = infoVinhos[chave];
       if(!info) return;
-      modalNome.textContent = info.nome;
+      const nomeEl = el.querySelector('.nome');
+      modalNome.textContent = nomeEl ? nomeEl.textContent : info.nome;
       modalOrigem.textContent = info.origem;
-      modalTipo.textContent = info.tipo;
+      modalTipo.textContent = (idiomaAtual === 'en' && info.tipo_en) ? info.tipo_en : (idiomaAtual === 'fr' && info.tipo_fr) ? info.tipo_fr : info.tipo;
       modalGrad.textContent = info.grad || '—';
       modal.classList.add('aberto');
     });
