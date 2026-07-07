@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Editar Rodapé — Rest & Bar Parque São Caetano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --branco: #ffffff;
+    --bege-claro: #fbf8f2;
+    --bege: #f5efe2;
+    --linha: #e6dcc8;
+    --castanho: #4a3820;
+    --castanho-suave: #8a7350;
+    --castanho-claro: #a8987a;
+    --dourado: #a8712f;
+    --dourado-escuro: #8a5a24;
+    --verde: #4a7a4a;
+    --vermelho: #b0402f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Nunito',sans-serif;
+    background:var(--bege-claro);
+    color:var(--castanho);
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  .caixa{
+    max-width:520px;
+    margin:0 auto;
+    background:var(--branco);
+    border:1px solid var(--linha);
+    border-radius:16px;
+    padding:24px 22px 28px;
+  }
+  h1{
+    font-family:'Fredoka',sans-serif;
+    color:var(--castanho);
+    font-size:1.3rem;
+    margin-bottom:6px;
+  }
+  .subtitulo{
+    color:var(--castanho-suave);
+    font-size:0.88rem;
+    margin-bottom:20px;
+    line-height:1.4;
+  }
+  label{
+    display:block;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.8rem;
+    font-weight:600;
+    color:var(--dourado-escuro);
+    margin:16px 0 6px;
+  }
+  input[type=text], input[type=password]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--linha);
+    background:var(--bege-claro);
+    font-family:'Nunito',sans-serif;
+    font-size:0.92rem;
+    color:var(--castanho);
+    outline:none;
+  }
+  input[type=text]:focus, input[type=password]:focus{border-color:var(--dourado);}
+  .campo-token{display:flex; gap:8px; align-items:center;}
+  .campo-token input{flex:1;}
+  .campo-token button{
+    flex:0 0 auto;
+    background:var(--bege);
+    border:1px solid var(--linha);
+    border-radius:10px;
+    padding:0 12px;
+    height:40px;
+    cursor:pointer;
+    font-size:0.85rem;
+    color:var(--castanho);
+  }
+  .lembrar{
+    display:flex; align-items:center; gap:6px;
+    margin-top:10px;
+    font-size:0.8rem;
+    color:var(--castanho-suave);
+  }
+  .lembrar input{width:auto;}
+
+  details{
+    margin-top:14px;
+    background:var(--bege-claro);
+    border:1px solid var(--linha);
+    border-radius:10px;
+    padding:10px 14px;
+  }
+  details summary{
+    cursor:pointer;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.82rem;
+    font-weight:600;
+    color:var(--dourado-escuro);
+  }
+  details ol{
+    margin:10px 0 4px 18px;
+    font-size:0.82rem;
+    color:var(--castanho-suave);
+    line-height:1.6;
+  }
+  details code{
+    background:var(--bege);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.8rem;
+  }
+
+  .botoes{
+    display:flex; gap:10px;
+    margin-top:22px;
+  }
+  button.acao{
+    flex:1;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.88rem;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid var(--linha);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  button.carregar{
+    background:var(--bege);
+    color:var(--castanho);
+  }
+  button.carregar:hover{border-color:var(--dourado);}
+  button.guardar{
+    background:var(--castanho);
+    color:var(--branco);
+    border-color:var(--castanho);
+  }
+  button.guardar:hover{background:var(--dourado-escuro); border-color:var(--dourado-escuro);}
+  button:disabled{opacity:.5; cursor:not-allowed;}
+
+  .estado{
+    margin-top:16px;
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:0.85rem;
+    display:none;
+  }
+  .estado.mostrar{display:block;}
+  .estado.info{background:var(--bege); color:var(--castanho-suave); border:1px solid var(--linha);}
+  .estado.ok{background:#eef5ee; color:var(--verde); border:1px solid #cfe4cf;}
+  .estado.erro{background:#f7e9e6; color:var(--vermelho); border:1px solid #edcfc8;}
+
+  .preview{
+    margin-top:22px;
+    padding:14px 16px;
+    background:var(--castanho);
+    border-radius:12px;
+    text-align:center;
+  }
+  .preview .p-negrito{
+    font-family:'Fredoka',sans-serif;
+    color:var(--dourado);
+    font-weight:600;
+    font-size:0.85rem;
+  }
+  .preview .p-linha{
+    color:#e8ddc9;
+    font-size:0.72rem;
+    margin-top:2px;
+  }
+  .preview-titulo{
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--castanho-claro);
+    margin-top:22px;
+    margin-bottom:6px;
+  }
+
+  a.voltar{
+    display:inline-block;
+    margin-bottom:14px;
+    color:var(--castanho-suave);
+    font-size:0.85rem;
+    text-decoration:none;
+  }
+  a.voltar:hover{color:var(--dourado);}
+</style>
+</head>
+<body>
+
+<div class="caixa">
+  <a class="voltar" href="cardapio.html">← Voltar ao cardápio</a>
+  <h1>Editar rodapé (caixa fixa)</h1>
+  <div class="subtitulo">
+    Muda aqui as 4 linhas que aparecem sempre visíveis no fundo do cardápio. A 1ª linha aparece a negrito/dourado, as outras 3 normais. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
+  </div>
+
+  <label for="token">Token de acesso do GitHub</label>
+  <div class="campo-token">
+    <input type="password" id="token" placeholder="cola aqui o teu token (github_pat_...)">
+    <button type="button" id="mostrarToken">Ver</button>
+  </div>
+  <div class="lembrar">
+    <input type="checkbox" id="lembrar" checked>
+    <label for="lembrar" style="margin:0; font-weight:400; color:inherit;">Lembrar neste aparelho (fica só guardado no teu telemóvel/computador)</label>
+  </div>
+
+  <details>
+    <summary>Ainda não tenho token — como crio um?</summary>
+    <ol>
+      <li>Entra no GitHub e vai a <code>Settings → Developer settings → Personal access tokens → Fine-grained tokens</code>.</li>
+      <li>Clica em <code>Generate new token</code>.</li>
+      <li>Em "Repository access", escolhe <code>Only select repositories</code> e seleciona <code>cardapio-parque-sao-caetano</code>.</li>
+      <li>Em "Permissions", abre <code>Repository permissions</code> e muda <code>Contents</code> para <code>Read and write</code>.</li>
+      <li>Escolhe uma validade (ex: 1 ano) e clica em <code>Generate token</code>.</li>
+      <li>Copia o token (começa por <code>github_pat_</code>) e cola-o no campo acima. Só tu o vês — fica só no teu aparelho.</li>
+    </ol>
+  </details>
+
+  <label for="linha1">Linha 1 (aparece a negrito)</label>
+  <input type="text" id="linha1" placeholder="Ex: Contamos contigo!">
+
+  <label for="linha2">Linha 2</label>
+  <input type="text" id="linha2" placeholder="Ex: Terça a Domingo — Almoço e Jantar">
+
+  <label for="linha3">Linha 3</label>
+  <input type="text" id="linha3" placeholder="Ex: Reservas: 962 202 622">
+
+  <label for="linha4">Linha 4</label>
+  <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
+
+  <div class="preview-titulo">Pré-visualização</div>
+  <div class="preview">
+    <div class="p-negrito" id="pvLinha1">Contamos contigo!</div>
+    <div class="p-linha" id="pvLinha2">Terça a Domingo — Almoço e Jantar</div>
+    <div class="p-linha" id="pvLinha3">Reservas: 962 202 622</div>
+    <div class="p-linha" id="pvLinha4">Avenida de São Caetano, nº17</div>
+  </div>
+
+  <div class="botoes">
+    <button type="button" class="acao carregar" id="btnCarregar">Carregar texto atual</button>
+    <button type="button" class="acao guardar" id="btnGuardar">Guardar alterações</button>
+  </div>
+
+  <div class="estado" id="estado"></div>
+</div>
+
+<script>
+  const REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
+  const FILE_PATH = 'cardapio.html';
+  const API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE_PATH;
+
+  const tokenInput = document.getElementById('token');
+  const lembrarInput = document.getElementById('lembrar');
+  const estadoEl = document.getElementById('estado');
+  const btnCarregar = document.getElementById('btnCarregar');
+  const btnGuardar = document.getElementById('btnGuardar');
+  const campos = {
+    1: document.getElementById('linha1'),
+    2: document.getElementById('linha2'),
+    3: document.getElementById('linha3'),
+    4: document.getElementById('linha4'),
+  };
+  const previews = {
+    1: document.getElementById('pvLinha1'),
+    2: document.getElementById('pvLinha2'),
+    3: document.getElementById('pvLinha3'),
+    4: document.getElementById('pvLinha4'),
+  };
+
+  let shaAtual = null;
+  let conteudoOriginal = null;
+
+  // ---- Lembrar token neste aparelho ----
+  const tokenGuardado = localStorage.getItem('cardapioEditorToken');
+  if(tokenGuardado){
+    tokenInput.value = tokenGuardado;
+  } else {
+    lembrarInput.checked = false;
+  }
+
+  document.getElementById('mostrarToken').addEventListener('click', () => {
+    tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password';
+  });
+
+  function setEstado(msg, tipo){
+    estadoEl.textContent = msg;
+    estadoEl.className = 'estado mostrar ' + tipo;
+  }
+
+  function atualizarPreview(){
+    for(const n of [1,2,3,4]){
+      previews[n].textContent = campos[n].value || '';
+    }
+  }
+  Object.values(campos).forEach(c => c.addEventListener('input', atualizarPreview));
+
+  // ---- Codificação UTF-8 segura (emojis, acentos) ----
+  function utf8ParaBase64(str){
+    const bytes = new TextEncoder().encode(str);
+    let binario = '';
+    bytes.forEach(b => binario += String.fromCharCode(b));
+    return btoa(binario);
+  }
+  function base64ParaUtf8(base64){
+    const binario = atob(base64.replace(/\n/g, ''));
+    const bytes = new Uint8Array(binario.length);
+    for(let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  function extrairLinha(html, id){
+    const regex = new RegExp('id="' + id + '">([\\s\\S]*?)<\\/div>');
+    const m = html.match(regex);
+    return m ? m[1].trim() : '';
+  }
+
+  function substituirLinha(html, id, novoTexto){
+    const escapado = novoTexto
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    const regex = new RegExp('(id="' + id + '">)([\\s\\S]*?)(<\\/div>)');
+    return html.replace(regex, '$1' + escapado + '$3');
+  }
+
+  function cabecalhos(comAuth){
+    const h = { 'Accept': 'application/vnd.github+json' };
+    const token = tokenInput.value.trim();
+    if(comAuth && token) h['Authorization'] = 'Bearer ' + token;
+    return h;
+  }
+
+  async function carregarTexto(){
+    setEstado('A carregar texto atual…', 'info');
+    btnCarregar.disabled = true;
+    try{
+      const resp = await fetch(API_URL + '?t=' + Date.now(), { headers: cabecalhos(true) });
+      if(!resp.ok) throw new Error('HTTP ' + resp.status + ' — verifica o token ou tenta novamente');
+      const data = await resp.json();
+      const conteudo = base64ParaUtf8(data.content);
+      shaAtual = data.sha;
+      conteudoOriginal = conteudo;
+
+      campos[1].value = extrairLinha(conteudo, 'rodapeLinha1');
+      campos[2].value = extrairLinha(conteudo, 'rodapeLinha2');
+      campos[3].value = extrairLinha(conteudo, 'rodapeLinha3');
+      campos[4].value = extrairLinha(conteudo, 'rodapeLinha4');
+      atualizarPreview();
+
+      setEstado('Texto atual carregado. Já podes editar os campos.', 'ok');
+    } catch(err){
+      setEstado('Não consegui carregar: ' + err.message, 'erro');
+    } finally {
+      btnCarregar.disabled = false;
+    }
+  }
+
+  async function guardarTexto(){
+    const token = tokenInput.value.trim();
+    if(!token){
+      setEstado('Cola primeiro o teu token de acesso do GitHub.', 'erro');
+      return;
+    }
+    if(!conteudoOriginal){
+      setEstado('Carrega primeiro o texto atual (botão "Carregar texto atual").', 'erro');
+      return;
+    }
+
+    if(lembrarInput.checked){
+      localStorage.setItem('cardapioEditorToken', token);
+    } else {
+      localStorage.removeItem('cardapioEditorToken');
+    }
+
+    setEstado('A guardar…', 'info');
+    btnGuardar.disabled = true;
+    try{
+      let novo = conteudoOriginal;
+      novo = substituirLinha(novo, 'rodapeLinha1', campos[1].value);
+      novo = substituirLinha(novo, 'rodapeLinha2', campos[2].value);
+      novo = substituirLinha(novo, 'rodapeLinha3', campos[3].value);
+      novo = substituirLinha(novo, 'rodapeLinha4', campos[4].value);
+
+      const resp = await fetch(API_URL, {
+        method: 'PUT',
+        headers: { ...cabecalhos(true), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'Atualização do rodapé via editor',
+          content: utf8ParaBase64(novo),
+          sha: shaAtual
+        })
+      });
+
+      if(!resp.ok){
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.message || ('HTTP ' + resp.status));
+      }
+
+      const data = await resp.json();
+      shaAtual = data.content.sha;
+      conteudoOriginal = novo;
+
+      setEstado('Guardado! Demora uns 10 a 30 segundos a aparecer no cardápio.', 'ok');
+    } catch(err){
+      setEstado('Não consegui guardar: ' + err.message, 'erro');
+    } finally {
+      btnGuardar.disabled = false;
+    }
+  }
+
+  btnCarregar.addEventListener('click', carregarTexto);
+  btnGuardar.addEventListener('click', guardarTexto);
+
+  // carrega automaticamente ao abrir a página
+  carregarTexto();
+</script>
+
+</body>
+</html>
