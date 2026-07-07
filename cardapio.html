@@ -488,10 +488,15 @@
   .jogo-velha-tabuleiro{
     display:grid;
     grid-template-columns:repeat(3, 1fr);
+    grid-template-rows:repeat(3, 1fr);
     gap:8px;
+    width:100%;
     aspect-ratio:1/1;
   }
   .jv-casa{
+    width:100%;
+    height:100%;
+    min-height:0;
     background:var(--branco);
     border:2px solid var(--linha);
     border-radius:12px;
@@ -1126,13 +1131,13 @@
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" data-duracao="3" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
-    data-especial-ativo="true"
-    data-especial-inicio="00:34"
-    data-especial-fim="00:35"
-    data-especial-l1="Ghg"
-    data-especial-l2="Ghg"
-    data-especial-l3="Ggg"
-    data-especial-l4="Ggg">
+    data-especial-ativo="false"
+    data-especial-inicio=""
+    data-especial-fim=""
+    data-especial-l1=""
+    data-especial-l2=""
+    data-especial-l3=""
+    data-especial-l4="">
     <!-- ======================================================= -->
     <!-- EDITA AQUI: muda só o texto entre ">" e "</div>".        -->
     <!-- Não apagues nada mais (as aspas, as tags, etc).          -->
