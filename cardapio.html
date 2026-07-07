@@ -120,6 +120,56 @@
   }
   .tile.active .tile-label{color:var(--branco);}
 
+  .categoria-painel{
+    position:fixed; inset:0;
+    z-index:300;
+    background:var(--bege-claro);
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    transform-origin:var(--origin-x, 50%) var(--origin-y, 50%);
+    transform:scale(0.05);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:transform .38s cubic-bezier(.22,.8,.25,1), opacity .28s ease;
+  }
+  .categoria-painel.aberto{
+    transform:scale(1);
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  .categoria-painel-header{
+    position:sticky; top:0; z-index:2;
+    display:flex; align-items:center; gap:10px;
+    background:var(--branco);
+    border-bottom:1px solid var(--linha);
+    padding:14px 16px;
+  }
+  .categoria-painel-header .voltar{
+    background:var(--bege);
+    border:1px solid var(--linha);
+    border-radius:50%;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem;
+    color:var(--castanho);
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .categoria-painel-header .titulo{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    color:var(--castanho);
+    font-size:0.95rem;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
+  .categoria-painel-conteudo{
+    max-width:640px; margin:0 auto; padding:18px 14px 40px;
+  }
+  .categoria-painel-conteudo section.categoria{margin-top:0;}
+
   main{max-width:640px;margin:0 auto;padding:18px 14px 0;}
 
   .banner{
@@ -273,7 +323,7 @@
     display:none;
     position:fixed; inset:0;
     background:rgba(30,24,12,0.5);
-    z-index:200;
+    z-index:350;
     align-items:center; justify-content:center;
     padding:20px;
   }
@@ -532,6 +582,14 @@
     <span class="tile-emoji">🍷</span>
     <span class="tile-label" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</span>
   </button>
+</div>
+
+<div class="categoria-painel" id="categoriaPainel">
+  <div class="categoria-painel-header">
+    <button type="button" id="fecharPainel" class="voltar" aria-label="Voltar">←</button>
+    <div class="titulo" id="painelTitulo"></div>
+  </div>
+  <div class="categoria-painel-conteudo" id="painelConteudo"></div>
 </div>
 
 <main>
@@ -949,34 +1007,70 @@
 
   aplicarIdioma(idiomaAtual);
 
+  // ---- Grelha de categorias: abrir em zoom tipo ícone de telemóvel ----
   const tiles = document.querySelectorAll('.tile');
-  const categorias = document.querySelectorAll('section.categoria');
+  const painel = document.getElementById('categoriaPainel');
+  const painelConteudo = document.getElementById('painelConteudo');
+  const painelTitulo = document.getElementById('painelTitulo');
+  const fecharPainelBtn = document.getElementById('fecharPainel');
+
+  let categoriaAtual = null;
+  let categoriaPaiOriginal = null;
+  let categoriaProximoOriginal = null;
+
+  function abrirCategoria(tile){
+    const target = document.getElementById(tile.dataset.target);
+    if(!target) return;
+
+    const rect = tile.getBoundingClientRect();
+    painel.style.setProperty('--origin-x', (rect.left + rect.width / 2) + 'px');
+    painel.style.setProperty('--origin-y', (rect.top + rect.height / 2) + 'px');
+
+    tiles.forEach(t => t.classList.remove('active'));
+    tile.classList.add('active');
+
+    const label = tile.querySelector('.tile-label');
+    painelTitulo.textContent = label ? label.textContent : '';
+
+    categoriaAtual = target;
+    categoriaPaiOriginal = target.parentNode;
+    categoriaProximoOriginal = target.nextSibling;
+
+    target.classList.add('ativa');
+    painelConteudo.appendChild(target);
+
+    document.querySelectorAll('.grupo-prato').forEach(det => { det.open = false; });
+    const grupo = target.querySelector('.grupo-prato');
+    if (grupo) grupo.open = true;
+
+    painelConteudo.scrollTop = 0;
+    requestAnimationFrame(() => painel.classList.add('aberto'));
+  }
+
+  function fecharCategoria(){
+    tiles.forEach(t => t.classList.remove('active'));
+    painel.classList.remove('aberto');
+
+    const restaurarNaOrigem = (e) => {
+      if(e.target !== painel || e.propertyName !== 'transform') return;
+      if(categoriaAtual){
+        categoriaAtual.classList.remove('ativa');
+        if(categoriaPaiOriginal){
+          categoriaPaiOriginal.insertBefore(categoriaAtual, categoriaProximoOriginal);
+        }
+        categoriaAtual = null;
+      }
+      painel.removeEventListener('transitionend', restaurarNaOrigem);
+    };
+    painel.addEventListener('transitionend', restaurarNaOrigem);
+  }
 
   tiles.forEach(tile => {
-    tile.addEventListener('click', () => {
-      const target = document.getElementById(tile.dataset.target);
-      const jaAtivo = tile.classList.contains('active');
-
-      // fecha tudo primeiro
-      tiles.forEach(t => t.classList.remove('active'));
-      categorias.forEach(c => c.classList.remove('ativa'));
-
-      if(jaAtivo){
-        // clicar de novo no mesmo quadrado fecha a categoria
-        return;
-      }
-
-      tile.classList.add('active');
-      target.classList.add('ativa');
-
-      // acordeão: fecha todos os grupos de pratos e abre só o primeiro da categoria clicada
-      document.querySelectorAll('.grupo-prato').forEach(det => { det.open = false; });
-      const grupo = target.querySelector('.grupo-prato');
-      if (grupo) grupo.open = true;
-
-      target.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
-    });
+    tile.addEventListener('click', () => abrirCategoria(tile));
   });
+
+  fecharPainelBtn.addEventListener('click', fecharCategoria);
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && painel.classList.contains('aberto')) fecharCategoria(); });
 
   // ---- Info dos vinhos (origem, tipo e graduação) ----
   const infoVinhos = {
