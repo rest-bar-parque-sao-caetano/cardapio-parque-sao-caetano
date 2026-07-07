@@ -943,16 +943,16 @@
 
 <div class="info-fixa">
   <div class="info-fixa-fotos" id="infoFixaFotos">
-    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" class="ativa" alt="Rest & Bar Parque São Caetano">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" data-duracao="3" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
-    data-especial-ativo="true"
-    data-especial-inicio="23:48"
-    data-especial-fim="23:50"
-    data-especial-l1="4-Feira Prato do Dia"
-    data-especial-l2="Francesinha"
-    data-especial-l3="Bife na Pucara"
-    data-especial-l4="Filetes de Pescada">
+    data-especial-ativo="false"
+    data-especial-inicio=""
+    data-especial-fim=""
+    data-especial-l1=""
+    data-especial-l2=""
+    data-especial-l3=""
+    data-especial-l4="">
     <!-- ======================================================= -->
     <!-- EDITA AQUI: muda só o texto entre ">" e "</div>".        -->
     <!-- Não apagues nada mais (as aspas, as tags, etc).          -->
@@ -962,22 +962,26 @@
     <!-- ======================================================= -->
     <div class="linha-negrito" id="rodapeLinha1">Contamos contigo!</div>
     <div class="linha" id="rodapeLinha2">De Terça a Domingo — Almoço e Jantar</div>
-    <div class="linha" id="rodapeLinha3"></div>
-    <div class="linha" id="rodapeLinha4"></div>
+    <div class="linha" id="rodapeLinha3">Reservas: 962 202 622 / 227 130 614</div>
+    <div class="linha" id="rodapeLinha4">Avenida de São Caetano, nº17</div>
   </div>
 </div>
 
 <script>
-  // ---- Loop de fotos na caixa fixa ----
+  // ---- Loop de fotos na caixa fixa (ordem e duração de cada uma editáveis em editar.html) ----
   (function(){
     const fotos = document.querySelectorAll('#infoFixaFotos img');
     if(fotos.length <= 1) return;
     let idx = 0;
-    setInterval(() => {
+    function proximaFoto(){
       fotos[idx].classList.remove('ativa');
       idx = (idx + 1) % fotos.length;
       fotos[idx].classList.add('ativa');
-    }, 3000);
+      const duracao = parseFloat(fotos[idx].dataset.duracao) || 3;
+      setTimeout(proximaFoto, duracao * 1000);
+    }
+    const duracaoInicial = parseFloat(fotos[idx].dataset.duracao) || 3;
+    setTimeout(proximaFoto, duracaoInicial * 1000);
   })();
 
   // ---- Texto especial do rodapé com horário automático ----

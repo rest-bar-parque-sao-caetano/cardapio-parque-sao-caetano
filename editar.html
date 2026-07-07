@@ -94,6 +94,68 @@
     border:1px solid var(--linha);
     border-radius:10px;
   }
+
+  .linha-foto{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--linha);
+  }
+  .linha-foto:last-child{border-bottom:none;}
+  .miniatura{
+    width:48px; height:48px;
+    object-fit:cover;
+    border-radius:8px;
+    flex:0 0 auto;
+    background:var(--bege);
+  }
+  .linha-foto-info{flex:1; min-width:0;}
+  .linha-foto-nome{
+    font-size:0.78rem;
+    color:var(--castanho);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .linha-foto-duracao{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:4px;
+  }
+  .linha-foto-duracao label{margin:0; font-weight:400; font-size:0.74rem; color:var(--castanho-suave);}
+  .linha-foto-duracao input{
+    width:56px;
+    padding:4px 6px;
+    border-radius:6px;
+    border:1px solid var(--linha);
+    font-size:0.78rem;
+    background:var(--branco);
+    color:var(--castanho);
+  }
+  .linha-foto-acoes{display:flex; gap:4px; flex:0 0 auto;}
+  .btn-mini{
+    width:26px; height:26px;
+    border-radius:6px;
+    border:1px solid var(--linha);
+    background:var(--branco);
+    cursor:pointer;
+    font-size:0.75rem;
+    color:var(--castanho);
+  }
+  .btn-mini:hover{border-color:var(--dourado);}
+  .btn-mini:disabled{opacity:.3; cursor:not-allowed;}
+  .sem-fotos{
+    font-size:0.8rem;
+    color:var(--castanho-suave);
+    padding:10px 0;
+  }
+  input[type=file]{
+    width:100%;
+    font-size:0.82rem;
+    color:var(--castanho-suave);
+  }
   .campo-token{display:flex; gap:8px; align-items:center;}
   .campo-token input{flex:1;}
   .campo-token button{
@@ -295,6 +357,16 @@
     <input type="text" id="especial4">
   </div>
 
+  <div class="preview-titulo" style="margin-top:28px;">Fotos do rodapé</div>
+  <div class="subtitulo" style="margin:2px 0 10px;">
+    Define a ordem das fotos e quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si). Podes adicionar novas fotos ou remover as que já lá estão.
+  </div>
+
+  <div id="listaFotos"></div>
+
+  <label for="novaFoto">Adicionar nova(s) foto(s)</label>
+  <input type="file" id="novaFoto" accept="image/*" multiple>
+
   <div class="preview-titulo">Pré-visualização</div>
   <div class="preview">
     <div class="p-negrito" id="pvLinha1">Contamos contigo!</div>
@@ -336,6 +408,9 @@
     3: document.getElementById('especial3'),
     4: document.getElementById('especial4'),
   };
+  const listaFotosEl = document.getElementById('listaFotos');
+  const novaFotoInput = document.getElementById('novaFoto');
+  let fotosState = [];
   const previews = {
     1: document.getElementById('pvLinha1'),
     2: document.getElementById('pvLinha2'),
@@ -415,6 +490,136 @@
     return html.replace(regex, '$1' + escapado + '$3');
   }
 
+  // ---- Fotos do rodapé ----
+  function extrairFotos(html){
+    const regexBloco = /<div class="info-fixa-fotos" id="infoFixaFotos">([\s\S]*?)<\/div>/;
+    const m = html.match(regexBloco);
+    if(!m) return [];
+    const imgTags = m[1].match(/<img[^>]*>/g) || [];
+    return imgTags.map(tag => {
+      const srcM = tag.match(/src="([^"]*)"/);
+      const durM = tag.match(/data-duracao="([^"]*)"/);
+      const src = srcM ? srcM[1] : '';
+      return {
+        caminho: src,
+        duracao: durM ? (parseFloat(durM[1]) || 3) : 3,
+        novoFicheiro: null,
+        previewUrl: null,
+        nomePreview: src.split('/').pop()
+      };
+    });
+  }
+
+  function construirImgsHtml(lista){
+    return lista.map((f, i) => {
+      const ativa = i === 0 ? ' class="ativa"' : '';
+      return '\n    <img src="' + f.caminho + '" data-duracao="' + f.duracao + '"' + ativa + ' alt="Rest & Bar Parque São Caetano">';
+    }).join('') + '\n  ';
+  }
+
+  function substituirFotosImgs(html, novoInnerHTML){
+    const regex = /(<div class="info-fixa-fotos" id="infoFixaFotos">)([\s\S]*?)(<\/div>)/;
+    return html.replace(regex, '$1' + novoInnerHTML + '$3');
+  }
+
+  function nomeFicheiroLimpo(nome){
+    // Qualquer acento ou carácter especial (inclui espaços) vira "-"; letras e números normais mantêm-se.
+    return nome
+      .replace(/[^a-zA-Z0-9.\-_]/g, '-')
+      .toLowerCase();
+  }
+
+  async function enviarFoto(file, token){
+    const caminho = 'imagens/' + Date.now() + '-' + nomeFicheiroLimpo(file.name);
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + caminho, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Adicionar foto do rodapé: ' + file.name,
+        content: base64
+      })
+    });
+    if(!resp.ok){
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.message || ('HTTP ' + resp.status));
+    }
+    return caminho;
+  }
+
+  function renderizarFotos(){
+    listaFotosEl.innerHTML = '';
+    if(fotosState.length === 0){
+      listaFotosEl.innerHTML = '<div class="sem-fotos">Ainda não há fotos. Adiciona uma abaixo.</div>';
+      return;
+    }
+    fotosState.forEach((foto, i) => {
+      const src = foto.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + foto.caminho);
+      const linha = document.createElement('div');
+      linha.className = 'linha-foto';
+      linha.innerHTML =
+        '<img class="miniatura" src="' + src + '" alt="">' +
+        '<div class="linha-foto-info">' +
+          '<div class="linha-foto-nome">' + (foto.nomePreview || foto.caminho) + '</div>' +
+          '<div class="linha-foto-duracao">' +
+            '<label>Segundos:</label>' +
+            '<input type="number" min="1" max="30" step="1" class="input-duracao" value="' + foto.duracao + '">' +
+          '</div>' +
+        '</div>' +
+        '<div class="linha-foto-acoes">' +
+          '<button type="button" class="btn-mini btn-subir"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+          '<button type="button" class="btn-mini btn-descer"' + (i === fotosState.length - 1 ? ' disabled' : '') + '>↓</button>' +
+          '<button type="button" class="btn-mini btn-remover">✕</button>' +
+        '</div>';
+
+      linha.querySelector('.input-duracao').addEventListener('input', (e) => {
+        fotosState[i].duracao = parseFloat(e.target.value) || 3;
+      });
+      linha.querySelector('.btn-subir').addEventListener('click', () => {
+        if(i > 0){
+          [fotosState[i - 1], fotosState[i]] = [fotosState[i], fotosState[i - 1]];
+          renderizarFotos();
+        }
+      });
+      linha.querySelector('.btn-descer').addEventListener('click', () => {
+        if(i < fotosState.length - 1){
+          [fotosState[i + 1], fotosState[i]] = [fotosState[i], fotosState[i + 1]];
+          renderizarFotos();
+        }
+      });
+      linha.querySelector('.btn-remover').addEventListener('click', () => {
+        fotosState.splice(i, 1);
+        renderizarFotos();
+      });
+
+      listaFotosEl.appendChild(linha);
+    });
+  }
+
+  novaFotoInput.addEventListener('change', (e) => {
+    const ficheiros = Array.from(e.target.files || []);
+    ficheiros.forEach(file => {
+      fotosState.push({
+        caminho: null,
+        duracao: 3,
+        novoFicheiro: file,
+        previewUrl: URL.createObjectURL(file),
+        nomePreview: file.name
+      });
+    });
+    renderizarFotos();
+    e.target.value = '';
+  });
+
   function cabecalhos(comAuth){
     const h = { 'Accept': 'application/vnd.github+json' };
     const token = tokenInput.value.trim();
@@ -446,6 +651,9 @@
       camposEspecial[3].value = extrairAtributo(conteudo, 'data-especial-l3');
       camposEspecial[4].value = extrairAtributo(conteudo, 'data-especial-l4');
 
+      fotosState = extrairFotos(conteudo);
+      renderizarFotos();
+
       atualizarPreview();
 
       setEstado('Texto atual carregado. Já podes editar os campos.', 'ok');
@@ -466,6 +674,10 @@
       setEstado('Carrega primeiro o texto atual (botão "Carregar texto atual").', 'erro');
       return;
     }
+    if(fotosState.length === 0){
+      setEstado('Precisas de pelo menos 1 foto no rodapé.', 'erro');
+      return;
+    }
 
     if(lembrarInput.checked){
       localStorage.setItem('cardapioEditorToken', token);
@@ -476,6 +688,15 @@
     setEstado('A guardar…', 'info');
     btnGuardar.disabled = true;
     try{
+      for(const foto of fotosState){
+        if(foto.novoFicheiro){
+          setEstado('A enviar foto: ' + foto.nomePreview + '…', 'info');
+          foto.caminho = await enviarFoto(foto.novoFicheiro, token);
+          foto.novoFicheiro = null;
+        }
+      }
+
+      setEstado('A guardar…', 'info');
       let novo = conteudoOriginal;
       novo = substituirLinha(novo, 'rodapeLinha1', campos[1].value);
       novo = substituirLinha(novo, 'rodapeLinha2', campos[2].value);
@@ -489,6 +710,8 @@
       novo = substituirAtributo(novo, 'data-especial-l2', camposEspecial[2].value);
       novo = substituirAtributo(novo, 'data-especial-l3', camposEspecial[3].value);
       novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
+
+      novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
 
       const resp = await fetch(API_URL, {
         method: 'PUT',
