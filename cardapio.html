@@ -355,9 +355,51 @@
     margin-top:12px;
     text-align:center;
   }
+
+  .ad-popup-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(30,24,12,0.65);
+    z-index:500;
+    align-items:center; justify-content:center;
+  }
+  .ad-popup-overlay.aberto{display:flex;}
+  .ad-popup{
+    width:90vw; height:90vh;
+    background:var(--bege);
+    border:2px dashed var(--dourado);
+    border-radius:18px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+    gap:10px;
+    position:relative;
+    animation:modalPop .18s ease;
+  }
+  .ad-popup .ad-texto{
+    font-family:'Fredoka',sans-serif;
+    color:var(--castanho-suave);
+    font-size:clamp(1.4rem,5vw,2.6rem);
+    font-weight:600;
+    letter-spacing:1px;
+  }
+  .ad-popup .fechar-ad{
+    position:absolute; top:14px; right:16px;
+    background:none; border:none;
+    font-size:1.6rem; line-height:1;
+    color:var(--castanho-suave); cursor:pointer;
+    padding:6px;
+  }
 </style>
 </head>
 <body>
+
+<div class="ad-popup-overlay" id="adPopup">
+  <div class="ad-popup">
+    <button class="fechar-ad" id="fecharAdPopup" aria-label="Fechar">✕</button>
+    <div class="ad-texto" data-en="Advertise here" data-fr="Annoncez ici">Anuncie aqui</div>
+  </div>
+</div>
 
 <header>
   <div class="brand-mark">Rest & Bar Parque São Caetano</div>
@@ -677,6 +719,22 @@
 </footer>
 
 <script>
+  // ---- Popup de anúncio (placeholder) ----
+  (function(){
+    const adPopup = document.getElementById('adPopup');
+    const fecharAd = document.getElementById('fecharAdPopup');
+    let escondido = false;
+    function esconderAd(){
+      if(escondido) return;
+      escondido = true;
+      adPopup.classList.remove('aberto');
+    }
+    adPopup.classList.add('aberto');
+    setTimeout(esconderAd, 6000);
+    fecharAd.addEventListener('click', esconderAd);
+    adPopup.addEventListener('click', (e) => { if(e.target === adPopup) esconderAd(); });
+  })();
+
   // ---- Seletor de idioma ----
   let idiomaAtual = localStorage.getItem('idiomaCardapio') || 'pt';
   const elementosTraduzeis = document.querySelectorAll('[data-en]');
