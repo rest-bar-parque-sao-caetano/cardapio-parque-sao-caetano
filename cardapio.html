@@ -488,15 +488,17 @@
   }
   .info-fixa-fotos img.ativa{opacity:1;}
   .info-fixa-texto{flex:1; text-align:center; min-width:0;}
-  .info-fixa .horario{
-    font-size:0.76rem;
-    color:var(--castanho-suave);
-  }
-  .info-fixa .contamos-contigo{
+  .info-fixa-texto .linha-negrito{
     font-family:'Fredoka',sans-serif;
     color:var(--dourado);
     font-weight:600;
     font-size:0.85rem;
+    line-height:1.25;
+  }
+  .info-fixa-texto .linha{
+    font-size:0.72rem;
+    color:var(--castanho-suave);
+    line-height:1.25;
   }
 </style>
 </head>
@@ -944,8 +946,16 @@
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
   <div class="info-fixa-texto">
-    <div class="horario" data-en="Tuesday to Sunday — Lunch & Dinner" data-fr="Du mardi au dimanche — Déjeuner et dîner">Terça a Domingo — Almoço e Jantar</div>
-    <div class="contamos-contigo" data-en="We're looking forward to seeing you!" data-fr="On vous attend avec plaisir !">Contamos contigo!</div>
+    <!-- ======================================================= -->
+    <!-- EDITA AQUI: muda só o texto entre ">" e "</div>".        -->
+    <!-- Não apagues nada mais (as aspas, as tags, etc).          -->
+    <!-- A 1ª linha aparece a negrito/dourado; as outras 3 normal.-->
+    <!-- Este texto NÃO muda com o idioma (fica igual em PT/EN/FR)-->
+    <!-- ======================================================= -->
+    <div class="linha-negrito">Contamos contigo!</div>
+    <div class="linha">Terça a Domingo — Almoço e Jantar</div>
+    <div class="linha">Reservas: 962 202 622 / 227 130 614</div>
+    <div class="linha">Avenida de São Caetano, nº17</div>
   </div>
 </div>
 
