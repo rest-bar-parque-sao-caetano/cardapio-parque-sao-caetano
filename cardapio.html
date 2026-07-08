@@ -530,6 +530,247 @@
   }
   .jv-reiniciar:hover{ background:var(--dourado-escuro); border-color:var(--dourado-escuro); }
 
+  /* ---- Menu de seleção de jogos ---- */
+  .jogos-lista{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    justify-content:center;
+    margin-top:18px;
+  }
+  .jogo-card{
+    width:140px;
+    padding:18px 10px;
+    border-radius:16px;
+    border:1px solid var(--linha);
+    background:var(--bege-claro);
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    transition:all .15s ease;
+  }
+  .jogo-card:hover{ border-color:var(--dourado); background:var(--bege); }
+  .jogo-card-emoji{ font-size:2rem; }
+  .jogo-card-nome{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.9rem;
+    color:var(--castanho);
+    text-align:center;
+  }
+  .jogo-ecra{ display:none; }
+  .jogo-ecra.ativo{ display:block; }
+  .stop-ecra{ display:none; }
+  .stop-ecra.ativo{ display:block; }
+  .jogo-voltar{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    margin-bottom:10px;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.8rem;
+    color:var(--castanho-suave);
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:4px 0;
+  }
+  .jogo-voltar:hover{ color:var(--dourado-escuro); }
+
+  /* ---- Jogo do Stop ---- */
+  .stop-caixa{ max-width:380px; margin:10px auto 0; text-align:center; }
+  .stop-campo{ margin-bottom:14px; text-align:left; }
+  .stop-campo label{
+    display:block;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.8rem;
+    color:var(--castanho-suave);
+    margin-bottom:5px;
+  }
+  .stop-campo input[type="text"]{
+    width:100%;
+    box-sizing:border-box;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--linha);
+    font-family:'Nunito',sans-serif;
+    font-size:0.95rem;
+    color:var(--castanho);
+    background:var(--branco);
+  }
+  .stop-campo input[type="text"]:focus{ outline:none; border-color:var(--dourado); }
+  .stop-linha-botoes{ display:flex; gap:10px; margin-top:16px; }
+  .stop-btn{
+    flex:1;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    padding:11px 14px;
+    border-radius:10px;
+    border:1px solid var(--castanho);
+    background:var(--castanho);
+    color:var(--branco);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .stop-btn:hover{ background:var(--dourado-escuro); border-color:var(--dourado-escuro); }
+  .stop-btn.stop-btn-secundario{
+    background:var(--branco);
+    color:var(--castanho);
+    border-color:var(--linha);
+  }
+  .stop-btn.stop-btn-secundario:hover{ border-color:var(--castanho-claro); }
+  .stop-btn:disabled{ opacity:0.5; cursor:default; }
+  .stop-erro{
+    color:#b3452c;
+    font-family:'Nunito',sans-serif;
+    font-size:0.82rem;
+    margin-top:10px;
+    display:none;
+  }
+  .stop-erro.mostrar{ display:block; }
+  .stop-divisor{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:18px 0;
+    color:var(--castanho-claro);
+    font-family:'Nunito',sans-serif;
+    font-size:0.78rem;
+  }
+  .stop-divisor::before, .stop-divisor::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:var(--linha);
+  }
+  .stop-codigo-caixa{
+    background:var(--bege);
+    border:1px dashed var(--dourado);
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:16px;
+  }
+  .stop-codigo-label{
+    font-family:'Nunito',sans-serif;
+    font-size:0.78rem;
+    color:var(--castanho-suave);
+    margin-bottom:4px;
+  }
+  .stop-codigo-valor{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1.8rem;
+    letter-spacing:4px;
+    color:var(--dourado-escuro);
+  }
+  .stop-jogadores-lista{
+    list-style:none;
+    padding:0;
+    margin:0 0 16px;
+    text-align:left;
+  }
+  .stop-jogadores-lista li{
+    font-family:'Nunito',sans-serif;
+    font-size:0.9rem;
+    color:var(--castanho);
+    padding:7px 10px;
+    border-bottom:1px solid var(--linha);
+  }
+  .stop-jogadores-lista li:last-child{ border-bottom:none; }
+  .stop-espera-msg{
+    font-family:'Nunito',sans-serif;
+    font-size:0.85rem;
+    color:var(--castanho-suave);
+    margin-top:10px;
+  }
+  .stop-topo-jogo{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .stop-letra-caixa{ text-align:left; }
+  .stop-letra-label{
+    font-family:'Nunito',sans-serif;
+    font-size:0.75rem;
+    color:var(--castanho-suave);
+  }
+  .stop-letra-valor{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:2.2rem;
+    color:var(--dourado-escuro);
+    line-height:1;
+  }
+  .stop-timer{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1.6rem;
+    color:var(--castanho);
+    background:var(--bege);
+    border-radius:12px;
+    padding:8px 16px;
+  }
+  .stop-timer.stop-timer-urgente{ color:#b3452c; }
+  .stop-btn-parar{
+    width:100%;
+    margin-top:6px;
+    font-family:'Fredoka',sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    background:#b3452c;
+    color:var(--branco);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .stop-btn-parar:hover{ background:#943a24; }
+  .stop-btn-parar:disabled{ opacity:0.5; cursor:default; }
+  .stop-tabela-resultados{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:6px;
+    font-family:'Nunito',sans-serif;
+    font-size:0.85rem;
+  }
+  .stop-tabela-resultados th, .stop-tabela-resultados td{
+    border:1px solid var(--linha);
+    padding:8px 6px;
+    text-align:center;
+    color:var(--castanho);
+  }
+  .stop-tabela-resultados th{
+    background:var(--bege);
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.78rem;
+  }
+  .stop-tabela-resultados td.stop-unica{ background:#f4f9ef; color:#4a7a2e; font-weight:600; }
+  .stop-tabela-resultados td.stop-repetida{ background:var(--bege-claro); color:var(--castanho-claro); }
+  .stop-legenda{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    margin-top:12px;
+    flex-wrap:wrap;
+    font-family:'Nunito',sans-serif;
+    font-size:0.75rem;
+    color:var(--castanho-suave);
+  }
+  .stop-legenda span{ display:inline-flex; align-items:center; gap:5px; }
+  .stop-legenda i{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .stop-legenda .stop-i-unica{ background:#4a7a2e; }
+  .stop-legenda .stop-i-repetida{ background:var(--castanho-claro); }
+  .stop-resultados-tabela-wrap{ overflow-x:auto; }
+  .stop-acoes-resultado{ display:flex; gap:10px; margin-top:18px; }
+
   .info-fixa{
     position:fixed;
     bottom:0; left:0; right:0;
@@ -741,7 +982,7 @@
     <span class="tile-emoji">🍷</span>
     <span class="tile-label" data-en="Wines & Drinks" data-fr="Vins & Boissons">Vinhos & Bebidas</span>
   </button>
-  <button class="tile" data-target="jogo-velha" type="button">
+  <button class="tile" data-target="jogos-menu" type="button">
     <span class="tile-emoji">🎮</span>
     <span class="tile-label" data-en="Games" data-fr="Jeux">Jogos</span>
   </button>
@@ -1062,27 +1303,127 @@
     <div class="subtitulo" style="margin-top:10px;" data-en="VAT included at the legal rate in force." data-fr="TVA incluse au taux légal en vigueur.">IVA incluído à taxa legal em vigor.</div>
   </section>
 
-  <section class="categoria" id="jogo-velha">
-    <h2 data-en="Tic-Tac-Toe" data-fr="Morpion">Jogo da Velha</h2>
-    <div class="subtitulo" data-en="Take turns and have fun while you wait!" data-fr="Jouez à tour de rôle et amusez-vous en attendant !">Joga à vez e diverte-te enquanto esperas!</div>
+  <section class="categoria" id="jogos-menu">
+    <h2 data-en="Games" data-fr="Jeux">Jogos</h2>
+    <div class="subtitulo" data-en="Choose a game and have fun while you wait!" data-fr="Choisis un jeu et amuse-toi en attendant !">Escolhe um jogo e diverte-te enquanto esperas!</div>
 
-    <div class="jogo-velha-caixa">
-      <div class="jogo-velha-estado">
-        <span id="jvTurno" data-en="Turn: " data-fr="Tour : ">Vez de: <span id="jvJogadorAtual">X</span></span>
-        <span id="jvResultado" class="jv-resultado"></span>
+    <div class="jogos-lista" id="jogosLista">
+      <button type="button" class="jogo-card" data-jogo="velha">
+        <span class="jogo-card-emoji">⭕</span>
+        <span class="jogo-card-nome" data-en="Tic-Tac-Toe" data-fr="Morpion">Jogo da Velha</span>
+      </button>
+      <button type="button" class="jogo-card" data-jogo="stop">
+        <span class="jogo-card-emoji">🔤</span>
+        <span class="jogo-card-nome" data-en="Stop Game" data-fr="Jeu du Stop">Jogo do Stop</span>
+      </button>
+    </div>
+
+    <div class="jogo-ecra" id="jogoVelhaEcra">
+      <button type="button" class="jogo-voltar" data-voltar-jogos data-en="← Games" data-fr="← Jeux">← Jogos</button>
+      <div class="jogo-velha-caixa">
+        <div class="jogo-velha-estado">
+          <span id="jvTurno" data-en="Turn: " data-fr="Tour : ">Vez de: <span id="jvJogadorAtual">X</span></span>
+          <span id="jvResultado" class="jv-resultado"></span>
+        </div>
+        <div class="jogo-velha-tabuleiro" id="jvTabuleiro">
+          <button type="button" class="jv-casa" data-i="0" aria-label="Casa 1"></button>
+          <button type="button" class="jv-casa" data-i="1" aria-label="Casa 2"></button>
+          <button type="button" class="jv-casa" data-i="2" aria-label="Casa 3"></button>
+          <button type="button" class="jv-casa" data-i="3" aria-label="Casa 4"></button>
+          <button type="button" class="jv-casa" data-i="4" aria-label="Casa 5"></button>
+          <button type="button" class="jv-casa" data-i="5" aria-label="Casa 6"></button>
+          <button type="button" class="jv-casa" data-i="6" aria-label="Casa 7"></button>
+          <button type="button" class="jv-casa" data-i="7" aria-label="Casa 8"></button>
+          <button type="button" class="jv-casa" data-i="8" aria-label="Casa 9"></button>
+        </div>
+        <button type="button" class="jv-reiniciar" id="jvReiniciar" data-en="Play again" data-fr="Rejouer">Jogar de novo</button>
       </div>
-      <div class="jogo-velha-tabuleiro" id="jvTabuleiro">
-        <button type="button" class="jv-casa" data-i="0" aria-label="Casa 1"></button>
-        <button type="button" class="jv-casa" data-i="1" aria-label="Casa 2"></button>
-        <button type="button" class="jv-casa" data-i="2" aria-label="Casa 3"></button>
-        <button type="button" class="jv-casa" data-i="3" aria-label="Casa 4"></button>
-        <button type="button" class="jv-casa" data-i="4" aria-label="Casa 5"></button>
-        <button type="button" class="jv-casa" data-i="5" aria-label="Casa 6"></button>
-        <button type="button" class="jv-casa" data-i="6" aria-label="Casa 7"></button>
-        <button type="button" class="jv-casa" data-i="7" aria-label="Casa 8"></button>
-        <button type="button" class="jv-casa" data-i="8" aria-label="Casa 9"></button>
+    </div>
+
+    <div class="jogo-ecra" id="jogoStopEcra">
+      <button type="button" class="jogo-voltar" data-voltar-jogos data-en="← Games" data-fr="← Jeux">← Jogos</button>
+
+      <div class="stop-caixa">
+
+        <!-- Ecrã: entrada (criar ou entrar numa sala) -->
+        <div class="stop-ecra ativo" id="stopEntradaEcra">
+          <div class="stop-campo">
+            <label for="stopNomeJogador" data-en="Your name" data-fr="Ton prénom">O teu nome</label>
+            <input type="text" id="stopNomeJogador" maxlength="20" placeholder="Ex: Ana" data-en="E.g. Ana" data-fr="Ex : Ana">
+          </div>
+          <button type="button" class="stop-btn" id="stopBtnCriar" data-en="Create room" data-fr="Créer une salle">Criar sala</button>
+
+          <div class="stop-divisor" data-en="or" data-fr="ou">ou</div>
+
+          <div class="stop-campo">
+            <label for="stopCodigoInput" data-en="Room code" data-fr="Code de la salle">Código da sala</label>
+            <input type="text" id="stopCodigoInput" maxlength="4" placeholder="Ex: ABCD" style="text-transform:uppercase;letter-spacing:3px;">
+          </div>
+          <button type="button" class="stop-btn stop-btn-secundario" id="stopBtnEntrar" data-en="Join room" data-fr="Rejoindre la salle">Entrar na sala</button>
+
+          <div class="stop-erro" id="stopErro"></div>
+        </div>
+
+        <!-- Ecrã: sala de espera -->
+        <div class="stop-ecra" id="stopEsperaEcra">
+          <div class="stop-codigo-caixa">
+            <div class="stop-codigo-label" data-en="Room code — share it with the group" data-fr="Code de la salle — partage-le avec le groupe">Código da sala — partilha com o grupo</div>
+            <div class="stop-codigo-valor" id="stopCodigoAtual">----</div>
+          </div>
+          <ul class="stop-jogadores-lista" id="stopListaJogadores"></ul>
+          <button type="button" class="stop-btn" id="stopBtnComecar" data-en="Start game" data-fr="Commencer">Começar jogo</button>
+          <div class="stop-espera-msg" data-en="Anyone in the room can start the round." data-fr="N'importe qui dans la salle peut lancer la manche.">Qualquer jogador na sala pode começar a ronda.</div>
+          <button type="button" class="jogo-voltar" id="stopBtnSairEspera" data-en="Leave room" data-fr="Quitter la salle">Sair da sala</button>
+        </div>
+
+        <!-- Ecrã: a jogar -->
+        <div class="stop-ecra" id="stopJogoEcra">
+          <div class="stop-topo-jogo">
+            <div class="stop-letra-caixa">
+              <div class="stop-letra-label" data-en="Letter" data-fr="Lettre">Letra</div>
+              <div class="stop-letra-valor" id="stopLetraAtual">A</div>
+            </div>
+            <div class="stop-timer" id="stopTimer">60</div>
+          </div>
+          <div class="stop-campo">
+            <label data-en="Name" data-fr="Prénom">Nome</label>
+            <input type="text" id="stopRNome" autocomplete="off">
+          </div>
+          <div class="stop-campo">
+            <label data-en="Animal" data-fr="Animal">Animal</label>
+            <input type="text" id="stopRAnimal" autocomplete="off">
+          </div>
+          <div class="stop-campo">
+            <label data-en="Color" data-fr="Couleur">Cor</label>
+            <input type="text" id="stopRCor" autocomplete="off">
+          </div>
+          <div class="stop-campo">
+            <label data-en="Fruit" data-fr="Fruit">Fruta</label>
+            <input type="text" id="stopRFruta" autocomplete="off">
+          </div>
+          <div class="stop-campo">
+            <label data-en="Country/City" data-fr="Pays/Ville">País/Cidade</label>
+            <input type="text" id="stopRPais" autocomplete="off">
+          </div>
+          <button type="button" class="stop-btn-parar" id="stopBtnParar" data-en="🛑 STOP!" data-fr="🛑 STOP !">🛑 STOP!</button>
+        </div>
+
+        <!-- Ecrã: resultados -->
+        <div class="stop-ecra" id="stopResultadosEcra">
+          <div class="stop-resultados-tabela-wrap">
+            <table class="stop-tabela-resultados" id="stopTabelaResultados"></table>
+          </div>
+          <div class="stop-legenda">
+            <span><i class="stop-i-unica"></i><span data-en="Unique answer" data-fr="Réponse unique">Resposta única</span></span>
+            <span><i class="stop-i-repetida"></i><span data-en="Repeated answer" data-fr="Réponse répétée">Resposta repetida</span></span>
+          </div>
+          <div class="stop-acoes-resultado">
+            <button type="button" class="stop-btn" id="stopBtnNovaRonda" data-en="New round" data-fr="Nouvelle manche">Nova ronda</button>
+            <button type="button" class="stop-btn stop-btn-secundario" id="stopBtnSairResultado" data-en="Leave room" data-fr="Quitter la salle">Sair da sala</button>
+          </div>
+        </div>
+
       </div>
-      <button type="button" class="jv-reiniciar" id="jvReiniciar" data-en="Play again" data-fr="Rejouer">Jogar de novo</button>
     </div>
   </section>
 </main>
@@ -1173,6 +1514,8 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <script>
   // ---- Loop de fotos na caixa fixa (ordem e duração de cada uma editáveis em editar.html) ----
   (function(){
@@ -1346,6 +1689,318 @@
 
     casas.forEach((c, i) => c.addEventListener('click', () => jogar(i)));
     if(btnReiniciar) btnReiniciar.addEventListener('click', reiniciar);
+  })();
+
+  // ---- Menu de seleção de jogos ----
+  (function(){
+    const lista = document.getElementById('jogosLista');
+    const cards = document.querySelectorAll('.jogo-card');
+    const ecraVelha = document.getElementById('jogoVelhaEcra');
+    const ecraStop = document.getElementById('jogoStopEcra');
+    if(!lista) return;
+
+    function mostrarMenu(){
+      lista.style.display = 'flex';
+      if(ecraVelha) ecraVelha.classList.remove('ativo');
+      if(ecraStop) ecraStop.classList.remove('ativo');
+    }
+    function mostrarJogo(nome){
+      lista.style.display = 'none';
+      if(ecraVelha) ecraVelha.classList.toggle('ativo', nome === 'velha');
+      if(ecraStop) ecraStop.classList.toggle('ativo', nome === 'stop');
+    }
+    cards.forEach(c => c.addEventListener('click', () => mostrarJogo(c.dataset.jogo)));
+    document.querySelectorAll('[data-voltar-jogos]').forEach(b => b.addEventListener('click', mostrarMenu));
+  })();
+
+  // ---- Jogo do Stop (multijogador em tempo real via Firebase) ----
+  (function(){
+    const stopEcra = document.getElementById('jogoStopEcra');
+    if(!stopEcra || typeof firebase === 'undefined') return;
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuWoSlk2rmZ1KU_3ioAvlo2wS6-BjqyzA",
+      authDomain: "cardapio-parque-sao-caetano.firebaseapp.com",
+      databaseURL: "https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com",
+      projectId: "cardapio-parque-sao-caetano",
+      storageBucket: "cardapio-parque-sao-caetano.firebasestorage.app",
+      messagingSenderId: "722262488019",
+      appId: "1:722262488019:web:4c95b1adbe86aa14e5b526"
+    };
+    if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+    const db = firebase.database();
+
+    const entradaEcra = document.getElementById('stopEntradaEcra');
+    const esperaEcra = document.getElementById('stopEsperaEcra');
+    const jogoEcra = document.getElementById('stopJogoEcra');
+    const resultadosEcra = document.getElementById('stopResultadosEcra');
+    const nomeInput = document.getElementById('stopNomeJogador');
+    const btnCriar = document.getElementById('stopBtnCriar');
+    const codigoInput = document.getElementById('stopCodigoInput');
+    const btnEntrar = document.getElementById('stopBtnEntrar');
+    const erroEl = document.getElementById('stopErro');
+    const codigoAtualEl = document.getElementById('stopCodigoAtual');
+    const listaJogadoresEl = document.getElementById('stopListaJogadores');
+    const btnComecar = document.getElementById('stopBtnComecar');
+    const btnSairEspera = document.getElementById('stopBtnSairEspera');
+    const letraEl = document.getElementById('stopLetraAtual');
+    const timerEl = document.getElementById('stopTimer');
+    const rNome = document.getElementById('stopRNome');
+    const rAnimal = document.getElementById('stopRAnimal');
+    const rCor = document.getElementById('stopRCor');
+    const rFruta = document.getElementById('stopRFruta');
+    const rPais = document.getElementById('stopRPais');
+    const btnParar = document.getElementById('stopBtnParar');
+    const tabelaResultados = document.getElementById('stopTabelaResultados');
+    const btnNovaRonda = document.getElementById('stopBtnNovaRonda');
+    const btnSairResultado = document.getElementById('stopBtnSairResultado');
+
+    const LETRAS = ['A','B','C','D','E','F','G','H','I','J','L','M','N','O','P','Q','R','S','T','U','V','X','Z'];
+    const DURACAO_RONDA = 60;
+    const CATEGORIAS = [
+      { chave: 'nome', label: 'Nome' },
+      { chave: 'animal', label: 'Animal' },
+      { chave: 'cor', label: 'Cor' },
+      { chave: 'fruta', label: 'Fruta' },
+      { chave: 'pais', label: 'País/Cidade' }
+    ];
+
+    let jogadorId = localStorage.getItem('stopJogadorId');
+    if(!jogadorId){
+      jogadorId = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem('stopJogadorId', jogadorId);
+    }
+
+    let salaRef = null;
+    let estadoAnterior = null;
+    let timerIntervalId = null;
+    let respostaJaEnviada = false;
+    let listenersAtivos = [];
+
+    if(codigoInput){
+      codigoInput.addEventListener('input', () => { codigoInput.value = codigoInput.value.toUpperCase(); });
+    }
+
+    function mostrarErro(msg){ erroEl.textContent = msg; erroEl.classList.add('mostrar'); }
+    function limparErro(){ erroEl.textContent = ''; erroEl.classList.remove('mostrar'); }
+
+    function trocarEcra(el){
+      [entradaEcra, esperaEcra, jogoEcra, resultadosEcra].forEach(e => e && e.classList.remove('ativo'));
+      if(el) el.classList.add('ativo');
+    }
+
+    function escaparHtml(s){
+      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    function gerarCodigo(){
+      let c = '';
+      for(let i = 0; i < 4; i++){ c += LETRAS[Math.floor(Math.random() * LETRAS.length)]; }
+      return c;
+    }
+
+    async function criarSala(){
+      limparErro();
+      const nome = (nomeInput.value || '').trim();
+      if(!nome){ mostrarErro('Escreve o teu nome primeiro.'); return; }
+      btnCriar.disabled = true;
+      try{
+        let codigo, existe, tentativas = 0;
+        do {
+          codigo = gerarCodigo();
+          const snap = await db.ref('salas/' + codigo).get();
+          existe = snap.exists();
+          tentativas++;
+        } while(existe && tentativas < 10);
+
+        await db.ref('salas/' + codigo).set({
+          criadoEm: firebase.database.ServerValue.TIMESTAMP,
+          estado: 'espera',
+          jogadores: { [jogadorId]: { nome: nome } }
+        });
+        entrarNaSalaExistente(codigo);
+      } catch(err){
+        mostrarErro('Não foi possível criar a sala. Tenta novamente.');
+      }
+      btnCriar.disabled = false;
+    }
+
+    async function entrarSala(){
+      limparErro();
+      const nome = (nomeInput.value || '').trim();
+      const codigo = (codigoInput.value || '').trim().toUpperCase();
+      if(!nome){ mostrarErro('Escreve o teu nome primeiro.'); return; }
+      if(codigo.length !== 4){ mostrarErro('O código da sala tem 4 letras.'); return; }
+      btnEntrar.disabled = true;
+      try{
+        const snap = await db.ref('salas/' + codigo).get();
+        if(!snap.exists()){
+          mostrarErro('Não encontrámos essa sala. Confirma o código.');
+          btnEntrar.disabled = false;
+          return;
+        }
+        await db.ref('salas/' + codigo + '/jogadores/' + jogadorId).set({ nome: nome });
+        entrarNaSalaExistente(codigo);
+      } catch(err){
+        mostrarErro('Não foi possível entrar na sala. Tenta novamente.');
+      }
+      btnEntrar.disabled = false;
+    }
+
+    function entrarNaSalaExistente(codigo){
+      salaRef = db.ref('salas/' + codigo);
+      codigoAtualEl.textContent = codigo;
+      ligarListeners();
+      trocarEcra(esperaEcra);
+      btnCriar.disabled = false;
+      btnEntrar.disabled = false;
+    }
+
+    function ligarListeners(){
+      desligarListeners();
+      const refJogadores = salaRef.child('jogadores');
+      const handlerJogadores = refJogadores.on('value', snap => {
+        const val = snap.val() || {};
+        listaJogadoresEl.innerHTML = '';
+        Object.values(val).forEach(j => {
+          const li = document.createElement('li');
+          li.textContent = j.nome;
+          listaJogadoresEl.appendChild(li);
+        });
+      });
+      listenersAtivos.push({ ref: refJogadores, evento: 'value', handler: handlerJogadores });
+
+      const handlerSala = salaRef.on('value', snap => {
+        const val = snap.val();
+        if(!val) return;
+        if(val.estado === 'a-jogar' && estadoAnterior !== 'a-jogar'){
+          iniciarEcraJogo(val);
+        } else if(val.estado === 'resultados' && estadoAnterior !== 'resultados'){
+          mostrarResultados();
+        } else if(val.estado === 'espera' && estadoAnterior !== 'espera' && estadoAnterior !== null){
+          respostaJaEnviada = false;
+          trocarEcra(esperaEcra);
+        }
+        estadoAnterior = val.estado;
+      });
+      listenersAtivos.push({ ref: salaRef, evento: 'value', handler: handlerSala });
+    }
+
+    function desligarListeners(){
+      listenersAtivos.forEach(l => l.ref.off(l.evento, l.handler));
+      listenersAtivos = [];
+      if(timerIntervalId){ clearInterval(timerIntervalId); timerIntervalId = null; }
+    }
+
+    async function comecarJogo(){
+      if(!salaRef) return;
+      const letra = LETRAS[Math.floor(Math.random() * LETRAS.length)];
+      await salaRef.update({
+        estado: 'a-jogar',
+        letra: letra,
+        inicioTimestamp: firebase.database.ServerValue.TIMESTAMP,
+        duracaoSegundos: DURACAO_RONDA,
+        respostas: null
+      });
+    }
+
+    function iniciarEcraJogo(val){
+      respostaJaEnviada = false;
+      letraEl.textContent = val.letra || '?';
+      [rNome, rAnimal, rCor, rFruta, rPais].forEach(i => { i.value = ''; i.disabled = false; });
+      btnParar.disabled = false;
+      trocarEcra(jogoEcra);
+
+      if(timerIntervalId){ clearInterval(timerIntervalId); }
+      const duracaoMs = (val.duracaoSegundos || DURACAO_RONDA) * 1000;
+
+      salaRef.child('inicioTimestamp').get().then(snap => {
+        const inicio = snap.val() || Date.now();
+        const fim = inicio + duracaoMs;
+        function atualizarTimer(){
+          const restanteMs = fim - Date.now();
+          const restanteS = Math.max(0, Math.ceil(restanteMs / 1000));
+          timerEl.textContent = restanteS;
+          timerEl.classList.toggle('stop-timer-urgente', restanteS <= 10);
+          if(restanteMs <= 0){
+            clearInterval(timerIntervalId);
+            timerIntervalId = null;
+            pararJogo();
+          }
+        }
+        atualizarTimer();
+        timerIntervalId = setInterval(atualizarTimer, 250);
+      });
+    }
+
+    async function enviarResposta(){
+      if(respostaJaEnviada || !salaRef) return;
+      respostaJaEnviada = true;
+      await salaRef.child('respostas/' + jogadorId).set({
+        nome: rNome.value.trim(),
+        animal: rAnimal.value.trim(),
+        cor: rCor.value.trim(),
+        fruta: rFruta.value.trim(),
+        pais: rPais.value.trim()
+      });
+    }
+
+    async function pararJogo(){
+      [rNome, rAnimal, rCor, rFruta, rPais].forEach(i => i.disabled = true);
+      btnParar.disabled = true;
+      await enviarResposta();
+      if(salaRef){ await salaRef.update({ estado: 'resultados' }); }
+    }
+
+    async function mostrarResultados(){
+      if(timerIntervalId){ clearInterval(timerIntervalId); timerIntervalId = null; }
+      await enviarResposta();
+      setTimeout(async () => {
+        const [jogadoresSnap, respostasSnap] = await Promise.all([
+          salaRef.child('jogadores').get(),
+          salaRef.child('respostas').get()
+        ]);
+        renderizarResultados(jogadoresSnap.val() || {}, respostasSnap.val() || {});
+        trocarEcra(resultadosEcra);
+      }, 700);
+    }
+
+    function renderizarResultados(jogadores, respostas){
+      const ids = Object.keys(jogadores);
+      let html = '<tr><th>Categoria</th>' + ids.map(id => '<th>' + escaparHtml(jogadores[id].nome) + '</th>').join('') + '</tr>';
+      CATEGORIAS.forEach(cat => {
+        const valores = ids.map(id => ((respostas[id] && respostas[id][cat.chave]) || '').trim());
+        const contagem = {};
+        valores.forEach(v => { if(v){ const k = v.toLowerCase(); contagem[k] = (contagem[k] || 0) + 1; } });
+        html += '<tr><th>' + cat.label + '</th>' + valores.map(v => {
+          if(!v) return '<td>—</td>';
+          const repetida = contagem[v.toLowerCase()] > 1;
+          return '<td class="' + (repetida ? 'stop-repetida' : 'stop-unica') + '">' + escaparHtml(v) + '</td>';
+        }).join('') + '</tr>';
+      });
+      tabelaResultados.innerHTML = html;
+    }
+
+    async function novaRonda(){
+      await comecarJogo();
+    }
+
+    async function sairSala(){
+      desligarListeners();
+      if(salaRef){ salaRef.child('jogadores/' + jogadorId).remove(); }
+      salaRef = null;
+      estadoAnterior = null;
+      limparErro();
+      trocarEcra(entradaEcra);
+    }
+
+    btnCriar.addEventListener('click', criarSala);
+    btnEntrar.addEventListener('click', entrarSala);
+    btnComecar.addEventListener('click', comecarJogo);
+    btnParar.addEventListener('click', pararJogo);
+    btnNovaRonda.addEventListener('click', novaRonda);
+    btnSairEspera.addEventListener('click', sairSala);
+    btnSairResultado.addEventListener('click', sairSala);
   })();
 
   // ---- Cozinheiro animado (interage ao tocar) ----
