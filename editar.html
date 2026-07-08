@@ -369,10 +369,15 @@
 
   <div class="preview-titulo" style="margin-top:28px;">Publicidade do rodapé</div>
   <div class="subtitulo" style="margin:2px 0 10px;">
-    Esta imagem fica de fundo na barra fixa do rodapé, por baixo do texto de cima. Substitui-a sempre que quiseres trocar de anunciante.
+    Podes mostrar uma imagem de fundo (de um anunciante) na barra fixa do rodapé, por baixo do texto de cima — ou deixar o rodapé sem foto, só com o texto sobre fundo liso.
   </div>
 
-  <div class="linha-foto" id="linhaPublicidade">
+  <div class="check-ativar" style="margin-top:6px;">
+    <input type="checkbox" id="fundoAtivo">
+    <label for="fundoAtivo">Mostrar imagem de publicidade no rodapé</label>
+  </div>
+
+  <div class="linha-foto" id="linhaPublicidade" style="margin-top:10px;">
     <img class="miniatura" id="miniaturaPublicidade" src="" alt="">
     <div class="linha-foto-info">
       <div class="linha-foto-nome" id="nomePublicidade">—</div>
@@ -429,6 +434,7 @@
   const novaPublicidadeInput = document.getElementById('novaPublicidade');
   const miniaturaPublicidadeEl = document.getElementById('miniaturaPublicidade');
   const nomePublicidadeEl = document.getElementById('nomePublicidade');
+  const fundoAtivoInput = document.getElementById('fundoAtivo');
   let publicidadeState = null;
   const previews = {
     1: document.getElementById('pvLinha1'),
@@ -543,7 +549,7 @@
 
   // ---- Publicidade do rodapé ----
   function extrairPublicidade(html){
-    const regexBloco = /<div class="info-fixa-fundo" id="infoFixaFundo">([\s\S]*?)<\/div>/;
+    const regexBloco = /<div class="info-fixa-fundo" id="infoFixaFundo"[^>]*>([\s\S]*?)<\/div>/;
     const m = html.match(regexBloco);
     if(!m) return null;
     const imgM = m[1].match(/<img[^>]*>/);
@@ -559,11 +565,11 @@
   }
 
   function construirFundoImgHtml(pub){
-    return '\n    <!-- Imagem de publicidade: edita-se em editar.html -->\n    <img src="' + pub.caminho + '" alt="Publicidade">\n  ';
+    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    <img src="' + pub.caminho + '" alt="Publicidade">\n  ';
   }
 
   function substituirFundoImg(html, novoInnerHTML){
-    const regex = /(<div class="info-fixa-fundo" id="infoFixaFundo">)([\s\S]*?)(<\/div>)/;
+    const regex = /(<div class="info-fixa-fundo" id="infoFixaFundo"[^>]*>)([\s\S]*?)(<\/div>)/;
     return html.replace(regex, '$1' + novoInnerHTML + '$3');
   }
 
@@ -725,6 +731,7 @@
 
       publicidadeState = extrairPublicidade(conteudo);
       renderizarPublicidade();
+      fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
 
       atualizarPreview();
 
@@ -750,8 +757,8 @@
       setEstado('Precisas de pelo menos 1 foto no cabeçalho.', 'erro');
       return;
     }
-    if(!publicidadeState || (!publicidadeState.caminho && !publicidadeState.novoFicheiro)){
-      setEstado('Precisas de uma imagem de publicidade no rodapé.', 'erro');
+    if(fundoAtivoInput.checked && (!publicidadeState || (!publicidadeState.caminho && !publicidadeState.novoFicheiro))){
+      setEstado('Ativaste a imagem de publicidade mas ainda não escolheste nenhuma. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
     }
 
@@ -794,7 +801,10 @@
       novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
 
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
-      novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
+      if(publicidadeState){
+        novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
+      }
+      novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
 
       const resp = await fetch(API_URL, {
         method: 'PUT',
