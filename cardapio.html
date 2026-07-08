@@ -1711,6 +1711,11 @@
     }
     cards.forEach(c => c.addEventListener('click', () => mostrarJogo(c.dataset.jogo)));
     document.querySelectorAll('[data-voltar-jogos]').forEach(b => b.addEventListener('click', mostrarMenu));
+
+    // Sempre que se reabre o separador "Jogos" (depois de ter fechado o painel a
+    // meio de um jogo), repõe o menu de seleção em vez de mostrar o último jogo aberto.
+    const tileJogos = document.querySelector('.tile[data-target="jogos-menu"]');
+    if(tileJogos) tileJogos.addEventListener('click', mostrarMenu);
   })();
 
   // ---- Jogo do Stop (multijogador em tempo real via Firebase) ----
