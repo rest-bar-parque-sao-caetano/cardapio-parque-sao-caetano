@@ -319,15 +319,37 @@
   .tabela-doses .preco-dose{font-weight:700; color:var(--dourado); font-family:'Fredoka',sans-serif;}
 
   footer{
+    position:relative;
+    overflow:hidden;
     text-align:center;
     color:var(--castanho-suave);
     font-size:0.8rem;
     margin-top:44px;
     padding:22px 16px;
     border-top:1px solid var(--linha);
+    min-height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
   footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1rem; margin-bottom:4px; font-weight:600;}
   footer a{color:var(--castanho-suave);}
+  .footer-texto{ position:relative; z-index:1; width:100%; transition:opacity .5s ease; }
+  .footer-publicidade{
+    position:absolute; inset:0;
+    z-index:2;
+    overflow:hidden;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .6s ease;
+  }
+  .footer-publicidade.mostrar{ opacity:1; pointer-events:auto; }
+  .footer-texto.escondido{ opacity:0; }
+  .footer-publicidade img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+  }
 
   .item.vinho-clicavel{
     cursor:pointer;
@@ -1690,9 +1712,21 @@
 </div>
 
 <footer>
-  <div class="nome-rest">Rest & Bar Parque São Caetano</div>
-  <div>Avenida de São Caetano, nº17</div>
-  <div>📞 962 202 622 / 227 130 614</div>
+  <div class="footer-publicidade" id="footerPublicidade"
+    data-pub-ativo="false"
+    data-pub-inicio="09:00"
+    data-pub-fim="23:00"
+    data-pub-intervalo="15"
+    data-pub-duracao="6"
+    data-pub-max-dia="0">
+    <!-- Foto de patrocínio, posição, ampliação e horários: edita-se em editar.html -->
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" style="object-position:50% 50%; transform:scale(1); transform-origin:50% 50%;">
+  </div>
+  <div class="footer-texto" id="footerTexto">
+    <div class="nome-rest">Rest & Bar Parque São Caetano</div>
+    <div>Avenida de São Caetano, nº17</div>
+    <div>📞 962 202 622 / 227 130 614</div>
+  </div>
 </footer>
 
 <div class="info-fixa">
@@ -1753,6 +1787,65 @@
     if(fundo.dataset.fundoAtivo === 'true'){
       fundo.classList.add('com-foto');
     }
+  })();
+
+  // ---- Publicidade no rodapé de texto (nome/morada/telefone), a cobrir de vez em quando ----
+  // Horários, intervalo, duração e limite diário editam-se em editar.html.
+  (function(){
+    const bloco = document.getElementById('footerPublicidade');
+    const textoBloco = document.getElementById('footerTexto');
+    if(!bloco || !textoBloco) return;
+    if(bloco.dataset.pubAtivo !== 'true') return;
+
+    const inicio = bloco.dataset.pubInicio || '00:00';
+    const fim = bloco.dataset.pubFim || '23:59';
+    const intervaloMin = parseFloat(bloco.dataset.pubIntervalo) || 15;
+    const duracaoSeg = parseFloat(bloco.dataset.pubDuracao) || 6;
+    const maxDia = parseInt(bloco.dataset.pubMaxDia, 10) || 0;
+
+    function paraMinutos(hhmm){
+      const p = hhmm.split(':');
+      return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
+    }
+    function dentroIntervalo(agora, ini, f){
+      if(ini === f) return true;
+      if(ini < f) return agora >= ini && agora < f;
+      return agora >= ini || agora < f; // atravessa a meia-noite
+    }
+    const iniMin = paraMinutos(inicio);
+    const fimMin = paraMinutos(fim);
+
+    function chaveContagemHoje(){
+      const d = new Date();
+      return 'footerPubContagem_' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+    function contagemHoje(){
+      return parseInt(localStorage.getItem(chaveContagemHoje()) || '0', 10);
+    }
+    function incrementarContagem(){
+      try{ localStorage.setItem(chaveContagemHoje(), String(contagemHoje() + 1)); } catch(e){}
+    }
+
+    function mostrarAnuncio(){
+      bloco.classList.add('mostrar');
+      textoBloco.classList.add('escondido');
+      incrementarContagem();
+      setTimeout(() => {
+        bloco.classList.remove('mostrar');
+        textoBloco.classList.remove('escondido');
+      }, duracaoSeg * 1000);
+    }
+
+    function ciclo(){
+      const d = new Date();
+      const agora = d.getHours() * 60 + d.getMinutes();
+      if(dentroIntervalo(agora, iniMin, fimMin) && (maxDia === 0 || contagemHoje() < maxDia)){
+        mostrarAnuncio();
+      }
+      setTimeout(ciclo, intervaloMin * 60000);
+    }
+
+    setTimeout(ciclo, intervaloMin * 60000);
   })();
 
   // ---- Loop de fotos no cabeçalho (ordem e duração de cada uma editáveis em editar.html) ----
