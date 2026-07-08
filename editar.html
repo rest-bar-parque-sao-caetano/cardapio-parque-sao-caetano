@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Editar Rodapé — Rest & Bar Parque São Caetano</title>
+<title>Editar Cabeçalho e Rodapé — Rest & Bar Parque São Caetano</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -285,9 +285,9 @@
 
 <div class="caixa">
   <a class="voltar" href="cardapio.html">← Voltar ao cardápio</a>
-  <h1>Editar rodapé (caixa fixa)</h1>
+  <h1>Editar cabeçalho e rodapé</h1>
   <div class="subtitulo">
-    Muda aqui as 4 linhas que aparecem sempre visíveis no fundo do cardápio. A 1ª linha aparece a negrito/dourado, as outras 3 normais. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
+    Muda aqui o texto do rodapé, as fotos que rodam no topo do cardápio e a imagem de publicidade do rodapé. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
   </div>
 
   <label for="token">Token de acesso do GitHub</label>
@@ -357,15 +357,30 @@
     <input type="text" id="especial4">
   </div>
 
-  <div class="preview-titulo" style="margin-top:28px;">Fotos do rodapé</div>
+  <div class="preview-titulo" style="margin-top:28px;">Fotos do cabeçalho</div>
   <div class="subtitulo" style="margin:2px 0 10px;">
-    Define a ordem das fotos e quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si). Podes adicionar novas fotos ou remover as que já lá estão.
+    Estas fotos aparecem a rodar no topo do cardápio, por trás do nome do restaurante. Define a ordem, quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si), e adiciona ou remove fotos.
   </div>
 
   <div id="listaFotos"></div>
 
-  <label for="novaFoto">Adicionar nova(s) foto(s)</label>
+  <label for="novaFoto">Adicionar nova(s) foto(s) ao cabeçalho</label>
   <input type="file" id="novaFoto" accept="image/*" multiple>
+
+  <div class="preview-titulo" style="margin-top:28px;">Publicidade do rodapé</div>
+  <div class="subtitulo" style="margin:2px 0 10px;">
+    Esta imagem fica de fundo na barra fixa do rodapé, por baixo do texto de cima. Substitui-a sempre que quiseres trocar de anunciante.
+  </div>
+
+  <div class="linha-foto" id="linhaPublicidade">
+    <img class="miniatura" id="miniaturaPublicidade" src="" alt="">
+    <div class="linha-foto-info">
+      <div class="linha-foto-nome" id="nomePublicidade">—</div>
+    </div>
+  </div>
+
+  <label for="novaPublicidade">Substituir imagem de publicidade</label>
+  <input type="file" id="novaPublicidade" accept="image/*">
 
   <div class="preview-titulo">Pré-visualização</div>
   <div class="preview">
@@ -411,6 +426,10 @@
   const listaFotosEl = document.getElementById('listaFotos');
   const novaFotoInput = document.getElementById('novaFoto');
   let fotosState = [];
+  const novaPublicidadeInput = document.getElementById('novaPublicidade');
+  const miniaturaPublicidadeEl = document.getElementById('miniaturaPublicidade');
+  const nomePublicidadeEl = document.getElementById('nomePublicidade');
+  let publicidadeState = null;
   const previews = {
     1: document.getElementById('pvLinha1'),
     2: document.getElementById('pvLinha2'),
@@ -490,9 +509,9 @@
     return html.replace(regex, '$1' + escapado + '$3');
   }
 
-  // ---- Fotos do rodapé ----
+  // ---- Fotos do cabeçalho ----
   function extrairFotos(html){
-    const regexBloco = /<div class="info-fixa-fotos" id="infoFixaFotos">([\s\S]*?)<\/div>/;
+    const regexBloco = /<div class="header-fotos" id="headerFotos">([\s\S]*?)<\/div>/;
     const m = html.match(regexBloco);
     if(!m) return [];
     const imgTags = m[1].match(/<img[^>]*>/g) || [];
@@ -518,9 +537,59 @@
   }
 
   function substituirFotosImgs(html, novoInnerHTML){
-    const regex = /(<div class="info-fixa-fotos" id="infoFixaFotos">)([\s\S]*?)(<\/div>)/;
+    const regex = /(<div class="header-fotos" id="headerFotos">)([\s\S]*?)(<\/div>)/;
     return html.replace(regex, '$1' + novoInnerHTML + '$3');
   }
+
+  // ---- Publicidade do rodapé ----
+  function extrairPublicidade(html){
+    const regexBloco = /<div class="info-fixa-fundo" id="infoFixaFundo">([\s\S]*?)<\/div>/;
+    const m = html.match(regexBloco);
+    if(!m) return null;
+    const imgM = m[1].match(/<img[^>]*>/);
+    if(!imgM) return null;
+    const srcM = imgM[0].match(/src="([^"]*)"/);
+    const src = srcM ? srcM[1] : '';
+    return {
+      caminho: src,
+      novoFicheiro: null,
+      previewUrl: null,
+      nomePreview: src.split('/').pop()
+    };
+  }
+
+  function construirFundoImgHtml(pub){
+    return '\n    <!-- Imagem de publicidade: edita-se em editar.html -->\n    <img src="' + pub.caminho + '" alt="Publicidade">\n  ';
+  }
+
+  function substituirFundoImg(html, novoInnerHTML){
+    const regex = /(<div class="info-fixa-fundo" id="infoFixaFundo">)([\s\S]*?)(<\/div>)/;
+    return html.replace(regex, '$1' + novoInnerHTML + '$3');
+  }
+
+  function renderizarPublicidade(){
+    if(!publicidadeState){
+      miniaturaPublicidadeEl.src = '';
+      nomePublicidadeEl.textContent = '—';
+      return;
+    }
+    const src = publicidadeState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + publicidadeState.caminho);
+    miniaturaPublicidadeEl.src = src;
+    nomePublicidadeEl.textContent = publicidadeState.nomePreview || publicidadeState.caminho || '—';
+  }
+
+  novaPublicidadeInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    publicidadeState = {
+      caminho: publicidadeState ? publicidadeState.caminho : null,
+      novoFicheiro: file,
+      previewUrl: URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarPublicidade();
+    e.target.value = '';
+  });
 
   function nomeFicheiroLimpo(nome){
     // Qualquer acento ou carácter especial (inclui espaços) vira "-"; letras e números normais mantêm-se.
@@ -654,6 +723,9 @@
       fotosState = extrairFotos(conteudo);
       renderizarFotos();
 
+      publicidadeState = extrairPublicidade(conteudo);
+      renderizarPublicidade();
+
       atualizarPreview();
 
       setEstado('Texto atual carregado. Já podes editar os campos.', 'ok');
@@ -675,7 +747,11 @@
       return;
     }
     if(fotosState.length === 0){
-      setEstado('Precisas de pelo menos 1 foto no rodapé.', 'erro');
+      setEstado('Precisas de pelo menos 1 foto no cabeçalho.', 'erro');
+      return;
+    }
+    if(!publicidadeState || (!publicidadeState.caminho && !publicidadeState.novoFicheiro)){
+      setEstado('Precisas de uma imagem de publicidade no rodapé.', 'erro');
       return;
     }
 
@@ -696,6 +772,12 @@
         }
       }
 
+      if(publicidadeState && publicidadeState.novoFicheiro){
+        setEstado('A enviar imagem de publicidade: ' + publicidadeState.nomePreview + '…', 'info');
+        publicidadeState.caminho = await enviarFoto(publicidadeState.novoFicheiro, token);
+        publicidadeState.novoFicheiro = null;
+      }
+
       setEstado('A guardar…', 'info');
       let novo = conteudoOriginal;
       novo = substituirLinha(novo, 'rodapeLinha1', campos[1].value);
@@ -712,6 +794,7 @@
       novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
 
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
+      novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
 
       const resp = await fetch(API_URL, {
         method: 'PUT',
