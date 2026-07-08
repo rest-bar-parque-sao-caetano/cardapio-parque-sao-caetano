@@ -26,7 +26,7 @@
     background:var(--bege-claro);
     color:var(--castanho);
     min-height:100vh;
-    padding-bottom:96px;
+    padding-bottom:112px;
   }
   header{
     position:sticky; top:0; z-index:50;
@@ -917,19 +917,14 @@
     position:fixed;
     bottom:0; left:0; right:0;
     z-index:100;
-    background:var(--branco);
+    height:92px;
     border-top:1px solid var(--linha);
     box-shadow:0 -4px 16px rgba(74,56,32,0.15);
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:8px 14px calc(8px + env(safe-area-inset-bottom));
+    overflow:visible;
   }
   .info-fixa-fotos{
-    position:relative;
-    width:58px; height:58px;
-    flex:0 0 auto;
-    border-radius:10px;
+    position:absolute;
+    inset:0;
     overflow:hidden;
     background:var(--bege);
   }
@@ -938,36 +933,55 @@
     width:100%; height:100%;
     object-fit:cover;
     opacity:0;
-    transition:opacity 1s ease;
+    transition:opacity 1.2s ease;
   }
   .info-fixa-fotos img.ativa{opacity:1;}
-  .info-fixa-texto{flex:1; text-align:center; min-width:0;}
+  .info-fixa-fotos::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(20,12,4,0.62) 0%, rgba(20,12,4,0.28) 45%, rgba(20,12,4,0.45) 100%);
+  }
+  .info-fixa-texto{
+    position:relative;
+    z-index:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    text-align:left;
+    padding:calc(6px + env(safe-area-inset-bottom)) 96px 6px 16px;
+  }
   .info-fixa-texto .linha-negrito{
     font-family:'Fredoka',sans-serif;
-    color:var(--dourado);
+    color:var(--branco);
     font-weight:600;
-    font-size:0.85rem;
-    line-height:1.25;
+    font-size:0.88rem;
+    line-height:1.3;
+    text-shadow:0 1px 5px rgba(0,0,0,0.55);
   }
   .info-fixa-texto .linha{
-    font-size:0.72rem;
-    color:var(--castanho-suave);
-    line-height:1.25;
+    font-size:0.74rem;
+    color:#f2ece0;
+    line-height:1.3;
+    text-shadow:0 1px 5px rgba(0,0,0,0.55);
   }
 
   .chef-mascote{
-    flex:0 0 auto;
-    width:44px; height:44px;
+    width:88px; height:88px;
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
     user-select:none;
-    position:relative;
+    position:absolute;
+    z-index:2;
+    top:-44px;
+    right:12px;
     animation:chefFlutuar 3.2s ease-in-out infinite;
   }
   .chef-mascote svg{width:100%; height:100%; display:block; overflow:visible;}
   @keyframes chefFlutuar{
     0%, 100%{ transform:translateY(0) rotate(0deg); }
-    50%{ transform:translateY(-3px) rotate(-2deg); }
+    50%{ transform:translateY(-5px) rotate(-2deg); }
   }
   .chef-olhos{
     transform-origin:center;
@@ -2470,6 +2484,17 @@
     mascote.addEventListener('keydown', (e) => {
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); interagir(); }
     });
+
+    // Fala frases aleatórias de vez em quando, mesmo sem lhe tocarem
+    function falarSozinho(){
+      if(!aAnimar){
+        balao.textContent = frases[Math.floor(Math.random() * frases.length)];
+        balao.classList.add('mostrar');
+        setTimeout(() => balao.classList.remove('mostrar'), 2200);
+      }
+      setTimeout(falarSozinho, 10000 + Math.random() * 8000);
+    }
+    setTimeout(falarSozinho, 10000 + Math.random() * 8000);
   })();
 
   // ---- Popup de anúncio (placeholder) ----
