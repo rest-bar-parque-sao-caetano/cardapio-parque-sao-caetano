@@ -478,6 +478,7 @@
 
   <label for="novaPubFim" style="margin-top:16px;">Foto do patrocínio</label>
   <input type="file" id="novaPubFim" accept="image/*">
+  <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
 
   <div class="pub-editor-caixa" id="pubFimCaixa">
     <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
@@ -549,6 +550,7 @@
   const pubFimVazioEl = document.getElementById('pubFimVazio');
   const pubFimImgEl = document.getElementById('pubFimImg');
   const pubFimZoomInput = document.getElementById('pubFimZoom');
+  const pubFimNomeFicheiroEl = document.getElementById('pubFimNomeFicheiro');
   let pubFimState = null; // { caminho, novoFicheiro, previewUrl, nomePreview, posX, posY, escala }
   let pubFimNatW = 0, pubFimNatH = 0;
   let pubFimDispW = 0, pubFimDispH = 0;
@@ -764,6 +766,7 @@
   function pubFimCarregarImagem(src){
     pubFimVazioEl.style.display = 'none';
     pubFimImgEl.style.display = 'block';
+    pubFimNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (pubFimState && pubFimState.nomePreview ? pubFimState.nomePreview : '—');
     pubFimImgEl.onload = () => {
       pubFimNatW = pubFimImgEl.naturalWidth;
       pubFimNatH = pubFimImgEl.naturalHeight;
@@ -1089,8 +1092,18 @@
       }
       pubFimCapturarEstadoAtual();
 
+      // Vai sempre buscar a versão mais recente do ficheiro mesmo agora, em vez de usar
+      // a que foi carregada quando a página abriu. Isto evita que uma aba desta página
+      // deixada aberta durante muito tempo apague, sem querer, alterações feitas entretanto
+      // por outra pessoa (ou por ti noutra aba/aparelho).
+      setEstado('A confirmar a versão mais recente…', 'info');
+      const respAtual = await fetch(API_URL + '?t=' + Date.now(), { headers: cabecalhos(true) });
+      if(!respAtual.ok) throw new Error('HTTP ' + respAtual.status + ' — não consegui confirmar a versão mais recente antes de guardar');
+      const dataAtual = await respAtual.json();
+      shaAtual = dataAtual.sha;
+
       setEstado('A guardar…', 'info');
-      let novo = conteudoOriginal;
+      let novo = base64ParaUtf8(dataAtual.content);
       novo = substituirLinha(novo, 'rodapeLinha1', campos[1].value);
       novo = substituirLinha(novo, 'rodapeLinha2', campos[2].value);
       novo = substituirLinha(novo, 'rodapeLinha3', campos[3].value);
