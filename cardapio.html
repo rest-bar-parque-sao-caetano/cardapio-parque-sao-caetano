@@ -1714,13 +1714,13 @@
 <footer>
   <div class="footer-publicidade" id="footerPublicidade"
     data-pub-ativo="true"
-    data-pub-inicio="00:10"
-    data-pub-fim="00:11"
+    data-pub-inicio="09:00"
+    data-pub-fim="23:00"
     data-pub-intervalo="15"
     data-pub-duracao="6"
     data-pub-max-dia="0">
     <!-- Foto de patrocínio, posição, ampliação e horários: edita-se em editar.html -->
-    <img src="imagens/1783552160895-img_1561.png" alt="Publicidade" style="object-position:50% 65.1%; transform:scale(1); transform-origin:50% 65.1%;">
+    <img src="imagens/1783551156786-gemini_generated_image_pr2a2spr2a2spr2a.png" alt="Publicidade" style="object-position:50% 50%; transform:scale(1); transform-origin:50% 50%;">
   </div>
   <div class="footer-texto" id="footerTexto">
     <div class="nome-rest">Rest & Bar Parque São Caetano</div>
@@ -1795,6 +1795,17 @@
     const bloco = document.getElementById('footerPublicidade');
     const textoBloco = document.getElementById('footerTexto');
     if(!bloco || !textoBloco) return;
+
+    // Link de pré-visualização instantânea (usado no editar.html): mostra já,
+    // sem depender do agendamento, para poderes confirmar em segundos que a
+    // foto/posição está bem, sem teres de esperar pela hora certa.
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('preview_pub_fim') === '1'){
+      bloco.classList.add('mostrar');
+      textoBloco.classList.add('escondido');
+      return;
+    }
+
     if(bloco.dataset.pubAtivo !== 'true') return;
 
     const inicio = bloco.dataset.pubInicio || '00:00';
@@ -1836,16 +1847,30 @@
       }, duracaoSeg * 1000);
     }
 
-    function ciclo(){
+    // Verificação em horas fixas do relógio (não a partir de quando a página
+    // carregou), para que uma janela estreita (ex.: 1 minuto) não possa nunca
+    // ser "saltada" por um intervalo de verificação desalinhado com ela.
+    function chaveMinutoJaMostrado(){
+      const d = new Date();
+      return 'footerPubMinuto_' + d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + '-' + d.getHours() + '-' + d.getMinutes();
+    }
+    function verificar(){
       const d = new Date();
       const agora = d.getHours() * 60 + d.getMinutes();
-      if(dentroIntervalo(agora, iniMin, fimMin) && (maxDia === 0 || contagemHoje() < maxDia)){
-        mostrarAnuncio();
-      }
-      setTimeout(ciclo, intervaloMin * 60000);
+      if(!dentroIntervalo(agora, iniMin, fimMin)) return;
+      if(maxDia !== 0 && contagemHoje() >= maxDia) return;
+      const minutosDesdeInicio = ((agora - iniMin) % 1440 + 1440) % 1440;
+      if(minutosDesdeInicio % intervaloMin !== 0) return;
+      const chave = chaveMinutoJaMostrado();
+      try{
+        if(sessionStorage.getItem(chave)) return;
+        sessionStorage.setItem(chave, '1');
+      }catch(e){}
+      mostrarAnuncio();
     }
 
-    setTimeout(ciclo, intervaloMin * 60000);
+    verificar();
+    setInterval(verificar, 20000);
   })();
 
   // ---- Loop de fotos no cabeçalho (ordem e duração de cada uma editáveis em editar.html) ----

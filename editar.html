@@ -335,6 +335,10 @@
     Muda aqui o texto do rodapé, as fotos que rodam no topo do cardápio e a imagem de publicidade do rodapé. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
   </div>
 
+  <div class="estado erro mostrar" id="avisoDesatualizado" style="display:none;">
+    Esta página foi atualizada entretanto (tens esta aba aberta há algum tempo). Para não corrermos o risco de apagar alterações mais recentes, recarrega a página (F5) antes de continuares a editar ou a guardar.
+  </div>
+
   <label for="token">Token de acesso do GitHub</label>
   <div class="campo-token">
     <input type="password" id="token" placeholder="cola aqui o teu token (github_pat_...)">
@@ -489,6 +493,10 @@
     <span>Tamanho</span>
     <input type="range" id="pubFimZoom" min="100" max="300" step="1" value="100">
   </div>
+  <div class="pub-editor-dica" style="margin-top:8px;">
+    Não queres esperar pela hora agendada para confirmar que está bem? <a href="https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/cardapio.html?preview_pub_fim=1" target="_blank" rel="noopener">Pré-visualizar agora →</a>
+    (mostra a publicidade de imediato, numa aba nova, sem depender do agendamento — só nessa aba, não afeta os outros visitantes).
+  </div>
 
   <div class="preview-titulo">Pré-visualização</div>
   <div class="preview">
@@ -510,6 +518,13 @@
   const REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
   const FILE_PATH = 'cardapio.html';
   const API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE_PATH;
+  const EDITOR_FILE_PATH = 'editar.html';
+  const EDITOR_API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + EDITOR_FILE_PATH;
+  // Marca de versão desta página. Muda sempre que este ficheiro for publicado
+  // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
+  // aba foi deixada aberta há muito tempo com uma versão antiga do código —
+  // isso já causou, no passado, que alterações fossem apagadas sem querer.
+  const EDITOR_VERSION = '2026-07-09-01';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -1039,10 +1054,41 @@
     }
   }
 
+  // ---- Deteção de aba desatualizada ----
+  // Se este ficheiro (editar.html) foi publicado de novo desde que esta aba
+  // abriu, o código que está a correr aqui em memória pode já não ter as
+  // proteções mais recentes. Comparamos a nossa EDITOR_VERSION com a que está
+  // publicada agora mesmo no GitHub Pages, e avisamos/bloqueamos se diferirem.
+  const avisoDesatualizadoEl = document.getElementById('avisoDesatualizado');
+  async function paginaEstaAtualizada(){
+    try{
+      const resp = await fetch('https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/editar.html?t=' + Date.now(), { cache: 'no-store' });
+      if(!resp.ok) return true; // não conseguimos confirmar — não bloqueia por causa disto
+      const texto = await resp.text();
+      const m = texto.match(/EDITOR_VERSION\s*=\s*'([^']+)'/);
+      if(!m) return true;
+      return m[1] === EDITOR_VERSION;
+    } catch(e){
+      return true; // falha de rede — não bloqueia por causa disto
+    }
+  }
+  async function verificarPaginaAtualizada(){
+    const atualizada = await paginaEstaAtualizada();
+    avisoDesatualizadoEl.style.display = atualizada ? 'none' : 'block';
+    return atualizada;
+  }
+  verificarPaginaAtualizada();
+  setInterval(verificarPaginaAtualizada, 3 * 60 * 1000);
+
   async function guardarTexto(){
     const token = tokenInput.value.trim();
     if(!token){
       setEstado('Cola primeiro o teu token de acesso do GitHub.', 'erro');
+      return;
+    }
+    setEstado('A verificar se esta página está atualizada…', 'info');
+    if(!(await verificarPaginaAtualizada())){
+      setEstado('Esta página foi atualizada entretanto. Recarrega (F5) antes de guardar, para não perderes nem apagares alterações.', 'erro');
       return;
     }
     if(!conteudoOriginal){
