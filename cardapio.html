@@ -771,6 +771,84 @@
   .stop-resultados-tabela-wrap{ overflow-x:auto; }
   .stop-acoes-resultado{ display:flex; gap:10px; margin-top:18px; }
 
+  /* ---- Jogo da Forca ---- */
+  .forca-caixa{ max-width:380px; margin:10px auto 0; text-align:center; }
+  .forca-desenho{ width:140px; height:140px; margin:0 auto 10px; }
+  .forca-desenho svg{ width:100%; height:100%; }
+  .forca-desenho .forca-parte{ opacity:0; transition:opacity .2s ease; }
+  .forca-desenho .forca-parte.visivel{ opacity:1; }
+  .forca-tentativas{
+    font-family:'Nunito',sans-serif;
+    font-size:0.82rem;
+    color:var(--castanho-suave);
+    margin-bottom:10px;
+  }
+  .forca-palavra{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:6px;
+    margin-bottom:16px;
+  }
+  .forca-letra-caixa{
+    width:30px;
+    height:38px;
+    border-bottom:3px solid var(--castanho);
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1.4rem;
+    color:var(--castanho);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .forca-teclado{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .forca-tecla{
+    aspect-ratio:1/1;
+    border-radius:8px;
+    border:1px solid var(--linha);
+    background:var(--branco);
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.9rem;
+    color:var(--castanho);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .15s ease;
+  }
+  .forca-tecla:hover:not(:disabled){ border-color:var(--dourado); }
+  .forca-tecla:disabled{ cursor:default; opacity:0.4; }
+  .forca-tecla.forca-acerto{ background:var(--bege); border-color:var(--dourado); color:var(--dourado-escuro); opacity:1; }
+  .forca-tecla.forca-erro{ background:var(--bege-claro); border-color:var(--linha); color:var(--castanho-claro); opacity:0.6; }
+  .forca-resultado{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    color:var(--castanho);
+    min-height:1.4em;
+    margin-bottom:10px;
+  }
+  .forca-reiniciar{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.85rem;
+    padding:10px 22px;
+    border-radius:10px;
+    border:1px solid var(--castanho);
+    background:var(--castanho);
+    color:var(--branco);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .forca-reiniciar:hover{ background:var(--dourado-escuro); border-color:var(--dourado-escuro); }
+
   .info-fixa{
     position:fixed;
     bottom:0; left:0; right:0;
@@ -1316,6 +1394,10 @@
         <span class="jogo-card-emoji">🔤</span>
         <span class="jogo-card-nome" data-en="Stop Game" data-fr="Jeu du Stop">Jogo do Stop</span>
       </button>
+      <button type="button" class="jogo-card" data-jogo="forca">
+        <span class="jogo-card-emoji">🧩</span>
+        <span class="jogo-card-nome" data-en="Hangman" data-fr="Le Pendu">Jogo da Forca</span>
+      </button>
     </div>
 
     <div class="jogo-ecra" id="jogoVelhaEcra">
@@ -1423,6 +1505,31 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <div class="jogo-ecra" id="jogoForcaEcra">
+      <button type="button" class="jogo-voltar" data-voltar-jogos data-en="← Games" data-fr="← Jeux">← Jogos</button>
+      <div class="forca-caixa">
+        <div class="forca-desenho">
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10" y1="110" x2="70" y2="110" stroke="var(--castanho)" stroke-width="4" stroke-linecap="round"></line>
+            <line x1="30" y1="10" x2="30" y2="110" stroke="var(--castanho)" stroke-width="4" stroke-linecap="round"></line>
+            <line x1="30" y1="10" x2="90" y2="10" stroke="var(--castanho)" stroke-width="4" stroke-linecap="round"></line>
+            <line x1="90" y1="10" x2="90" y2="25" stroke="var(--castanho)" stroke-width="3" stroke-linecap="round"></line>
+            <circle id="forcaParte1" class="forca-parte" cx="90" cy="35" r="10" fill="none" stroke="var(--dourado-escuro)" stroke-width="3"></circle>
+            <line id="forcaParte2" class="forca-parte" x1="90" y1="45" x2="90" y2="75" stroke="var(--dourado-escuro)" stroke-width="3" stroke-linecap="round"></line>
+            <line id="forcaParte3" class="forca-parte" x1="90" y1="55" x2="75" y2="65" stroke="var(--dourado-escuro)" stroke-width="3" stroke-linecap="round"></line>
+            <line id="forcaParte4" class="forca-parte" x1="90" y1="55" x2="105" y2="65" stroke="var(--dourado-escuro)" stroke-width="3" stroke-linecap="round"></line>
+            <line id="forcaParte5" class="forca-parte" x1="90" y1="75" x2="78" y2="95" stroke="var(--dourado-escuro)" stroke-width="3" stroke-linecap="round"></line>
+            <line id="forcaParte6" class="forca-parte" x1="90" y1="75" x2="102" y2="95" stroke="var(--dourado-escuro)" stroke-width="3" stroke-linecap="round"></line>
+          </svg>
+        </div>
+        <div class="forca-tentativas" id="forcaTentativas">Tentativas restantes: 6</div>
+        <div class="forca-palavra" id="forcaPalavra"></div>
+        <div class="forca-resultado" id="forcaResultado"></div>
+        <div class="forca-teclado" id="forcaTeclado"></div>
+        <button type="button" class="forca-reiniciar" id="forcaReiniciar" data-en="Play again" data-fr="Rejouer">Jogar de novo</button>
       </div>
     </div>
   </section>
@@ -1697,17 +1804,20 @@
     const cards = document.querySelectorAll('.jogo-card');
     const ecraVelha = document.getElementById('jogoVelhaEcra');
     const ecraStop = document.getElementById('jogoStopEcra');
+    const ecraForca = document.getElementById('jogoForcaEcra');
     if(!lista) return;
 
     function mostrarMenu(){
       lista.style.display = 'flex';
       if(ecraVelha) ecraVelha.classList.remove('ativo');
       if(ecraStop) ecraStop.classList.remove('ativo');
+      if(ecraForca) ecraForca.classList.remove('ativo');
     }
     function mostrarJogo(nome){
       lista.style.display = 'none';
       if(ecraVelha) ecraVelha.classList.toggle('ativo', nome === 'velha');
       if(ecraStop) ecraStop.classList.toggle('ativo', nome === 'stop');
+      if(ecraForca) ecraForca.classList.toggle('ativo', nome === 'forca');
     }
     cards.forEach(c => c.addEventListener('click', () => mostrarJogo(c.dataset.jogo)));
     document.querySelectorAll('[data-voltar-jogos]').forEach(b => b.addEventListener('click', mostrarMenu));
@@ -2006,6 +2116,142 @@
     btnNovaRonda.addEventListener('click', novaRonda);
     btnSairEspera.addEventListener('click', sairSala);
     btnSairResultado.addEventListener('click', sairSala);
+  })();
+
+  // ---- Jogo da Forca (com popup patrocinado no fim de cada jogo) ----
+  (function(){
+    const ecra = document.getElementById('jogoForcaEcra');
+    if(!ecra) return;
+    const partes = ecra.querySelectorAll('.forca-parte');
+    const tentativasEl = document.getElementById('forcaTentativas');
+    const palavraEl = document.getElementById('forcaPalavra');
+    const resultadoEl = document.getElementById('forcaResultado');
+    const tecladoEl = document.getElementById('forcaTeclado');
+    const btnReiniciar = document.getElementById('forcaReiniciar');
+    const patrocinioPopup = document.getElementById('patrocinioPopup');
+    const fecharPatrocinioBtn = document.getElementById('fecharPatrocinioPopup');
+
+    const PALAVRAS = ["BACALHAU","ARROZ","GAMBAS","AZEITE","BATATA","TOMATE","CEBOLA","ALHO","LIMAO","VINHO","CAFE","BROA","CHOURICO","PRESUNTO","MELAO","FRANGO","PORCO","PEIXE","CARNE","SALADA","SOPA","SOBREMESA","QUEIJO","PAO","MANTEIGA","AZEITONA","CAMARAO","POLVO","BIFE","OVOS","ALHEIRA","PIMENTOS","FRANCESINHA","HAMBURGUER","SANDES","TOSTA","GELADO","TARTE","PUDIM","NATAS","CERVEJA","AGUA"];
+    const MAX_ERROS = 6;
+    const ALFABETO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+    let palavraAtual = '';
+    let letrasCertas = new Set();
+    let erros = 0;
+    let jogoTerminado = false;
+    let popupTimeoutId = null;
+    let ultimaPalavra = '';
+
+    function escolherPalavra(){
+      let p;
+      do { p = PALAVRAS[Math.floor(Math.random() * PALAVRAS.length)]; } while(p === ultimaPalavra && PALAVRAS.length > 1);
+      ultimaPalavra = p;
+      return p;
+    }
+
+    function esconderPatrocinio(){
+      if(!patrocinioPopup) return;
+      patrocinioPopup.classList.remove('aberto');
+      if(popupTimeoutId){ clearTimeout(popupTimeoutId); popupTimeoutId = null; }
+    }
+    function mostrarPatrocinio(){
+      if(!patrocinioPopup) return;
+      patrocinioPopup.classList.add('aberto');
+      popupTimeoutId = setTimeout(esconderPatrocinio, 5000);
+    }
+    if(fecharPatrocinioBtn){ fecharPatrocinioBtn.addEventListener('click', esconderPatrocinio); }
+
+    function renderizarPalavra(){
+      palavraEl.innerHTML = '';
+      for(const letra of palavraAtual){
+        const caixa = document.createElement('div');
+        caixa.className = 'forca-letra-caixa';
+        if(letrasCertas.has(letra)){
+          caixa.textContent = letra;
+        } else if(jogoTerminado){
+          caixa.textContent = letra;
+          caixa.style.color = 'var(--castanho-claro)';
+        }
+        palavraEl.appendChild(caixa);
+      }
+    }
+
+    function construirTeclado(){
+      tecladoEl.innerHTML = '';
+      ALFABETO.forEach(letra => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'forca-tecla';
+        btn.textContent = letra;
+        btn.addEventListener('click', () => tentarLetra(letra));
+        tecladoEl.appendChild(btn);
+      });
+    }
+
+    function atualizarDesenho(){
+      partes.forEach((parte, i) => parte.classList.toggle('visivel', i < erros));
+    }
+
+    function atualizarTentativas(){
+      tentativasEl.textContent = 'Tentativas restantes: ' + (MAX_ERROS - erros);
+    }
+
+    function tentarLetra(letra){
+      if(jogoTerminado || letrasCertas.has(letra)) return;
+      const botao = Array.from(tecladoEl.querySelectorAll('.forca-tecla')).find(b => b.textContent === letra);
+      if(botao && botao.disabled) return;
+      if(palavraAtual.includes(letra)){
+        letrasCertas.add(letra);
+        if(botao){ botao.classList.add('forca-acerto'); botao.disabled = true; }
+      } else {
+        erros++;
+        if(botao){ botao.classList.add('forca-erro'); botao.disabled = true; }
+      }
+      renderizarPalavra();
+      atualizarDesenho();
+      atualizarTentativas();
+      verificarFim();
+    }
+
+    function verificarFim(){
+      const ganhou = palavraAtual.split('').every(l => letrasCertas.has(l));
+      if(ganhou){
+        terminarJogo(true);
+      } else if(erros >= MAX_ERROS){
+        terminarJogo(false);
+      }
+    }
+
+    function terminarJogo(ganhou){
+      jogoTerminado = true;
+      tecladoEl.querySelectorAll('.forca-tecla').forEach(b => b.disabled = true);
+      resultadoEl.textContent = ganhou ? 'Acertaste! 🎉' : ('A palavra era: ' + palavraAtual + ' 😔');
+      renderizarPalavra();
+      setTimeout(mostrarPatrocinio, 600);
+    }
+
+    function reiniciar(){
+      palavraAtual = escolherPalavra();
+      letrasCertas = new Set();
+      erros = 0;
+      jogoTerminado = false;
+      resultadoEl.textContent = '';
+      construirTeclado();
+      renderizarPalavra();
+      atualizarDesenho();
+      atualizarTentativas();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if(!ecra.classList.contains('ativo')) return;
+      const tag = document.activeElement ? document.activeElement.tagName : '';
+      if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+      const letra = e.key.toUpperCase();
+      if(/^[A-Z]$/.test(letra)) tentarLetra(letra);
+    });
+
+    btnReiniciar.addEventListener('click', reiniciar);
+    reiniciar();
   })();
 
   // ---- Cozinheiro animado (interage ao tocar) ----
