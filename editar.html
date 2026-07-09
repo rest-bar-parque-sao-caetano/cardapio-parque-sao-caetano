@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Editar Cabeçalho e Rodapé — Rest & Bar Parque São Caetano</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Playfair+Display:wght@600;700&family=Merriweather:wght@600;700&family=Poppins:wght@600;700&family=Pacifico&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --branco: #ffffff;
@@ -393,6 +393,47 @@
     color:var(--verde);
   }
 </style>
+.campo-cor-linha{ display:flex; align-items:center; gap:10px; margin-top:6px; }
+.campo-cor-linha input[type=color]{
+  width:52px; height:40px;
+  padding:2px;
+  border-radius:8px;
+  border:1px solid var(--linha);
+  background:var(--bege-claro);
+  cursor:pointer;
+}
+.btn-repor{
+  flex:0 0 auto;
+  background:var(--bege);
+  border:1px solid var(--linha);
+  border-radius:10px;
+  padding:0 12px;
+  height:40px;
+  cursor:pointer;
+  font-size:0.8rem;
+  color:var(--castanho);
+}
+.btn-repor:hover{ border-color:var(--dourado); }
+.cabecalho-preview{
+  margin-top:12px;
+  padding:20px 16px;
+  border-radius:12px;
+  text-align:center;
+  background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
+}
+.cabecalho-preview-nome{
+  font-size:1.3rem;
+  font-weight:600;
+  color:#ffffff;
+  text-shadow:0 1px 6px rgba(0,0,0,0.55);
+}
+.cabecalho-preview-frase{
+  font-size:0.78rem;
+  font-style:italic;
+  color:#f5e2d3;
+  margin-top:3px;
+  text-shadow:0 1px 6px rgba(0,0,0,0.55);
+}
 </head>
 <body>
 
@@ -482,6 +523,46 @@
 
         <label for="especial4">Linha 4 especial</label>
         <input type="text" id="especial4">
+      </div>
+    </div>
+  </details>
+
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">🔤</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Texto do cabeçalho</span>
+        <span class="bloco-resumo">Nome do restaurante, frase por baixo, tipo de letra e cor</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <label for="cabecalhoNome">Nome do restaurante</label>
+      <input type="text" id="cabecalhoNome" placeholder="Ex: Rest & Bar Parque São Caetano">
+
+      <label for="cabecalhoFrase">Frase por baixo do nome</label>
+      <input type="text" id="cabecalhoFrase" placeholder="Ex: Tradição, sabor e conforto à mesa">
+
+      <label for="cabecalhoFonte">Tipo de letra</label>
+      <select id="cabecalhoFonte">
+        <option value="">Padrão (Fredoka)</option>
+        <option value="Playfair Display">Elegante (Playfair Display)</option>
+        <option value="Merriweather">Clássica (Merriweather)</option>
+        <option value="Poppins">Moderna (Poppins)</option>
+        <option value="Pacifico">Divertida (Pacifico)</option>
+        <option value="Dancing Script">Manuscrita (Dancing Script)</option>
+      </select>
+
+      <label for="cabecalhoCor">Cor do texto</label>
+      <div class="campo-cor-linha">
+        <input type="color" id="cabecalhoCor" value="#ffffff">
+        <button type="button" class="btn-repor" id="cabecalhoRepor">Repor predefinição</button>
+      </div>
+
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização:</div>
+      <div class="cabecalho-preview">
+        <div class="cabecalho-preview-nome" id="cabecalhoPreviewNome">Rest & Bar Parque São Caetano</div>
+        <div class="cabecalho-preview-frase" id="cabecalhoPreviewFrase">Tradição, sabor e conforto à mesa</div>
       </div>
     </div>
   </details>
@@ -771,7 +852,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-08';
+  const EDITOR_VERSION = '2026-07-09-09';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -849,6 +930,57 @@
     3: document.getElementById('pvLinha3'),
     4: document.getElementById('pvLinha4'),
   };
+
+  const cabecalhoNomeInput = document.getElementById('cabecalhoNome');
+  const cabecalhoFraseInput = document.getElementById('cabecalhoFrase');
+  const cabecalhoFonteInput = document.getElementById('cabecalhoFonte');
+  const cabecalhoCorInput = document.getElementById('cabecalhoCor');
+  const cabecalhoReporBtn = document.getElementById('cabecalhoRepor');
+  const cabecalhoPreviewNomeEl = document.getElementById('cabecalhoPreviewNome');
+  const cabecalhoPreviewFraseEl = document.getElementById('cabecalhoPreviewFrase');
+  const COR_CABECALHO_PREDEFINIDA = '#ffffff';
+
+  function extrairEstiloPorId(html, id){
+    const regexTag = new RegExp('<div[^>]*\\bid="' + id + '"[^>]*>');
+    const m = html.match(regexTag);
+    if(!m) return '';
+    const styleM = m[0].match(/style="([^"]*)"/);
+    return styleM ? styleM[1] : '';
+  }
+
+  function substituirEstiloPorId(html, id, novoEstilo){
+    const regexTag = new RegExp('<div[^>]*\\bid="' + id + '"[^>]*>');
+    const m = html.match(regexTag);
+    if(!m) return html;
+    const novaTag = /style="[^"]*"/.test(m[0]) ? m[0].replace(/style="[^"]*"/, 'style="' + novoEstilo + '"') : m[0];
+    return html.replace(m[0], novaTag);
+  }
+
+  function construirEstiloCabecalho(fonte, cor){
+    const partes = [];
+    if(fonte) partes.push("font-family:'" + fonte + "'");
+    if(cor && cor.toLowerCase() !== COR_CABECALHO_PREDEFINIDA) partes.push('color:' + cor);
+    return partes.join('; ');
+  }
+
+  function atualizarPreviewCabecalho(){
+    cabecalhoPreviewNomeEl.textContent = cabecalhoNomeInput.value || '';
+    cabecalhoPreviewFraseEl.textContent = cabecalhoFraseInput.value || '';
+    const fonte = cabecalhoFonteInput.value;
+    const cor = cabecalhoCorInput.value;
+    const fontFamily = fonte ? ("'" + fonte + "', sans-serif") : "'Fredoka', sans-serif";
+    cabecalhoPreviewNomeEl.style.fontFamily = fontFamily;
+    cabecalhoPreviewFraseEl.style.fontFamily = fontFamily;
+    cabecalhoPreviewNomeEl.style.color = cor;
+  }
+  [cabecalhoNomeInput, cabecalhoFraseInput, cabecalhoFonteInput, cabecalhoCorInput].forEach(el => {
+    el.addEventListener('input', atualizarPreviewCabecalho);
+  });
+  cabecalhoReporBtn.addEventListener('click', () => {
+    cabecalhoFonteInput.value = '';
+    cabecalhoCorInput.value = COR_CABECALHO_PREDEFINIDA;
+    atualizarPreviewCabecalho();
+  });
 
   let shaAtual = null;
   let conteudoOriginal = null;
@@ -997,6 +1129,17 @@
   function substituirFotosImgs(html, novoInnerHTML){
     const regex = /(<div class="header-fotos" id="headerFotos">)([\s\S]*?)(<\/div>)/;
     return html.replace(regex, '$1' + novoInnerHTML + '$3');
+  }
+
+  // ---- Texto e estilo do cabeçalho ----
+  function extrairEstiloCabecalhoAtual(html){
+    const estilo = extrairEstiloPorId(html, 'brandMark');
+    const fonteM = estilo.match(/font-family:\s*'([^']+)'/);
+    const corM = estilo.match(/color:\s*(#[0-9a-fA-F]{3,8})/);
+    return {
+      fonte: fonteM ? fonteM[1] : '',
+      cor: corM ? corM[1] : ''
+    };
   }
 
   // ---- Publicidade do rodapé ----
@@ -1510,6 +1653,13 @@
       camposEspecial[3].value = extrairAtributo(conteudo, 'data-especial-l3');
       camposEspecial[4].value = extrairAtributo(conteudo, 'data-especial-l4');
 
+      cabecalhoNomeInput.value = extrairLinha(conteudo, 'brandMark');
+      cabecalhoFraseInput.value = extrairLinha(conteudo, 'brandSub');
+      const estiloCabecalhoAtual = extrairEstiloCabecalhoAtual(conteudo);
+      cabecalhoFonteInput.value = estiloCabecalhoAtual.fonte;
+      cabecalhoCorInput.value = estiloCabecalhoAtual.cor || COR_CABECALHO_PREDEFINIDA;
+      atualizarPreviewCabecalho();
+
       fotosState = extrairFotos(conteudo);
       renderizarFotos();
 
@@ -1709,6 +1859,12 @@
       novo = substituirAtributo(novo, 'data-especial-l2', camposEspecial[2].value);
       novo = substituirAtributo(novo, 'data-especial-l3', camposEspecial[3].value);
       novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
+
+      novo = substituirLinha(novo, 'brandMark', cabecalhoNomeInput.value);
+      novo = substituirLinha(novo, 'brandSub', cabecalhoFraseInput.value);
+      const novoEstiloCabecalho = construirEstiloCabecalho(cabecalhoFonteInput.value, cabecalhoCorInput.value);
+      novo = substituirEstiloPorId(novo, 'brandMark', novoEstiloCabecalho);
+      novo = substituirEstiloPorId(novo, 'brandSub', novoEstiloCabecalho);
 
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
       if(publicidadeState){
