@@ -358,6 +358,8 @@
     margin-top:2px;
   }
   .vinho-anuncio-texto .subtitulo-anuncio:empty{ display:none; }
+  .vinho-anuncio.alto{ min-height:200px; }
+  .vinho-anuncio.alto .vinho-anuncio-texto{ min-height:200px; }
 
   .tabela-doses{width:100%; border-collapse:collapse; text-align:center; margin:4px 0;}
   .tabela-doses td{padding:6px 4px; font-size:0.85rem;}
@@ -1454,10 +1456,10 @@
 
         <div class="vinho-anuncio" id="vinhoAnuncio" data-vinho-pub-ativo="false">
           <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->
-          <img src="imagens/1783596552519-teste-vinho-do-mes.svg" alt="Publicidade">
+          <img src="" alt="Publicidade">
           <div class="vinho-anuncio-texto">
-            <div class="titulo" id="vinhoAnuncioTitulo">Vinho do Mês — Teste</div>
-            <div class="subtitulo-anuncio" id="vinhoAnuncioSubtitulo">20,00€ a garrafa</div>
+            <div class="titulo" id="vinhoAnuncioTitulo"></div>
+            <div class="subtitulo-anuncio" id="vinhoAnuncioSubtitulo"></div>
           </div>
         </div>
       </div>
@@ -1562,6 +1564,15 @@
     </details>
 
     <div class="subtitulo" style="margin-top:10px;" data-en="VAT included at the legal rate in force." data-fr="TVA incluse au taux légal en vigueur.">IVA incluído à taxa legal em vigor.</div>
+
+    <div class="vinho-anuncio alto" id="vinhosAnuncioSeccao" data-vinhos-pub-ativo="false">
+      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->
+      <img src="" alt="Publicidade">
+      <div class="vinho-anuncio-texto">
+        <div class="titulo" id="vinhosAnuncioSeccaoTitulo"></div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo"></div>
+      </div>
+    </div>
   </section>
 
   <section class="categoria" id="jogos-menu">
@@ -1879,6 +1890,15 @@
     const bloco = document.getElementById('vinhoAnuncio');
     if(!bloco) return;
     if(bloco.dataset.vinhoPubAtivo === 'true'){
+      bloco.classList.add('ativo');
+    }
+  })();
+
+  // ---- Mostrar (ou não) a publicidade no fundo da secção de Vinhos & Bebidas (ativa-se em editar.html) ----
+  (function(){
+    const bloco = document.getElementById('vinhosAnuncioSeccao');
+    if(!bloco) return;
+    if(bloco.dataset.vinhosPubAtivo === 'true'){
       bloco.classList.add('ativo');
     }
   })();
