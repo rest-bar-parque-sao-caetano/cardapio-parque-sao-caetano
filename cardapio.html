@@ -322,7 +322,7 @@
     display:none;
   }
   .vinho-anuncio.ativo{ display:block; }
-  .vinho-anuncio img{
+  .vinho-anuncio img, .vinho-anuncio video{
     position:absolute; inset:0;
     width:100%; height:100%;
     object-fit:cover;
@@ -393,7 +393,7 @@
   }
   .footer-publicidade.mostrar{ opacity:1; pointer-events:auto; }
   .footer-texto.escondido{ opacity:0; }
-  .footer-publicidade img{
+  .footer-publicidade img, .footer-publicidade video{
     position:absolute; inset:0;
     width:100%; height:100%;
     object-fit:cover;
@@ -562,7 +562,7 @@
     max-width:82%;
     margin:0 auto;
   }
-  .jogo-anuncio img{
+  .jogo-anuncio img, .jogo-anuncio video{
     width:100%;
     max-width:220px;
     max-height:220px;
@@ -1045,13 +1045,13 @@
     overflow:hidden;
     background:var(--castanho);
   }
-  .info-fixa-fundo img{
+  .info-fixa-fundo img, .info-fixa-fundo video{
     position:absolute; inset:0;
     width:100%; height:100%;
     object-fit:cover;
     display:none;
   }
-  .info-fixa-fundo.com-foto img{ display:block; }
+  .info-fixa-fundo.com-foto img, .info-fixa-fundo.com-foto video{ display:block; }
   .info-fixa-fundo::after{
     content:"";
     position:absolute; inset:0;
@@ -2115,6 +2115,31 @@
     if(!bloco) return;
     if(bloco.dataset.vinhosPubAtivo === 'true'){
       bloco.classList.add('ativo');
+    }
+  })();
+
+  // ---- Carregamento preguiçoso dos vídeos de publicidade (só descarrega e reproduz quando visível) ----
+  // Cada <video> de publicidade guarda o caminho real em data-src em vez de src, para não
+  // gastar dados/bateria com vídeos que o cliente nunca chega a ver.
+  (function(){
+    const videosPreguicosos = document.querySelectorAll('video[data-src]');
+    if(!videosPreguicosos.length) return;
+    const ativarVideo = (v) => {
+      if(!v.dataset.src || v.src) return;
+      v.muted = true;
+      v.src = v.dataset.src;
+      v.load();
+      v.play().catch(() => {});
+    };
+    if('IntersectionObserver' in window){
+      const observador = new IntersectionObserver((entradas) => {
+        entradas.forEach((entrada) => {
+          if(entrada.isIntersecting) ativarVideo(entrada.target);
+        });
+      }, { rootMargin: '80px' });
+      videosPreguicosos.forEach((v) => observador.observe(v));
+    } else {
+      videosPreguicosos.forEach(ativarVideo);
     }
   })();
 
