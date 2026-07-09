@@ -533,8 +533,8 @@
         </div>
       </div>
 
-      <label for="novaPublicidade">Substituir imagem de publicidade</label>
-      <input type="file" id="novaPublicidade" accept="image/*">
+      <label for="novaPublicidade">Substituir imagem ou vídeo de publicidade</label>
+      <input type="file" id="novaPublicidade" accept="image/*,video/mp4,video/webm">
     </div>
   </details>
 
@@ -564,8 +564,8 @@
         </div>
       </div>
 
-      <label for="novaVinhoPub">Substituir foto da publicidade</label>
-      <input type="file" id="novaVinhoPub" accept="image/*">
+      <label for="novaVinhoPub">Substituir foto ou vídeo da publicidade</label>
+      <input type="file" id="novaVinhoPub" accept="image/*,video/mp4,video/webm">
 
       <label for="vinhoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
       <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do Mês — Almotriga">
@@ -601,8 +601,8 @@
         </div>
       </div>
 
-      <label for="novaVinhosSeccaoPub">Substituir foto da publicidade</label>
-      <input type="file" id="novaVinhosSeccaoPub" accept="image/*">
+      <label for="novaVinhosSeccaoPub">Substituir foto ou vídeo da publicidade</label>
+      <input type="file" id="novaVinhosSeccaoPub" accept="image/*,video/mp4,video/webm">
 
       <label for="vinhosSeccaoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
       <input type="text" id="vinhosSeccaoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
@@ -672,7 +672,7 @@
       </div>
 
       <label for="novaPubFim" style="margin-top:16px;">Foto do patrocínio</label>
-      <input type="file" id="novaPubFim" accept="image/*">
+      <input type="file" id="novaPubFim" accept="image/*,video/mp4,video/webm">
       <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
 
       <div class="pub-editor-caixa" id="pubFimCaixa">
@@ -717,8 +717,8 @@
         </div>
       </div>
 
-      <label for="novaJogoPub">Substituir foto da publicidade</label>
-      <input type="file" id="novaJogoPub" accept="image/*">
+      <label for="novaJogoPub">Substituir foto ou vídeo da publicidade</label>
+      <input type="file" id="novaJogoPub" accept="image/*,video/mp4,video/webm">
 
       <label for="jogoPubTitulo" style="margin-top:10px;">Título</label>
       <input type="text" id="jogoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
@@ -771,7 +771,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-07';
+  const EDITOR_VERSION = '2026-07-09-08';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -922,6 +922,51 @@
     return html.replace(regex, '$1' + escapado + '$3');
   }
 
+  // ---- Publicidade: deteção e construção de foto OU vídeo ----
+  // Vídeos usam data-src (não src) para carregarem só quando ficam visíveis — ver o
+  // IntersectionObserver em cardapio.html. Isto mantém a app leve mesmo com vídeos ativos.
+  function ficheiroEhVideo(file){
+    return !!file && file.type.startsWith('video/');
+  }
+  function extrairMediaDoInner(innerHtml){
+    const videoM = innerHtml.match(/<video[^>]*><\/video>/);
+    if(videoM){
+      const srcM = videoM[0].match(/data-src="([^"]*)"/);
+      return { tipo: 'video', caminho: srcM ? srcM[1] : '' };
+    }
+    const imgM = innerHtml.match(/<img[^>]*>/);
+    if(imgM){
+      const srcM = imgM[0].match(/src="([^"]*)"/);
+      return { tipo: 'foto', caminho: srcM ? srcM[1] : '' };
+    }
+    return null;
+  }
+  function construirMediaTag(pub, atributosExtra){
+    const extra = atributosExtra || '';
+    if(pub.tipo === 'video'){
+      return '<video data-src="' + pub.caminho + '" muted loop playsinline preload="none"' + extra + '></video>';
+    }
+    return '<img src="' + pub.caminho + '" alt="Publicidade"' + extra + '>';
+  }
+  function renderizarMiniaturaOuVideo(pub, imgEl, nomeEl){
+    if(!pub){
+      imgEl.style.display = '';
+      imgEl.src = '';
+      nomeEl.textContent = '—';
+      return;
+    }
+    if(pub.tipo === 'video'){
+      imgEl.style.display = 'none';
+      imgEl.src = '';
+      nomeEl.textContent = '🎬 ' + (pub.nomePreview || (pub.caminho ? pub.caminho.split('/').pop() : '—'));
+      return;
+    }
+    imgEl.style.display = '';
+    const src = pub.previewUrl || (pub.caminho ? ('https://raw.githubusercontent.com/' + REPO + '/main/' + pub.caminho) : '');
+    imgEl.src = src;
+    nomeEl.textContent = pub.nomePreview || pub.caminho || '—';
+  }
+
   // ---- Fotos do cabeçalho ----
   function extrairFotos(html){
     const regexBloco = /<div class="header-fotos" id="headerFotos">([\s\S]*?)<\/div>/;
@@ -959,20 +1004,19 @@
     const regexBloco = /<div class="info-fixa-fundo" id="infoFixaFundo"[^>]*>([\s\S]*?)<\/div>/;
     const m = html.match(regexBloco);
     if(!m) return null;
-    const imgM = m[1].match(/<img[^>]*>/);
-    if(!imgM) return null;
-    const srcM = imgM[0].match(/src="([^"]*)"/);
-    const src = srcM ? srcM[1] : '';
+    const media = extrairMediaDoInner(m[1]);
+    if(!media) return null;
     return {
-      caminho: src,
+      caminho: media.caminho,
+      tipo: media.tipo,
       novoFicheiro: null,
       previewUrl: null,
-      nomePreview: src.split('/').pop()
+      nomePreview: media.caminho.split('/').pop()
     };
   }
 
   function construirFundoImgHtml(pub){
-    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    <img src="' + pub.caminho + '" alt="Publicidade">\n  ';
+    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
   }
 
   function substituirFundoImg(html, novoInnerHTML){
@@ -981,14 +1025,7 @@
   }
 
   function renderizarPublicidade(){
-    if(!publicidadeState){
-      miniaturaPublicidadeEl.src = '';
-      nomePublicidadeEl.textContent = '—';
-      return;
-    }
-    const src = publicidadeState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + publicidadeState.caminho);
-    miniaturaPublicidadeEl.src = src;
-    nomePublicidadeEl.textContent = publicidadeState.nomePreview || publicidadeState.caminho || '—';
+    renderizarMiniaturaOuVideo(publicidadeState, miniaturaPublicidadeEl, nomePublicidadeEl);
   }
 
   novaPublicidadeInput.addEventListener('change', (e) => {
@@ -996,8 +1033,9 @@
     if(!file) return;
     publicidadeState = {
       caminho: publicidadeState ? publicidadeState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
       novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
       nomePreview: file.name
     };
     renderizarPublicidade();
@@ -1009,20 +1047,19 @@
     const regexBloco = /<div class="vinho-anuncio" id="vinhoAnuncio"[^>]*>([\s\S]*?)<div class="vinho-anuncio-texto">/;
     const m = html.match(regexBloco);
     if(!m) return null;
-    const imgM = m[1].match(/<img[^>]*>/);
-    if(!imgM) return null;
-    const srcM = imgM[0].match(/src="([^"]*)"/);
-    const src = srcM ? srcM[1] : '';
+    const media = extrairMediaDoInner(m[1]);
+    if(!media) return null;
     return {
-      caminho: src,
+      caminho: media.caminho,
+      tipo: media.tipo,
       novoFicheiro: null,
       previewUrl: null,
-      nomePreview: src ? src.split('/').pop() : ''
+      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
     };
   }
 
   function construirVinhoPubImgHtml(pub){
-    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          <img src="' + pub.caminho + '" alt="Publicidade">\n          ';
+    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          ' + construirMediaTag(pub) + '\n          ';
   }
 
   function substituirVinhoPubImg(html, novoInnerHTML){
@@ -1033,12 +1070,11 @@
   function renderizarVinhoPub(){
     if(!vinhoPubState || !vinhoPubState.caminho && !vinhoPubState.novoFicheiro){
       miniaturaVinhoPubEl.src = '';
+      miniaturaVinhoPubEl.style.display = '';
       nomeVinhoPubEl.textContent = '—';
       return;
     }
-    const src = vinhoPubState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhoPubState.caminho);
-    miniaturaVinhoPubEl.src = src;
-    nomeVinhoPubEl.textContent = vinhoPubState.nomePreview || vinhoPubState.caminho || '—';
+    renderizarMiniaturaOuVideo(vinhoPubState, miniaturaVinhoPubEl, nomeVinhoPubEl);
   }
 
   novaVinhoPubInput.addEventListener('change', (e) => {
@@ -1046,8 +1082,9 @@
     if(!file) return;
     vinhoPubState = {
       caminho: vinhoPubState ? vinhoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
       novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
       nomePreview: file.name
     };
     renderizarVinhoPub();
@@ -1059,20 +1096,19 @@
     const regexBloco = /<div class="vinho-anuncio alto" id="vinhosAnuncioSeccao"[^>]*>([\s\S]*?)<div class="vinho-anuncio-texto">/;
     const m = html.match(regexBloco);
     if(!m) return null;
-    const imgM = m[1].match(/<img[^>]*>/);
-    if(!imgM) return null;
-    const srcM = imgM[0].match(/src="([^"]*)"/);
-    const src = srcM ? srcM[1] : '';
+    const media = extrairMediaDoInner(m[1]);
+    if(!media) return null;
     return {
-      caminho: src,
+      caminho: media.caminho,
+      tipo: media.tipo,
       novoFicheiro: null,
       previewUrl: null,
-      nomePreview: src ? src.split('/').pop() : ''
+      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
     };
   }
 
   function construirVinhosSeccaoPubImgHtml(pub){
-    return '\n      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->\n      <img src="' + pub.caminho + '" alt="Publicidade">\n      ';
+    return '\n      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub) + '\n      ';
   }
 
   function substituirVinhosSeccaoPubImg(html, novoInnerHTML){
@@ -1083,12 +1119,11 @@
   function renderizarVinhosSeccaoPub(){
     if(!vinhosSeccaoPubState || !vinhosSeccaoPubState.caminho && !vinhosSeccaoPubState.novoFicheiro){
       miniaturaVinhosSeccaoPubEl.src = '';
+      miniaturaVinhosSeccaoPubEl.style.display = '';
       nomeVinhosSeccaoPubEl.textContent = '—';
       return;
     }
-    const src = vinhosSeccaoPubState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhosSeccaoPubState.caminho);
-    miniaturaVinhosSeccaoPubEl.src = src;
-    nomeVinhosSeccaoPubEl.textContent = vinhosSeccaoPubState.nomePreview || vinhosSeccaoPubState.caminho || '—';
+    renderizarMiniaturaOuVideo(vinhosSeccaoPubState, miniaturaVinhosSeccaoPubEl, nomeVinhosSeccaoPubEl);
   }
 
   novaVinhosSeccaoPubInput.addEventListener('change', (e) => {
@@ -1096,8 +1131,9 @@
     if(!file) return;
     vinhosSeccaoPubState = {
       caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
       novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
       nomePreview: file.name
     };
     renderizarVinhosSeccaoPub();
@@ -1109,20 +1145,19 @@
     const regexBloco = /<div class="jogo-anuncio" id="jogoAnuncio"[^>]*>([\s\S]*?)<div class="jogo-anuncio-titulo"/;
     const m = html.match(regexBloco);
     if(!m) return null;
-    const imgM = m[1].match(/<img[^>]*>/);
-    if(!imgM) return null;
-    const srcM = imgM[0].match(/src="([^"]*)"/);
-    const src = srcM ? srcM[1] : '';
+    const media = extrairMediaDoInner(m[1]);
+    if(!media) return null;
     return {
-      caminho: src,
+      caminho: media.caminho,
+      tipo: media.tipo,
       novoFicheiro: null,
       previewUrl: null,
-      nomePreview: src ? src.split('/').pop() : ''
+      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
     };
   }
 
   function construirJogoPubImgHtml(pub){
-    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      <img id="jogoAnuncioImg" src="' + pub.caminho + '" alt="Publicidade">\n      ';
+    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="jogoAnuncioImg"') + '\n      ';
   }
 
   function substituirJogoPubImg(html, novoInnerHTML){
@@ -1133,12 +1168,11 @@
   function renderizarJogoPub(){
     if(!jogoPubState || !jogoPubState.caminho && !jogoPubState.novoFicheiro){
       miniaturaJogoPubEl.src = '';
+      miniaturaJogoPubEl.style.display = '';
       nomeJogoPubEl.textContent = '—';
       return;
     }
-    const src = jogoPubState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + jogoPubState.caminho);
-    miniaturaJogoPubEl.src = src;
-    nomeJogoPubEl.textContent = jogoPubState.nomePreview || jogoPubState.caminho || '—';
+    renderizarMiniaturaOuVideo(jogoPubState, miniaturaJogoPubEl, nomeJogoPubEl);
   }
 
   novaJogoPubInput.addEventListener('change', (e) => {
@@ -1146,8 +1180,9 @@
     if(!file) return;
     jogoPubState = {
       caminho: jogoPubState ? jogoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
       novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
       nomePreview: file.name
     };
     renderizarJogoPub();
@@ -1269,17 +1304,33 @@
     if(pubFimNatW) pubFimRecalcular(true);
   });
 
+  function pubFimMostrarVideo(nome){
+    // Vídeos não têm editor de posição/zoom (ficam sempre centrados, a cobrir a caixa toda).
+    pubFimVazioEl.style.display = '';
+    pubFimVazioEl.textContent = '🎬 vídeo: ' + (nome || '—') + ' — sem edição de posição/zoom para vídeo, fica sempre centrado.';
+    pubFimImgEl.style.display = 'none';
+    pubFimNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (nome || '—');
+    pubFimNatW = 0;
+    pubFimNatH = 0;
+  }
+
   novaPubFimInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
+    const ehVideo = ficheiroEhVideo(file);
     pubFimState = {
       caminho: pubFimState ? pubFimState.caminho : null,
+      tipo: ehVideo ? 'video' : 'foto',
       novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
+      previewUrl: ehVideo ? null : URL.createObjectURL(file),
       nomePreview: file.name,
       posX: 50, posY: 50, escala: 1
     };
-    pubFimCarregarImagem(pubFimState.previewUrl);
+    if(ehVideo){
+      pubFimMostrarVideo(file.name);
+    } else {
+      pubFimCarregarImagem(pubFimState.previewUrl);
+    }
     e.target.value = '';
   });
 
@@ -1287,18 +1338,28 @@
     const regexBloco = /<div class="footer-publicidade" id="footerPublicidade"[^>]*>([\s\S]*?)<\/div>/;
     const m = html.match(regexBloco);
     if(!m) return null;
+    const media = extrairMediaDoInner(m[1]);
+    if(!media) return null;
+    if(media.tipo === 'video'){
+      return {
+        caminho: media.caminho,
+        tipo: 'video',
+        novoFicheiro: null,
+        previewUrl: null,
+        nomePreview: media.caminho.split('/').pop(),
+        posX: 50, posY: 50, escala: 1
+      };
+    }
     const imgM = m[1].match(/<img[^>]*>/);
-    if(!imgM) return null;
-    const tag = imgM[0];
-    const srcM = tag.match(/src="([^"]*)"/);
-    const src = srcM ? srcM[1] : '';
+    const tag = imgM ? imgM[0] : '';
     const posM = tag.match(/object-position:\s*([\d.]+)%\s+([\d.]+)%/);
     const scaleM = tag.match(/scale\(([\d.]+)\)/);
     return {
-      caminho: src,
+      caminho: media.caminho,
+      tipo: 'foto',
       novoFicheiro: null,
       previewUrl: null,
-      nomePreview: src.split('/').pop(),
+      nomePreview: media.caminho.split('/').pop(),
       posX: posM ? parseFloat(posM[1]) : 50,
       posY: posM ? parseFloat(posM[2]) : 50,
       escala: scaleM ? parseFloat(scaleM[1]) : 1
@@ -1306,6 +1367,9 @@
   }
 
   function construirPubFimImgHtml(pub){
+    if(pub.tipo === 'video'){
+      return '\n    <!-- Vídeo de patrocínio (sem posição/ampliação) e horários: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
+    }
     const x = Math.round(pub.posX * 10) / 10;
     const y = Math.round(pub.posY * 10) / 10;
     const s = Math.round(pub.escala * 100) / 100;
@@ -1474,7 +1538,9 @@
       jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
 
       pubFimState = extrairPubFim(conteudo);
-      if(pubFimState && pubFimState.caminho){
+      if(pubFimState && pubFimState.tipo === 'video'){
+        pubFimMostrarVideo(pubFimState.nomePreview);
+      } else if(pubFimState && pubFimState.caminho){
         pubFimCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho);
       }
       pubFimAtivoInput.checked = extrairAtributo(conteudo, 'data-pub-ativo') === 'true';
