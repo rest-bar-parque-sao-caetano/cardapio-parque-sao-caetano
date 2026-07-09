@@ -1141,6 +1141,171 @@
     opacity:1;
     transform:translateY(0) scale(1);
   }
+
+  /* ---- Lista pessoal do cliente (adicionar itens para pedir) ---- */
+  .item-conteudo{
+    flex:1;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:10px;
+    min-width:0;
+  }
+  .lista-add-btn{
+    flex:0 0 auto;
+    align-self:center;
+    width:28px; height:28px;
+    border-radius:50%;
+    border:1px solid var(--dourado);
+    background:var(--bege);
+    color:var(--dourado-escuro);
+    font-family:'Fredoka',sans-serif;
+    font-size:1rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:background .15s ease, color .15s ease, transform .15s ease;
+  }
+  .lista-add-btn:active{ transform:scale(0.9); }
+  .lista-add-btn.adicionado{
+    background:var(--castanho);
+    border-color:var(--castanho);
+    color:var(--branco);
+  }
+
+  .lista-flutuante-btn{
+    display:none;
+    position:fixed;
+    left:14px; bottom:106px;
+    z-index:400;
+    align-items:center; gap:8px;
+    background:var(--castanho);
+    color:var(--branco);
+    border:none;
+    border-radius:999px;
+    padding:11px 16px 11px 14px;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:0.82rem;
+    box-shadow:0 6px 18px rgba(74,56,32,0.3);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lista-flutuante-btn.mostrar{ display:inline-flex; }
+  .lista-flutuante-btn .lista-icone{ font-size:1rem; }
+  .lista-flutuante-btn .lista-contagem{
+    background:var(--dourado);
+    color:var(--branco);
+    border-radius:999px;
+    min-width:19px; height:19px;
+    font-size:0.72rem;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:0 5px;
+  }
+
+  .lista-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(30,24,12,0.55);
+    z-index:550;
+    align-items:flex-end; justify-content:center;
+    padding:0;
+  }
+  .lista-overlay.aberto{ display:flex; }
+  .lista-card{
+    background:var(--branco);
+    border-radius:18px 18px 0 0;
+    max-width:480px; width:100%;
+    max-height:78vh;
+    padding:18px 18px 20px;
+    box-shadow:0 -8px 28px rgba(74,56,32,0.25);
+    position:relative;
+    display:flex; flex-direction:column;
+    animation:listaSubir .2s ease;
+  }
+  @keyframes listaSubir{
+    from{ transform:translateY(24px); opacity:0; }
+    to{ transform:translateY(0); opacity:1; }
+  }
+  .lista-card .fechar{
+    position:absolute; top:12px; right:14px;
+    background:none; border:none;
+    font-size:1.3rem; line-height:1;
+    color:var(--castanho-claro); cursor:pointer;
+    padding:4px;
+  }
+  .lista-card h3{
+    font-family:'Fredoka',sans-serif;
+    color:var(--dourado);
+    font-size:1.1rem;
+    padding-right:24px;
+    margin-bottom:2px;
+  }
+  .lista-card .lista-subtitulo{
+    font-size:0.78rem;
+    color:var(--castanho-suave);
+    margin-bottom:12px;
+  }
+  .lista-itens{
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    border-top:1px solid var(--linha);
+  }
+  .lista-item-linha{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+    padding:11px 2px;
+    border-bottom:1px dotted var(--linha);
+  }
+  .lista-item-linha .lista-item-nome{
+    font-weight:500; font-size:0.92rem; color:var(--castanho);
+    flex:1; min-width:0;
+  }
+  .lista-item-qtd{
+    display:flex; align-items:center; gap:8px;
+    flex:0 0 auto;
+  }
+  .lista-item-qtd button{
+    width:26px; height:26px;
+    border-radius:50%;
+    border:1px solid var(--linha);
+    background:var(--bege);
+    color:var(--castanho);
+    font-size:0.95rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .lista-item-qtd .lista-item-num{
+    min-width:16px; text-align:center;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600; color:var(--castanho);
+    font-size:0.9rem;
+  }
+  .lista-vazia{
+    padding:24px 4px; text-align:center;
+    color:var(--castanho-suave); font-size:0.85rem;
+  }
+  .lista-card .lista-rodape{
+    margin-top:14px; padding-top:12px;
+    border-top:1px solid var(--linha);
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px;
+  }
+  .lista-card .lista-nota{
+    font-size:0.72rem; color:var(--castanho-claro);
+    line-height:1.35;
+  }
+  .lista-card .lista-limpar{
+    flex:0 0 auto;
+    background:none;
+    border:1px solid var(--linha);
+    border-radius:8px;
+    padding:8px 12px;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.74rem;
+    font-weight:600;
+    color:var(--castanho-suave);
+    cursor:pointer;
+  }
+  .lista-card .lista-limpar:active{ background:var(--bege); }
 </style>
 </head>
 <body>
@@ -1567,10 +1732,10 @@
 
     <div class="vinho-anuncio alto" id="vinhosAnuncioSeccao" data-vinhos-pub-ativo="false">
       <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->
-      <img src="imagens/1783601813035-teste-vinho-do-mes.svg" alt="Publicidade">
+      <img src="" alt="Publicidade">
       <div class="vinho-anuncio-texto">
-        <div class="titulo" id="vinhosAnuncioSeccaoTitulo">Teste — fundo secção</div>
-        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo">Subtítulo de teste</div>
+        <div class="titulo" id="vinhosAnuncioSeccaoTitulo"></div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo"></div>
       </div>
     </div>
   </section>
@@ -1774,6 +1939,27 @@
       </div>
     </div>
     <h3 id="modalFotoNome">Nome do prato</h3>
+  </div>
+</div>
+
+<button class="lista-flutuante-btn" id="listaFlutuanteBtn" type="button">
+  <span class="lista-icone">📝</span>
+  <span data-en="My list" data-fr="Ma liste">A minha lista</span>
+  <span class="lista-contagem" id="listaContagem">0</span>
+</button>
+
+<div class="lista-overlay" id="listaOverlay">
+  <div class="lista-card">
+    <button class="fechar" id="fecharListaPopup" aria-label="Fechar">✕</button>
+    <h3 data-en="My list" data-fr="Ma liste">A minha lista</h3>
+    <div class="lista-subtitulo" data-en="Show this to your waiter" data-fr="Montre ceci à ton serveur">Mostra isto ao empregado</div>
+    <div class="lista-itens" id="listaItensWrap">
+      <div class="lista-vazia" id="listaVazia" data-en="Your list is empty. Tap the + next to a dish or drink to add it." data-fr="Ta liste est vide. Touche le + à côté d'un plat ou d'une boisson pour l'ajouter.">A tua lista está vazia. Toca no + junto de um prato ou bebida para adicionar.</div>
+    </div>
+    <div class="lista-rodape">
+      <div class="lista-nota" data-en="The list clears itself 15 minutes after the last item you add." data-fr="La liste s'efface automatiquement 15 minutes après le dernier article ajouté.">A lista apaga-se sozinha 15 min depois do último item que adicionares.</div>
+      <button class="lista-limpar" id="listaLimparBtn" type="button" data-en="Clear" data-fr="Effacer">Limpar</button>
+    </div>
   </div>
 </div>
 
@@ -2979,6 +3165,170 @@
   document.getElementById('fecharModalFoto').addEventListener('click', fecharModalFoto);
   modalFoto.addEventListener('click', (e) => { if(e.target === modalFoto) fecharModalFoto(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalFoto(); });
+
+  // ---- Lista pessoal do cliente (itens para pedir ao empregado) ----
+  (function(){
+    const LISTA_KEY = 'listaPedidoCliente';
+    const LISTA_EXPIRA_MS = 15 * 60 * 1000;
+    const registoItens = {};
+    let contadorItens = 0;
+
+    const listaFlutuanteBtn = document.getElementById('listaFlutuanteBtn');
+    const listaContagem = document.getElementById('listaContagem');
+    const listaOverlay = document.getElementById('listaOverlay');
+    const listaItensWrap = document.getElementById('listaItensWrap');
+    const listaVazia = document.getElementById('listaVazia');
+
+    if(!listaFlutuanteBtn || !listaOverlay) return;
+
+    function lerLista(){
+      let dados;
+      try{ dados = JSON.parse(localStorage.getItem(LISTA_KEY) || 'null'); }
+      catch(e){ dados = null; }
+      if(!dados || !Array.isArray(dados.itens)) return [];
+      if(Date.now() - (dados.ultimaAtualizacao || 0) > LISTA_EXPIRA_MS){
+        localStorage.removeItem(LISTA_KEY);
+        return [];
+      }
+      return dados.itens;
+    }
+
+    function guardarLista(itens){
+      if(itens.length === 0) localStorage.removeItem(LISTA_KEY);
+      else localStorage.setItem(LISTA_KEY, JSON.stringify({ itens, ultimaAtualizacao: Date.now() }));
+      renderizarLista();
+    }
+
+    function adicionarItem(id){
+      const itens = lerLista();
+      const existente = itens.find(i => i.id === id);
+      if(existente) existente.qtd += 1;
+      else itens.push({ id, qtd: 1 });
+      guardarLista(itens);
+    }
+
+    function alterarQtd(id, delta){
+      let itens = lerLista();
+      const item = itens.find(i => i.id === id);
+      if(!item) return;
+      item.qtd += delta;
+      if(item.qtd <= 0) itens = itens.filter(i => i.id !== id);
+      guardarLista(itens);
+    }
+
+    function nomeNoIdioma(id){
+      const info = registoItens[id];
+      if(!info) return '';
+      if(idiomaAtual === 'en' && info.en) return info.en;
+      if(idiomaAtual === 'fr' && info.fr) return info.fr;
+      return info.pt;
+    }
+
+    function renderizarLista(){
+      const itens = lerLista();
+      const total = itens.reduce((soma, i) => soma + i.qtd, 0);
+
+      listaContagem.textContent = total;
+      listaFlutuanteBtn.classList.toggle('mostrar', total > 0);
+
+      listaItensWrap.querySelectorAll('.lista-item-linha').forEach(el => el.remove());
+
+      if(itens.length === 0){
+        listaVazia.style.display = 'block';
+        return;
+      }
+      listaVazia.style.display = 'none';
+
+      itens.forEach(item => {
+        const linha = document.createElement('div');
+        linha.className = 'lista-item-linha';
+
+        const nome = document.createElement('div');
+        nome.className = 'lista-item-nome';
+        nome.textContent = nomeNoIdioma(item.id);
+
+        const qtdWrap = document.createElement('div');
+        qtdWrap.className = 'lista-item-qtd';
+
+        const btnMenos = document.createElement('button');
+        btnMenos.type = 'button';
+        btnMenos.textContent = '−';
+        btnMenos.setAttribute('aria-label', 'Diminuir quantidade');
+        btnMenos.addEventListener('click', () => alterarQtd(item.id, -1));
+
+        const num = document.createElement('span');
+        num.className = 'lista-item-num';
+        num.textContent = item.qtd;
+
+        const btnMais = document.createElement('button');
+        btnMais.type = 'button';
+        btnMais.textContent = '+';
+        btnMais.setAttribute('aria-label', 'Aumentar quantidade');
+        btnMais.addEventListener('click', () => alterarQtd(item.id, 1));
+
+        qtdWrap.appendChild(btnMenos);
+        qtdWrap.appendChild(num);
+        qtdWrap.appendChild(btnMais);
+
+        linha.appendChild(nome);
+        linha.appendChild(qtdWrap);
+        listaItensWrap.appendChild(linha);
+      });
+    }
+
+    function abrirListaPopup(){ listaOverlay.classList.add('aberto'); }
+    function fecharListaPopup(){ listaOverlay.classList.remove('aberto'); }
+
+    listaFlutuanteBtn.addEventListener('click', abrirListaPopup);
+    document.getElementById('fecharListaPopup').addEventListener('click', fecharListaPopup);
+    listaOverlay.addEventListener('click', (e) => { if(e.target === listaOverlay) fecharListaPopup(); });
+    document.getElementById('listaLimparBtn').addEventListener('click', () => {
+      localStorage.removeItem(LISTA_KEY);
+      renderizarLista();
+    });
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharListaPopup(); });
+
+    document.querySelectorAll('#langSwitch button').forEach(b => {
+      b.addEventListener('click', () => renderizarLista());
+    });
+
+    document.querySelectorAll('.categoria .item').forEach(item => {
+      const nomeEl = item.querySelector('.nome');
+      if(!nomeEl) return;
+
+      const id = 'item-' + (contadorItens++);
+      const pt = nomeEl.dataset.pt || nomeEl.textContent.trim();
+      const en = nomeEl.dataset.en || pt;
+      const fr = nomeEl.dataset.fr || pt;
+      registoItens[id] = { pt, en, fr };
+
+      const conteudo = document.createElement('div');
+      conteudo.className = 'item-conteudo';
+      while(item.firstChild) conteudo.appendChild(item.firstChild);
+      item.appendChild(conteudo);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lista-add-btn';
+      btn.setAttribute('aria-label', 'Adicionar à lista');
+      btn.textContent = '+';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        adicionarItem(id);
+        btn.classList.add('adicionado');
+        btn.textContent = '✓';
+        setTimeout(() => {
+          btn.classList.remove('adicionado');
+          btn.textContent = '+';
+        }, 700);
+      });
+      item.appendChild(btn);
+    });
+
+    renderizarLista();
+    setInterval(renderizarLista, 30000);
+  })();
 </script>
 
 </body>
