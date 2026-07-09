@@ -324,6 +324,74 @@
   }
   .pub-editor-zoom span{font-size:0.75rem; color:var(--castanho-suave); flex:0 0 auto;}
   .pub-editor-zoom input[type=range]{ flex:1; }
+
+  /* ---- Blocos dobráveis (cada secção do editor abre/fecha por si) ---- */
+  .bloco-editor{
+    margin-top:14px;
+    padding:0;
+    background:var(--branco);
+    border:1px solid var(--linha);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .bloco-editor + .bloco-editor{ margin-top:10px; }
+  .bloco-editor summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    background:var(--bege-claro);
+    font-family:inherit;
+  }
+  .bloco-editor summary::-webkit-details-marker{ display:none; }
+  .bloco-editor summary .bloco-icone{
+    font-size:1.15rem;
+    flex:0 0 auto;
+    line-height:1;
+  }
+  .bloco-editor summary .bloco-titulos{ flex:1; min-width:0; }
+  .bloco-editor summary .bloco-titulo{
+    font-family:'Fredoka',sans-serif;
+    font-size:0.86rem;
+    font-weight:600;
+    color:var(--castanho);
+  }
+  .bloco-editor summary .bloco-resumo{
+    font-size:0.74rem;
+    color:var(--castanho-suave);
+    margin-top:1px;
+    line-height:1.3;
+  }
+  .bloco-editor summary .bloco-seta{
+    flex:0 0 auto;
+    color:var(--castanho-claro);
+    font-size:0.9rem;
+    transition:transform .15s ease;
+  }
+  .bloco-editor[open] summary .bloco-seta{ transform:rotate(90deg); }
+  .bloco-editor[open] summary{ border-bottom:1px solid var(--linha); }
+  .bloco-editor .bloco-conteudo{
+    padding:16px 16px 18px;
+  }
+  .bloco-editor .bloco-conteudo > label:first-child,
+  .bloco-editor .bloco-conteudo > .check-ativar:first-child{ margin-top:0; }
+  .bloco-editor .bloco-estado-tag{
+    font-size:0.68rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    padding:2px 7px;
+    border-radius:20px;
+    flex:0 0 auto;
+    background:var(--bege);
+    color:var(--castanho-claro);
+  }
+  .bloco-editor .bloco-estado-tag.ligado{
+    background:#eef5ee;
+    color:var(--verde);
+  }
 </style>
 </head>
 <body>
@@ -332,7 +400,7 @@
   <a class="voltar" href="cardapio.html">← Voltar ao cardápio</a>
   <h1>Editar cabeçalho e rodapé</h1>
   <div class="subtitulo">
-    Muda aqui o texto do rodapé, as fotos que rodam no topo do cardápio e a imagem de publicidade do rodapé. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
+    Toca num bloco abaixo para o abrir e editar só essa parte. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
   </div>
 
   <div class="estado erro mostrar" id="avisoDesatualizado" style="display:none;">
@@ -361,201 +429,313 @@
     </ol>
   </details>
 
-  <label for="linha1">Linha 1 (aparece a negrito)</label>
-  <input type="text" id="linha1" placeholder="Ex: Contamos contigo!">
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">📝</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Texto do rodapé</span>
+        <span class="bloco-resumo">Nome, horário, morada e telefone — e o texto especial automático</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <label for="linha1">Linha 1 (aparece a negrito)</label>
+      <input type="text" id="linha1" placeholder="Ex: Contamos contigo!">
 
-  <label for="linha2">Linha 2</label>
-  <input type="text" id="linha2" placeholder="Ex: Terça a Domingo — Almoço e Jantar">
+      <label for="linha2">Linha 2</label>
+      <input type="text" id="linha2" placeholder="Ex: Terça a Domingo — Almoço e Jantar">
 
-  <label for="linha3">Linha 3</label>
-  <input type="text" id="linha3" placeholder="Ex: Reservas: 962 202 622">
+      <label for="linha3">Linha 3</label>
+      <input type="text" id="linha3" placeholder="Ex: Reservas: 962 202 622">
 
-  <label for="linha4">Linha 4</label>
-  <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
+      <label for="linha4">Linha 4</label>
+      <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
 
-  <div class="check-ativar">
-    <input type="checkbox" id="especialAtivo">
-    <label for="especialAtivo">Ativar texto especial com horário automático</label>
-  </div>
-  <div class="subtitulo" style="margin:6px 0 0;">
-    Enquanto estiver ativo, o rodapé muda sozinho para o texto abaixo durante o horário indicado, e volta ao texto normal automaticamente fora desse horário — não precisas de fazer nada nessa hora.
-  </div>
-
-  <div class="bloco-especial">
-    <div class="linha-horas">
-      <div>
-        <label for="horaInicio">Começa às</label>
-        <input type="time" id="horaInicio">
+      <div class="check-ativar">
+        <input type="checkbox" id="especialAtivo">
+        <label for="especialAtivo">Ativar texto especial com horário automático</label>
       </div>
-      <div>
-        <label for="horaFim">Termina às</label>
-        <input type="time" id="horaFim">
+      <div class="subtitulo" style="margin:6px 0 0;">
+        Enquanto estiver ativo, o rodapé muda sozinho para o texto abaixo durante o horário indicado, e volta ao texto normal automaticamente fora desse horário — não precisas de fazer nada nessa hora.
       </div>
-    </div>
 
-    <label for="especial1">Linha 1 especial (negrito)</label>
-    <input type="text" id="especial1" placeholder="Ex: Estamos fechados">
+      <div class="bloco-especial">
+        <div class="linha-horas">
+          <div>
+            <label for="horaInicio">Começa às</label>
+            <input type="time" id="horaInicio">
+          </div>
+          <div>
+            <label for="horaFim">Termina às</label>
+            <input type="time" id="horaFim">
+          </div>
+        </div>
 
-    <label for="especial2">Linha 2 especial</label>
-    <input type="text" id="especial2">
+        <label for="especial1">Linha 1 especial (negrito)</label>
+        <input type="text" id="especial1" placeholder="Ex: Estamos fechados">
 
-    <label for="especial3">Linha 3 especial</label>
-    <input type="text" id="especial3">
+        <label for="especial2">Linha 2 especial</label>
+        <input type="text" id="especial2">
 
-    <label for="especial4">Linha 4 especial</label>
-    <input type="text" id="especial4">
-  </div>
+        <label for="especial3">Linha 3 especial</label>
+        <input type="text" id="especial3">
 
-  <div class="preview-titulo" style="margin-top:28px;">Fotos do cabeçalho</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Estas fotos aparecem a rodar no topo do cardápio, por trás do nome do restaurante. Define a ordem, quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si), e adiciona ou remove fotos.
-  </div>
-
-  <div id="listaFotos"></div>
-
-  <label for="novaFoto">Adicionar nova(s) foto(s) ao cabeçalho</label>
-  <input type="file" id="novaFoto" accept="image/*" multiple>
-
-  <div class="preview-titulo" style="margin-top:28px;">Publicidade da barra fixa</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Podes mostrar uma imagem de fundo (de um anunciante) na barra fixa que fica sempre visível no fundo do ecrã, por baixo do texto de cima — ou deixá-la sem foto, só com o texto sobre fundo liso.
-  </div>
-
-  <div class="check-ativar" style="margin-top:6px;">
-    <input type="checkbox" id="fundoAtivo">
-    <label for="fundoAtivo">Mostrar imagem de publicidade na barra fixa</label>
-  </div>
-
-  <div class="linha-foto" id="linhaPublicidade" style="margin-top:10px;">
-    <img class="miniatura" id="miniaturaPublicidade" src="" alt="">
-    <div class="linha-foto-info">
-      <div class="linha-foto-nome" id="nomePublicidade">—</div>
-    </div>
-  </div>
-
-  <label for="novaPublicidade">Substituir imagem de publicidade</label>
-  <input type="file" id="novaPublicidade" accept="image/*">
-
-  <div class="preview-titulo" style="margin-top:28px;">Publicidade no grupo "Vinho da Casa"</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Podes mostrar uma foto de publicidade (ex: "Vinho do Mês") no fundo do grupo "Vinho da Casa", dentro da secção de Vinhos & Bebidas. Aparece sempre que o cliente abrir esse grupo, sem horários.
-  </div>
-
-  <div class="check-ativar" style="margin-top:6px;">
-    <input type="checkbox" id="vinhoPubAtivo">
-    <label for="vinhoPubAtivo">Mostrar publicidade no grupo "Vinho da Casa"</label>
-  </div>
-
-  <div class="linha-foto" id="linhaVinhoPub" style="margin-top:10px;">
-    <img class="miniatura" id="miniaturaVinhoPub" src="" alt="">
-    <div class="linha-foto-info">
-      <div class="linha-foto-nome" id="nomeVinhoPub">—</div>
-    </div>
-  </div>
-
-  <label for="novaVinhoPub">Substituir foto da publicidade</label>
-  <input type="file" id="novaVinhoPub" accept="image/*">
-
-  <label for="vinhoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-  <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do Mês — Almotriga">
-
-  <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
-  <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
-
-  <div class="preview-titulo" style="margin-top:28px;">Publicidade no fundo da secção de Vinhos & Bebidas</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Podes mostrar uma foto de publicidade no espaço em branco que fica no fundo da secção de Vinhos & Bebidas, logo abaixo do grupo "Sangrias". Aparece sempre que o cliente abrir essa secção, sem horários.
-  </div>
-
-  <div class="check-ativar" style="margin-top:6px;">
-    <input type="checkbox" id="vinhosSeccaoPubAtivo">
-    <label for="vinhosSeccaoPubAtivo">Mostrar publicidade no fundo da secção de Vinhos & Bebidas</label>
-  </div>
-
-  <div class="linha-foto" id="linhaVinhosSeccaoPub" style="margin-top:10px;">
-    <img class="miniatura" id="miniaturaVinhosSeccaoPub" src="" alt="">
-    <div class="linha-foto-info">
-      <div class="linha-foto-nome" id="nomeVinhosSeccaoPub">—</div>
-    </div>
-  </div>
-
-  <label for="novaVinhosSeccaoPub">Substituir foto da publicidade</label>
-  <input type="file" id="novaVinhosSeccaoPub" accept="image/*">
-
-  <label for="vinhosSeccaoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-  <input type="text" id="vinhosSeccaoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
-
-  <label for="vinhosSeccaoPubSubtitulo">Texto secundário (opcional)</label>
-  <input type="text" id="vinhosSeccaoPubSubtitulo">
-
-  <div class="preview-titulo" style="margin-top:28px;">Publicidade no fim da página</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Este é o rodapé com o nome, morada e telefone que aparece quando se faz scroll até ao fim do cardápio. Podes pôr aí uma foto de patrocínio que aparece a cobrir esse espaço de vez em quando, e tu decides os horários, o intervalo e quantas vezes por dia.
-  </div>
-
-  <div class="check-ativar" style="margin-top:6px;">
-    <input type="checkbox" id="pubFimAtivo">
-    <label for="pubFimAtivo">Ativar publicidade no fim da página</label>
-  </div>
-
-  <div class="bloco-especial">
-    <div class="linha-horas">
-      <div>
-        <label for="pubFimInicio">Só entre</label>
-        <input type="time" id="pubFimInicio">
-      </div>
-      <div>
-        <label for="pubFimFim">e</label>
-        <input type="time" id="pubFimFim">
+        <label for="especial4">Linha 4 especial</label>
+        <input type="text" id="especial4">
       </div>
     </div>
+  </details>
 
-    <label for="pubFimIntervalo">De quantos em quantos minutos aparece</label>
-    <div class="campo-numero">
-      <input type="number" id="pubFimIntervalo" min="1" max="240" step="1">
-      <span>minutos</span>
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">🖼️</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Fotos do cabeçalho</span>
+        <span class="bloco-resumo">As fotos que rodam no topo do cardápio</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Estas fotos aparecem a rodar no topo do cardápio, por trás do nome do restaurante. Define a ordem, quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si), e adiciona ou remove fotos.
+      </div>
+
+      <div id="listaFotos"></div>
+
+      <label for="novaFoto">Adicionar nova(s) foto(s) ao cabeçalho</label>
+      <input type="file" id="novaFoto" accept="image/*" multiple>
     </div>
+  </details>
 
-    <label for="pubFimDuracao">Quantos segundos fica visível cada vez</label>
-    <div class="campo-numero">
-      <input type="number" id="pubFimDuracao" min="1" max="60" step="1">
-      <span>segundos</span>
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">📢</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Publicidade — barra fixa</span>
+        <span class="bloco-resumo">Imagem de fundo na barra sempre visível no fundo do ecrã</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Podes mostrar uma imagem de fundo (de um anunciante) na barra fixa que fica sempre visível no fundo do ecrã, por baixo do texto de cima — ou deixá-la sem foto, só com o texto sobre fundo liso.
+      </div>
+
+      <div class="check-ativar" style="margin-top:0;">
+        <input type="checkbox" id="fundoAtivo">
+        <label for="fundoAtivo">Mostrar imagem de publicidade na barra fixa</label>
+      </div>
+
+      <div class="linha-foto" id="linhaPublicidade" style="margin-top:10px;">
+        <img class="miniatura" id="miniaturaPublicidade" src="" alt="">
+        <div class="linha-foto-info">
+          <div class="linha-foto-nome" id="nomePublicidade">—</div>
+        </div>
+      </div>
+
+      <label for="novaPublicidade">Substituir imagem de publicidade</label>
+      <input type="file" id="novaPublicidade" accept="image/*">
     </div>
+  </details>
 
-    <label for="pubFimMax">Máximo de vezes por dia</label>
-    <div class="campo-numero">
-      <input type="number" id="pubFimMax" min="0" max="200" step="1">
-      <span>(0 = sem limite)</span>
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">🍷</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Publicidade — Vinho da Casa</span>
+        <span class="bloco-resumo">Foto no fundo do grupo "Vinho da Casa"</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Podes mostrar uma foto de publicidade (ex: "Vinho do Mês") no fundo do grupo "Vinho da Casa", dentro da secção de Vinhos & Bebidas. Aparece sempre que o cliente abrir esse grupo, sem horários.
+      </div>
+
+      <div class="check-ativar" style="margin-top:0;">
+        <input type="checkbox" id="vinhoPubAtivo">
+        <label for="vinhoPubAtivo">Mostrar publicidade no grupo "Vinho da Casa"</label>
+      </div>
+
+      <div class="linha-foto" id="linhaVinhoPub" style="margin-top:10px;">
+        <img class="miniatura" id="miniaturaVinhoPub" src="" alt="">
+        <div class="linha-foto-info">
+          <div class="linha-foto-nome" id="nomeVinhoPub">—</div>
+        </div>
+      </div>
+
+      <label for="novaVinhoPub">Substituir foto da publicidade</label>
+      <input type="file" id="novaVinhoPub" accept="image/*">
+
+      <label for="vinhoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
+      <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do Mês — Almotriga">
+
+      <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
+      <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
     </div>
-    <div class="subtitulo" style="margin:6px 0 0; font-size:0.76rem;">
-      Nota: esta contagem é feita no telemóvel/computador de cada pessoa que visita o cardápio (não há um contador central), por isso serve para não repetir demasiadas vezes ao mesmo cliente, não como contagem exata de exibições.
+  </details>
+
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">🍾</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Publicidade — secção Vinhos & Bebidas</span>
+        <span class="bloco-resumo">Foto no fundo da secção, abaixo do grupo "Sangrias"</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Podes mostrar uma foto de publicidade no espaço em branco que fica no fundo da secção de Vinhos & Bebidas, logo abaixo do grupo "Sangrias". Aparece sempre que o cliente abrir essa secção, sem horários.
+      </div>
+
+      <div class="check-ativar" style="margin-top:0;">
+        <input type="checkbox" id="vinhosSeccaoPubAtivo">
+        <label for="vinhosSeccaoPubAtivo">Mostrar publicidade no fundo da secção de Vinhos & Bebidas</label>
+      </div>
+
+      <div class="linha-foto" id="linhaVinhosSeccaoPub" style="margin-top:10px;">
+        <img class="miniatura" id="miniaturaVinhosSeccaoPub" src="" alt="">
+        <div class="linha-foto-info">
+          <div class="linha-foto-nome" id="nomeVinhosSeccaoPub">—</div>
+        </div>
+      </div>
+
+      <label for="novaVinhosSeccaoPub">Substituir foto da publicidade</label>
+      <input type="file" id="novaVinhosSeccaoPub" accept="image/*">
+
+      <label for="vinhosSeccaoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
+      <input type="text" id="vinhosSeccaoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
+
+      <label for="vinhosSeccaoPubSubtitulo">Texto secundário (opcional)</label>
+      <input type="text" id="vinhosSeccaoPubSubtitulo">
     </div>
-  </div>
+  </details>
 
-  <label for="novaPubFim" style="margin-top:16px;">Foto do patrocínio</label>
-  <input type="file" id="novaPubFim" accept="image/*">
-  <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">📄</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Publicidade — fim da página</span>
+        <span class="bloco-resumo">Foto de patrocínio agendada, no rodapé com morada e telefone</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Este é o rodapé com o nome, morada e telefone que aparece quando se faz scroll até ao fim do cardápio. Podes pôr aí uma foto de patrocínio que aparece a cobrir esse espaço de vez em quando, e tu decides os horários, o intervalo e quantas vezes por dia.
+      </div>
 
-  <div class="pub-editor-caixa" id="pubFimCaixa">
-    <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
-    <img id="pubFimImg" src="" alt="" style="display:none;">
-  </div>
-  <div class="pub-editor-dica">Arrasta a foto dentro da moldura para a posicionares.</div>
-  <div class="pub-editor-zoom">
-    <span>Tamanho</span>
-    <input type="range" id="pubFimZoom" min="100" max="300" step="1" value="100">
-  </div>
-  <div class="pub-editor-dica" style="margin-top:8px;">
-    Não queres esperar pela hora agendada para confirmar que está bem? <a href="https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/cardapio.html?preview_pub_fim=1" target="_blank" rel="noopener">Pré-visualizar agora →</a>
-    (mostra a publicidade de imediato, numa aba nova, sem depender do agendamento — só nessa aba, não afeta os outros visitantes).
-  </div>
+      <div class="check-ativar" style="margin-top:0;">
+        <input type="checkbox" id="pubFimAtivo">
+        <label for="pubFimAtivo">Ativar publicidade no fim da página</label>
+      </div>
 
-  <div class="preview-titulo" style="margin-top:28px;">Estatísticas</div>
-  <div class="subtitulo" style="margin:2px 0 10px;">
-    Quantas vezes o cardápio foi aberto e quantas vezes a publicidade do rodapé foi mostrada. Números guardados automaticamente, sem precisares de fazer nada.
-  </div>
-  <div id="estatisticasCaixa" style="font-size:0.85rem; color:var(--castanho-suave); line-height:1.7;">A carregar…</div>
-  <button type="button" class="acao carregar" id="btnAtualizarEstatisticas" style="margin-top:10px; width:100%;">Atualizar estatísticas</button>
+      <div class="bloco-especial">
+        <div class="linha-horas">
+          <div>
+            <label for="pubFimInicio">Só entre</label>
+            <input type="time" id="pubFimInicio">
+          </div>
+          <div>
+            <label for="pubFimFim">e</label>
+            <input type="time" id="pubFimFim">
+          </div>
+        </div>
+
+        <label for="pubFimIntervalo">De quantos em quantos minutos aparece</label>
+        <div class="campo-numero">
+          <input type="number" id="pubFimIntervalo" min="1" max="240" step="1">
+          <span>minutos</span>
+        </div>
+
+        <label for="pubFimDuracao">Quantos segundos fica visível cada vez</label>
+        <div class="campo-numero">
+          <input type="number" id="pubFimDuracao" min="1" max="60" step="1">
+          <span>segundos</span>
+        </div>
+
+        <label for="pubFimMax">Máximo de vezes por dia</label>
+        <div class="campo-numero">
+          <input type="number" id="pubFimMax" min="0" max="200" step="1">
+          <span>(0 = sem limite)</span>
+        </div>
+        <div class="subtitulo" style="margin:6px 0 0; font-size:0.76rem;">
+          Nota: esta contagem é feita no telemóvel/computador de cada pessoa que visita o cardápio (não há um contador central), por isso serve para não repetir demasiadas vezes ao mesmo cliente, não como contagem exata de exibições.
+        </div>
+      </div>
+
+      <label for="novaPubFim" style="margin-top:16px;">Foto do patrocínio</label>
+      <input type="file" id="novaPubFim" accept="image/*">
+      <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
+
+      <div class="pub-editor-caixa" id="pubFimCaixa">
+        <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
+        <img id="pubFimImg" src="" alt="" style="display:none;">
+      </div>
+      <div class="pub-editor-dica">Arrasta a foto dentro da moldura para a posicionares.</div>
+      <div class="pub-editor-zoom">
+        <span>Tamanho</span>
+        <input type="range" id="pubFimZoom" min="100" max="300" step="1" value="100">
+      </div>
+      <div class="pub-editor-dica" style="margin-top:8px;">
+        Não queres esperar pela hora agendada para confirmar que está bem? <a href="https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/cardapio.html?preview_pub_fim=1" target="_blank" rel="noopener">Pré-visualizar agora →</a>
+        (mostra a publicidade de imediato, numa aba nova, sem depender do agendamento — só nessa aba, não afeta os outros visitantes).
+      </div>
+    </div>
+  </details>
+
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">🎮</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Publicidade — depois de um jogo</span>
+        <span class="bloco-resumo">Popup que aparece no fim do Jogo da Velha, Forca ou Adivinhas</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin:0 0 10px;">
+        Sempre que um cliente termina uma partida (Jogo da Velha, Forca ou Adivinhas), aparece um popup por alguns segundos. Se não ativares nada aqui, continua a mostrar-se o anúncio padrão "Patrocinado por RE/MAX".
+      </div>
+
+      <div class="check-ativar" style="margin-top:0;">
+        <input type="checkbox" id="jogoPubAtivo">
+        <label for="jogoPubAtivo">Mostrar esta publicidade personalizada após os jogos</label>
+      </div>
+
+      <div class="linha-foto" id="linhaJogoPub" style="margin-top:10px;">
+        <img class="miniatura" id="miniaturaJogoPub" src="" alt="">
+        <div class="linha-foto-info">
+          <div class="linha-foto-nome" id="nomeJogoPub">—</div>
+        </div>
+      </div>
+
+      <label for="novaJogoPub">Substituir foto da publicidade</label>
+      <input type="file" id="novaJogoPub" accept="image/*">
+
+      <label for="jogoPubTitulo" style="margin-top:10px;">Título</label>
+      <input type="text" id="jogoPubTitulo" placeholder="Ex: Patrocinado por RE/MAX">
+
+      <label for="jogoPubSubtitulo">Texto secundário (opcional)</label>
+      <input type="text" id="jogoPubSubtitulo">
+    </div>
+  </details>
+
+  <details class="bloco-editor">
+    <summary>
+      <span class="bloco-icone">📊</span>
+      <span class="bloco-titulos">
+        <span class="bloco-titulo">Estatísticas</span>
+        <span class="bloco-resumo">Visitas ao cardápio e impressões da publicidade do rodapé</span>
+      </span>
+      <span class="bloco-seta">▸</span>
+    </summary>
+    <div class="bloco-conteudo">
+      <div id="estatisticasCaixa" style="font-size:0.85rem; color:var(--castanho-suave); line-height:1.7;">A carregar…</div>
+      <button type="button" class="acao carregar" id="btnAtualizarEstatisticas" style="margin-top:10px; width:100%;">Atualizar estatísticas</button>
+    </div>
+  </details>
 
   <div class="preview-titulo">Pré-visualização</div>
   <div class="preview">
@@ -585,7 +765,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-05';
+  const EDITOR_VERSION = '2026-07-09-06';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -629,6 +809,13 @@
   const vinhosSeccaoPubTituloInput = document.getElementById('vinhosSeccaoPubTitulo');
   const vinhosSeccaoPubSubtituloInput = document.getElementById('vinhosSeccaoPubSubtitulo');
   let vinhosSeccaoPubState = null;
+  const novaJogoPubInput = document.getElementById('novaJogoPub');
+  const miniaturaJogoPubEl = document.getElementById('miniaturaJogoPub');
+  const nomeJogoPubEl = document.getElementById('nomeJogoPub');
+  const jogoPubAtivoInput = document.getElementById('jogoPubAtivo');
+  const jogoPubTituloInput = document.getElementById('jogoPubTitulo');
+  const jogoPubSubtituloInput = document.getElementById('jogoPubSubtitulo');
+  let jogoPubState = null;
   const pubFimAtivoInput = document.getElementById('pubFimAtivo');
   const pubFimInicioInput = document.getElementById('pubFimInicio');
   const pubFimFimInput = document.getElementById('pubFimFim');
@@ -906,6 +1093,56 @@
       nomePreview: file.name
     };
     renderizarVinhosSeccaoPub();
+    e.target.value = '';
+  });
+
+  // ---- Publicidade após terminar um jogo (Jogo da Velha / Forca / Adivinhas) ----
+  function extrairJogoPub(html){
+    const regexBloco = /<div class="jogo-anuncio" id="jogoAnuncio"[^>]*>([\s\S]*?)<div class="jogo-anuncio-titulo"/;
+    const m = html.match(regexBloco);
+    if(!m) return null;
+    const imgM = m[1].match(/<img[^>]*>/);
+    if(!imgM) return null;
+    const srcM = imgM[0].match(/src="([^"]*)"/);
+    const src = srcM ? srcM[1] : '';
+    return {
+      caminho: src,
+      novoFicheiro: null,
+      previewUrl: null,
+      nomePreview: src ? src.split('/').pop() : ''
+    };
+  }
+
+  function construirJogoPubImgHtml(pub){
+    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      <img id="jogoAnuncioImg" src="' + pub.caminho + '" alt="Publicidade">\n      ';
+  }
+
+  function substituirJogoPubImg(html, novoInnerHTML){
+    const regex = /(<div class="jogo-anuncio" id="jogoAnuncio"[^>]*>)([\s\S]*?)(<div class="jogo-anuncio-titulo")/;
+    return html.replace(regex, '$1' + novoInnerHTML + '$3');
+  }
+
+  function renderizarJogoPub(){
+    if(!jogoPubState || !jogoPubState.caminho && !jogoPubState.novoFicheiro){
+      miniaturaJogoPubEl.src = '';
+      nomeJogoPubEl.textContent = '—';
+      return;
+    }
+    const src = jogoPubState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + jogoPubState.caminho);
+    miniaturaJogoPubEl.src = src;
+    nomeJogoPubEl.textContent = jogoPubState.nomePreview || jogoPubState.caminho || '—';
+  }
+
+  novaJogoPubInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    jogoPubState = {
+      caminho: jogoPubState ? jogoPubState.caminho : null,
+      novoFicheiro: file,
+      previewUrl: URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarJogoPub();
     e.target.value = '';
   });
 
@@ -1220,6 +1457,12 @@
       vinhosSeccaoPubTituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoTitulo');
       vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
 
+      jogoPubState = extrairJogoPub(conteudo);
+      renderizarJogoPub();
+      jogoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-jogo-pub-ativo') === 'true';
+      jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
+      jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
+
       pubFimState = extrairPubFim(conteudo);
       if(pubFimState && pubFimState.caminho){
         pubFimCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho);
@@ -1309,6 +1552,10 @@
       setEstado('Ativaste a publicidade do fundo da secção de Vinhos & Bebidas mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
     }
+    if(jogoPubAtivoInput.checked && (!jogoPubState || (!jogoPubState.caminho && !jogoPubState.novoFicheiro))){
+      setEstado('Ativaste a publicidade após os jogos mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
+      return;
+    }
     if(pubFimAtivoInput.checked && (!pubFimState || (!pubFimState.caminho && !pubFimState.novoFicheiro))){
       setEstado('Ativaste a publicidade no fim da página mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
@@ -1347,6 +1594,12 @@
         setEstado('A enviar foto do fundo da secção de Vinhos & Bebidas: ' + vinhosSeccaoPubState.nomePreview + '…', 'info');
         vinhosSeccaoPubState.caminho = await enviarFoto(vinhosSeccaoPubState.novoFicheiro, token);
         vinhosSeccaoPubState.novoFicheiro = null;
+      }
+
+      if(jogoPubState && jogoPubState.novoFicheiro){
+        setEstado('A enviar foto da publicidade após jogos: ' + jogoPubState.nomePreview + '…', 'info');
+        jogoPubState.caminho = await enviarFoto(jogoPubState.novoFicheiro, token);
+        jogoPubState.novoFicheiro = null;
       }
 
       if(pubFimState && pubFimState.novoFicheiro){
@@ -1400,6 +1653,13 @@
       novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoTitulo', vinhosSeccaoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoSubtitulo', vinhosSeccaoPubSubtituloInput.value);
+
+      if(jogoPubState){
+        novo = substituirJogoPubImg(novo, construirJogoPubImgHtml(jogoPubState));
+      }
+      novo = substituirAtributo(novo, 'data-jogo-pub-ativo', jogoPubAtivoInput.checked ? 'true' : 'false');
+      novo = substituirLinha(novo, 'jogoAnuncioTitulo', jogoPubTituloInput.value);
+      novo = substituirLinha(novo, 'jogoAnuncioSubtitulo', jogoPubSubtituloInput.value);
 
       if(pubFimState){
         novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
