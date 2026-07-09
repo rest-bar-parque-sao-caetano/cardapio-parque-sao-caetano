@@ -607,8 +607,14 @@
       <label for="vinhosSeccaoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
       <input type="text" id="vinhosSeccaoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
 
-      <label for="vinhosSeccaoPubSubtitulo">Texto secundário (opcional)</label>
+      <label for="vinhosSeccaoPubSubtitulo">Linha 2 (opcional)</label>
       <input type="text" id="vinhosSeccaoPubSubtitulo">
+
+      <label for="vinhosSeccaoPubLinha3">Linha 3 (opcional)</label>
+      <input type="text" id="vinhosSeccaoPubLinha3">
+
+      <label for="vinhosSeccaoPubLinha4">Linha 4 (opcional)</label>
+      <input type="text" id="vinhosSeccaoPubLinha4">
     </div>
   </details>
 
@@ -696,12 +702,12 @@
     </summary>
     <div class="bloco-conteudo">
       <div class="subtitulo" style="margin:0 0 10px;">
-        Sempre que um cliente termina uma partida (Jogo da Velha, Forca ou Adivinhas), aparece um popup por alguns segundos. Se não ativares nada aqui, continua a mostrar-se o anúncio padrão "Patrocinado por RE/MAX".
+        Sempre que um cliente termina uma partida (Jogo da Velha, Forca ou Adivinhas), aparece um popup por alguns segundos — só se carregares aqui uma foto e ativares a opção abaixo. Se não ativares, não aparece nenhum popup no fim dos jogos.
       </div>
 
       <div class="check-ativar" style="margin-top:0;">
         <input type="checkbox" id="jogoPubAtivo">
-        <label for="jogoPubAtivo">Mostrar esta publicidade personalizada após os jogos</label>
+        <label for="jogoPubAtivo">Mostrar publicidade após os jogos</label>
       </div>
 
       <div class="linha-foto" id="linhaJogoPub" style="margin-top:10px;">
@@ -715,7 +721,7 @@
       <input type="file" id="novaJogoPub" accept="image/*">
 
       <label for="jogoPubTitulo" style="margin-top:10px;">Título</label>
-      <input type="text" id="jogoPubTitulo" placeholder="Ex: Patrocinado por RE/MAX">
+      <input type="text" id="jogoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
 
       <label for="jogoPubSubtitulo">Texto secundário (opcional)</label>
       <input type="text" id="jogoPubSubtitulo">
@@ -765,7 +771,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-06';
+  const EDITOR_VERSION = '2026-07-09-07';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -808,6 +814,8 @@
   const vinhosSeccaoPubAtivoInput = document.getElementById('vinhosSeccaoPubAtivo');
   const vinhosSeccaoPubTituloInput = document.getElementById('vinhosSeccaoPubTitulo');
   const vinhosSeccaoPubSubtituloInput = document.getElementById('vinhosSeccaoPubSubtitulo');
+  const vinhosSeccaoPubLinha3Input = document.getElementById('vinhosSeccaoPubLinha3');
+  const vinhosSeccaoPubLinha4Input = document.getElementById('vinhosSeccaoPubLinha4');
   let vinhosSeccaoPubState = null;
   const novaJogoPubInput = document.getElementById('novaJogoPub');
   const miniaturaJogoPubEl = document.getElementById('miniaturaJogoPub');
@@ -1456,6 +1464,8 @@
       vinhosSeccaoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinhos-pub-ativo') === 'true';
       vinhosSeccaoPubTituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoTitulo');
       vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
+      vinhosSeccaoPubLinha3Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha3');
+      vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
 
       jogoPubState = extrairJogoPub(conteudo);
       renderizarJogoPub();
@@ -1653,6 +1663,8 @@
       novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoTitulo', vinhosSeccaoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoSubtitulo', vinhosSeccaoPubSubtituloInput.value);
+      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoLinha3', vinhosSeccaoPubLinha3Input.value);
+      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoLinha4', vinhosSeccaoPubLinha4Input.value);
 
       if(jogoPubState){
         novo = substituirJogoPubImg(novo, construirJogoPubImgHtml(jogoPubState));
