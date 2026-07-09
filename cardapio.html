@@ -278,6 +278,7 @@
     border:1px solid var(--linha);
   }
   .item{
+    position:relative;
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:10px;
     padding:13px 12px;
@@ -1193,6 +1194,39 @@
     border-color:var(--castanho);
     color:var(--branco);
   }
+  .lista-escolha-pop{
+    position:absolute;
+    right:8px; top:100%;
+    margin-top:4px;
+    z-index:60;
+    background:var(--branco);
+    border:1px solid var(--linha);
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(74,56,32,0.2);
+    padding:6px;
+    display:flex; flex-direction:column; gap:4px;
+    min-width:150px;
+  }
+  .lista-escolha-pop button{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px;
+    padding:7px 9px;
+    border-radius:7px;
+    border:none;
+    background:var(--bege);
+    color:var(--castanho);
+    font-family:'Nunito',sans-serif;
+    font-size:0.82rem;
+    cursor:pointer;
+    text-align:left;
+  }
+  .lista-escolha-pop button:active{ background:var(--linha-suave); }
+  .lista-escolha-pop button .valor{
+    font-family:'Fredoka',sans-serif;
+    font-weight:700;
+    color:var(--dourado);
+    white-space:nowrap;
+  }
 
   .lista-flutuante-btn{
     display:none;
@@ -1272,15 +1306,48 @@
     -webkit-overflow-scrolling:touch;
     border-top:1px solid var(--linha);
   }
+  .lista-total{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 2px 0;
+    margin-top:2px;
+    border-top:1px solid var(--linha);
+    font-family:'Fredoka',sans-serif;
+    font-weight:700;
+    color:var(--castanho);
+    font-size:0.98rem;
+  }
+  .lista-total .valor{ color:var(--dourado); }
+  .lista-total.escondido{ display:none; }
   .lista-item-linha{
     display:flex; align-items:center; justify-content:space-between;
     gap:10px;
     padding:11px 2px;
     border-bottom:1px dotted var(--linha);
   }
+  .lista-item-info{ flex:1; min-width:0; }
   .lista-item-linha .lista-item-nome{
     font-weight:500; font-size:0.92rem; color:var(--castanho);
-    flex:1; min-width:0;
+  }
+  .lista-item-tag{
+    display:inline-block;
+    margin-top:3px;
+    font-size:0.7rem;
+    font-weight:600;
+    color:var(--dourado-escuro);
+    background:var(--bege);
+    border-radius:999px;
+    padding:1px 8px;
+  }
+  .lista-item-direita{
+    display:flex; flex-direction:column; align-items:flex-end; gap:4px;
+    flex:0 0 auto;
+  }
+  .lista-item-preco{
+    font-family:'Fredoka',sans-serif;
+    font-size:0.78rem;
+    font-weight:600;
+    color:var(--dourado);
+    white-space:nowrap;
   }
   .lista-item-qtd{
     display:flex; align-items:center; gap:8px;
@@ -1984,6 +2051,10 @@
     <div class="lista-subtitulo" data-en="Show this to your waiter" data-fr="Montre ceci à ton serveur">Mostra isto ao empregado</div>
     <div class="lista-itens" id="listaItensWrap">
       <div class="lista-vazia" id="listaVazia" data-en="Your list is empty. Tap the + next to a dish or drink to add it." data-fr="Ta liste est vide. Touche le + à côté d'un plat ou d'une boisson pour l'ajouter.">A tua lista está vazia. Toca no + junto de um prato ou bebida para adicionar.</div>
+    </div>
+    <div class="lista-total escondido" id="listaTotal">
+      <span data-en="Estimated total" data-fr="Total estimé">Total estimado</span>
+      <span class="valor" id="listaTotalValor">0,00€</span>
     </div>
     <div class="lista-rodape">
       <div class="lista-nota" data-en="The list clears itself 15 minutes after the last item you add." data-fr="La liste s'efface automatiquement 15 minutes après le dernier article ajouté.">A lista apaga-se sozinha 15 min depois do último item que adicionares.</div>
@@ -3226,7 +3297,7 @@
   modalFoto.addEventListener('click', (e) => { if(e.target === modalFoto) fecharModalFoto(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalFoto(); });
 
-  // ---- Lista pessoal do cliente (itens para pedir ao empregado) ----
+    // ---- Lista pessoal do cliente (itens para pedir ao empregado) ----
   (function(){
     const LISTA_KEY = 'listaPedidoCliente';
     const LISTA_EXPIRA_MS = 15 * 60 * 1000;
@@ -3238,6 +3309,8 @@
     const listaOverlay = document.getElementById('listaOverlay');
     const listaItensWrap = document.getElementById('listaItensWrap');
     const listaVazia = document.getElementById('listaVazia');
+    const listaTotal = document.getElementById('listaTotal');
+    const listaTotalValor = document.getElementById('listaTotalValor');
 
     if(!listaFlutuanteBtn || !listaOverlay) return;
 
@@ -3259,20 +3332,20 @@
       renderizarLista();
     }
 
-    function adicionarItem(id){
+    function adicionarItem(id, tipo){
       const itens = lerLista();
-      const existente = itens.find(i => i.id === id);
+      const existente = itens.find(i => i.id === id && i.tipo === tipo);
       if(existente) existente.qtd += 1;
-      else itens.push({ id, qtd: 1 });
+      else itens.push({ id, tipo: tipo || null, qtd: 1 });
       guardarLista(itens);
     }
 
-    function alterarQtd(id, delta){
+    function alterarQtd(id, tipo, delta){
       let itens = lerLista();
-      const item = itens.find(i => i.id === id);
+      const item = itens.find(i => i.id === id && i.tipo === tipo);
       if(!item) return;
       item.qtd += delta;
-      if(item.qtd <= 0) itens = itens.filter(i => i.id !== id);
+      if(item.qtd <= 0) itens = itens.filter(i => !(i.id === id && i.tipo === tipo));
       guardarLista(itens);
     }
 
@@ -3284,28 +3357,98 @@
       return info.pt;
     }
 
+    const ROTULOS_TIPO = {
+      meia: { pt: 'Meia dose', en: 'Half portion', fr: 'Demi-portion' },
+      dose: { pt: 'Dose', en: 'Full portion', fr: 'Portion' }
+    };
+    function rotuloTipo(tipo){
+      const r = ROTULOS_TIPO[tipo];
+      if(!r) return '';
+      if(idiomaAtual === 'en') return r.en;
+      if(idiomaAtual === 'fr') return r.fr;
+      return r.pt;
+    }
+
+    function formatarEuro(v){
+      return v.toFixed(2).replace('.', ',') + '€';
+    }
+
+    function precoUnitario(item){
+      const info = registoItens[item.id];
+      if(!info || !info.preco) return null;
+      if(info.preco.tipo === 'unica') return info.preco.valor;
+      if(item.tipo === 'meia') return info.preco.meia;
+      if(item.tipo === 'dose') return info.preco.dose;
+      return null;
+    }
+
+    function parsePrecoTexto(texto){
+      if(!texto) return null;
+      const partes = texto.split('/').map(p => p.trim()).filter(Boolean);
+      const paraNumero = (s) => {
+        const limpo = s.replace(/[^0-9,.]/g, '').replace(',', '.');
+        const n = parseFloat(limpo);
+        return isNaN(n) ? null : n;
+      };
+      if(partes.length >= 2){
+        const meia = paraNumero(partes[0]);
+        const dose = paraNumero(partes[1]);
+        if(meia === null || dose === null) return null;
+        return { tipo: 'dupla', meia, dose };
+      }
+      if(partes.length === 1){
+        const n = paraNumero(partes[0]);
+        if(n === null) return null;
+        return { tipo: 'unica', valor: n };
+      }
+      return null;
+    }
+
     function renderizarLista(){
       const itens = lerLista();
-      const total = itens.reduce((soma, i) => soma + i.qtd, 0);
+      const totalQtd = itens.reduce((soma, i) => soma + i.qtd, 0);
+      const totalPreco = itens.reduce((soma, i) => {
+        const p = precoUnitario(i);
+        return soma + (p ? p * i.qtd : 0);
+      }, 0);
 
-      listaContagem.textContent = total;
-      listaFlutuanteBtn.classList.toggle('mostrar', total > 0);
+      listaContagem.textContent = totalQtd;
+      listaFlutuanteBtn.classList.toggle('mostrar', totalQtd > 0);
 
       listaItensWrap.querySelectorAll('.lista-item-linha').forEach(el => el.remove());
 
       if(itens.length === 0){
         listaVazia.style.display = 'block';
+        if(listaTotal) listaTotal.classList.add('escondido');
         return;
       }
       listaVazia.style.display = 'none';
+      if(listaTotal && listaTotalValor){
+        listaTotal.classList.remove('escondido');
+        listaTotalValor.textContent = formatarEuro(totalPreco);
+      }
 
       itens.forEach(item => {
         const linha = document.createElement('div');
         linha.className = 'lista-item-linha';
 
+        const infoWrap = document.createElement('div');
+        infoWrap.className = 'lista-item-info';
+
         const nome = document.createElement('div');
         nome.className = 'lista-item-nome';
         nome.textContent = nomeNoIdioma(item.id);
+        infoWrap.appendChild(nome);
+
+        if(item.tipo === 'meia' || item.tipo === 'dose'){
+          const tag = document.createElement('div');
+          tag.className = 'lista-item-tag';
+          tag.textContent = rotuloTipo(item.tipo);
+          infoWrap.appendChild(tag);
+        }
+
+        const direita = document.createElement('div');
+        direita.className = 'lista-item-direita';
 
         const qtdWrap = document.createElement('div');
         qtdWrap.className = 'lista-item-qtd';
@@ -3314,7 +3457,7 @@
         btnMenos.type = 'button';
         btnMenos.textContent = '−';
         btnMenos.setAttribute('aria-label', 'Diminuir quantidade');
-        btnMenos.addEventListener('click', () => alterarQtd(item.id, -1));
+        btnMenos.addEventListener('click', () => alterarQtd(item.id, item.tipo, -1));
 
         const num = document.createElement('span');
         num.className = 'lista-item-num';
@@ -3324,14 +3467,23 @@
         btnMais.type = 'button';
         btnMais.textContent = '+';
         btnMais.setAttribute('aria-label', 'Aumentar quantidade');
-        btnMais.addEventListener('click', () => alterarQtd(item.id, 1));
+        btnMais.addEventListener('click', () => alterarQtd(item.id, item.tipo, 1));
 
         qtdWrap.appendChild(btnMenos);
         qtdWrap.appendChild(num);
         qtdWrap.appendChild(btnMais);
+        direita.appendChild(qtdWrap);
 
-        linha.appendChild(nome);
-        linha.appendChild(qtdWrap);
+        const precoUn = precoUnitario(item);
+        if(precoUn !== null){
+          const precoLinha = document.createElement('div');
+          precoLinha.className = 'lista-item-preco';
+          precoLinha.textContent = formatarEuro(precoUn * item.qtd);
+          direita.appendChild(precoLinha);
+        }
+
+        linha.appendChild(infoWrap);
+        linha.appendChild(direita);
         listaItensWrap.appendChild(linha);
       });
     }
@@ -3356,11 +3508,15 @@
       const nomeEl = item.querySelector('.nome');
       if(!nomeEl) return;
 
+      const precoEl = item.querySelector('.preco');
+      const infoPreco = precoEl ? parsePrecoTexto(precoEl.textContent) : null;
+      if(!infoPreco) return;
+
       const id = 'item-' + (contadorItens++);
       const pt = nomeEl.dataset.pt || nomeEl.textContent.trim();
       const en = nomeEl.dataset.en || pt;
       const fr = nomeEl.dataset.fr || pt;
-      registoItens[id] = { pt, en, fr };
+      registoItens[id] = { pt, en, fr, preco: infoPreco };
 
       const conteudo = document.createElement('div');
       conteudo.className = 'item-conteudo';
@@ -3372,17 +3528,85 @@
       btn.className = 'lista-add-btn';
       btn.setAttribute('aria-label', 'Adicionar à lista');
       btn.textContent = '+';
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        adicionarItem(id);
+
+      function confirmarAdicao(tipo){
+        adicionarItem(id, tipo);
         btn.classList.add('adicionado');
         btn.textContent = '✓';
         setTimeout(() => {
           btn.classList.remove('adicionado');
           btn.textContent = '+';
         }, 700);
-      });
+      }
+
+      if(infoPreco.tipo === 'unica'){
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          confirmarAdicao('unica');
+        });
+      } else {
+        let popover = null;
+        function fecharAoClicarFora(e){
+          if(popover && !popover.contains(e.target) && e.target !== btn){
+            popover.remove();
+            popover = null;
+            document.removeEventListener('click', fecharAoClicarFora, true);
+          }
+        }
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if(popover){
+            popover.remove();
+            popover = null;
+            document.removeEventListener('click', fecharAoClicarFora, true);
+            return;
+          }
+          popover = document.createElement('div');
+          popover.className = 'lista-escolha-pop';
+
+          const optMeia = document.createElement('button');
+          optMeia.type = 'button';
+          const optMeiaLabel = document.createElement('span');
+          optMeiaLabel.textContent = rotuloTipo('meia');
+          const optMeiaValor = document.createElement('span');
+          optMeiaValor.className = 'valor';
+          optMeiaValor.textContent = formatarEuro(infoPreco.meia);
+          optMeia.appendChild(optMeiaLabel);
+          optMeia.appendChild(optMeiaValor);
+          optMeia.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            confirmarAdicao('meia');
+            popover.remove();
+            popover = null;
+            document.removeEventListener('click', fecharAoClicarFora, true);
+          });
+
+          const optDose = document.createElement('button');
+          optDose.type = 'button';
+          const optDoseLabel = document.createElement('span');
+          optDoseLabel.textContent = rotuloTipo('dose');
+          const optDoseValor = document.createElement('span');
+          optDoseValor.className = 'valor';
+          optDoseValor.textContent = formatarEuro(infoPreco.dose);
+          optDose.appendChild(optDoseLabel);
+          optDose.appendChild(optDoseValor);
+          optDose.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            confirmarAdicao('dose');
+            popover.remove();
+            popover = null;
+            document.removeEventListener('click', fecharAoClicarFora, true);
+          });
+
+          popover.appendChild(optMeia);
+          popover.appendChild(optDose);
+          item.appendChild(popover);
+          setTimeout(() => document.addEventListener('click', fecharAoClicarFora, true), 0);
+        });
+      }
+
       item.appendChild(btn);
     });
 
