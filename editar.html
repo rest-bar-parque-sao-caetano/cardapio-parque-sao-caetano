@@ -436,6 +436,32 @@
   <label for="novaPublicidade">Substituir imagem de publicidade</label>
   <input type="file" id="novaPublicidade" accept="image/*">
 
+  <div class="preview-titulo" style="margin-top:28px;">Publicidade no grupo "Vinho da Casa"</div>
+  <div class="subtitulo" style="margin:2px 0 10px;">
+    Podes mostrar uma foto de publicidade (ex: "Vinho do Mês") no fundo do grupo "Vinho da Casa", dentro da secção de Vinhos & Bebidas. Aparece sempre que o cliente abrir esse grupo, sem horários.
+  </div>
+
+  <div class="check-ativar" style="margin-top:6px;">
+    <input type="checkbox" id="vinhoPubAtivo">
+    <label for="vinhoPubAtivo">Mostrar publicidade no grupo "Vinho da Casa"</label>
+  </div>
+
+  <div class="linha-foto" id="linhaVinhoPub" style="margin-top:10px;">
+    <img class="miniatura" id="miniaturaVinhoPub" src="" alt="">
+    <div class="linha-foto-info">
+      <div class="linha-foto-nome" id="nomeVinhoPub">—</div>
+    </div>
+  </div>
+
+  <label for="novaVinhoPub">Substituir foto da publicidade</label>
+  <input type="file" id="novaVinhoPub" accept="image/*">
+
+  <label for="vinhoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
+  <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do Mês — Almotriga">
+
+  <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
+  <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
+
   <div class="preview-titulo" style="margin-top:28px;">Publicidade no fim da página</div>
   <div class="subtitulo" style="margin:2px 0 10px;">
     Este é o rodapé com o nome, morada e telefone que aparece quando se faz scroll até ao fim do cardápio. Podes pôr aí uma foto de patrocínio que aparece a cobrir esse espaço de vez em quando, e tu decides os horários, o intervalo e quantas vezes por dia.
@@ -533,7 +559,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-02';
+  const EDITOR_VERSION = '2026-07-09-03';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -563,6 +589,13 @@
   const nomePublicidadeEl = document.getElementById('nomePublicidade');
   const fundoAtivoInput = document.getElementById('fundoAtivo');
   let publicidadeState = null;
+  const novaVinhoPubInput = document.getElementById('novaVinhoPub');
+  const miniaturaVinhoPubEl = document.getElementById('miniaturaVinhoPub');
+  const nomeVinhoPubEl = document.getElementById('nomeVinhoPub');
+  const vinhoPubAtivoInput = document.getElementById('vinhoPubAtivo');
+  const vinhoPubTituloInput = document.getElementById('vinhoPubTitulo');
+  const vinhoPubSubtituloInput = document.getElementById('vinhoPubSubtitulo');
+  let vinhoPubState = null;
   const pubFimAtivoInput = document.getElementById('pubFimAtivo');
   const pubFimInicioInput = document.getElementById('pubFimInicio');
   const pubFimFimInput = document.getElementById('pubFimFim');
@@ -740,6 +773,56 @@
       nomePreview: file.name
     };
     renderizarPublicidade();
+    e.target.value = '';
+  });
+
+  // ---- Publicidade dentro do grupo "Vinho da Casa" ----
+  function extrairVinhoPub(html){
+    const regexBloco = /<div class="vinho-anuncio" id="vinhoAnuncio"[^>]*>([\s\S]*?)<div class="vinho-anuncio-texto">/;
+    const m = html.match(regexBloco);
+    if(!m) return null;
+    const imgM = m[1].match(/<img[^>]*>/);
+    if(!imgM) return null;
+    const srcM = imgM[0].match(/src="([^"]*)"/);
+    const src = srcM ? srcM[1] : '';
+    return {
+      caminho: src,
+      novoFicheiro: null,
+      previewUrl: null,
+      nomePreview: src ? src.split('/').pop() : ''
+    };
+  }
+
+  function construirVinhoPubImgHtml(pub){
+    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          <img src="' + pub.caminho + '" alt="Publicidade">\n          ';
+  }
+
+  function substituirVinhoPubImg(html, novoInnerHTML){
+    const regex = /(<div class="vinho-anuncio" id="vinhoAnuncio"[^>]*>)([\s\S]*?)(<div class="vinho-anuncio-texto">)/;
+    return html.replace(regex, '$1' + novoInnerHTML + '$3');
+  }
+
+  function renderizarVinhoPub(){
+    if(!vinhoPubState || !vinhoPubState.caminho && !vinhoPubState.novoFicheiro){
+      miniaturaVinhoPubEl.src = '';
+      nomeVinhoPubEl.textContent = '—';
+      return;
+    }
+    const src = vinhoPubState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhoPubState.caminho);
+    miniaturaVinhoPubEl.src = src;
+    nomeVinhoPubEl.textContent = vinhoPubState.nomePreview || vinhoPubState.caminho || '—';
+  }
+
+  novaVinhoPubInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    vinhoPubState = {
+      caminho: vinhoPubState ? vinhoPubState.caminho : null,
+      novoFicheiro: file,
+      previewUrl: URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarVinhoPub();
     e.target.value = '';
   });
 
@@ -1042,6 +1125,12 @@
       renderizarPublicidade();
       fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
 
+      vinhoPubState = extrairVinhoPub(conteudo);
+      renderizarVinhoPub();
+      vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
+      vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
+      vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
+
       pubFimState = extrairPubFim(conteudo);
       if(pubFimState && pubFimState.caminho){
         pubFimCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho);
@@ -1112,6 +1201,10 @@
       setEstado('Ativaste a imagem de publicidade mas ainda não escolheste nenhuma. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
     }
+    if(vinhoPubAtivoInput.checked && (!vinhoPubState || (!vinhoPubState.caminho && !vinhoPubState.novoFicheiro))){
+      setEstado('Ativaste a publicidade do "Vinho da Casa" mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
+      return;
+    }
     if(pubFimAtivoInput.checked && (!pubFimState || (!pubFimState.caminho && !pubFimState.novoFicheiro))){
       setEstado('Ativaste a publicidade no fim da página mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
@@ -1138,6 +1231,12 @@
         setEstado('A enviar imagem de publicidade: ' + publicidadeState.nomePreview + '…', 'info');
         publicidadeState.caminho = await enviarFoto(publicidadeState.novoFicheiro, token);
         publicidadeState.novoFicheiro = null;
+      }
+
+      if(vinhoPubState && vinhoPubState.novoFicheiro){
+        setEstado('A enviar foto do "Vinho da Casa": ' + vinhoPubState.nomePreview + '…', 'info');
+        vinhoPubState.caminho = await enviarFoto(vinhoPubState.novoFicheiro, token);
+        vinhoPubState.novoFicheiro = null;
       }
 
       if(pubFimState && pubFimState.novoFicheiro){
@@ -1177,6 +1276,13 @@
         novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
       }
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
+
+      if(vinhoPubState){
+        novo = substituirVinhoPubImg(novo, construirVinhoPubImgHtml(vinhoPubState));
+      }
+      novo = substituirAtributo(novo, 'data-vinho-pub-ativo', vinhoPubAtivoInput.checked ? 'true' : 'false');
+      novo = substituirLinha(novo, 'vinhoAnuncioTitulo', vinhoPubTituloInput.value);
+      novo = substituirLinha(novo, 'vinhoAnuncioSubtitulo', vinhoPubSubtituloInput.value);
 
       if(pubFimState){
         novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
