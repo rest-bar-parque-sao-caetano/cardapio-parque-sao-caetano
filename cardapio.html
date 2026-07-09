@@ -554,23 +554,14 @@
     padding:6px;
   }
 
-  .patrocinio-popup .ad-texto{ margin:0; }
-  .patrocinio-popup .patrocinio-emoji{ font-size:clamp(2rem,8vw,3.5rem); }
-  .patrocinio-popup .patrocinio-sub{
-    font-family:'Nunito',sans-serif;
-    color:var(--castanho-suave);
-    font-size:0.85rem;
-    margin-top:2px;
-  }
   .jogo-anuncio{
-    display:none;
+    display:flex;
     flex-direction:column;
     align-items:center;
     gap:8px;
     max-width:82%;
     margin:0 auto;
   }
-  .jogo-anuncio.ativo{ display:flex; }
   .jogo-anuncio img{
     width:100%;
     max-width:220px;
@@ -1352,8 +1343,6 @@
 <div class="ad-popup-overlay patrocinio-popup" id="patrocinioPopup">
   <div class="ad-popup">
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
-    <div class="patrocinio-emoji" id="patrocinioEmojiPadrao">🏡</div>
-    <div class="ad-texto" id="patrocinioTextoPadrao" data-en="Sponsored by RE/MAX" data-fr="Sponsorisé par RE/MAX">Patrocinado por RE/MAX</div>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
       <img id="jogoAnuncioImg" src="" alt="Publicidade">
@@ -1774,6 +1763,8 @@
       <div class="vinho-anuncio-texto">
         <div class="titulo" id="vinhosAnuncioSeccaoTitulo"></div>
         <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo"></div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha3"></div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha4"></div>
       </div>
     </div>
   </section>
@@ -2127,20 +2118,6 @@
     }
   })();
 
-  // ---- Mostrar (ou não) a publicidade personalizada após terminar um jogo (ativa-se em editar.html) ----
-  // Se não estiver ativa, mantém-se o anúncio padrão "Patrocinado por RE/MAX".
-  (function(){
-    const bloco = document.getElementById('jogoAnuncio');
-    if(!bloco) return;
-    if(bloco.dataset.jogoPubAtivo === 'true'){
-      bloco.classList.add('ativo');
-      const emojiPadrao = document.getElementById('patrocinioEmojiPadrao');
-      const textoPadrao = document.getElementById('patrocinioTextoPadrao');
-      if(emojiPadrao) emojiPadrao.style.display = 'none';
-      if(textoPadrao) textoPadrao.style.display = 'none';
-    }
-  })();
-
   // ---- Publicidade no rodapé de texto (nome/morada/telefone), a cobrir de vez em quando ----
   // Horários, intervalo, duração e limite diário editam-se em editar.html.
   (function(){
@@ -2339,6 +2316,8 @@
 
     function mostrarPatrocinio(){
       if(!patrocinioPopup) return;
+      const jogoAnuncioEl = document.getElementById('jogoAnuncio');
+      if(!jogoAnuncioEl || jogoAnuncioEl.dataset.jogoPubAtivo !== 'true') return;
       patrocinioPopup.classList.add('aberto');
       popupTimeoutId = setTimeout(esconderPatrocinio, 5000);
     }
@@ -2761,6 +2740,8 @@
     }
     function mostrarPatrocinio(){
       if(!patrocinioPopup) return;
+      const jogoAnuncioEl = document.getElementById('jogoAnuncio');
+      if(!jogoAnuncioEl || jogoAnuncioEl.dataset.jogoPubAtivo !== 'true') return;
       patrocinioPopup.classList.add('aberto');
       popupTimeoutId = setTimeout(esconderPatrocinio, 5000);
     }
@@ -2904,6 +2885,8 @@
     }
     function mostrarPatrocinio(){
       if(!patrocinioPopup) return;
+      const jogoAnuncioEl = document.getElementById('jogoAnuncio');
+      if(!jogoAnuncioEl || jogoAnuncioEl.dataset.jogoPubAtivo !== 'true') return;
       patrocinioPopup.classList.add('aberto');
       popupTimeoutId = setTimeout(esconderPatrocinio, 5000);
     }
