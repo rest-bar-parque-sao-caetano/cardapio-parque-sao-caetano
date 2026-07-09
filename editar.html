@@ -585,7 +585,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-04';
+  const EDITOR_VERSION = '2026-07-09-05';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -1247,17 +1247,28 @@
   // proteções mais recentes. Comparamos a nossa EDITOR_VERSION com a que está
   // publicada agora mesmo no GitHub Pages, e avisamos/bloqueamos se diferirem.
   const avisoDesatualizadoEl = document.getElementById('avisoDesatualizado');
-  async function paginaEstaAtualizada(){
+  async function buscarVersaoPublicada(){
     try{
       const resp = await fetch('https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/editar.html?t=' + Date.now(), { cache: 'no-store' });
-      if(!resp.ok) return true; // não conseguimos confirmar — não bloqueia por causa disto
+      if(!resp.ok) return undefined; // não conseguimos confirmar
       const texto = await resp.text();
       const m = texto.match(/EDITOR_VERSION\s*=\s*'([^']+)'/);
-      if(!m) return true;
-      return m[1] === EDITOR_VERSION;
+      return m ? m[1] : undefined;
     } catch(e){
-      return true; // falha de rede — não bloqueia por causa disto
+      return undefined; // falha de rede — não conseguimos confirmar
     }
+  }
+  // A CDN do GitHub Pages por vezes serve versões ligeiramente atrasadas em
+  // alguns nós, o que pode indicar "desatualizado" por engano mesmo quando a
+  // aba está com a versão mais recente. Por isso, só bloqueamos se uma
+  // segunda verificação (com um pequeno intervalo) confirmar a discrepância.
+  async function paginaEstaAtualizada(){
+    const v1 = await buscarVersaoPublicada();
+    if(v1 === undefined || v1 === EDITOR_VERSION) return true;
+    await new Promise(r => setTimeout(r, 1500));
+    const v2 = await buscarVersaoPublicada();
+    if(v2 === undefined) return true;
+    return v2 === EDITOR_VERSION;
   }
   async function verificarPaginaAtualizada(){
     const atualizada = await paginaEstaAtualizada();
