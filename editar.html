@@ -434,6 +434,40 @@
   margin-top:3px;
   text-shadow:0 1px 6px rgba(0,0,0,0.55);
 }
+.cabecalho-pos-caixa{
+  position:relative;
+  width:100%;
+  max-width:480px;
+  overflow:hidden;
+  border-radius:10px;
+  border:1px solid var(--linha);
+  background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
+  padding:20px 16px 14px;
+  text-align:center;
+  touch-action:none;
+  user-select:none;
+}
+.cabecalho-pos-nome, .cabecalho-pos-frase{
+  position:relative;
+  display:inline-block;
+  cursor:grab;
+  text-shadow:0 1px 6px rgba(0,0,0,0.55);
+  white-space:pre-line;
+}
+.cabecalho-pos-nome{
+  font-family:'Fredoka',sans-serif;
+  font-size:1.7rem;
+  font-weight:600;
+  color:#ffffff;
+}
+.cabecalho-pos-frase{
+  font-family:'Fredoka',sans-serif;
+  font-size:0.82rem;
+  font-style:italic;
+  color:#f5e2d3;
+  margin-top:3px;
+}
+.cabecalho-pos-nome.arrastando, .cabecalho-pos-frase.arrastando{ cursor:grabbing; }
 </style>
 </head>
 <body>
@@ -539,7 +573,7 @@
     </summary>
     <div class="bloco-conteudo">
       <label for="cabecalhoNome">Nome do restaurante</label>
-      <input type="text" id="cabecalhoNome" placeholder="Ex: Rest & Bar Parque São Caetano">
+      <textarea id="cabecalhoNome" rows="2" placeholder="Ex: Rest & Bar Parque São Caetano"></textarea>
 
       <label for="cabecalhoFrase">Frase por baixo do nome</label>
       <input type="text" id="cabecalhoFrase" placeholder="Ex: Tradição, sabor e conforto à mesa">
@@ -554,16 +588,22 @@
         <option value="Dancing Script">Manuscrita (Dancing Script)</option>
       </select>
 
+      <label for="cabecalhoTamanho">Tamanho da letra</label>
+      <div class="campo-numero">
+        <input type="range" id="cabecalhoTamanho" min="1.0" max="3.2" step="0.1" value="1.7" style="flex:1;">
+        <span id="cabecalhoTamanhoValor">1.7rem</span>
+      </div>
+
       <label for="cabecalhoCor">Cor do texto</label>
       <div class="campo-cor-linha">
         <input type="color" id="cabecalhoCor" value="#ffffff">
         <button type="button" class="btn-repor" id="cabecalhoRepor">Repor predefinição</button>
       </div>
 
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização:</div>
-      <div class="cabecalho-preview">
-        <div class="cabecalho-preview-nome" id="cabecalhoPreviewNome">Rest & Bar Parque São Caetano</div>
-        <div class="cabecalho-preview-frase" id="cabecalhoPreviewFrase">Tradição, sabor e conforto à mesa</div>
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta o nome ou a frase para os reposicionares):</div>
+      <div class="cabecalho-pos-caixa" id="cabecalhoPosCaixa">
+        <div class="cabecalho-pos-nome" id="cabecalhoPosNome">Rest & Bar Parque São Caetano</div>
+        <div class="cabecalho-pos-frase" id="cabecalhoPosFrase">Tradição, sabor e conforto à mesa</div>
       </div>
     </div>
   </details>
@@ -853,7 +893,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-09';
+  const EDITOR_VERSION = '2026-07-09-10';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -937,9 +977,15 @@
   const cabecalhoFonteInput = document.getElementById('cabecalhoFonte');
   const cabecalhoCorInput = document.getElementById('cabecalhoCor');
   const cabecalhoReporBtn = document.getElementById('cabecalhoRepor');
-  const cabecalhoPreviewNomeEl = document.getElementById('cabecalhoPreviewNome');
-  const cabecalhoPreviewFraseEl = document.getElementById('cabecalhoPreviewFrase');
+  const cabecalhoTamanhoInput = document.getElementById('cabecalhoTamanho');
+  const cabecalhoTamanhoValorEl = document.getElementById('cabecalhoTamanhoValor');
+  const cabecalhoPosCaixaEl = document.getElementById('cabecalhoPosCaixa');
+  const cabecalhoPosNomeEl = document.getElementById('cabecalhoPosNome');
+  const cabecalhoPosFraseEl = document.getElementById('cabecalhoPosFrase');
   const COR_CABECALHO_PREDEFINIDA = '#ffffff';
+  const TAMANHO_NOME_PREDEFINIDO = 1.7;
+  const TAMANHO_FRASE_PREDEFINIDO = 0.82;
+  let cabecalhoPosState = { nome: { x: 0, y: 0 }, frase: { x: 0, y: 0 } };
 
   function extrairEstiloPorId(html, id){
     const regexTag = new RegExp('<div[^>]*\\bid="' + id + '"[^>]*>');
@@ -964,23 +1010,113 @@
     return partes.join('; ');
   }
 
+  function textoParaHtmlComQuebras(texto){
+    return (texto || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
+  }
+  function htmlComQuebrasParaTexto(html){
+    return (html || '')
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .trim();
+  }
+  function extrairLinhaComQuebras(html, id){
+    const regex = new RegExp('id="' + id + '">([\\s\\S]*?)<\\/div>');
+    const m = html.match(regex);
+    return m ? htmlComQuebrasParaTexto(m[1]) : '';
+  }
+  function substituirLinhaComQuebras(html, id, novoTexto){
+    const conteudo = textoParaHtmlComQuebras(novoTexto);
+    const regex = new RegExp('(id="' + id + '">)([\\s\\S]*?)(<\\/div>)');
+    return html.replace(regex, '$1' + conteudo + '$3');
+  }
+
+  function extrairInfoEstiloElemento(estilo){
+    const fonteM = estilo.match(/font-family:\s*'([^']+)'/);
+    const corM = estilo.match(/color:\s*(#[0-9a-fA-F]{3,8})/);
+    const tamanhoM = estilo.match(/font-size:\s*([\d.]+)rem/);
+    const transM = estilo.match(/transform:\s*translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/);
+    return {
+      fonte: fonteM ? fonteM[1] : '',
+      cor: corM ? corM[1] : '',
+      tamanho: tamanhoM ? parseFloat(tamanhoM[1]) : null,
+      x: transM ? parseFloat(transM[1]) : 0,
+      y: transM ? parseFloat(transM[2]) : 0
+    };
+  }
+
+  function construirEstiloElemento(fonte, cor, tamanhoRem, tamanhoPredefinido, offsetX, offsetY){
+    const partes = [];
+    if(fonte) partes.push("font-family:'" + fonte + "'");
+    if(cor && cor.toLowerCase() !== COR_CABECALHO_PREDEFINIDA) partes.push('color:' + cor);
+    if(Math.abs(tamanhoRem - tamanhoPredefinido) > 0.001) partes.push('font-size:' + tamanhoRem.toFixed(2) + 'rem');
+    if(Math.round(offsetX) !== 0 || Math.round(offsetY) !== 0) partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px)');
+    return partes.join('; ');
+  }
+
+  function aplicarPosicaoPreview(){
+    cabecalhoPosNomeEl.style.transform = 'translate(' + cabecalhoPosState.nome.x + 'px, ' + cabecalhoPosState.nome.y + 'px)';
+    cabecalhoPosFraseEl.style.transform = 'translate(' + cabecalhoPosState.frase.x + 'px, ' + cabecalhoPosState.frase.y + 'px)';
+  }
+
+  function tornarArrastavel(el, chave){
+    let arrastando = false;
+    let inicio = { x: 0, y: 0 };
+    let posInicio = { x: 0, y: 0 };
+    el.addEventListener('pointerdown', (e) => {
+      arrastando = true;
+      el.classList.add('arrastando');
+      inicio = { x: e.clientX, y: e.clientY };
+      posInicio = { x: cabecalhoPosState[chave].x, y: cabecalhoPosState[chave].y };
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if(!arrastando) return;
+      const dx = e.clientX - inicio.x;
+      const dy = e.clientY - inicio.y;
+      cabecalhoPosState[chave] = { x: posInicio.x + dx, y: posInicio.y + dy };
+      aplicarPosicaoPreview();
+    });
+    function terminar(){ arrastando = false; el.classList.remove('arrastando'); }
+    el.addEventListener('pointerup', terminar);
+    el.addEventListener('pointercancel', terminar);
+    el.addEventListener('pointerleave', terminar);
+  }
+  tornarArrastavel(cabecalhoPosNomeEl, 'nome');
+  tornarArrastavel(cabecalhoPosFraseEl, 'frase');
+
   function atualizarPreviewCabecalho(){
-    cabecalhoPreviewNomeEl.textContent = cabecalhoNomeInput.value || '';
-    cabecalhoPreviewFraseEl.textContent = cabecalhoFraseInput.value || '';
+    cabecalhoPosNomeEl.innerHTML = textoParaHtmlComQuebras(cabecalhoNomeInput.value);
+    cabecalhoPosFraseEl.textContent = cabecalhoFraseInput.value || '';
     const fonte = cabecalhoFonteInput.value;
     const cor = cabecalhoCorInput.value;
     const fontFamily = fonte ? ("'" + fonte + "', sans-serif") : "'Fredoka', sans-serif";
-    cabecalhoPreviewNomeEl.style.fontFamily = fontFamily;
-    cabecalhoPreviewFraseEl.style.fontFamily = fontFamily;
-    cabecalhoPreviewNomeEl.style.color = cor;
+    const tamanhoNome = parseFloat(cabecalhoTamanhoInput.value) || TAMANHO_NOME_PREDEFINIDO;
+    const tamanhoFrase = Math.round(tamanhoNome * (TAMANHO_FRASE_PREDEFINIDO / TAMANHO_NOME_PREDEFINIDO) * 100) / 100;
+    cabecalhoPosNomeEl.style.fontFamily = fontFamily;
+    cabecalhoPosFraseEl.style.fontFamily = fontFamily;
+    cabecalhoPosNomeEl.style.color = cor;
+    cabecalhoPosFraseEl.style.color = cor;
+    cabecalhoPosNomeEl.style.fontSize = tamanhoNome + 'rem';
+    cabecalhoPosFraseEl.style.fontSize = tamanhoFrase + 'rem';
+    cabecalhoTamanhoValorEl.textContent = tamanhoNome.toFixed(1) + 'rem';
   }
+  cabecalhoTamanhoInput.addEventListener('input', atualizarPreviewCabecalho);
   [cabecalhoNomeInput, cabecalhoFraseInput, cabecalhoFonteInput, cabecalhoCorInput].forEach(el => {
     el.addEventListener('input', atualizarPreviewCabecalho);
   });
   cabecalhoReporBtn.addEventListener('click', () => {
     cabecalhoFonteInput.value = '';
     cabecalhoCorInput.value = COR_CABECALHO_PREDEFINIDA;
+    cabecalhoTamanhoInput.value = TAMANHO_NOME_PREDEFINIDO;
+    cabecalhoPosState = { nome: { x: 0, y: 0 }, frase: { x: 0, y: 0 } };
     atualizarPreviewCabecalho();
+    aplicarPosicaoPreview();
   });
 
   let shaAtual = null;
@@ -1654,12 +1790,19 @@
       camposEspecial[3].value = extrairAtributo(conteudo, 'data-especial-l3');
       camposEspecial[4].value = extrairAtributo(conteudo, 'data-especial-l4');
 
-      cabecalhoNomeInput.value = extrairLinha(conteudo, 'brandMark');
+      cabecalhoNomeInput.value = extrairLinhaComQuebras(conteudo, 'brandMark');
       cabecalhoFraseInput.value = extrairLinha(conteudo, 'brandSub');
-      const estiloCabecalhoAtual = extrairEstiloCabecalhoAtual(conteudo);
-      cabecalhoFonteInput.value = estiloCabecalhoAtual.fonte;
-      cabecalhoCorInput.value = estiloCabecalhoAtual.cor || COR_CABECALHO_PREDEFINIDA;
+      const estiloNomeAtual = extrairInfoEstiloElemento(extrairEstiloPorId(conteudo, 'brandMark'));
+      const estiloFraseAtual = extrairInfoEstiloElemento(extrairEstiloPorId(conteudo, 'brandSub'));
+      cabecalhoFonteInput.value = estiloNomeAtual.fonte;
+      cabecalhoCorInput.value = estiloNomeAtual.cor || COR_CABECALHO_PREDEFINIDA;
+      cabecalhoTamanhoInput.value = estiloNomeAtual.tamanho || TAMANHO_NOME_PREDEFINIDO;
+      cabecalhoPosState = {
+        nome: { x: estiloNomeAtual.x, y: estiloNomeAtual.y },
+        frase: { x: estiloFraseAtual.x, y: estiloFraseAtual.y }
+      };
       atualizarPreviewCabecalho();
+      aplicarPosicaoPreview();
 
       fotosState = extrairFotos(conteudo);
       renderizarFotos();
@@ -1861,11 +2004,14 @@
       novo = substituirAtributo(novo, 'data-especial-l3', camposEspecial[3].value);
       novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
 
-      novo = substituirLinha(novo, 'brandMark', cabecalhoNomeInput.value);
+      novo = substituirLinhaComQuebras(novo, 'brandMark', cabecalhoNomeInput.value);
       novo = substituirLinha(novo, 'brandSub', cabecalhoFraseInput.value);
-      const novoEstiloCabecalho = construirEstiloCabecalho(cabecalhoFonteInput.value, cabecalhoCorInput.value);
-      novo = substituirEstiloPorId(novo, 'brandMark', novoEstiloCabecalho);
-      novo = substituirEstiloPorId(novo, 'brandSub', novoEstiloCabecalho);
+      const tamanhoNomeSalvar = parseFloat(cabecalhoTamanhoInput.value) || TAMANHO_NOME_PREDEFINIDO;
+      const tamanhoFraseSalvar = Math.round(tamanhoNomeSalvar * (TAMANHO_FRASE_PREDEFINIDO / TAMANHO_NOME_PREDEFINIDO) * 100) / 100;
+      const estiloNomeSalvar = construirEstiloElemento(cabecalhoFonteInput.value, cabecalhoCorInput.value, tamanhoNomeSalvar, TAMANHO_NOME_PREDEFINIDO, cabecalhoPosState.nome.x, cabecalhoPosState.nome.y);
+      const estiloFraseSalvar = construirEstiloElemento(cabecalhoFonteInput.value, cabecalhoCorInput.value, tamanhoFraseSalvar, TAMANHO_FRASE_PREDEFINIDO, cabecalhoPosState.frase.x, cabecalhoPosState.frase.y);
+      novo = substituirEstiloPorId(novo, 'brandMark', estiloNomeSalvar);
+      novo = substituirEstiloPorId(novo, 'brandSub', estiloFraseSalvar);
 
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
       if(publicidadeState){
