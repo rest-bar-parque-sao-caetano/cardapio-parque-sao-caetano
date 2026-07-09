@@ -498,6 +498,13 @@
     (mostra a publicidade de imediato, numa aba nova, sem depender do agendamento — só nessa aba, não afeta os outros visitantes).
   </div>
 
+  <div class="preview-titulo" style="margin-top:28px;">Estatísticas</div>
+  <div class="subtitulo" style="margin:2px 0 10px;">
+    Quantas vezes o cardápio foi aberto e quantas vezes a publicidade do rodapé foi mostrada. Números guardados automaticamente, sem precisares de fazer nada.
+  </div>
+  <div id="estatisticasCaixa" style="font-size:0.85rem; color:var(--castanho-suave); line-height:1.7;">A carregar…</div>
+  <button type="button" class="acao carregar" id="btnAtualizarEstatisticas" style="margin-top:10px; width:100%;">Atualizar estatísticas</button>
+
   <div class="preview-titulo">Pré-visualização</div>
   <div class="preview">
     <div class="p-negrito" id="pvLinha1">Contamos contigo!</div>
@@ -517,6 +524,8 @@
 <script>
   const REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
   const FILE_PATH = 'cardapio.html';
+  // Mesma base de dados Firebase usada pelo Jogo do Stop e pelas estatísticas no cardapio.html.
+  const FIREBASE_DB_URL = 'https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com';
   const API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE_PATH;
   const EDITOR_FILE_PATH = 'editar.html';
   const EDITOR_API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + EDITOR_FILE_PATH;
@@ -524,7 +533,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-01';
+  const EDITOR_VERSION = '2026-07-09-02';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -1205,6 +1214,42 @@
       btnGuardar.disabled = false;
     }
   }
+
+  // ---- Estatísticas (visitas + impressões do anúncio do rodapé) ----
+  const estatisticasCaixaEl = document.getElementById('estatisticasCaixa');
+  const btnAtualizarEstatisticas = document.getElementById('btnAtualizarEstatisticas');
+  function contarUltimosDias(obj, dias){
+    const limite = Date.now() - dias * 24 * 60 * 60 * 1000;
+    return Object.values(obj).filter(v => v && typeof v.quando === 'number' && v.quando >= limite).length;
+  }
+  async function carregarEstatisticas(){
+    if(!estatisticasCaixaEl) return;
+    estatisticasCaixaEl.textContent = 'A carregar…';
+    try{
+      const [respVisitas, respImpressoes] = await Promise.all([
+        fetch(FIREBASE_DB_URL + '/estatisticas/visitas.json'),
+        fetch(FIREBASE_DB_URL + '/estatisticas/impressoesAnuncio.json')
+      ]);
+      if(!respVisitas.ok || !respImpressoes.ok) throw new Error('não consegui ler a base de dados');
+      const visitas = (await respVisitas.json()) || {};
+      const impressoes = (await respImpressoes.json()) || {};
+      const totalVisitas = Object.keys(visitas).length;
+      const visitas7d = contarUltimosDias(visitas, 7);
+      const visitasQr = Object.values(visitas).filter(v => v && v.origem === 'qr').length;
+      const totalImpressoes = Object.keys(impressoes).length;
+      const impressoes7d = contarUltimosDias(impressoes, 7);
+      estatisticasCaixaEl.innerHTML =
+        '<div>👀 Visitas totais ao cardápio: <strong>' + totalVisitas + '</strong></div>' +
+        '<div>📅 Visitas nos últimos 7 dias: <strong>' + visitas7d + '</strong></div>' +
+        '<div>📱 Das quais vindas do QR code: <strong>' + visitasQr + '</strong></div>' +
+        '<div style="margin-top:6px;">📢 Publicidade do rodapé mostrada (total): <strong>' + totalImpressoes + '</strong></div>' +
+        '<div>📢 Publicidade mostrada nos últimos 7 dias: <strong>' + impressoes7d + '</strong></div>';
+    } catch(err){
+      estatisticasCaixaEl.textContent = 'Não consegui carregar as estatísticas: ' + err.message;
+    }
+  }
+  if(btnAtualizarEstatisticas) btnAtualizarEstatisticas.addEventListener('click', carregarEstatisticas);
+  carregarEstatisticas();
 
   btnCarregar.addEventListener('click', carregarTexto);
   btnGuardar.addEventListener('click', guardarTexto);

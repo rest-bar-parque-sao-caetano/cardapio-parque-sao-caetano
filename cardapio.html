@@ -1780,6 +1780,36 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <script>
+  // ---- Estatísticas: visitas ao cardápio e vezes que o anúncio do rodapé é mostrado ----
+  // Guardado no mesmo Firebase do Jogo do Stop. Consultado em editar.html.
+  // Nota: as regras da base de dados estão abertas (tal como já estavam para o
+  // Jogo do Stop), por isso estes números servem para teres uma ideia real de
+  // tráfego/impressões, mas não são à prova de manipulação técnica.
+  (function(){
+    const ESTATISTICAS_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDuWoSlk2rmZ1KU_3ioAvlo2wS6-BjqyzA",
+      authDomain: "cardapio-parque-sao-caetano.firebaseapp.com",
+      databaseURL: "https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com",
+      projectId: "cardapio-parque-sao-caetano",
+      storageBucket: "cardapio-parque-sao-caetano.firebasestorage.app",
+      messagingSenderId: "722262488019",
+      appId: "1:722262488019:web:4c95b1adbe86aa14e5b526"
+    };
+    window.registarEvento = function(tipo, extra){
+      try{
+        if(typeof firebase === 'undefined') return;
+        if(!firebase.apps.length){ firebase.initializeApp(ESTATISTICAS_FIREBASE_CONFIG); }
+        const db = firebase.database();
+        const dados = Object.assign({ quando: firebase.database.ServerValue.TIMESTAMP }, extra || {});
+        db.ref('estatisticas/' + tipo).push(dados);
+      } catch(e){ /* nunca deve impedir o resto do cardápio de funcionar */ }
+    };
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('preview_pub_fim') !== '1'){
+      window.registarEvento('visitas', { origem: params.get('src') === 'qr' ? 'qr' : 'direto' });
+    }
+  })();
+
   // ---- Mostrar (ou não) a imagem de publicidade no fundo do rodapé (ativa-se em editar.html) ----
   (function(){
     const fundo = document.getElementById('infoFixaFundo');
@@ -1841,6 +1871,7 @@
       bloco.classList.add('mostrar');
       textoBloco.classList.add('escondido');
       incrementarContagem();
+      if(window.registarEvento) window.registarEvento('impressoesAnuncio', { anuncio: 'rodape' });
       setTimeout(() => {
         bloco.classList.remove('mostrar');
         textoBloco.classList.remove('escondido');
