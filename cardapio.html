@@ -3297,7 +3297,7 @@
   modalFoto.addEventListener('click', (e) => { if(e.target === modalFoto) fecharModalFoto(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalFoto(); });
 
-    // ---- Lista pessoal do cliente (itens para pedir ao empregado) ----
+      // ---- Lista pessoal do cliente (itens para pedir ao empregado) ----
   (function(){
     const LISTA_KEY = 'listaPedidoCliente';
     const LISTA_EXPIRA_MS = 15 * 60 * 1000;
@@ -3363,7 +3363,7 @@
     };
     function rotuloTipo(tipo){
       const r = ROTULOS_TIPO[tipo];
-      if(!r) return '';
+      if(!r) return tipo || '';
       if(idiomaAtual === 'en') return r.en;
       if(idiomaAtual === 'fr') return r.fr;
       return r.pt;
@@ -3373,33 +3373,70 @@
       return v.toFixed(2).replace('.', ',') + '€';
     }
 
-    function precoUnitario(item){
-      const info = registoItens[item.id];
-      if(!info || !info.preco) return null;
-      if(info.preco.tipo === 'unica') return info.preco.valor;
-      if(item.tipo === 'meia') return info.preco.meia;
-      if(item.tipo === 'dose') return info.preco.dose;
-      return null;
+    function numeroDoTexto(s){
+      const limpo = s.replace(/[^0-9,.]/g, '').replace(',', '.');
+      const n = parseFloat(limpo);
+      return isNaN(n) ? null : n;
     }
 
     function parsePrecoTexto(texto){
       if(!texto) return null;
       const partes = texto.split('/').map(p => p.trim()).filter(Boolean);
-      const paraNumero = (s) => {
-        const limpo = s.replace(/[^0-9,.]/g, '').replace(',', '.');
-        const n = parseFloat(limpo);
-        return isNaN(n) ? null : n;
-      };
       if(partes.length >= 2){
-        const meia = paraNumero(partes[0]);
-        const dose = paraNumero(partes[1]);
+        const meia = numeroDoTexto(partes[0]);
+        const dose = numeroDoTexto(partes[1]);
         if(meia === null || dose === null) return null;
         return { tipo: 'dupla', meia, dose };
       }
       if(partes.length === 1){
-        const n = paraNumero(partes[0]);
+        const n = numeroDoTexto(partes[0]);
         if(n === null) return null;
         return { tipo: 'unica', valor: n };
+      }
+      return null;
+    }
+
+    function parseTabelaDoses(tabela){
+      const linhasTabela = tabela.querySelectorAll('tr');
+      if(linhasTabela.length < 2) return null;
+      const doseCells = Array.from(linhasTabela[0].querySelectorAll('td.dose'));
+      const precoCells = Array.from(linhasTabela[1].querySelectorAll('td.preco-dose'));
+      if(!doseCells.length || doseCells.length !== precoCells.length) return null;
+      const opcoes = [];
+      for(let i = 0; i < doseCells.length; i++){
+        const label = doseCells[i].textContent.trim();
+        const valor = numeroDoTexto(precoCells[i].textContent);
+        if(!label || valor === null) return null;
+        opcoes.push({ label, valor });
+      }
+      return { tipo: 'multipla', opcoes };
+    }
+
+    function opcoesDeEscolha(infoPreco){
+      if(infoPreco.tipo === 'dupla'){
+        return [
+          { chave: 'meia', label: rotuloTipo('meia'), valor: infoPreco.meia },
+          { chave: 'dose', label: rotuloTipo('dose'), valor: infoPreco.dose }
+        ];
+      }
+      if(infoPreco.tipo === 'multipla'){
+        return infoPreco.opcoes.map(o => ({ chave: o.label, label: o.label, valor: o.valor }));
+      }
+      return [];
+    }
+
+    function precoUnitario(item){
+      const info = registoItens[item.id];
+      if(!info || !info.preco) return null;
+      if(info.preco.tipo === 'unica') return info.preco.valor;
+      if(info.preco.tipo === 'dupla'){
+        if(item.tipo === 'meia') return info.preco.meia;
+        if(item.tipo === 'dose') return info.preco.dose;
+        return null;
+      }
+      if(info.preco.tipo === 'multipla'){
+        const opt = info.preco.opcoes.find(o => o.label === item.tipo);
+        return opt ? opt.valor : null;
       }
       return null;
     }
@@ -3440,10 +3477,10 @@
         nome.textContent = nomeNoIdioma(item.id);
         infoWrap.appendChild(nome);
 
-        if(item.tipo === 'meia' || item.tipo === 'dose'){
+        if(item.tipo && item.tipo !== 'unica'){
           const tag = document.createElement('div');
           tag.className = 'lista-item-tag';
-          tag.textContent = rotuloTipo(item.tipo);
+          tag.textContent = (item.tipo === 'meia' || item.tipo === 'dose') ? rotuloTipo(item.tipo) : item.tipo;
           infoWrap.appendChild(tag);
         }
 
@@ -3509,7 +3546,15 @@
       if(!nomeEl) return;
 
       const precoEl = item.querySelector('.preco');
-      const infoPreco = precoEl ? parsePrecoTexto(precoEl.textContent) : null;
+      let infoPreco = precoEl ? parsePrecoTexto(precoEl.textContent) : null;
+
+      if(!infoPreco){
+        const prox = item.nextElementSibling;
+        if(prox && prox.tagName === 'TABLE' && prox.classList.contains('tabela-doses')){
+          infoPreco = parseTabelaDoses(prox);
+        }
+      }
+
       if(!infoPreco) return;
 
       const id = 'item-' + (contadorItens++);
@@ -3546,6 +3591,7 @@
           confirmarAdicao('unica');
         });
       } else {
+        const opcoes = opcoesDeEscolha(infoPreco);
         let popover = null;
         function fecharAoClicarFora(e){
           if(popover && !popover.contains(e.target) && e.target !== btn){
@@ -3566,42 +3612,26 @@
           popover = document.createElement('div');
           popover.className = 'lista-escolha-pop';
 
-          const optMeia = document.createElement('button');
-          optMeia.type = 'button';
-          const optMeiaLabel = document.createElement('span');
-          optMeiaLabel.textContent = rotuloTipo('meia');
-          const optMeiaValor = document.createElement('span');
-          optMeiaValor.className = 'valor';
-          optMeiaValor.textContent = formatarEuro(infoPreco.meia);
-          optMeia.appendChild(optMeiaLabel);
-          optMeia.appendChild(optMeiaValor);
-          optMeia.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            confirmarAdicao('meia');
-            popover.remove();
-            popover = null;
-            document.removeEventListener('click', fecharAoClicarFora, true);
+          opcoes.forEach(opcao => {
+            const optBtn = document.createElement('button');
+            optBtn.type = 'button';
+            const optLabel = document.createElement('span');
+            optLabel.textContent = opcao.label;
+            const optValor = document.createElement('span');
+            optValor.className = 'valor';
+            optValor.textContent = formatarEuro(opcao.valor);
+            optBtn.appendChild(optLabel);
+            optBtn.appendChild(optValor);
+            optBtn.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              confirmarAdicao(opcao.chave);
+              popover.remove();
+              popover = null;
+              document.removeEventListener('click', fecharAoClicarFora, true);
+            });
+            popover.appendChild(optBtn);
           });
 
-          const optDose = document.createElement('button');
-          optDose.type = 'button';
-          const optDoseLabel = document.createElement('span');
-          optDoseLabel.textContent = rotuloTipo('dose');
-          const optDoseValor = document.createElement('span');
-          optDoseValor.className = 'valor';
-          optDoseValor.textContent = formatarEuro(infoPreco.dose);
-          optDose.appendChild(optDoseLabel);
-          optDose.appendChild(optDoseValor);
-          optDose.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            confirmarAdicao('dose');
-            popover.remove();
-            popover = null;
-            document.removeEventListener('click', fecharAoClicarFora, true);
-          });
-
-          popover.appendChild(optMeia);
-          popover.appendChild(optDose);
           item.appendChild(popover);
           setTimeout(() => document.addEventListener('click', fecharAoClicarFora, true), 0);
         });
