@@ -676,11 +676,6 @@
         <span id="fundoPubTamanhoValor">100%</span>
       </div>
 
-      <div class="check-ativar" style="margin-top:8px;">
-        <input type="checkbox" id="fundoPubRecortada">
-        <label for="fundoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
-      </div>
-
       <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
       <div class="anuncio-pos-caixa" id="fundoPubPosCaixa">
         <img id="fundoPubPosImg" class="anuncio-pos-img" src="" alt="">
@@ -723,23 +718,6 @@
 
       <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
       <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
-
-      <label for="vinhoPubTamanho">Tamanho da imagem</label>
-      <div class="campo-numero">
-        <input type="range" id="vinhoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
-        <span id="vinhoPubTamanhoValor">100%</span>
-      </div>
-
-      <div class="check-ativar" style="margin-top:8px;">
-        <input type="checkbox" id="vinhoPubRecortada">
-        <label for="vinhoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
-      </div>
-
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
-      <div class="anuncio-pos-caixa" id="vinhoPubPosCaixa">
-        <img id="vinhoPubPosImg" class="anuncio-pos-img" src="" alt="">
-      </div>
-      <button type="button" class="btn-repor" id="vinhoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -783,23 +761,6 @@
 
       <label for="vinhosSeccaoPubLinha4">Linha 4 (opcional)</label>
       <input type="text" id="vinhosSeccaoPubLinha4">
-
-      <label for="vinhosSeccaoPubTamanho">Tamanho da imagem</label>
-      <div class="campo-numero">
-        <input type="range" id="vinhosSeccaoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
-        <span id="vinhosSeccaoPubTamanhoValor">100%</span>
-      </div>
-
-      <div class="check-ativar" style="margin-top:8px;">
-        <input type="checkbox" id="vinhosSeccaoPubRecortada">
-        <label for="vinhosSeccaoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
-      </div>
-
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
-      <div class="anuncio-pos-caixa" id="vinhosSeccaoPubPosCaixa">
-        <img id="vinhosSeccaoPubPosImg" class="anuncio-pos-img" src="" alt="">
-      </div>
-      <button type="button" class="btn-repor" id="vinhosSeccaoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -866,11 +827,6 @@
         <span id="pubFimPubTamanhoValor">100%</span>
       </div>
 
-      <div class="check-ativar" style="margin-top:8px;">
-        <input type="checkbox" id="pubFimPubRecortada">
-        <label for="pubFimPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
-      </div>
-
       <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
       <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
       <div class="anuncio-pos-caixa" id="pubFimPubPosCaixa">
@@ -914,23 +870,6 @@
 
       <label for="jogoPubSubtitulo">Texto secundário (opcional)</label>
       <input type="text" id="jogoPubSubtitulo">
-
-      <label for="jogoPubTamanho">Tamanho da imagem</label>
-      <div class="campo-numero">
-        <input type="range" id="jogoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
-        <span id="jogoPubTamanhoValor">100%</span>
-      </div>
-
-      <div class="check-ativar" style="margin-top:8px;">
-        <input type="checkbox" id="jogoPubRecortada">
-        <label for="jogoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
-      </div>
-
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
-      <div class="anuncio-pos-caixa" id="jogoPubPosCaixa">
-        <img id="jogoPubPosImg" class="anuncio-pos-img" src="" alt="">
-      </div>
-      <button type="button" class="btn-repor" id="jogoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -977,7 +916,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-10-04';
+  const EDITOR_VERSION = '2026-07-10-05';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -1386,22 +1325,15 @@
   novaPublicidadeInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    function aplicarFicheiroFundoPub(f){
-      publicidadeState = {
-        caminho: publicidadeState ? publicidadeState.caminho : null,
-        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
-        novoFicheiro: f,
-        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
-        nomePreview: f.name
-      };
-      renderizarPublicidade();
-      if(!ficheiroEhVideo(f)){ fundoPubPosImgEl.src = publicidadeState.previewUrl; }
-    }
-    if(!ficheiroEhVideo(file) && fundoPubRecortadaInput.checked){
-      limparFalsaTransparencia(file, aplicarFicheiroFundoPub);
-    } else {
-      aplicarFicheiroFundoPub(file);
-    }
+    publicidadeState = {
+      caminho: publicidadeState ? publicidadeState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
+      novoFicheiro: file,
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarPublicidade();
+    if(!ficheiroEhVideo(file)){ fundoPubPosImgEl.src = publicidadeState.previewUrl; }
     e.target.value = '';
   });
 
@@ -1443,22 +1375,14 @@
   novaVinhoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    function aplicarFicheiroVinhoPub(f){
-      vinhoPubState = {
-        caminho: vinhoPubState ? vinhoPubState.caminho : null,
-        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
-        novoFicheiro: f,
-        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
-        nomePreview: f.name
-      };
-      renderizarVinhoPub();
-      if(!ficheiroEhVideo(f)){ vinhoPubPosImgEl.src = vinhoPubState.previewUrl; }
-    }
-    if(!ficheiroEhVideo(file) && vinhoPubRecortadaInput.checked){
-      limparFalsaTransparencia(file, aplicarFicheiroVinhoPub);
-    } else {
-      aplicarFicheiroVinhoPub(file);
-    }
+    vinhoPubState = {
+      caminho: vinhoPubState ? vinhoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
+      novoFicheiro: file,
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarVinhoPub();
     e.target.value = '';
   });
 
@@ -1500,22 +1424,14 @@
   novaVinhosSeccaoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    function aplicarFicheiroVinhosSeccaoPub(f){
-      vinhosSeccaoPubState = {
-        caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
-        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
-        novoFicheiro: f,
-        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
-        nomePreview: f.name
-      };
-      renderizarVinhosSeccaoPub();
-      if(!ficheiroEhVideo(f)){ vinhosSeccaoPubPosImgEl.src = vinhosSeccaoPubState.previewUrl; }
-    }
-    if(!ficheiroEhVideo(file) && vinhosSeccaoPubRecortadaInput.checked){
-      limparFalsaTransparencia(file, aplicarFicheiroVinhosSeccaoPub);
-    } else {
-      aplicarFicheiroVinhosSeccaoPub(file);
-    }
+    vinhosSeccaoPubState = {
+      caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
+      novoFicheiro: file,
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarVinhosSeccaoPub();
     e.target.value = '';
   });
 
@@ -1557,22 +1473,14 @@
   novaJogoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    function aplicarFicheiroJogoPub(f){
-      jogoPubState = {
-        caminho: jogoPubState ? jogoPubState.caminho : null,
-        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
-        novoFicheiro: f,
-        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
-        nomePreview: f.name
-      };
-      renderizarJogoPub();
-      if(!ficheiroEhVideo(f)){ jogoPubPosImgEl.src = jogoPubState.previewUrl; }
-    }
-    if(!ficheiroEhVideo(file) && jogoPubRecortadaInput.checked){
-      limparFalsaTransparencia(file, aplicarFicheiroJogoPub);
-    } else {
-      aplicarFicheiroJogoPub(file);
-    }
+    jogoPubState = {
+      caminho: jogoPubState ? jogoPubState.caminho : null,
+      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
+      novoFicheiro: file,
+      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    renderizarJogoPub();
     e.target.value = '';
   });
 
@@ -1601,23 +1509,16 @@
       e.target.value = '';
       return;
     }
-    function aplicarFotoPubFim(ficheiroFinal){
-      pubFimState = {
-        caminho: pubFimState ? pubFimState.caminho : null,
-        tipo: 'foto',
-        novoFicheiro: ficheiroFinal,
-        previewUrl: URL.createObjectURL(ficheiroFinal),
-        nomePreview: ficheiroFinal.name
-      };
-      pubFimVazioEl.style.display = 'none';
-      pubFimPubPosImgEl.style.display = '';
-      pubFimPubPosImgEl.src = pubFimState.previewUrl;
-    }
-    if(pubFimPubRecortadaInput.checked){
-      limparFalsaTransparencia(file, aplicarFotoPubFim);
-    } else {
-      aplicarFotoPubFim(file);
-    }
+    pubFimState = {
+      caminho: pubFimState ? pubFimState.caminho : null,
+      tipo: 'foto',
+      novoFicheiro: file,
+      previewUrl: URL.createObjectURL(file),
+      nomePreview: file.name
+    };
+    pubFimVazioEl.style.display = 'none';
+    pubFimPubPosImgEl.style.display = '';
+    pubFimPubPosImgEl.src = pubFimState.previewUrl;
     e.target.value = '';
   });
 
@@ -1817,7 +1718,6 @@
       const fundoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'fundoAnuncioImg'));
       fundoPubTamanhoInput.value = fundoPubEstiloAtual.tamanho;
       fundoPubTamanhoValorEl.textContent = Math.round(fundoPubEstiloAtual.tamanho*100) + '%';
-      fundoPubRecortadaInput.checked = fundoPubEstiloAtual.recortada;
       fundoPubPosState.x = fundoPubEstiloAtual.x;
       fundoPubPosState.y = fundoPubEstiloAtual.y;
       aplicarPosFundoPub();
@@ -1828,13 +1728,6 @@
       vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
       vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
       vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
-      const vinhoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'vinhoAnuncioImg'));
-      vinhoPubTamanhoInput.value = vinhoPubEstiloAtual.tamanho;
-      vinhoPubTamanhoValorEl.textContent = Math.round(vinhoPubEstiloAtual.tamanho*100) + '%';
-      vinhoPubRecortadaInput.checked = vinhoPubEstiloAtual.recortada;
-      vinhoPubPosState.x = vinhoPubEstiloAtual.x; vinhoPubPosState.y = vinhoPubEstiloAtual.y;
-      if(vinhoPubState && vinhoPubState.caminho){ vinhoPubPosImgEl.src = vinhoPubState.caminho; }
-      aplicarPosVinhoPub();
 
       vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
       renderizarVinhosSeccaoPub();
@@ -1843,24 +1736,9 @@
       vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
       vinhosSeccaoPubLinha3Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha3');
       vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
-      const vinhosSeccaoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'vinhosSeccaoPubImg'));
-      vinhosSeccaoPubTamanhoInput.value = vinhosSeccaoPubEstiloAtual.tamanho;
-      vinhosSeccaoPubTamanhoValorEl.textContent = Math.round(vinhosSeccaoPubEstiloAtual.tamanho*100) + '%';
-      vinhosSeccaoPubRecortadaInput.checked = vinhosSeccaoPubEstiloAtual.recortada;
-      vinhosSeccaoPubPosState.x = vinhosSeccaoPubEstiloAtual.x; vinhosSeccaoPubPosState.y = vinhosSeccaoPubEstiloAtual.y;
-      if(vinhosSeccaoPubState && vinhosSeccaoPubState.caminho){ vinhosSeccaoPubPosImgEl.src = vinhosSeccaoPubState.caminho; }
-      aplicarPosVinhosSeccaoPub();
 
       jogoPubState = extrairJogoPub(conteudo);
       renderizarJogoPub();
-      const jogoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'jogoAnuncioImg'));
-      jogoPubTamanhoInput.value = jogoPubEstiloAtual.tamanho;
-      jogoPubTamanhoValorEl.textContent = Math.round(jogoPubEstiloAtual.tamanho*100) + '%';
-      jogoPubRecortadaInput.checked = jogoPubEstiloAtual.recortada;
-      jogoPubPosState.x = jogoPubEstiloAtual.x;
-      jogoPubPosState.y = jogoPubEstiloAtual.y;
-      aplicarPosJogoPub();
-      if(jogoPubState && jogoPubState.caminho){ jogoPubPosImgEl.src = jogoPubState.caminho; }
       jogoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-jogo-pub-ativo') === 'true';
       jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
       jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
@@ -1876,7 +1754,6 @@
       const pubFimPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'pubFimAnuncioImg'));
       pubFimPubTamanhoInput.value = pubFimPubEstiloAtual.tamanho;
       pubFimPubTamanhoValorEl.textContent = Math.round(pubFimPubEstiloAtual.tamanho*100) + '%';
-      pubFimPubRecortadaInput.checked = pubFimPubEstiloAtual.recortada;
       pubFimPubPosState.x = pubFimPubEstiloAtual.x;
       pubFimPubPosState.y = pubFimPubEstiloAtual.y;
       aplicarPosPubFimPub();
@@ -2058,14 +1935,13 @@
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
       if(publicidadeState){
         novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
-    novo = substituirEstiloPorId(novo, 'fundoAnuncioImg', construirEstiloImagemAnuncio(fundoPubRecortadaInput.checked, parseFloat(fundoPubTamanhoInput.value)||1, fundoPubPosState.x, fundoPubPosState.y));
+      novo = substituirEstiloPorId(novo, 'fundoAnuncioImg', construirEstiloImagemAnuncio(parseFloat(fundoPubTamanhoInput.value)||1, fundoPubPosState.x, fundoPubPosState.y));
       }
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
 
       if(vinhoPubState){
         novo = substituirVinhoPubImg(novo, construirVinhoPubImgHtml(vinhoPubState));
       }
-      novo = substituirEstiloPorId(novo, 'vinhoAnuncioImg', construirEstiloImagemAnuncio(vinhoPubRecortadaInput.checked, parseFloat(vinhoPubTamanhoInput.value) || 1, vinhoPubPosState.x, vinhoPubPosState.y));
       novo = substituirAtributo(novo, 'data-vinho-pub-ativo', vinhoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhoAnuncioTitulo', vinhoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhoAnuncioSubtitulo', vinhoPubSubtituloInput.value);
@@ -2073,7 +1949,6 @@
       if(vinhosSeccaoPubState){
         novo = substituirVinhosSeccaoPubImg(novo, construirVinhosSeccaoPubImgHtml(vinhosSeccaoPubState));
       }
-      novo = substituirEstiloPorId(novo, 'vinhosSeccaoPubImg', construirEstiloImagemAnuncio(vinhosSeccaoPubRecortadaInput.checked, parseFloat(vinhosSeccaoPubTamanhoInput.value) || 1, vinhosSeccaoPubPosState.x, vinhosSeccaoPubPosState.y));
       novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoTitulo', vinhosSeccaoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoSubtitulo', vinhosSeccaoPubSubtituloInput.value);
@@ -2082,7 +1957,6 @@
 
       if(jogoPubState){
         novo = substituirJogoPubImg(novo, construirJogoPubImgHtml(jogoPubState));
-    novo = substituirEstiloPorId(novo, 'jogoAnuncioImg', construirEstiloImagemAnuncio(jogoPubRecortadaInput.checked, parseFloat(jogoPubTamanhoInput.value)||1, jogoPubPosState.x, jogoPubPosState.y));
       }
       novo = substituirAtributo(novo, 'data-jogo-pub-ativo', jogoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'jogoAnuncioTitulo', jogoPubTituloInput.value);
@@ -2091,7 +1965,7 @@
       if(pubFimState){
         novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
         if(pubFimState.tipo !== 'video'){
-          novo = substituirEstiloPorId(novo, 'pubFimAnuncioImg', construirEstiloImagemAnuncio(pubFimPubRecortadaInput.checked, parseFloat(pubFimPubTamanhoInput.value)||1, pubFimPubPosState.x, pubFimPubPosState.y));
+          novo = substituirEstiloPorId(novo, 'pubFimAnuncioImg', construirEstiloImagemAnuncio(parseFloat(pubFimPubTamanhoInput.value)||1, pubFimPubPosState.x, pubFimPubPosState.y));
         }
       }
       novo = substituirAtributo(novo, 'data-pub-ativo', pubFimAtivoInput.checked ? 'true' : 'false');
@@ -2165,7 +2039,6 @@
   carregarEstatisticas();
   const fundoPubTamanhoInput = document.getElementById('fundoPubTamanho');
   const fundoPubTamanhoValorEl = document.getElementById('fundoPubTamanhoValor');
-  const fundoPubRecortadaInput = document.getElementById('fundoPubRecortada');
   const fundoPubPosImgEl = document.getElementById('fundoPubPosImg');
   const fundoPubReporPosBtn = document.getElementById('fundoPubReporPos');
   let fundoPubPosState = { x: 0, y: 0 };
@@ -2175,34 +2048,15 @@
     aplicarPosFundoPub();
   });
   fundoPubReporPosBtn.addEventListener('click', function(){
-    fundoPubRecortadaInput.checked = false;
     fundoPubTamanhoInput.value = 1;
     fundoPubTamanhoValorEl.textContent = '100%';
     fundoPubPosState.x = 0; fundoPubPosState.y = 0;
     aplicarPosFundoPub();
   });
 
-  const jogoPubTamanhoInput = document.getElementById('jogoPubTamanho');
-  const jogoPubTamanhoValorEl = document.getElementById('jogoPubTamanhoValor');
-  const jogoPubRecortadaInput = document.getElementById('jogoPubRecortada');
-  const jogoPubPosImgEl = document.getElementById('jogoPubPosImg');
-  const jogoPubReporPosBtn = document.getElementById('jogoPubReporPos');
-  let jogoPubPosState = { x: 0, y: 0 };
-  const aplicarPosJogoPub = tornarArrastavelImagemAnuncio(jogoPubPosImgEl, jogoPubPosState, jogoPubTamanhoInput);
-  jogoPubTamanhoInput.addEventListener('input', function(){
-    jogoPubTamanhoValorEl.textContent = Math.round(parseFloat(jogoPubTamanhoInput.value)*100) + '%';
-    aplicarPosJogoPub();
-  });
-  jogoPubReporPosBtn.addEventListener('click', function(){
-    jogoPubRecortadaInput.checked = false;
-    jogoPubTamanhoInput.value = 1;
-    jogoPubTamanhoValorEl.textContent = '100%';
-    jogoPubPosState.x = 0; jogoPubPosState.y = 0;
-    aplicarPosJogoPub();
-  });
+
   const pubFimPubTamanhoInput = document.getElementById('pubFimPubTamanho');
   const pubFimPubTamanhoValorEl = document.getElementById('pubFimPubTamanhoValor');
-  const pubFimPubRecortadaInput = document.getElementById('pubFimPubRecortada');
   const pubFimPubPosImgEl = document.getElementById('pubFimPubPosImg');
   const pubFimPubReporPosBtn = document.getElementById('pubFimPubReporPos');
   let pubFimPubPosState = { x: 0, y: 0 };
@@ -2212,80 +2066,26 @@
     aplicarPosPubFimPub();
   });
   pubFimPubReporPosBtn.addEventListener('click', function(){
-    pubFimPubRecortadaInput.checked = false;
     pubFimPubTamanhoInput.value = 1;
     pubFimPubTamanhoValorEl.textContent = '100%';
     pubFimPubPosState.x = 0; pubFimPubPosState.y = 0;
     aplicarPosPubFimPub();
   });
-  function limparFalsaTransparencia(ficheiro, callback){
-    if(!ficheiro || !ficheiro.type || ficheiro.type.indexOf('image/') !== 0){ callback(ficheiro); return; }
-    const imgEl = new Image();
-    const urlTemp = URL.createObjectURL(ficheiro);
-    imgEl.onload = function(){
-      URL.revokeObjectURL(urlTemp);
-      const canvas = document.createElement('canvas');
-      canvas.width = imgEl.naturalWidth;
-      canvas.height = imgEl.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(imgEl, 0, 0);
-      let imgData;
-      try { imgData = ctx.getImageData(0, 0, canvas.width, canvas.height); }
-      catch(erro){ callback(ficheiro); return; }
-      const dados = imgData.data;
-      let temAlphaReal = false;
-      for(let i = 3; i < dados.length; i += 4){ if(dados[i] < 255){ temAlphaReal = true; break; } }
-      if(temAlphaReal){ callback(ficheiro); return; }
-      const w = canvas.width, h = canvas.height;
-      const visitado = new Uint8Array(w*h);
-      const pilha = [];
-      function ehQuadriculado(r,g,b){
-        const sat = Math.max(r,g,b) - Math.min(r,g,b);
-        const brilho = (r+g+b)/3;
-        return sat <= 12 && brilho >= 195;
-      }
-      for(let x=0;x<w;x++){ pilha.push(x,0); pilha.push(x,h-1); }
-      for(let y=0;y<h;y++){ pilha.push(0,y); pilha.push(w-1,y); }
-      while(pilha.length){
-        const y = pilha.pop(), x = pilha.pop();
-        if(x<0||y<0||x>=w||y>=h) continue;
-        const i = y*w+x;
-        if(visitado[i]) continue;
-        const p = i*4;
-        const r = dados[p], g = dados[p+1], b = dados[p+2];
-        if(!ehQuadriculado(r,g,b)) continue;
-        visitado[i] = 1;
-        dados[p+3] = 0;
-        pilha.push(x+1,y); pilha.push(x-1,y); pilha.push(x,y+1); pilha.push(x,y-1);
-      }
-      ctx.putImageData(imgData, 0, 0);
-      canvas.toBlob(function(blob){
-        if(!blob){ callback(ficheiro); return; }
-        const novoNome = ficheiro.name.replace(/\.(jpe?g)$/i, '.png');
-        const ficheiroLimpo = new File([blob], novoNome, {type:'image/png'});
-        callback(ficheiroLimpo);
-      }, 'image/png');
-    };
-    imgEl.onerror = function(){ URL.revokeObjectURL(urlTemp); callback(ficheiro); };
-    imgEl.src = urlTemp;
-  }
+  
 
   btnCarregar.addEventListener('click', carregarTexto);
   btnGuardar.addEventListener('click', guardarTexto);
 
   function extrairInfoEstiloImagemAnuncio(estilo){
   const transM = estilo.match(/transform:\s*translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
-  const recortada = estilo.indexOf('object-fit:contain') !== -1;
   return {
-    recortada: recortada,
     tamanho: transM ? parseFloat(transM[3]) : 1,
     x: transM ? parseFloat(transM[1]) : 0,
     y: transM ? parseFloat(transM[2]) : 0
   };
 }
-function construirEstiloImagemAnuncio(recortada, tamanho, offsetX, offsetY){
-  const partes = [];
-  if(recortada){ partes.push('object-fit:contain'); partes.push('z-index:5'); partes.push('pointer-events:none'); }
+function construirEstiloImagemAnuncio(tamanho, offsetX, offsetY){
+  const partes = ['object-fit:cover'];
   const tamanhoArred = Math.round(tamanho*100)/100;
   if(Math.abs(tamanhoArred-1) > 0.001 || Math.round(offsetX)!==0 || Math.round(offsetY)!==0){
     partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px) scale(' + tamanhoArred.toFixed(2) + ')');
@@ -2317,45 +2117,7 @@ function tornarArrastavelImagemAnuncio(el, estado, sliderTamanho){
   return aplicar;
 }
 
-const vinhoPubTamanhoInput = document.getElementById('vinhoPubTamanho');
-const vinhoPubTamanhoValorEl = document.getElementById('vinhoPubTamanhoValor');
-const vinhoPubRecortadaInput = document.getElementById('vinhoPubRecortada');
-const vinhoPubPosImgEl = document.getElementById('vinhoPubPosImg');
-const vinhoPubReporPosBtn = document.getElementById('vinhoPubReporPos');
-let vinhoPubPosState = { x: 0, y: 0 };
-const aplicarPosVinhoPub = tornarArrastavelImagemAnuncio(vinhoPubPosImgEl, vinhoPubPosState, vinhoPubTamanhoInput);
-vinhoPubTamanhoInput.addEventListener('input', function(){
-  vinhoPubTamanhoValorEl.textContent = Math.round(parseFloat(vinhoPubTamanhoInput.value)*100) + '%';
-  aplicarPosVinhoPub();
-});
-vinhoPubReporPosBtn.addEventListener('click', function(){
-  vinhoPubRecortadaInput.checked = false;
-  vinhoPubTamanhoInput.value = 1;
-  vinhoPubTamanhoValorEl.textContent = '100%';
-  vinhoPubPosState.x = 0; vinhoPubPosState.y = 0;
-  aplicarPosVinhoPub();
-});
-/* preview do vinhoPub agora tratada no handler de novaVinhoPubInput */
 
-const vinhosSeccaoPubTamanhoInput = document.getElementById('vinhosSeccaoPubTamanho');
-const vinhosSeccaoPubTamanhoValorEl = document.getElementById('vinhosSeccaoPubTamanhoValor');
-const vinhosSeccaoPubRecortadaInput = document.getElementById('vinhosSeccaoPubRecortada');
-const vinhosSeccaoPubPosImgEl = document.getElementById('vinhosSeccaoPubPosImg');
-const vinhosSeccaoPubReporPosBtn = document.getElementById('vinhosSeccaoPubReporPos');
-let vinhosSeccaoPubPosState = { x: 0, y: 0 };
-const aplicarPosVinhosSeccaoPub = tornarArrastavelImagemAnuncio(vinhosSeccaoPubPosImgEl, vinhosSeccaoPubPosState, vinhosSeccaoPubTamanhoInput);
-vinhosSeccaoPubTamanhoInput.addEventListener('input', function(){
-  vinhosSeccaoPubTamanhoValorEl.textContent = Math.round(parseFloat(vinhosSeccaoPubTamanhoInput.value)*100) + '%';
-  aplicarPosVinhosSeccaoPub();
-});
-vinhosSeccaoPubReporPosBtn.addEventListener('click', function(){
-  vinhosSeccaoPubRecortadaInput.checked = false;
-  vinhosSeccaoPubTamanhoInput.value = 1;
-  vinhosSeccaoPubTamanhoValorEl.textContent = '100%';
-  vinhosSeccaoPubPosState.x = 0; vinhosSeccaoPubPosState.y = 0;
-  aplicarPosVinhosSeccaoPub();
-});
-/* preview do vinhosSeccaoPub agora tratada no handler de novaVinhosSeccaoPubInput */
 
   // carrega automaticamente ao abrir a página
   carregarTexto();
