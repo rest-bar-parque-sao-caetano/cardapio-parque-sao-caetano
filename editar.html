@@ -2453,7 +2453,15 @@
 
       setEstado('Guardado! Demora uns 10 a 30 segundos a aparecer no cardápio.', 'ok');
     
-    CATEGORIAS_ANUNCIO.forEach(function(slug){
+        for (const catSlug of CATEGORIAS_ANUNCIO) {
+      const catState = catPubState[catSlug];
+      if (catState && catState.novoFicheiro) {
+        setEstado("A enviar foto da categoria: " + catState.nomePreview + "…", "info");
+        catState.caminho = await enviarFoto(catState.novoFicheiro, token);
+        catState.novoFicheiro = null;
+      }
+    }
+CATEGORIAS_ANUNCIO.forEach(function(slug){
       const pascal = pascalCaseSlug(slug);
       if(catPubState[slug]){
         novo = substituirCategoriaPubImg(novo, slug, construirCategoriaPubImgHtml(catPubState[slug], slug));
