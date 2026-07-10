@@ -669,6 +669,23 @@
 
       <label for="novaPublicidade">Substituir imagem ou vídeo de publicidade</label>
       <input type="file" id="novaPublicidade" accept="image/*,video/mp4,video/webm">
+
+      <label for="fundoPubTamanho">Tamanho da imagem</label>
+      <div class="campo-numero">
+        <input type="range" id="fundoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
+        <span id="fundoPubTamanhoValor">100%</span>
+      </div>
+
+      <div class="check-ativar" style="margin-top:8px;">
+        <input type="checkbox" id="fundoPubRecortada">
+        <label for="fundoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
+      </div>
+
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
+      <div class="anuncio-pos-caixa" id="fundoPubPosCaixa">
+        <img id="fundoPubPosImg" class="anuncio-pos-img" src="" alt="">
+      </div>
+      <button type="button" class="btn-repor" id="fundoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -843,19 +860,23 @@
       <input type="file" id="novaPubFim" accept="image/*,video/mp4,video/webm">
       <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
 
-      <div class="pub-editor-caixa" id="pubFimCaixa">
-        <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
-        <img id="pubFimImg" src="" alt="" style="display:none;">
+      <label for="pubFimPubTamanho">Tamanho da imagem</label>
+      <div class="campo-numero">
+        <input type="range" id="pubFimPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
+        <span id="pubFimPubTamanhoValor">100%</span>
       </div>
-      <div class="pub-editor-dica">Arrasta a foto dentro da moldura para a posicionares.</div>
-      <div class="pub-editor-zoom">
-        <span>Tamanho</span>
-        <input type="range" id="pubFimZoom" min="100" max="300" step="1" value="100">
+
+      <div class="check-ativar" style="margin-top:8px;">
+        <input type="checkbox" id="pubFimPubRecortada">
+        <label for="pubFimPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
       </div>
-      <div class="pub-editor-dica" style="margin-top:8px;">
-        Não queres esperar pela hora agendada para confirmar que está bem? <a href="https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/cardapio.html?preview_pub_fim=1" target="_blank" rel="noopener">Pré-visualizar agora →</a>
-        (mostra a publicidade de imediato, numa aba nova, sem depender do agendamento — só nessa aba, não afeta os outros visitantes).
+
+      <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
+      <div class="anuncio-pos-caixa" id="pubFimPubPosCaixa">
+        <img id="pubFimPubPosImg" class="anuncio-pos-img" src="" alt="">
       </div>
+      <button type="button" class="btn-repor" id="pubFimPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -893,6 +914,23 @@
 
       <label for="jogoPubSubtitulo">Texto secundário (opcional)</label>
       <input type="text" id="jogoPubSubtitulo">
+
+      <label for="jogoPubTamanho">Tamanho da imagem</label>
+      <div class="campo-numero">
+        <input type="range" id="jogoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
+        <span id="jogoPubTamanhoValor">100%</span>
+      </div>
+
+      <div class="check-ativar" style="margin-top:8px;">
+        <input type="checkbox" id="jogoPubRecortada">
+        <label for="jogoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
+      </div>
+
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
+      <div class="anuncio-pos-caixa" id="jogoPubPosCaixa">
+        <img id="jogoPubPosImg" class="anuncio-pos-img" src="" alt="">
+      </div>
+      <button type="button" class="btn-repor" id="jogoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -939,7 +977,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-10-02';
+  const EDITOR_VERSION = '2026-07-10-03';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -999,18 +1037,9 @@
   const pubFimDuracaoInput = document.getElementById('pubFimDuracao');
   const pubFimMaxInput = document.getElementById('pubFimMax');
   const novaPubFimInput = document.getElementById('novaPubFim');
-  const pubFimCaixaEl = document.getElementById('pubFimCaixa');
   const pubFimVazioEl = document.getElementById('pubFimVazio');
-  const pubFimImgEl = document.getElementById('pubFimImg');
-  const pubFimZoomInput = document.getElementById('pubFimZoom');
   const pubFimNomeFicheiroEl = document.getElementById('pubFimNomeFicheiro');
-  let pubFimState = null; // { caminho, novoFicheiro, previewUrl, nomePreview, posX, posY, escala }
-  let pubFimNatW = 0, pubFimNatH = 0;
-  let pubFimDispW = 0, pubFimDispH = 0;
-  let pubFimLeft = 0, pubFimTop = 0;
-  let pubFimArrastando = false;
-  let pubFimArrastoInicio = { x: 0, y: 0 };
-  let pubFimPosInicio = { left: 0, top: 0 };
+  let pubFimState = null; // { caminho, novoFicheiro, previewUrl, nomePreview }
   const previews = {
     1: document.getElementById('pvLinha1'),
     2: document.getElementById('pvLinha2'),
@@ -1342,7 +1371,7 @@
   }
 
   function construirFundoImgHtml(pub){
-    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
+    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub, ' id="fundoAnuncioImg" style=""') + '\n  ';
   }
 
   function substituirFundoImg(html, novoInnerHTML){
@@ -1483,7 +1512,7 @@
   }
 
   function construirJogoPubImgHtml(pub){
-    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="jogoAnuncioImg"') + '\n      ';
+    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="jogoAnuncioImg" style=""') + '\n      ';
   }
 
   function substituirJogoPubImg(html, novoInnerHTML){
@@ -1516,128 +1545,12 @@
   });
 
   // ---- Publicidade no fim da página: editor de arrastar e ampliar ----
-  function pubFimCaixaRect(){
-    return pubFimCaixaEl.getBoundingClientRect();
-  }
-
-  function pubFimAplicarTransform(){
-    pubFimImgEl.style.width = pubFimDispW + 'px';
-    pubFimImgEl.style.height = pubFimDispH + 'px';
-    pubFimImgEl.style.left = pubFimLeft + 'px';
-    pubFimImgEl.style.top = pubFimTop + 'px';
-  }
-
-  function pubFimClamp(boxW, boxH){
-    const minLeft = boxW - pubFimDispW;
-    const minTop = boxH - pubFimDispH;
-    pubFimLeft = Math.max(minLeft, Math.min(0, pubFimLeft));
-    pubFimTop = Math.max(minTop, Math.min(0, pubFimTop));
-  }
-
-  function pubFimRecalcular(manterCentro){
-    if(!pubFimNatW || !pubFimNatH) return;
-    const rect = pubFimCaixaRect();
-    const boxW = rect.width, boxH = rect.height;
-    const coverScale = Math.max(boxW / pubFimNatW, boxH / pubFimNatH);
-    const zoom = (parseFloat(pubFimZoomInput.value) || 100) / 100;
-    const novoDispW = pubFimNatW * coverScale * zoom;
-    const novoDispH = pubFimNatH * coverScale * zoom;
-
-    if(manterCentro && pubFimDispW > 0 && pubFimDispH > 0){
-      const fracX = (-pubFimLeft + boxW / 2) / pubFimDispW;
-      const fracY = (-pubFimTop + boxH / 2) / pubFimDispH;
-      pubFimLeft = boxW / 2 - fracX * novoDispW;
-      pubFimTop = boxH / 2 - fracY * novoDispH;
-    } else {
-      pubFimLeft = (boxW - novoDispW) / 2;
-      pubFimTop = (boxH - novoDispH) / 2;
-    }
-
-    pubFimDispW = novoDispW;
-    pubFimDispH = novoDispH;
-    pubFimClamp(boxW, boxH);
-    pubFimAplicarTransform();
-  }
-
-  function pubFimCarregarImagem(src){
-    pubFimVazioEl.style.display = 'none';
-    pubFimImgEl.style.display = 'block';
-    pubFimNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (pubFimState && pubFimState.nomePreview ? pubFimState.nomePreview : '—');
-    pubFimImgEl.onload = () => {
-      pubFimNatW = pubFimImgEl.naturalWidth;
-      pubFimNatH = pubFimImgEl.naturalHeight;
-      const zoomPercent = pubFimState && pubFimState.escala ? Math.round(pubFimState.escala * 100) : 100;
-      pubFimZoomInput.value = zoomPercent;
-      const rect = pubFimCaixaRect();
-      const boxW = rect.width, boxH = rect.height;
-      const coverScale = Math.max(boxW / pubFimNatW, boxH / pubFimNatH);
-      const zoom = zoomPercent / 100;
-      pubFimDispW = pubFimNatW * coverScale * zoom;
-      pubFimDispH = pubFimNatH * coverScale * zoom;
-      if(pubFimState && typeof pubFimState.posX === 'number'){
-        pubFimLeft = pubFimDispW > boxW ? -(pubFimState.posX / 100) * (pubFimDispW - boxW) : (boxW - pubFimDispW) / 2;
-        pubFimTop = pubFimDispH > boxH ? -(pubFimState.posY / 100) * (pubFimDispH - boxH) : (boxH - pubFimDispH) / 2;
-      } else {
-        pubFimLeft = (boxW - pubFimDispW) / 2;
-        pubFimTop = (boxH - pubFimDispH) / 2;
-      }
-      pubFimClamp(boxW, boxH);
-      pubFimAplicarTransform();
-    };
-    pubFimImgEl.src = src;
-  }
-
-  function pubFimCapturarEstadoAtual(){
-    if(!pubFimState || !pubFimNatW) return;
-    const rect = pubFimCaixaRect();
-    const boxW = rect.width, boxH = rect.height;
-    pubFimState.posX = pubFimDispW > boxW ? (-pubFimLeft / (pubFimDispW - boxW)) * 100 : 50;
-    pubFimState.posY = pubFimDispH > boxH ? (-pubFimTop / (pubFimDispH - boxH)) * 100 : 50;
-    pubFimState.escala = (parseFloat(pubFimZoomInput.value) || 100) / 100;
-  }
-
-  pubFimCaixaEl.addEventListener('pointerdown', (e) => {
-    if(pubFimImgEl.style.display === 'none' || !pubFimNatW) return;
-    pubFimArrastando = true;
-    pubFimCaixaEl.classList.add('arrastando');
-    pubFimArrastoInicio = { x: e.clientX, y: e.clientY };
-    pubFimPosInicio = { left: pubFimLeft, top: pubFimTop };
-    pubFimCaixaEl.setPointerCapture(e.pointerId);
-  });
-  pubFimCaixaEl.addEventListener('pointermove', (e) => {
-    if(!pubFimArrastando) return;
-    const dx = e.clientX - pubFimArrastoInicio.x;
-    const dy = e.clientY - pubFimArrastoInicio.y;
-    const rect = pubFimCaixaRect();
-    pubFimLeft = pubFimPosInicio.left + dx;
-    pubFimTop = pubFimPosInicio.top + dy;
-    pubFimClamp(rect.width, rect.height);
-    pubFimAplicarTransform();
-  });
-  function pubFimTerminarArrasto(){
-    pubFimArrastando = false;
-    pubFimCaixaEl.classList.remove('arrastando');
-  }
-  pubFimCaixaEl.addEventListener('pointerup', pubFimTerminarArrasto);
-  pubFimCaixaEl.addEventListener('pointercancel', pubFimTerminarArrasto);
-  pubFimCaixaEl.addEventListener('pointerleave', pubFimTerminarArrasto);
-
-  pubFimZoomInput.addEventListener('input', () => {
-    pubFimRecalcular(true);
-  });
-
-  window.addEventListener('resize', () => {
-    if(pubFimNatW) pubFimRecalcular(true);
-  });
-
   function pubFimMostrarVideo(nome){
     // Vídeos não têm editor de posição/zoom (ficam sempre centrados, a cobrir a caixa toda).
     pubFimVazioEl.style.display = '';
     pubFimVazioEl.textContent = '🎬 vídeo: ' + (nome || '—') + ' — sem edição de posição/zoom para vídeo, fica sempre centrado.';
-    pubFimImgEl.style.display = 'none';
+    pubFimPubPosImgEl.style.display = 'none';
     pubFimNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (nome || '—');
-    pubFimNatW = 0;
-    pubFimNatH = 0;
   }
 
   novaPubFimInput.addEventListener('change', (e) => {
@@ -1649,13 +1562,14 @@
       tipo: ehVideo ? 'video' : 'foto',
       novoFicheiro: file,
       previewUrl: ehVideo ? null : URL.createObjectURL(file),
-      nomePreview: file.name,
-      posX: 50, posY: 50, escala: 1
+      nomePreview: file.name
     };
     if(ehVideo){
       pubFimMostrarVideo(file.name);
     } else {
-      pubFimCarregarImagem(pubFimState.previewUrl);
+      pubFimVazioEl.style.display = 'none';
+      pubFimPubPosImgEl.style.display = '';
+      pubFimPubPosImgEl.src = pubFimState.previewUrl;
     }
     e.target.value = '';
   });
@@ -1696,10 +1610,7 @@
     if(pub.tipo === 'video'){
       return '\n    <!-- Vídeo de patrocínio (sem posição/ampliação) e horários: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
     }
-    const x = Math.round(pub.posX * 10) / 10;
-    const y = Math.round(pub.posY * 10) / 10;
-    const s = Math.round(pub.escala * 100) / 100;
-    return '\n    <!-- Foto de patrocínio, posição, ampliação e horários: edita-se em editar.html -->\n    <img src="' + pub.caminho + '" alt="Publicidade" style="object-position:' + x + '% ' + y + '%; transform:scale(' + s + '); transform-origin:' + x + '% ' + y + '%;">\n  ';
+    return '\n    <!-- Foto de patrocínio, posição, ampliação e horários: edita-se em editar.html -->\n    ' + construirMediaTag(pub, ' id="pubFimAnuncioImg" style=""') + '\n  ';
   }
 
   function substituirPubFimImg(html, novoInnerHTML){
@@ -1856,6 +1767,14 @@
       publicidadeState = extrairPublicidade(conteudo);
       renderizarPublicidade();
       fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
+      const fundoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'fundoAnuncioImg'));
+      fundoPubTamanhoInput.value = fundoPubEstiloAtual.tamanho;
+      fundoPubTamanhoValorEl.textContent = Math.round(fundoPubEstiloAtual.tamanho*100) + '%';
+      fundoPubRecortadaInput.checked = fundoPubEstiloAtual.recortada;
+      fundoPubPosState.x = fundoPubEstiloAtual.x;
+      fundoPubPosState.y = fundoPubEstiloAtual.y;
+      aplicarPosFundoPub();
+      if(publicidadeState && publicidadeState.caminho){ fundoPubPosImgEl.src = publicidadeState.caminho; }
 
       vinhoPubState = extrairVinhoPub(conteudo);
       renderizarVinhoPub();
@@ -1887,6 +1806,14 @@
 
       jogoPubState = extrairJogoPub(conteudo);
       renderizarJogoPub();
+      const jogoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'jogoAnuncioImg'));
+      jogoPubTamanhoInput.value = jogoPubEstiloAtual.tamanho;
+      jogoPubTamanhoValorEl.textContent = Math.round(jogoPubEstiloAtual.tamanho*100) + '%';
+      jogoPubRecortadaInput.checked = jogoPubEstiloAtual.recortada;
+      jogoPubPosState.x = jogoPubEstiloAtual.x;
+      jogoPubPosState.y = jogoPubEstiloAtual.y;
+      aplicarPosJogoPub();
+      if(jogoPubState && jogoPubState.caminho){ jogoPubPosImgEl.src = jogoPubState.caminho; }
       jogoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-jogo-pub-ativo') === 'true';
       jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
       jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
@@ -1895,8 +1822,17 @@
       if(pubFimState && pubFimState.tipo === 'video'){
         pubFimMostrarVideo(pubFimState.nomePreview);
       } else if(pubFimState && pubFimState.caminho){
-        pubFimCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho);
+        pubFimVazioEl.style.display = 'none';
+        pubFimPubPosImgEl.style.display = '';
+        pubFimPubPosImgEl.src = 'https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho;
       }
+      const pubFimPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'pubFimAnuncioImg'));
+      pubFimPubTamanhoInput.value = pubFimPubEstiloAtual.tamanho;
+      pubFimPubTamanhoValorEl.textContent = Math.round(pubFimPubEstiloAtual.tamanho*100) + '%';
+      pubFimPubRecortadaInput.checked = pubFimPubEstiloAtual.recortada;
+      pubFimPubPosState.x = pubFimPubEstiloAtual.x;
+      pubFimPubPosState.y = pubFimPubEstiloAtual.y;
+      aplicarPosPubFimPub();
       pubFimAtivoInput.checked = extrairAtributo(conteudo, 'data-pub-ativo') === 'true';
       pubFimInicioInput.value = extrairAtributo(conteudo, 'data-pub-inicio');
       pubFimFimInput.value = extrairAtributo(conteudo, 'data-pub-fim');
@@ -2037,7 +1973,6 @@
         pubFimState.caminho = await enviarFoto(pubFimState.novoFicheiro, token);
         pubFimState.novoFicheiro = null;
       }
-      pubFimCapturarEstadoAtual();
 
       // Vai sempre buscar a versão mais recente do ficheiro mesmo agora, em vez de usar
       // a que foi carregada quando a página abriu. Isto evita que uma aba desta página
@@ -2076,6 +2011,7 @@
       novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
       if(publicidadeState){
         novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
+    novo = substituirEstiloPorId(novo, 'fundoAnuncioImg', construirEstiloImagemAnuncio(fundoPubRecortadaInput.checked, parseFloat(fundoPubTamanhoInput.value)||1, fundoPubPosState.x, fundoPubPosState.y));
       }
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
 
@@ -2099,6 +2035,7 @@
 
       if(jogoPubState){
         novo = substituirJogoPubImg(novo, construirJogoPubImgHtml(jogoPubState));
+    novo = substituirEstiloPorId(novo, 'jogoAnuncioImg', construirEstiloImagemAnuncio(jogoPubRecortadaInput.checked, parseFloat(jogoPubTamanhoInput.value)||1, jogoPubPosState.x, jogoPubPosState.y));
       }
       novo = substituirAtributo(novo, 'data-jogo-pub-ativo', jogoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'jogoAnuncioTitulo', jogoPubTituloInput.value);
@@ -2106,6 +2043,9 @@
 
       if(pubFimState){
         novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
+        if(pubFimState.tipo !== 'video'){
+          novo = substituirEstiloPorId(novo, 'pubFimAnuncioImg', construirEstiloImagemAnuncio(pubFimPubRecortadaInput.checked, parseFloat(pubFimPubTamanhoInput.value)||1, pubFimPubPosState.x, pubFimPubPosState.y));
+        }
       }
       novo = substituirAtributo(novo, 'data-pub-ativo', pubFimAtivoInput.checked ? 'true' : 'false');
       novo = substituirAtributo(novo, 'data-pub-inicio', pubFimInicioInput.value);
@@ -2176,6 +2116,81 @@
   }
   if(btnAtualizarEstatisticas) btnAtualizarEstatisticas.addEventListener('click', carregarEstatisticas);
   carregarEstatisticas();
+  const fundoPubTamanhoInput = document.getElementById('fundoPubTamanho');
+  const fundoPubTamanhoValorEl = document.getElementById('fundoPubTamanhoValor');
+  const fundoPubRecortadaInput = document.getElementById('fundoPubRecortada');
+  const fundoPubPosImgEl = document.getElementById('fundoPubPosImg');
+  const fundoPubReporPosBtn = document.getElementById('fundoPubReporPos');
+  let fundoPubPosState = { x: 0, y: 0 };
+  const aplicarPosFundoPub = tornarArrastavelImagemAnuncio(fundoPubPosImgEl, fundoPubPosState, fundoPubTamanhoInput);
+  fundoPubTamanhoInput.addEventListener('input', function(){
+    fundoPubTamanhoValorEl.textContent = Math.round(parseFloat(fundoPubTamanhoInput.value)*100) + '%';
+    aplicarPosFundoPub();
+  });
+  fundoPubReporPosBtn.addEventListener('click', function(){
+    fundoPubRecortadaInput.checked = false;
+    fundoPubTamanhoInput.value = 1;
+    fundoPubTamanhoValorEl.textContent = '100%';
+    fundoPubPosState.x = 0; fundoPubPosState.y = 0;
+    aplicarPosFundoPub();
+  });
+  if(novaPublicidadeInput){
+    novaPublicidadeInput.addEventListener('change', function(){
+      const ficheiro = novaPublicidadeInput.files && novaPublicidadeInput.files[0];
+      if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
+        const leitor = new FileReader();
+        leitor.onload = function(e){ fundoPubPosImgEl.src = e.target.result; };
+        leitor.readAsDataURL(ficheiro);
+      }
+    });
+  }
+
+  const jogoPubTamanhoInput = document.getElementById('jogoPubTamanho');
+  const jogoPubTamanhoValorEl = document.getElementById('jogoPubTamanhoValor');
+  const jogoPubRecortadaInput = document.getElementById('jogoPubRecortada');
+  const jogoPubPosImgEl = document.getElementById('jogoPubPosImg');
+  const jogoPubReporPosBtn = document.getElementById('jogoPubReporPos');
+  let jogoPubPosState = { x: 0, y: 0 };
+  const aplicarPosJogoPub = tornarArrastavelImagemAnuncio(jogoPubPosImgEl, jogoPubPosState, jogoPubTamanhoInput);
+  jogoPubTamanhoInput.addEventListener('input', function(){
+    jogoPubTamanhoValorEl.textContent = Math.round(parseFloat(jogoPubTamanhoInput.value)*100) + '%';
+    aplicarPosJogoPub();
+  });
+  jogoPubReporPosBtn.addEventListener('click', function(){
+    jogoPubRecortadaInput.checked = false;
+    jogoPubTamanhoInput.value = 1;
+    jogoPubTamanhoValorEl.textContent = '100%';
+    jogoPubPosState.x = 0; jogoPubPosState.y = 0;
+    aplicarPosJogoPub();
+  });
+  if(novaJogoPubInput){
+    novaJogoPubInput.addEventListener('change', function(){
+      const ficheiro = novaJogoPubInput.files && novaJogoPubInput.files[0];
+      if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
+        const leitor = new FileReader();
+        leitor.onload = function(e){ jogoPubPosImgEl.src = e.target.result; };
+        leitor.readAsDataURL(ficheiro);
+      }
+    });
+  }
+  const pubFimPubTamanhoInput = document.getElementById('pubFimPubTamanho');
+  const pubFimPubTamanhoValorEl = document.getElementById('pubFimPubTamanhoValor');
+  const pubFimPubRecortadaInput = document.getElementById('pubFimPubRecortada');
+  const pubFimPubPosImgEl = document.getElementById('pubFimPubPosImg');
+  const pubFimPubReporPosBtn = document.getElementById('pubFimPubReporPos');
+  let pubFimPubPosState = { x: 0, y: 0 };
+  const aplicarPosPubFimPub = tornarArrastavelImagemAnuncio(pubFimPubPosImgEl, pubFimPubPosState, pubFimPubTamanhoInput);
+  pubFimPubTamanhoInput.addEventListener('input', function(){
+    pubFimPubTamanhoValorEl.textContent = Math.round(parseFloat(pubFimPubTamanhoInput.value)*100) + '%';
+    aplicarPosPubFimPub();
+  });
+  pubFimPubReporPosBtn.addEventListener('click', function(){
+    pubFimPubRecortadaInput.checked = false;
+    pubFimPubTamanhoInput.value = 1;
+    pubFimPubTamanhoValorEl.textContent = '100%';
+    pubFimPubPosState.x = 0; pubFimPubPosState.y = 0;
+    aplicarPosPubFimPub();
+  });
 
   btnCarregar.addEventListener('click', carregarTexto);
   btnGuardar.addEventListener('click', guardarTexto);
