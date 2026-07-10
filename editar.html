@@ -977,7 +977,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-10-03';
+  const EDITOR_VERSION = '2026-07-10-04';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -1386,14 +1386,22 @@
   novaPublicidadeInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    publicidadeState = {
-      caminho: publicidadeState ? publicidadeState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarPublicidade();
+    function aplicarFicheiroFundoPub(f){
+      publicidadeState = {
+        caminho: publicidadeState ? publicidadeState.caminho : null,
+        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
+        novoFicheiro: f,
+        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
+        nomePreview: f.name
+      };
+      renderizarPublicidade();
+      if(!ficheiroEhVideo(f)){ fundoPubPosImgEl.src = publicidadeState.previewUrl; }
+    }
+    if(!ficheiroEhVideo(file) && fundoPubRecortadaInput.checked){
+      limparFalsaTransparencia(file, aplicarFicheiroFundoPub);
+    } else {
+      aplicarFicheiroFundoPub(file);
+    }
     e.target.value = '';
   });
 
@@ -1435,14 +1443,22 @@
   novaVinhoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    vinhoPubState = {
-      caminho: vinhoPubState ? vinhoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarVinhoPub();
+    function aplicarFicheiroVinhoPub(f){
+      vinhoPubState = {
+        caminho: vinhoPubState ? vinhoPubState.caminho : null,
+        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
+        novoFicheiro: f,
+        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
+        nomePreview: f.name
+      };
+      renderizarVinhoPub();
+      if(!ficheiroEhVideo(f)){ vinhoPubPosImgEl.src = vinhoPubState.previewUrl; }
+    }
+    if(!ficheiroEhVideo(file) && vinhoPubRecortadaInput.checked){
+      limparFalsaTransparencia(file, aplicarFicheiroVinhoPub);
+    } else {
+      aplicarFicheiroVinhoPub(file);
+    }
     e.target.value = '';
   });
 
@@ -1484,14 +1500,22 @@
   novaVinhosSeccaoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    vinhosSeccaoPubState = {
-      caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarVinhosSeccaoPub();
+    function aplicarFicheiroVinhosSeccaoPub(f){
+      vinhosSeccaoPubState = {
+        caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
+        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
+        novoFicheiro: f,
+        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
+        nomePreview: f.name
+      };
+      renderizarVinhosSeccaoPub();
+      if(!ficheiroEhVideo(f)){ vinhosSeccaoPubPosImgEl.src = vinhosSeccaoPubState.previewUrl; }
+    }
+    if(!ficheiroEhVideo(file) && vinhosSeccaoPubRecortadaInput.checked){
+      limparFalsaTransparencia(file, aplicarFicheiroVinhosSeccaoPub);
+    } else {
+      aplicarFicheiroVinhosSeccaoPub(file);
+    }
     e.target.value = '';
   });
 
@@ -1533,14 +1557,22 @@
   novaJogoPubInput.addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     if(!file) return;
-    jogoPubState = {
-      caminho: jogoPubState ? jogoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarJogoPub();
+    function aplicarFicheiroJogoPub(f){
+      jogoPubState = {
+        caminho: jogoPubState ? jogoPubState.caminho : null,
+        tipo: ficheiroEhVideo(f) ? 'video' : 'foto',
+        novoFicheiro: f,
+        previewUrl: ficheiroEhVideo(f) ? null : URL.createObjectURL(f),
+        nomePreview: f.name
+      };
+      renderizarJogoPub();
+      if(!ficheiroEhVideo(f)){ jogoPubPosImgEl.src = jogoPubState.previewUrl; }
+    }
+    if(!ficheiroEhVideo(file) && jogoPubRecortadaInput.checked){
+      limparFalsaTransparencia(file, aplicarFicheiroJogoPub);
+    } else {
+      aplicarFicheiroJogoPub(file);
+    }
     e.target.value = '';
   });
 
@@ -1557,19 +1589,34 @@
     const file = e.target.files && e.target.files[0];
     if(!file) return;
     const ehVideo = ficheiroEhVideo(file);
-    pubFimState = {
-      caminho: pubFimState ? pubFimState.caminho : null,
-      tipo: ehVideo ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ehVideo ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
     if(ehVideo){
+      pubFimState = {
+        caminho: pubFimState ? pubFimState.caminho : null,
+        tipo: 'video',
+        novoFicheiro: file,
+        previewUrl: null,
+        nomePreview: file.name
+      };
       pubFimMostrarVideo(file.name);
-    } else {
+      e.target.value = '';
+      return;
+    }
+    function aplicarFotoPubFim(ficheiroFinal){
+      pubFimState = {
+        caminho: pubFimState ? pubFimState.caminho : null,
+        tipo: 'foto',
+        novoFicheiro: ficheiroFinal,
+        previewUrl: URL.createObjectURL(ficheiroFinal),
+        nomePreview: ficheiroFinal.name
+      };
       pubFimVazioEl.style.display = 'none';
       pubFimPubPosImgEl.style.display = '';
       pubFimPubPosImgEl.src = pubFimState.previewUrl;
+    }
+    if(pubFimPubRecortadaInput.checked){
+      limparFalsaTransparencia(file, aplicarFotoPubFim);
+    } else {
+      aplicarFotoPubFim(file);
     }
     e.target.value = '';
   });
@@ -2134,16 +2181,6 @@
     fundoPubPosState.x = 0; fundoPubPosState.y = 0;
     aplicarPosFundoPub();
   });
-  if(novaPublicidadeInput){
-    novaPublicidadeInput.addEventListener('change', function(){
-      const ficheiro = novaPublicidadeInput.files && novaPublicidadeInput.files[0];
-      if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
-        const leitor = new FileReader();
-        leitor.onload = function(e){ fundoPubPosImgEl.src = e.target.result; };
-        leitor.readAsDataURL(ficheiro);
-      }
-    });
-  }
 
   const jogoPubTamanhoInput = document.getElementById('jogoPubTamanho');
   const jogoPubTamanhoValorEl = document.getElementById('jogoPubTamanhoValor');
@@ -2163,16 +2200,6 @@
     jogoPubPosState.x = 0; jogoPubPosState.y = 0;
     aplicarPosJogoPub();
   });
-  if(novaJogoPubInput){
-    novaJogoPubInput.addEventListener('change', function(){
-      const ficheiro = novaJogoPubInput.files && novaJogoPubInput.files[0];
-      if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
-        const leitor = new FileReader();
-        leitor.onload = function(e){ jogoPubPosImgEl.src = e.target.result; };
-        leitor.readAsDataURL(ficheiro);
-      }
-    });
-  }
   const pubFimPubTamanhoInput = document.getElementById('pubFimPubTamanho');
   const pubFimPubTamanhoValorEl = document.getElementById('pubFimPubTamanhoValor');
   const pubFimPubRecortadaInput = document.getElementById('pubFimPubRecortada');
@@ -2191,6 +2218,57 @@
     pubFimPubPosState.x = 0; pubFimPubPosState.y = 0;
     aplicarPosPubFimPub();
   });
+  function limparFalsaTransparencia(ficheiro, callback){
+    if(!ficheiro || !ficheiro.type || ficheiro.type.indexOf('image/') !== 0){ callback(ficheiro); return; }
+    const imgEl = new Image();
+    const urlTemp = URL.createObjectURL(ficheiro);
+    imgEl.onload = function(){
+      URL.revokeObjectURL(urlTemp);
+      const canvas = document.createElement('canvas');
+      canvas.width = imgEl.naturalWidth;
+      canvas.height = imgEl.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgEl, 0, 0);
+      let imgData;
+      try { imgData = ctx.getImageData(0, 0, canvas.width, canvas.height); }
+      catch(erro){ callback(ficheiro); return; }
+      const dados = imgData.data;
+      let temAlphaReal = false;
+      for(let i = 3; i < dados.length; i += 4){ if(dados[i] < 255){ temAlphaReal = true; break; } }
+      if(temAlphaReal){ callback(ficheiro); return; }
+      const w = canvas.width, h = canvas.height;
+      const visitado = new Uint8Array(w*h);
+      const pilha = [];
+      function ehQuadriculado(r,g,b){
+        const sat = Math.max(r,g,b) - Math.min(r,g,b);
+        const brilho = (r+g+b)/3;
+        return sat <= 12 && brilho >= 195;
+      }
+      for(let x=0;x<w;x++){ pilha.push(x,0); pilha.push(x,h-1); }
+      for(let y=0;y<h;y++){ pilha.push(0,y); pilha.push(w-1,y); }
+      while(pilha.length){
+        const y = pilha.pop(), x = pilha.pop();
+        if(x<0||y<0||x>=w||y>=h) continue;
+        const i = y*w+x;
+        if(visitado[i]) continue;
+        const p = i*4;
+        const r = dados[p], g = dados[p+1], b = dados[p+2];
+        if(!ehQuadriculado(r,g,b)) continue;
+        visitado[i] = 1;
+        dados[p+3] = 0;
+        pilha.push(x+1,y); pilha.push(x-1,y); pilha.push(x,y+1); pilha.push(x,y-1);
+      }
+      ctx.putImageData(imgData, 0, 0);
+      canvas.toBlob(function(blob){
+        if(!blob){ callback(ficheiro); return; }
+        const novoNome = ficheiro.name.replace(/\.(jpe?g)$/i, '.png');
+        const ficheiroLimpo = new File([blob], novoNome, {type:'image/png'});
+        callback(ficheiroLimpo);
+      }, 'image/png');
+    };
+    imgEl.onerror = function(){ URL.revokeObjectURL(urlTemp); callback(ficheiro); };
+    imgEl.src = urlTemp;
+  }
 
   btnCarregar.addEventListener('click', carregarTexto);
   btnGuardar.addEventListener('click', guardarTexto);
@@ -2257,17 +2335,7 @@ vinhoPubReporPosBtn.addEventListener('click', function(){
   vinhoPubPosState.x = 0; vinhoPubPosState.y = 0;
   aplicarPosVinhoPub();
 });
-const novaVinhoPubEl = document.getElementById('novaVinhoPub');
-if(novaVinhoPubEl){
-  novaVinhoPubEl.addEventListener('change', function(){
-    const ficheiro = novaVinhoPubEl.files && novaVinhoPubEl.files[0];
-    if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
-      const leitor = new FileReader();
-      leitor.onload = function(e){ vinhoPubPosImgEl.src = e.target.result; };
-      leitor.readAsDataURL(ficheiro);
-    }
-  });
-}
+/* preview do vinhoPub agora tratada no handler de novaVinhoPubInput */
 
 const vinhosSeccaoPubTamanhoInput = document.getElementById('vinhosSeccaoPubTamanho');
 const vinhosSeccaoPubTamanhoValorEl = document.getElementById('vinhosSeccaoPubTamanhoValor');
@@ -2287,17 +2355,7 @@ vinhosSeccaoPubReporPosBtn.addEventListener('click', function(){
   vinhosSeccaoPubPosState.x = 0; vinhosSeccaoPubPosState.y = 0;
   aplicarPosVinhosSeccaoPub();
 });
-const novaVinhosSeccaoPubEl = document.getElementById('novaVinhosSeccaoPub');
-if(novaVinhosSeccaoPubEl){
-  novaVinhosSeccaoPubEl.addEventListener('change', function(){
-    const ficheiro = novaVinhosSeccaoPubEl.files && novaVinhosSeccaoPubEl.files[0];
-    if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
-      const leitor = new FileReader();
-      leitor.onload = function(e){ vinhosSeccaoPubPosImgEl.src = e.target.result; };
-      leitor.readAsDataURL(ficheiro);
-    }
-  });
-}
+/* preview do vinhosSeccaoPub agora tratada no handler de novaVinhosSeccaoPubInput */
 
   // carrega automaticamente ao abrir a página
   carregarTexto();
