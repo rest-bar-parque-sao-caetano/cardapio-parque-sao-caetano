@@ -2192,7 +2192,7 @@
 }
 function construirEstiloImagemAnuncio(recortada, tamanho, offsetX, offsetY){
   const partes = [];
-  if(recortada){ partes.push('object-fit:contain'); partes.push('z-index:5'); }
+  if(recortada){ partes.push('object-fit:contain'); partes.push('z-index:5'); partes.push('pointer-events:none'); }
   const tamanhoArred = Math.round(tamanho*100)/100;
   if(Math.abs(tamanhoArred-1) > 0.001 || Math.round(offsetX)!==0 || Math.round(offsetY)!==0){
     partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px) scale(' + tamanhoArred.toFixed(2) + ')');
