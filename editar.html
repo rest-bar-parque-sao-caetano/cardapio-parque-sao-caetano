@@ -468,6 +468,18 @@
   margin-top:3px;
 }
 .cabecalho-pos-nome.arrastando, .cabecalho-pos-frase.arrastando{ cursor:grabbing; }
+  .anuncio-pos-caixa{
+    position:relative; width:100%; max-width:480px; min-height:140px;
+    display:flex; align-items:center; justify-content:center;
+    overflow:visible; border-radius:12px; border:1px solid var(--linha);
+    background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
+    touch-action:none; user-select:none; padding:10px;
+  }
+  .anuncio-pos-img{
+    position:relative; max-width:70%; max-height:120px;
+    cursor:grab; display:block;
+  }
+  .anuncio-pos-img.arrastando{ cursor:grabbing; }
 </style>
 </head>
 <body>
@@ -694,6 +706,23 @@
 
       <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
       <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
+
+      <label for="vinhoPubTamanho">Tamanho da imagem</label>
+      <div class="campo-numero">
+        <input type="range" id="vinhoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
+        <span id="vinhoPubTamanhoValor">100%</span>
+      </div>
+
+      <div class="check-ativar" style="margin-top:8px;">
+        <input type="checkbox" id="vinhoPubRecortada">
+        <label for="vinhoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
+      </div>
+
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
+      <div class="anuncio-pos-caixa" id="vinhoPubPosCaixa">
+        <img id="vinhoPubPosImg" class="anuncio-pos-img" src="" alt="">
+      </div>
+      <button type="button" class="btn-repor" id="vinhoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -737,6 +766,23 @@
 
       <label for="vinhosSeccaoPubLinha4">Linha 4 (opcional)</label>
       <input type="text" id="vinhosSeccaoPubLinha4">
+
+      <label for="vinhosSeccaoPubTamanho">Tamanho da imagem</label>
+      <div class="campo-numero">
+        <input type="range" id="vinhosSeccaoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
+        <span id="vinhosSeccaoPubTamanhoValor">100%</span>
+      </div>
+
+      <div class="check-ativar" style="margin-top:8px;">
+        <input type="checkbox" id="vinhosSeccaoPubRecortada">
+        <label for="vinhosSeccaoPubRecortada">Imagem recortada (fundo transparente, não corta a imagem, pode sobrepor os ícones)</label>
+      </div>
+
+      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
+      <div class="anuncio-pos-caixa" id="vinhosSeccaoPubPosCaixa">
+        <img id="vinhosSeccaoPubPosImg" class="anuncio-pos-img" src="" alt="">
+      </div>
+      <button type="button" class="btn-repor" id="vinhosSeccaoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
   </details>
 
@@ -893,7 +939,7 @@
   // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
   // aba foi deixada aberta há muito tempo com uma versão antiga do código —
   // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-09-10';
+  const EDITOR_VERSION = '2026-07-10-02';
 
   const tokenInput = document.getElementById('token');
   const lembrarInput = document.getElementById('lembrar');
@@ -988,7 +1034,7 @@
   let cabecalhoPosState = { nome: { x: 0, y: 0 }, frase: { x: 0, y: 0 } };
 
   function extrairEstiloPorId(html, id){
-    const regexTag = new RegExp('<div[^>]*\\bid="' + id + '"[^>]*>');
+    const regexTag = new RegExp('<[a-zA-Z][a-zA-Z0-9]*[^>]*\\bid="' + id + '"[^>]*>');
     const m = html.match(regexTag);
     if(!m) return '';
     const styleM = m[0].match(/style="([^"]*)"/);
@@ -996,7 +1042,7 @@
   }
 
   function substituirEstiloPorId(html, id, novoEstilo){
-    const regexTag = new RegExp('<div[^>]*\\bid="' + id + '"[^>]*>');
+    const regexTag = new RegExp('<[a-zA-Z][a-zA-Z0-9]*[^>]*\\bid="' + id + '"[^>]*>');
     const m = html.match(regexTag);
     if(!m) return html;
     const novaTag = /style="[^"]*"/.test(m[0]) ? m[0].replace(/style="[^"]*"/, 'style="' + novoEstilo + '"') : m[0];
@@ -1339,7 +1385,7 @@
   }
 
   function construirVinhoPubImgHtml(pub){
-    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          ' + construirMediaTag(pub) + '\n          ';
+    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          ' + construirMediaTag(pub, ' id="vinhoAnuncioImg" style=""') + '\n          ';
   }
 
   function substituirVinhoPubImg(html, novoInnerHTML){
@@ -1388,7 +1434,7 @@
   }
 
   function construirVinhosSeccaoPubImgHtml(pub){
-    return '\n      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub) + '\n      ';
+    return '\n      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="vinhosSeccaoPubImg" style=""') + '\n      ';
   }
 
   function substituirVinhosSeccaoPubImg(html, novoInnerHTML){
@@ -1816,6 +1862,13 @@
       vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
       vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
       vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
+      const vinhoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'vinhoAnuncioImg'));
+      vinhoPubTamanhoInput.value = vinhoPubEstiloAtual.tamanho;
+      vinhoPubTamanhoValorEl.textContent = Math.round(vinhoPubEstiloAtual.tamanho*100) + '%';
+      vinhoPubRecortadaInput.checked = vinhoPubEstiloAtual.recortada;
+      vinhoPubPosState.x = vinhoPubEstiloAtual.x; vinhoPubPosState.y = vinhoPubEstiloAtual.y;
+      if(vinhoPubState && vinhoPubState.caminho){ vinhoPubPosImgEl.src = vinhoPubState.caminho; }
+      aplicarPosVinhoPub();
 
       vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
       renderizarVinhosSeccaoPub();
@@ -1824,6 +1877,13 @@
       vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
       vinhosSeccaoPubLinha3Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha3');
       vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
+      const vinhosSeccaoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'vinhosSeccaoPubImg'));
+      vinhosSeccaoPubTamanhoInput.value = vinhosSeccaoPubEstiloAtual.tamanho;
+      vinhosSeccaoPubTamanhoValorEl.textContent = Math.round(vinhosSeccaoPubEstiloAtual.tamanho*100) + '%';
+      vinhosSeccaoPubRecortadaInput.checked = vinhosSeccaoPubEstiloAtual.recortada;
+      vinhosSeccaoPubPosState.x = vinhosSeccaoPubEstiloAtual.x; vinhosSeccaoPubPosState.y = vinhosSeccaoPubEstiloAtual.y;
+      if(vinhosSeccaoPubState && vinhosSeccaoPubState.caminho){ vinhosSeccaoPubPosImgEl.src = vinhosSeccaoPubState.caminho; }
+      aplicarPosVinhosSeccaoPub();
 
       jogoPubState = extrairJogoPub(conteudo);
       renderizarJogoPub();
@@ -2022,6 +2082,7 @@
       if(vinhoPubState){
         novo = substituirVinhoPubImg(novo, construirVinhoPubImgHtml(vinhoPubState));
       }
+      novo = substituirEstiloPorId(novo, 'vinhoAnuncioImg', construirEstiloImagemAnuncio(vinhoPubRecortadaInput.checked, parseFloat(vinhoPubTamanhoInput.value) || 1, vinhoPubPosState.x, vinhoPubPosState.y));
       novo = substituirAtributo(novo, 'data-vinho-pub-ativo', vinhoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhoAnuncioTitulo', vinhoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhoAnuncioSubtitulo', vinhoPubSubtituloInput.value);
@@ -2029,6 +2090,7 @@
       if(vinhosSeccaoPubState){
         novo = substituirVinhosSeccaoPubImg(novo, construirVinhosSeccaoPubImgHtml(vinhosSeccaoPubState));
       }
+      novo = substituirEstiloPorId(novo, 'vinhosSeccaoPubImg', construirEstiloImagemAnuncio(vinhosSeccaoPubRecortadaInput.checked, parseFloat(vinhosSeccaoPubTamanhoInput.value) || 1, vinhosSeccaoPubPosState.x, vinhosSeccaoPubPosState.y));
       novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoTitulo', vinhosSeccaoPubTituloInput.value);
       novo = substituirLinha(novo, 'vinhosAnuncioSeccaoSubtitulo', vinhosSeccaoPubSubtituloInput.value);
@@ -2117,6 +2179,110 @@
 
   btnCarregar.addEventListener('click', carregarTexto);
   btnGuardar.addEventListener('click', guardarTexto);
+
+  function extrairInfoEstiloImagemAnuncio(estilo){
+  const transM = estilo.match(/transform:\s*translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
+  const recortada = estilo.indexOf('object-fit:contain') !== -1;
+  return {
+    recortada: recortada,
+    tamanho: transM ? parseFloat(transM[3]) : 1,
+    x: transM ? parseFloat(transM[1]) : 0,
+    y: transM ? parseFloat(transM[2]) : 0
+  };
+}
+function construirEstiloImagemAnuncio(recortada, tamanho, offsetX, offsetY){
+  const partes = [];
+  if(recortada){ partes.push('object-fit:contain'); partes.push('z-index:5'); }
+  const tamanhoArred = Math.round(tamanho*100)/100;
+  if(Math.abs(tamanhoArred-1) > 0.001 || Math.round(offsetX)!==0 || Math.round(offsetY)!==0){
+    partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px) scale(' + tamanhoArred.toFixed(2) + ')');
+  }
+  return partes.join('; ');
+}
+function tornarArrastavelImagemAnuncio(el, estado, sliderTamanho){
+  let arrastando = false, inicio = {x:0,y:0}, posInicio = {x:0,y:0};
+  function aplicar(){
+    const escala = parseFloat(sliderTamanho.value) || 1;
+    el.style.transform = 'translate(' + estado.x + 'px, ' + estado.y + 'px) scale(' + escala + ')';
+  }
+  el.addEventListener('pointerdown', function(e){
+    arrastando = true; el.classList.add('arrastando');
+    inicio = { x: e.clientX, y: e.clientY };
+    posInicio = { x: estado.x, y: estado.y };
+    el.setPointerCapture(e.pointerId);
+  });
+  el.addEventListener('pointermove', function(e){
+    if(!arrastando) return;
+    const dx = e.clientX - inicio.x, dy = e.clientY - inicio.y;
+    estado.x = posInicio.x + dx; estado.y = posInicio.y + dy;
+    aplicar();
+  });
+  function terminar(){ arrastando = false; el.classList.remove('arrastando'); }
+  el.addEventListener('pointerup', terminar);
+  el.addEventListener('pointercancel', terminar);
+  el.addEventListener('pointerleave', terminar);
+  return aplicar;
+}
+
+const vinhoPubTamanhoInput = document.getElementById('vinhoPubTamanho');
+const vinhoPubTamanhoValorEl = document.getElementById('vinhoPubTamanhoValor');
+const vinhoPubRecortadaInput = document.getElementById('vinhoPubRecortada');
+const vinhoPubPosImgEl = document.getElementById('vinhoPubPosImg');
+const vinhoPubReporPosBtn = document.getElementById('vinhoPubReporPos');
+let vinhoPubPosState = { x: 0, y: 0 };
+const aplicarPosVinhoPub = tornarArrastavelImagemAnuncio(vinhoPubPosImgEl, vinhoPubPosState, vinhoPubTamanhoInput);
+vinhoPubTamanhoInput.addEventListener('input', function(){
+  vinhoPubTamanhoValorEl.textContent = Math.round(parseFloat(vinhoPubTamanhoInput.value)*100) + '%';
+  aplicarPosVinhoPub();
+});
+vinhoPubReporPosBtn.addEventListener('click', function(){
+  vinhoPubRecortadaInput.checked = false;
+  vinhoPubTamanhoInput.value = 1;
+  vinhoPubTamanhoValorEl.textContent = '100%';
+  vinhoPubPosState.x = 0; vinhoPubPosState.y = 0;
+  aplicarPosVinhoPub();
+});
+const novaVinhoPubEl = document.getElementById('novaVinhoPub');
+if(novaVinhoPubEl){
+  novaVinhoPubEl.addEventListener('change', function(){
+    const ficheiro = novaVinhoPubEl.files && novaVinhoPubEl.files[0];
+    if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
+      const leitor = new FileReader();
+      leitor.onload = function(e){ vinhoPubPosImgEl.src = e.target.result; };
+      leitor.readAsDataURL(ficheiro);
+    }
+  });
+}
+
+const vinhosSeccaoPubTamanhoInput = document.getElementById('vinhosSeccaoPubTamanho');
+const vinhosSeccaoPubTamanhoValorEl = document.getElementById('vinhosSeccaoPubTamanhoValor');
+const vinhosSeccaoPubRecortadaInput = document.getElementById('vinhosSeccaoPubRecortada');
+const vinhosSeccaoPubPosImgEl = document.getElementById('vinhosSeccaoPubPosImg');
+const vinhosSeccaoPubReporPosBtn = document.getElementById('vinhosSeccaoPubReporPos');
+let vinhosSeccaoPubPosState = { x: 0, y: 0 };
+const aplicarPosVinhosSeccaoPub = tornarArrastavelImagemAnuncio(vinhosSeccaoPubPosImgEl, vinhosSeccaoPubPosState, vinhosSeccaoPubTamanhoInput);
+vinhosSeccaoPubTamanhoInput.addEventListener('input', function(){
+  vinhosSeccaoPubTamanhoValorEl.textContent = Math.round(parseFloat(vinhosSeccaoPubTamanhoInput.value)*100) + '%';
+  aplicarPosVinhosSeccaoPub();
+});
+vinhosSeccaoPubReporPosBtn.addEventListener('click', function(){
+  vinhosSeccaoPubRecortadaInput.checked = false;
+  vinhosSeccaoPubTamanhoInput.value = 1;
+  vinhosSeccaoPubTamanhoValorEl.textContent = '100%';
+  vinhosSeccaoPubPosState.x = 0; vinhosSeccaoPubPosState.y = 0;
+  aplicarPosVinhosSeccaoPub();
+});
+const novaVinhosSeccaoPubEl = document.getElementById('novaVinhosSeccaoPub');
+if(novaVinhosSeccaoPubEl){
+  novaVinhosSeccaoPubEl.addEventListener('change', function(){
+    const ficheiro = novaVinhosSeccaoPubEl.files && novaVinhosSeccaoPubEl.files[0];
+    if(ficheiro && ficheiro.type && ficheiro.type.indexOf('image/') === 0){
+      const leitor = new FileReader();
+      leitor.onload = function(e){ vinhosSeccaoPubPosImgEl.src = e.target.result; };
+      leitor.readAsDataURL(ficheiro);
+    }
+  });
+}
 
   // carrega automaticamente ao abrir a página
   carregarTexto();
