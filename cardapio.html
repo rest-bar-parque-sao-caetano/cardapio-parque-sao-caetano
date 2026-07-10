@@ -1398,6 +1398,46 @@
   }
   .lista-card .lista-limpar:active{ background:var(--bege); }
     #vinhoAnuncioImg, #vinhosSeccaoPubImg, #jogoAnuncioImg { border-radius: 12px; }
+  .categoria-anuncio{
+    position:relative;
+    margin-top:14px;
+    border-radius:12px;
+    overflow:visible;
+    min-height:140px;
+    display:none;
+    z-index:2;
+  }
+  .categoria-anuncio.ativo{ display:block; }
+  .categoria-anuncio img, .categoria-anuncio video{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .categoria-anuncio::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(0deg, rgba(20,12,4,0.68) 0%, rgba(20,12,4,0.2) 50%, rgba(20,12,4,0) 78%);
+  }
+  .categoria-anuncio-texto{
+    position:relative;
+    z-index:1;
+    min-height:140px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:14px 16px;
+  }
+  .categoria-anuncio-texto .titulo{
+    font-family:'Fredoka',sans-serif;
+    color:var(--branco);
+    font-weight:600;
+    font-size:0.95rem;
+    line-height:1.3;
+    text-shadow:0 1px 5px rgba(0,0,0,0.55);
+  }
+  .categoria-anuncio-texto 
+  .categoria-anuncio-texto .subtitulo-anuncio:empty{ display:none; }
 </style>
 </head>
 <body>
@@ -1513,6 +1553,15 @@
 
 <main>
   <section class="categoria" id="entradas">
+
+      <div class="categoria-anuncio" id="catAnuncioEntradas" data-cat-pub-ativo-entradas="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioEntradasImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioEntradasTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioEntradasSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Starters" data-fr="Entrées">Entradas</summary>
       <div class="card-lista">
@@ -1533,6 +1582,15 @@
   </section>
 
   <section class="categoria" id="sopas-saladas">
+
+      <div class="categoria-anuncio" id="catAnuncioSopasSaladas" data-cat-pub-ativo-sopas-saladas="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioSopasSaladasImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioSopasSaladasTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioSopasSaladasSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Soups & Salads" data-fr="Soupes et Salades">Sopas e Saladas</summary>
       <div class="card-lista">
@@ -1544,6 +1602,15 @@
   </section>
 
   <section class="categoria" id="brasa">
+
+      <div class="categoria-anuncio" id="catAnuncioBrasa" data-cat-pub-ativo-brasa="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioBrasaImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioBrasaTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioBrasaSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Charcoal Grill Specialties" data-fr="Spécialités à la Braise">Especialidades na Brasa</summary>
       <div class="card-lista">
@@ -1559,6 +1626,15 @@
   </section>
 
   <section class="categoria" id="infantil">
+
+      <div class="categoria-anuncio" id="catAnuncioInfantil" data-cat-pub-ativo-infantil="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioInfantilImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioInfantilTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioInfantilSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Kids Menu" data-fr="Menu Enfants">Menu Infantil</summary>
       <div class="card-lista">
@@ -1570,6 +1646,15 @@
   </section>
 
   <section class="categoria" id="partilhados">
+
+      <div class="categoria-anuncio" id="catAnuncioPartilhados" data-cat-pub-ativo-partilhados="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioPartilhadosImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioPartilhadosTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioPartilhadosSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Grilled Dishes & Sharing Plates" data-fr="Grillades et Plats à Partager">Grelhados e Pratos Partilhados</summary>
       <div class="card-lista">
@@ -1587,6 +1672,15 @@
   </section>
 
   <section class="categoria" id="individuais">
+
+      <div class="categoria-anuncio" id="catAnuncioIndividuais" data-cat-pub-ativo-individuais="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioIndividuaisImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioIndividuaisTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioIndividuaisSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Individual Dishes" data-fr="Plats Individuels">Pratos Individuais</summary>
       <div class="card-lista">
@@ -1602,6 +1696,15 @@
   </section>
 
   <section class="categoria" id="peixe">
+
+      <div class="categoria-anuncio" id="catAnuncioPeixe" data-cat-pub-ativo-peixe="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioPeixeImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioPeixeTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioPeixeSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Fish" data-fr="Poisson">Peixe</summary>
       <div class="card-lista">
@@ -1620,6 +1723,15 @@
   </section>
 
   <section class="categoria" id="carne">
+
+      <div class="categoria-anuncio" id="catAnuncioCarne" data-cat-pub-ativo-carne="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioCarneImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioCarneTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioCarneSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Meat" data-fr="Viande">Carne</summary>
       <div class="card-lista">
@@ -1634,6 +1746,15 @@
   </section>
 
   <section class="categoria" id="vegetariana">
+
+      <div class="categoria-anuncio" id="catAnuncioVegetariana" data-cat-pub-ativo-vegetariana="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioVegetarianaImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioVegetarianaTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioVegetarianaSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Vegetarian" data-fr="Végétarien">Vegetariana</summary>
       <div class="card-lista">
@@ -1644,6 +1765,15 @@
   </section>
 
   <section class="categoria" id="snacks">
+
+      <div class="categoria-anuncio" id="catAnuncioSnacks" data-cat-pub-ativo-snacks="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioSnacksImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioSnacksTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioSnacksSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Snacks" data-fr="Snacks">Snacks</summary>
       <div class="subtitulo" data-en="Francesinhas & Hot Dogs" data-fr="Francesinhas et Hot-Dogs">Francesinhas e Cachorros</div>
@@ -1662,6 +1792,15 @@
   </section>
 
   <section class="categoria" id="sandes">
+
+      <div class="categoria-anuncio" id="catAnuncioSandes" data-cat-pub-ativo-sandes="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioSandesImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioSandesTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioSandesSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Sandwiches & Toasts" data-fr="Sandwichs et Croque-Monsieurs">Sandes & Tostas</summary>
       <div class="card-lista">
@@ -1677,6 +1816,15 @@
   </section>
 
   <section class="categoria" id="domingo">
+
+      <div class="categoria-anuncio" id="catAnuncioDomingo" data-cat-pub-ativo-domingo="false">
+          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
+          <img src="" alt="Publicidade" id="catAnuncioDomingoImg" style="">
+          <div class="categoria-anuncio-texto">
+            <div class="titulo" id="catAnuncioDomingoTitulo"></div>
+            <div class="subtitulo-anuncio" id="catAnuncioDomingoSubtitulo"></div>
+          </div>
+        </div>
     <details class="grupo-prato">
       <summary data-en="Sunday Menu" data-fr="Menu du Dimanche">Menu de Domingo</summary>
       <div class="subtitulo" data-en="Half portion / Full portion" data-fr="Demi-portion / Portion">Meia dose / Dose</div>
@@ -2180,6 +2328,19 @@
     if(bloco.dataset.vinhoPubAtivo === 'true'){
       bloco.classList.add('ativo');
     }
+  })();
+
+  // ---- Mostrar (ou nao) a publicidade nas categorias de comida (ativa-se em editar.html) ----
+  (function(){
+    var categoriasComPub = ["entradas","sopas-saladas","brasa","partilhados","infantil","individuais","peixe","carne","vegetariana","snacks","sandes","domingo"];
+    var pascal = function(s){ return s.split('-').map(function(p){ return p.charAt(0).toUpperCase()+p.slice(1); }).join(''); };
+    categoriasComPub.forEach(function(slug){
+      var bloco = document.getElementById('catAnuncio' + pascal(slug));
+      if(!bloco) return;
+      if(bloco.getAttribute('data-cat-pub-ativo-' + slug) === 'true'){
+        bloco.classList.add('ativo');
+      }
+    });
   })();
 
   // ---- Mostrar (ou não) a publicidade no fundo da secção de Vinhos & Bebidas (ativa-se em editar.html) ----
