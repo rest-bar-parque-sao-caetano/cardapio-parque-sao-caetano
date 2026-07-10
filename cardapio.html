@@ -318,9 +318,10 @@
     position:relative;
     margin-top:14px;
     border-radius:12px;
-    overflow:hidden;
+    overflow:visible;
     min-height:140px;
     display:none;
+    z-index:2;
   }
   .vinho-anuncio.ativo{ display:block; }
   .vinho-anuncio img, .vinho-anuncio video{
@@ -1715,7 +1716,7 @@
 
         <div class="vinho-anuncio" id="vinhoAnuncio" data-vinho-pub-ativo="false">
           <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->
-          <img src="imagens/1783607170442-img_1474.jpeg" alt="Publicidade">
+          <img id="vinhoAnuncioImg" style="" src="imagens/1783607170442-img_1474.jpeg" alt="Publicidade">
           <div class="vinho-anuncio-texto">
             <div class="titulo" id="vinhoAnuncioTitulo">Vinho do mês</div>
             <div class="subtitulo-anuncio" id="vinhoAnuncioSubtitulo">Aproveita</div>
