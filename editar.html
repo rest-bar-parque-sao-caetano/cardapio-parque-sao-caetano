@@ -2432,7 +2432,28 @@
       novo = substituirAtributo(novo, 'data-pub-duracao', pubFimDuracaoInput.value);
       novo = substituirAtributo(novo, 'data-pub-max-dia', pubFimMaxInput.value);
 
-      const resp = await fetch(API_URL, {
+      for (const catSlug of CATEGORIAS_ANUNCIO) {
+      const catState = catPubState[catSlug];
+      if (catState && catState.novoFicheiro) {
+        setEstado("A enviar foto da categoria: " + catState.nomePreview + "…", "info");
+        catState.caminho = await enviarFoto(catState.novoFicheiro, token);
+        catState.novoFicheiro = null;
+      }
+    }
+CATEGORIAS_ANUNCIO.forEach(function(slug){
+      const pascal = pascalCaseSlug(slug);
+      if(catPubState[slug]){
+        novo = substituirCategoriaPubImg(novo, slug, construirCategoriaPubImgHtml(catPubState[slug], slug));
+      }
+      const ativoEl = document.getElementById("catPub" + pascal + "Ativo");
+      const tituloEl = document.getElementById("catPub" + pascal + "Titulo");
+      const subtituloEl = document.getElementById("catPub" + pascal + "Subtitulo");
+      novo = substituirAtributo(novo, "data-cat-pub-ativo-" + slug, ativoEl && ativoEl.checked ? "true" : "false");
+      if(tituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Titulo", tituloEl.value);
+      if(subtituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Subtitulo", subtituloEl.value);
+    });
+
+    const resp = await fetch(API_URL, {
         method: 'PUT',
         headers: { ...cabecalhos(true), 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2453,26 +2474,7 @@
 
       setEstado('Guardado! Demora uns 10 a 30 segundos a aparecer no cardápio.', 'ok');
     
-        for (const catSlug of CATEGORIAS_ANUNCIO) {
-      const catState = catPubState[catSlug];
-      if (catState && catState.novoFicheiro) {
-        setEstado("A enviar foto da categoria: " + catState.nomePreview + "…", "info");
-        catState.caminho = await enviarFoto(catState.novoFicheiro, token);
-        catState.novoFicheiro = null;
-      }
-    }
-CATEGORIAS_ANUNCIO.forEach(function(slug){
-      const pascal = pascalCaseSlug(slug);
-      if(catPubState[slug]){
-        novo = substituirCategoriaPubImg(novo, slug, construirCategoriaPubImgHtml(catPubState[slug], slug));
-      }
-      const ativoEl = document.getElementById("catPub" + pascal + "Ativo");
-      const tituloEl = document.getElementById("catPub" + pascal + "Titulo");
-      const subtituloEl = document.getElementById("catPub" + pascal + "Subtitulo");
-      novo = substituirAtributo(novo, "data-cat-pub-ativo-" + slug, ativoEl && ativoEl.checked ? "true" : "false");
-      if(tituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Titulo", tituloEl.value);
-      if(subtituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Subtitulo", subtituloEl.value);
-    });
+        
 
     } catch(err){
       setEstado('Não consegui guardar: ' + err.message, 'erro');
