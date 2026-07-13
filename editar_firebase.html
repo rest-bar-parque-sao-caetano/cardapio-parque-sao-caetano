@@ -1,1 +1,533 @@
 
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Editar Cardápio — Rest & Bar Parque São Caetano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --branco: #ffffff;
+      --bege-claro: #fbf8f2;
+      --bege: #f5efe2;
+      --linha: #e6dcc8;
+      --castanho: #4a3820;
+      --castanho-suave: #8a7350;
+      --castanho-claro: #a8987a;
+      --dourado: #a8712f;
+      --dourado-escuro: #8a5a24;
+      --verde: #4a7a4a;
+      --vermelho: #b0402f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:'Nunito',sans-serif;
+      background:var(--bege-claro);
+      color:var(--castanho);
+      min-height:100vh;
+      padding:24px 16px 60px;
+    }
+    .container {max-width:900px; margin:0 auto;}
+    h1{
+      font-family:'Fredoka',sans-serif;
+      color:var(--castanho);
+      font-size:2.4rem;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .subtitulo-principal {
+      color:var(--castanho-suave);
+      font-size:1.1rem;
+      margin-bottom:32px;
+      line-height:1.5;
+      font-weight: 500;
+    }
+    .tabs {
+      display:flex;
+      gap:8px;
+      margin-bottom:28px;
+      flex-wrap:wrap;
+      border-bottom: 2px solid var(--linha);
+      padding-bottom: 0;
+    }
+    .tab-btn {
+      padding:12px 18px;
+      border:none;
+      background:transparent;
+      color:var(--castanho-suave);
+      border-radius:0;
+      cursor:pointer;
+      font-family:'Fredoka',sans-serif;
+      font-weight:600;
+      font-size:0.95rem;
+      transition:all 0.2s;
+      border-bottom:3px solid transparent;
+      position: relative;
+      bottom: -2px;
+    }
+    .tab-btn:hover{ color:var(--dourado); }
+    .tab-btn.ativo {
+      color:var(--dourado);
+      border-bottom-color:var(--dourado);
+    }
+    .tab-content { display:none; }
+    .tab-content.ativo { display:block; }
+    .secao {
+      background:var(--branco);
+      border:1px solid var(--linha);
+      border-radius:14px;
+      padding:28px;
+      margin-bottom:24px;
+      box-shadow: 0 2px 8px rgba(74,56,32,0.08);
+    }
+    .secao h2 {
+      font-family:'Fredoka',sans-serif;
+      color:var(--dourado);
+      font-size:1.6rem;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+    .secao-subtitulo {
+      color:var(--castanho-suave);
+      font-size:0.95rem;
+      margin-bottom:20px;
+      line-height: 1.5;
+    }
+    label{
+      display:block;
+      font-family:'Fredoka',sans-serif;
+      font-size:0.9rem;
+      font-weight:600;
+      color:var(--dourado-escuro);
+      margin:16px 0 8px;
+    }
+    input[type=text], input[type=number], input[type=time], textarea{
+      width:100%;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid var(--linha);
+      background:var(--bege-claro);
+      font-family:'Nunito',sans-serif;
+      font-size:0.95rem;
+      color:var(--castanho);
+      outline:none;
+    }
+    input:focus{
+      border-color:var(--dourado);
+      background:var(--branco);
+    }
+    .check-ativar{
+      display:flex; align-items:center; gap:10px;
+      margin-top:22px;
+    }
+    .check-ativar input{width:auto; width:20px; height:20px;}
+    .check-ativar label{margin:0; font-weight:600; font-size: 0.95rem;}
+    .bloco-especial{
+      margin-top:10px;
+      padding:18px;
+      background:var(--bege-claro);
+      border:2px solid var(--linha);
+      border-radius:10px;
+    }
+    .linha-horas{display:flex; gap:12px;}
+    .linha-horas > div{flex:1;}
+    .botoes{
+      display:flex; gap:12px;
+      margin-top:28px;
+    }
+    button.acao{
+      flex:1;
+      font-family:'Fredoka',sans-serif;
+      font-weight:600;
+      font-size:0.95rem;
+      padding:14px 18px;
+      border-radius:10px;
+      border:1px solid var(--linha);
+      cursor:pointer;
+      transition:all .15s ease;
+    }
+    button.guardar{
+      background:var(--castanho);
+      color:var(--branco);
+      border-color:var(--castanho);
+    }
+    button.guardar:hover{
+      background:var(--dourado-escuro);
+      border-color:var(--dourado-escuro);
+    }
+    button:disabled{opacity:.5; cursor:not-allowed;}
+    .estado{
+      margin-top:18px;
+      padding:14px 16px;
+      border-radius:10px;
+      font-size:0.9rem;
+      display:none;
+    }
+    .estado.mostrar{display:block;}
+    .estado.info{background:var(--bege); color:var(--castanho-suave); border:1px solid var(--linha);}
+    .estado.ok{background:#eef5ee; color:var(--verde); border:1px solid #cfe4cf;}
+    .estado.erro{background:#f7e9e6; color:var(--vermelho); border:1px solid #edcfc8;}
+    a.voltar{
+      display:inline-block;
+      margin-bottom:20px;
+      color:var(--castanho-suave);
+      font-size:0.9rem;
+      text-decoration:none;
+      font-weight: 600;
+    }
+    a.voltar:hover{color:var(--dourado);}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="cardapio.html" class="voltar">← Voltar ao cardápio</a>
+
+    <div class="header-section">
+      <h1>🍽️ Rest & Bar — Editor</h1>
+      <p class="subtitulo-principal">Edita as informações do cardápio. As mudanças são guardadas automaticamente em tempo real.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn ativo" onclick="abrirTab('rodape', this)">📝 Rodapé</button>
+      <button class="tab-btn" onclick="abrirTab('publicidade', this)">📢 Publicidade</button>
+      <button class="tab-btn" onclick="abrirTab('vinhos', this)">🍷 Vinhos</button>
+    </div>
+
+    <!-- RODAPÉ -->
+    <div id="tab-rodape" class="tab-content ativo">
+      <div class="secao">
+        <h2>Texto do Rodapé</h2>
+        <p class="secao-subtitulo">Define as linhas de texto que aparecem no rodapé da página.</p>
+
+        <label>Linha 1 (negrito/dourada)</label>
+        <input type="text" id="rodape1" placeholder="Ex: Contamos contigo!!!">
+
+        <label>Linha 2</label>
+        <input type="text" id="rodape2" placeholder="Ex: Terça a Domingo-Almoço e Jantar">
+
+        <label>Linha 3</label>
+        <input type="text" id="rodape3" placeholder="">
+
+        <label>Linha 4</label>
+        <input type="text" id="rodape4" placeholder="">
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarRodape()">💾 Guardar</button>
+        </div>
+        <div id="estadoRodape" class="estado"></div>
+      </div>
+
+      <div class="secao">
+        <h2>Mensagem Especial (Com Horário)</h2>
+        <p class="secao-subtitulo">Define uma mensagem que aparece apenas durante horas específicas.</p>
+
+        <div class="check-ativar">
+          <input type="checkbox" id="especial">
+          <label>Ativar mensagem especial</label>
+        </div>
+
+        <div class="bloco-especial">
+          <div class="linha-horas">
+            <div>
+              <label>Início (HH:MM)</label>
+              <input type="time" id="especialInicio">
+            </div>
+            <div>
+              <label>Fim (HH:MM)</label>
+              <input type="time" id="especialFim">
+            </div>
+          </div>
+
+          <label>Linha 1 (negrito)</label>
+          <input type="text" id="especial1" placeholder="">
+
+          <label>Linha 2</label>
+          <input type="text" id="especial2" placeholder="">
+
+          <label>Linha 3</label>
+          <input type="text" id="especial3" placeholder="">
+
+          <label>Linha 4</label>
+          <input type="text" id="especial4" placeholder="">
+        </div>
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarEspecial()">💾 Guardar</button>
+        </div>
+        <div id="estadoEspecial" class="estado"></div>
+      </div>
+    </div>
+
+    <!-- PUBLICIDADE -->
+    <div id="tab-publicidade" class="tab-content">
+      <div class="secao">
+        <h2>Publicidade do Rodapé</h2>
+        <p class="secao-subtitulo">Define a imagem e configurações da publicidade no fundo do rodapé.</p>
+
+        <div class="check-ativar">
+          <input type="checkbox" id="pubAtiva" checked>
+          <label>Ativar publicidade</label>
+        </div>
+
+        <label style="margin-top: 16px;">Imagem (caminho relativo ou URL)</label>
+        <input type="text" id="pubFoto" placeholder="imagens/foto.jpg">
+
+        <label>Posição X (px)</label>
+        <input type="number" id="pubPosX" value="0">
+
+        <label>Posição Y (px)</label>
+        <input type="number" id="pubPosY" value="-3">
+
+        <label>Escala (zoom)</label>
+        <input type="number" id="pubScale" value="1.15" step="0.05">
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarPublicidade()">💾 Guardar</button>
+        </div>
+        <div id="estadoPub" class="estado"></div>
+      </div>
+    </div>
+
+    <!-- VINHOS -->
+    <div id="tab-vinhos" class="tab-content">
+      <div class="secao">
+        <h2>Vinho do Mês</h2>
+        <p class="secao-subtitulo">Define o anúncio que aparece na secção de vinhos.</p>
+
+        <div class="check-ativar">
+          <input type="checkbox" id="vinhoPubAtiva" checked>
+          <label>Ativar anúncio de vinho</label>
+        </div>
+
+        <label style="margin-top: 16px;">Imagem</label>
+        <input type="text" id="vinhoPubFoto" placeholder="imagens/vinho.jpg">
+
+        <label>Título</label>
+        <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do mês">
+
+        <label>Subtítulo</label>
+        <input type="text" id="vinhoPubSub" placeholder="Ex: Aproveita">
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarVinhoPub()">💾 Guardar</button>
+        </div>
+        <div id="estadoVinhoPub" class="estado"></div>
+      </div>
+
+      <div class="secao">
+        <h2>Publicidade na Secção de Bebidas</h2>
+        <p class="secao-subtitulo">Define o anúncio que aparece no fundo da secção de vinhos e bebidas.</p>
+
+        <div class="check-ativar">
+          <input type="checkbox" id="vinhosSecPubAtiva" checked>
+          <label>Ativar publicidade</label>
+        </div>
+
+        <label style="margin-top: 16px;">Imagem</label>
+        <input type="text" id="vinhosSecPubImg" placeholder="imagens/bebidas.jpg">
+
+        <label>Título</label>
+        <input type="text" id="vinhosSecPubTitulo" placeholder="Ex: Prova a nossa sangria">
+
+        <label>Subtítulo Linha 1</label>
+        <input type="text" id="vinhosSecPubSub1" placeholder="">
+
+        <label>Subtítulo Linha 2</label>
+        <input type="text" id="vinhosSecPubSub2" placeholder="">
+
+        <label>Subtítulo Linha 3</label>
+        <input type="text" id="vinhosSecPubSub3" placeholder="">
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarVinhosSecPub()">💾 Guardar</button>
+        </div>
+        <div id="estadoVinhosSecPub" class="estado"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuWoSlk2rmZ1KU_3ioAvlo2wS6-BjqyzA",
+      authDomain: "cardapio-parque-sao-caetano.firebaseapp.com",
+      databaseURL: "https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com",
+      projectId: "cardapio-parque-sao-caetano",
+      storageBucket: "cardapio-parque-sao-caetano.firebasestorage.app",
+      messagingSenderId: "722262488019",
+      appId: "1:722262488019:web:4c95b1adbe86aa14e5b526"
+    };
+
+    // Inicializar Firebase
+    if(!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // Carregar dados do Firebase ao abrir
+    window.addEventListener('DOMContentLoaded', function() {
+      carregarDados();
+    });
+
+    function carregarDados() {
+      db.ref('editor').once('value', (snap) => {
+        const dados = snap.val() || {};
+
+        // Rodapé
+        document.getElementById('rodape1').value = dados.rodape1 || '';
+        document.getElementById('rodape2').value = dados.rodape2 || '';
+        document.getElementById('rodape3').value = dados.rodape3 || '';
+        document.getElementById('rodape4').value = dados.rodape4 || '';
+
+        // Especial
+        document.getElementById('especial').checked = dados.especialAtivo || false;
+        document.getElementById('especialInicio').value = dados.especialInicio || '';
+        document.getElementById('especialFim').value = dados.especialFim || '';
+        document.getElementById('especial1').value = dados.especial1 || '';
+        document.getElementById('especial2').value = dados.especial2 || '';
+        document.getElementById('especial3').value = dados.especial3 || '';
+        document.getElementById('especial4').value = dados.especial4 || '';
+
+        // Publicidade
+        document.getElementById('pubAtiva').checked = dados.pubAtivo !== false;
+        document.getElementById('pubFoto').value = dados.pubFoto || '';
+        document.getElementById('pubPosX').value = dados.pubPosX || 0;
+        document.getElementById('pubPosY').value = dados.pubPosY || -3;
+        document.getElementById('pubScale').value = dados.pubScale || 1.15;
+
+        // Vinho
+        document.getElementById('vinhoPubAtiva').checked = dados.vinhoPubAtivo !== false;
+        document.getElementById('vinhoPubFoto').value = dados.vinhoPubFoto || '';
+        document.getElementById('vinhoPubTitulo').value = dados.vinhoPubTitulo || '';
+        document.getElementById('vinhoPubSub').value = dados.vinhoPubSub || '';
+
+        // Bebidas
+        document.getElementById('vinhosSecPubAtiva').checked = dados.vinhosSecPubAtivo !== false;
+        document.getElementById('vinhosSecPubImg').value = dados.vinhosSecPubImg || '';
+        document.getElementById('vinhosSecPubTitulo').value = dados.vinhosSecPubTitulo || '';
+        document.getElementById('vinhosSecPubSub1').value = dados.vinhosSecPubSub1 || '';
+        document.getElementById('vinhosSecPubSub2').value = dados.vinhosSecPubSub2 || '';
+        document.getElementById('vinhosSecPubSub3').value = dados.vinhosSecPubSub3 || '';
+      });
+    }
+
+    function abrirTab(nome, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('ativo'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('ativo'));
+      document.getElementById('tab-' + nome).classList.add('ativo');
+      btn.classList.add('ativo');
+    }
+
+    function mostrarEstado(id, msg, tipo) {
+      const el = document.getElementById(id);
+      if(el) {
+        el.textContent = msg;
+        el.className = 'estado mostrar ' + tipo;
+        setTimeout(() => el.classList.remove('mostrar'), 3000);
+      }
+    }
+
+    async function guardarRodape() {
+      const dados = {
+        rodape1: document.getElementById('rodape1').value,
+        rodape2: document.getElementById('rodape2').value,
+        rodape3: document.getElementById('rodape3').value,
+        rodape4: document.getElementById('rodape4').value
+      };
+
+      mostrarEstado('estadoRodape', '💾 Guardando...', 'info');
+
+      try {
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoRodape', '✓ Rodapé guardado!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoRodape', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+
+    async function guardarEspecial() {
+      const dados = {
+        especialAtivo: document.getElementById('especial').checked,
+        especialInicio: document.getElementById('especialInicio').value,
+        especialFim: document.getElementById('especialFim').value,
+        especial1: document.getElementById('especial1').value,
+        especial2: document.getElementById('especial2').value,
+        especial3: document.getElementById('especial3').value,
+        especial4: document.getElementById('especial4').value
+      };
+
+      mostrarEstado('estadoEspecial', '💾 Guardando...', 'info');
+
+      try {
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoEspecial', '✓ Mensagem especial guardada!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoEspecial', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+
+    async function guardarPublicidade() {
+      const dados = {
+        pubAtivo: document.getElementById('pubAtiva').checked,
+        pubFoto: document.getElementById('pubFoto').value,
+        pubPosX: document.getElementById('pubPosX').value,
+        pubPosY: document.getElementById('pubPosY').value,
+        pubScale: document.getElementById('pubScale').value
+      };
+
+      mostrarEstado('estadoPub', '💾 Guardando...', 'info');
+
+      try {
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoPub', '✓ Publicidade guardada!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoPub', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+
+    async function guardarVinhoPub() {
+      const dados = {
+        vinhoPubAtivo: document.getElementById('vinhoPubAtiva').checked,
+        vinhoPubFoto: document.getElementById('vinhoPubFoto').value,
+        vinhoPubTitulo: document.getElementById('vinhoPubTitulo').value,
+        vinhoPubSub: document.getElementById('vinhoPubSub').value
+      };
+
+      mostrarEstado('estadoVinhoPub', '💾 Guardando...', 'info');
+
+      try {
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoVinhoPub', '✓ Vinho do mês guardado!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoVinhoPub', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+
+    async function guardarVinhosSecPub() {
+      const dados = {
+        vinhosSecPubAtivo: document.getElementById('vinhosSecPubAtiva').checked,
+        vinhosSecPubImg: document.getElementById('vinhosSecPubImg').value,
+        vinhosSecPubTitulo: document.getElementById('vinhosSecPubTitulo').value,
+        vinhosSecPubSub1: document.getElementById('vinhosSecPubSub1').value,
+        vinhosSecPubSub2: document.getElementById('vinhosSecPubSub2').value,
+        vinhosSecPubSub3: document.getElementById('vinhosSecPubSub3').value
+      };
+
+      mostrarEstado('estadoVinhosSecPub', '💾 Guardando...', 'info');
+
+      try {
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoVinhosSecPub', '✓ Publicidade de bebidas guardada!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoVinhosSecPub', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+  </script>
+</body>
+</html>
