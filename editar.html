@@ -347,6 +347,21 @@
     <div class="header-section">
       <h1>🍽️ Rest & Bar — Editor</h1>
       <p class="subtitulo-principal">Edita aqui as informações, fotos e configurações do cardápio</p>
+
+      <div style="background: var(--bege-claro); border: 1px solid var(--linha); border-radius: 10px; padding: 16px; margin-top: 16px;">
+        <h3 style="font-family: 'Fredoka', sans-serif; color: var(--dourado); font-size: 1rem; margin-bottom: 12px;">🔐 Autenticação GitHub</h3>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 12px;">Entra o teu token pessoal do GitHub para fazer commits automáticos</p>
+
+        <div class="campo-token">
+          <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxx" value="">
+          <button onclick="validarToken()">Validar</button>
+        </div>
+        <div class="lembrar">
+          <input type="checkbox" id="lembrarToken">
+          <label>Guardar token (no browser local)</label>
+        </div>
+        <div id="estadoToken" class="estado" style="margin-top: 10px;"></div>
+      </div>
     </div>
 
     <div class="tabs">
@@ -591,6 +606,106 @@
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 
   <script>
+    // Configuração GitHub
+    const GITHUB_REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
+    const GITHUB_FILE = 'cardapio.html';
+    const GITHUB_BRANCH = 'main';
+
+    // Carregador do token
+    window.addEventListener('DOMContentLoaded', function() {
+      const tokenSalvo = localStorage.getItem('githubToken');
+      if(tokenSalvo) {
+        document.getElementById('githubToken').value = tokenSalvo;
+        document.getElementById('lembrarToken').checked = true;
+      }
+    });
+
+    async function validarToken() {
+      const token = document.getElementById('githubToken').value.trim();
+      if(!token) {
+        mostrarEstado('estadoToken', '❌ Entra um token válido', 'erro');
+        return;
+      }
+
+      try {
+        const res = await fetch('https://api.github.com/user', {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if(res.ok) {
+          const user = await res.json();
+
+          if(document.getElementById('lembrarToken').checked) {
+            localStorage.setItem('githubToken', token);
+          } else {
+            localStorage.removeItem('githubToken');
+          }
+
+          mostrarEstado('estadoToken', `✓ Autenticado como ${user.login}`, 'ok');
+          window.githubTokenValido = token;
+        } else {
+          mostrarEstado('estadoToken', '❌ Token inválido ou expirado', 'erro');
+        }
+      } catch(err) {
+        mostrarEstado('estadoToken', '❌ Erro a validar token: ' + err.message, 'erro');
+      }
+    }
+
+    async function commitNoGitHub(novoConteudo, mensagem) {
+      const token = document.getElementById('githubToken').value.trim();
+      if(!token) {
+        alert('❌ Primeiro valida o token do GitHub!');
+        return false;
+      }
+
+      try {
+        // Obter SHA do ficheiro atual
+        const getRes = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}?ref=${GITHUB_BRANCH}`,
+          { headers: { 'Authorization': `token ${token}` } }
+        );
+
+        if(!getRes.ok) throw new Error('Não consegui aceder ao ficheiro');
+
+        const fileData = await getRes.json();
+        const sha = fileData.sha;
+
+        // Codificar conteúdo em base64
+        const content = btoa(unescape(encodeURIComponent(novoConteudo)));
+
+        // Fazer commit
+        const commitRes = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: mensagem,
+              content: content,
+              sha: sha,
+              branch: GITHUB_BRANCH
+            })
+          }
+        );
+
+        if(commitRes.ok) {
+          mostrarEstado('estadoToken', '✓ Commit feito com sucesso!', 'ok');
+          return true;
+        } else {
+          const erro = await commitRes.json();
+          throw new Error(erro.message);
+        }
+      } catch(err) {
+        alert('❌ Erro ao fazer commit: ' + err.message);
+        return false;
+      }
+    }
+  </script>
+
+  <script>
     function abrirTab(nome, btn) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('ativo'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('ativo'));
@@ -680,7 +795,7 @@
     handleFotoUpload('foto1Upload', 'foto1Url', 'foto1Preview');
     handleFotoUpload('foto2Upload', 'foto2Url', 'foto2Preview');
 
-    function guardarRodape() {
+    async function guardarRodape() {
       const l1 = document.getElementById('rodape1').value;
       const l2 = document.getElementById('rodape2').value;
       const l3 = document.getElementById('rodape3').value;
@@ -697,14 +812,39 @@
       document.getElementById('previewRodape3').textContent = l3;
       document.getElementById('previewRodape4').textContent = l4;
 
-      // Gerar código para copiar
-      const codigo = `<div class="linha-negrito" id="rodapeLinha1">${l1}</div>
+      // Novo código
+      const codigoNovo = `<div class="linha-negrito" id="rodapeLinha1">${l1}</div>
     <div class="linha" id="rodapeLinha2">${l2}</div>
     <div class="linha" id="rodapeLinha3">${l3}</div>
     <div class="linha" id="rodapeLinha4">${l4}</div>`;
 
-      mostrarEstado('estadoRodape', '✓ Rodapé guardado (copia o código abaixo para o cardapio.html)', 'ok');
-      alert(`Copia este código para o cardapio.html (procura <div class="info-fixa-texto" id="infoFixaTexto">):\n\n${codigo}`);
+      mostrarEstado('estadoRodape', '💾 Guardando...', 'info');
+
+      // Tentar commit automático
+      const token = document.getElementById('githubToken').value.trim();
+      if(token) {
+        try {
+          const res = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/${GITHUB_FILE}`);
+          if(res.ok) {
+            let conteudo = await res.text();
+            // Encontrar e substituir o rodapé
+            const regex = /<div class="linha-negrito" id="rodapeLinha1">.*?<div class="linha" id="rodapeLinha4">.*?<\/div>/s;
+            conteudo = conteudo.replace(regex, codigoNovo);
+
+            const sucesso = await commitNoGitHub(conteudo, '📝 Atualizar rodapé via editor');
+            if(sucesso) {
+              mostrarEstado('estadoRodape', '✓ Rodapé atualizado no GitHub!', 'ok');
+              return;
+            }
+          }
+        } catch(err) {
+          console.log('Fallback para copy-paste:', err);
+        }
+      }
+
+      // Fallback: mostrar código para copiar
+      mostrarEstado('estadoRodape', '✓ Rodapé guardado (copia o código)', 'ok');
+      alert(`Copia este código para o cardapio.html:\n\n${codigoNovo}`);
     }
 
     function guardarEspecial() {
