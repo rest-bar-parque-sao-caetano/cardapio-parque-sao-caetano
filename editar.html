@@ -1,2742 +1,535 @@
+
 <!DOCTYPE html>
-<html lang="pt-PT"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Editar Cabeçalho e Rodapé — Rest &amp; Bar Parque São Caetano</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&amp;family=Nunito:wght@400;600;700;800&amp;family=Playfair+Display:wght@600;700&amp;family=Merriweather:wght@600;700&amp;family=Poppins:wght@600;700&amp;family=Pacifico&amp;family=Dancing+Script:wght@600;700&amp;display=swap" rel="stylesheet">
-<style>
-  :root{
-    --branco: #ffffff;
-    --bege-claro: #fbf8f2;
-    --bege: #f5efe2;
-    --linha: #e6dcc8;
-    --castanho: #4a3820;
-    --castanho-suave: #8a7350;
-    --castanho-claro: #a8987a;
-    --dourado: #a8712f;
-    --dourado-escuro: #8a5a24;
-    --verde: #4a7a4a;
-    --vermelho: #b0402f;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{
-    font-family:'Nunito',sans-serif;
-    background:var(--bege-claro);
-    color:var(--castanho);
-    min-height:100vh;
-    padding:24px 16px 60px;
-  }
-  .caixa{
-    max-width:520px;
-    margin:0 auto;
-    background:var(--branco);
-    border:1px solid var(--linha);
-    border-radius:16px;
-    padding:24px 22px 28px;
-  }
-  h1{
-    font-family:'Fredoka',sans-serif;
-    color:var(--castanho);
-    font-size:1.3rem;
-    margin-bottom:6px;
-  }
-  .subtitulo{
-    color:var(--castanho-suave);
-    font-size:0.88rem;
-    margin-bottom:20px;
-    line-height:1.4;
-  }
-  label{
-    display:block;
-    font-family:'Fredoka',sans-serif;
-    font-size:0.8rem;
-    font-weight:600;
-    color:var(--dourado-escuro);
-    margin:16px 0 6px;
-  }
-  input[type=text], input[type=password]{
-    width:100%;
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--linha);
-    background:var(--bege-claro);
-    font-family:'Nunito',sans-serif;
-    font-size:0.92rem;
-    color:var(--castanho);
-    outline:none;
-  }
-  input[type=text]:focus, input[type=password]:focus, input[type=time]:focus{border-color:var(--dourado);}
-  input[type=time]{
-    width:100%;
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--linha);
-    background:var(--bege-claro);
-    font-family:'Nunito',sans-serif;
-    font-size:0.92rem;
-    color:var(--castanho);
-    outline:none;
-  }
-  .linha-horas{display:flex; gap:10px;}
-  .linha-horas > div{flex:1;}
-  .check-ativar{
-    display:flex; align-items:center; gap:8px;
-    margin-top:22px;
-  }
-  .check-ativar input{width:auto;}
-  .check-ativar label{margin:0; font-weight:600;}
-  .bloco-especial{
-    margin-top:6px;
-    padding:14px 14px 4px;
-    background:var(--bege-claro);
-    border:1px solid var(--linha);
-    border-radius:10px;
-  }
-
-  .linha-foto{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:8px 0;
-    border-bottom:1px solid var(--linha);
-  }
-  .linha-foto:last-child{border-bottom:none;}
-  .miniatura{
-    width:48px; height:48px;
-    object-fit:cover;
-    border-radius:8px;
-    flex:0 0 auto;
-    background:var(--bege);
-  }
-  .linha-foto-info{flex:1; min-width:0;}
-  .linha-foto-nome{
-    font-size:0.78rem;
-    color:var(--castanho);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .linha-foto-duracao{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    margin-top:4px;
-  }
-  .linha-foto-duracao label{margin:0; font-weight:400; font-size:0.74rem; color:var(--castanho-suave);}
-  .linha-foto-duracao input{
-    width:56px;
-    padding:4px 6px;
-    border-radius:6px;
-    border:1px solid var(--linha);
-    font-size:0.78rem;
-    background:var(--branco);
-    color:var(--castanho);
-  }
-  .linha-foto-acoes{display:flex; gap:4px; flex:0 0 auto;}
-  .btn-mini{
-    width:26px; height:26px;
-    border-radius:6px;
-    border:1px solid var(--linha);
-    background:var(--branco);
-    cursor:pointer;
-    font-size:0.75rem;
-    color:var(--castanho);
-  }
-  .btn-mini:hover{border-color:var(--dourado);}
-  .btn-mini:disabled{opacity:.3; cursor:not-allowed;}
-  .sem-fotos{
-    font-size:0.8rem;
-    color:var(--castanho-suave);
-    padding:10px 0;
-  }
-  input[type=file]{
-    width:100%;
-    font-size:0.82rem;
-    color:var(--castanho-suave);
-  }
-  .campo-token{display:flex; gap:8px; align-items:center;}
-  .campo-token input{flex:1;}
-  .campo-token button{
-    flex:0 0 auto;
-    background:var(--bege);
-    border:1px solid var(--linha);
-    border-radius:10px;
-    padding:0 12px;
-    height:40px;
-    cursor:pointer;
-    font-size:0.85rem;
-    color:var(--castanho);
-  }
-  .lembrar{
-    display:flex; align-items:center; gap:6px;
-    margin-top:10px;
-    font-size:0.8rem;
-    color:var(--castanho-suave);
-  }
-  .lembrar input{width:auto;}
-
-  details{
-    margin-top:14px;
-    background:var(--bege-claro);
-    border:1px solid var(--linha);
-    border-radius:10px;
-    padding:10px 14px;
-  }
-  details summary{
-    cursor:pointer;
-    font-family:'Fredoka',sans-serif;
-    font-size:0.82rem;
-    font-weight:600;
-    color:var(--dourado-escuro);
-  }
-  details ol{
-    margin:10px 0 4px 18px;
-    font-size:0.82rem;
-    color:var(--castanho-suave);
-    line-height:1.6;
-  }
-  details code{
-    background:var(--bege);
-    padding:1px 5px;
-    border-radius:4px;
-    font-size:0.8rem;
-  }
-
-  .botoes{
-    display:flex; gap:10px;
-    margin-top:22px;
-  }
-  button.acao{
-    flex:1;
-    font-family:'Fredoka',sans-serif;
-    font-weight:600;
-    font-size:0.88rem;
-    padding:12px 14px;
-    border-radius:12px;
-    border:1px solid var(--linha);
-    cursor:pointer;
-    transition:all .15s ease;
-  }
-  button.carregar{
-    background:var(--bege);
-    color:var(--castanho);
-  }
-  button.carregar:hover{border-color:var(--dourado);}
-  button.guardar{
-    background:var(--castanho);
-    color:var(--branco);
-    border-color:var(--castanho);
-  }
-  button.guardar:hover{background:var(--dourado-escuro); border-color:var(--dourado-escuro);}
-  button:disabled{opacity:.5; cursor:not-allowed;}
-
-  .estado{
-    margin-top:16px;
-    padding:10px 14px;
-    border-radius:10px;
-    font-size:0.85rem;
-    display:none;
-  }
-  .estado.mostrar{display:block;}
-  .estado.info{background:var(--bege); color:var(--castanho-suave); border:1px solid var(--linha);}
-  .estado.ok{background:#eef5ee; color:var(--verde); border:1px solid #cfe4cf;}
-  .estado.erro{background:#f7e9e6; color:var(--vermelho); border:1px solid #edcfc8;}
-
-  .preview{
-    margin-top:22px;
-    padding:14px 16px;
-    background:var(--castanho);
-    border-radius:12px;
-    text-align:center;
-  }
-  .preview .p-negrito{
-    font-family:'Fredoka',sans-serif;
-    color:var(--dourado);
-    font-weight:600;
-    font-size:0.85rem;
-  }
-  .preview .p-linha{
-    color:#e8ddc9;
-    font-size:0.72rem;
-    margin-top:2px;
-  }
-  .preview-titulo{
-    font-size:0.7rem;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    color:var(--castanho-claro);
-    margin-top:22px;
-    margin-bottom:6px;
-  }
-
-  a.voltar{
-    display:inline-block;
-    margin-bottom:14px;
-    color:var(--castanho-suave);
-    font-size:0.85rem;
-    text-decoration:none;
-  }
-  a.voltar:hover{color:var(--dourado);}
-
-  .campo-numero{display:flex; align-items:center; gap:8px;}
-  .campo-numero input{width:80px;}
-  .campo-numero span{font-size:0.8rem; color:var(--castanho-suave);}
-
-  .pub-editor-caixa{
-    position:relative;
-    width:100%;
-    max-width:480px;
-    height:120px;
-    overflow:hidden;
-    border-radius:10px;
-    border:1px solid var(--linha);
-    background:var(--bege);
-    margin:10px 0 4px;
-    cursor:grab;
-    touch-action:none;
-    user-select:none;
-  }
-  .pub-editor-caixa.arrastando{ cursor:grabbing; }
-  .pub-editor-caixa img{
-    position:absolute;
-    top:0; left:0;
-    pointer-events:none;
-    -webkit-user-drag:none;
-  }
-  .pub-editor-vazio{
-    display:flex; align-items:center; justify-content:center;
-    height:100%;
-    color:var(--castanho-suave);
-    font-size:0.8rem;
-    text-align:center;
-    padding:10px;
-  }
-  .pub-editor-dica{
-    font-size:0.72rem;
-    color:var(--castanho-claro);
-    margin-top:4px;
-  }
-  .pub-editor-zoom{
-    display:flex; align-items:center; gap:10px;
-    margin-top:10px;
-  }
-  .pub-editor-zoom span{font-size:0.75rem; color:var(--castanho-suave); flex:0 0 auto;}
-  .pub-editor-zoom input[type=range]{ flex:1; }
-
-  /* ---- Blocos dobráveis (cada secção do editor abre/fecha por si) ---- */
-  .bloco-editor{
-    margin-top:14px;
-    padding:0;
-    background:var(--branco);
-    border:1px solid var(--linha);
-    border-radius:12px;
-    overflow:hidden;
-  }
-  .bloco-editor + .bloco-editor{ margin-top:10px; }
-  .bloco-editor summary{
-    list-style:none;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:14px 16px;
-    background:var(--bege-claro);
-    font-family:inherit;
-  }
-  .bloco-editor summary::-webkit-details-marker{ display:none; }
-  .bloco-editor summary .bloco-icone{
-    font-size:1.15rem;
-    flex:0 0 auto;
-    line-height:1;
-  }
-  .bloco-editor summary .bloco-titulos{ flex:1; min-width:0; }
-  .bloco-editor summary .bloco-titulo{
-    font-family:'Fredoka',sans-serif;
-    font-size:0.86rem;
-    font-weight:600;
-    color:var(--castanho);
-  }
-  .bloco-editor summary .bloco-resumo{
-    font-size:0.74rem;
-    color:var(--castanho-suave);
-    margin-top:1px;
-    line-height:1.3;
-  }
-  .bloco-editor summary .bloco-seta{
-    flex:0 0 auto;
-    color:var(--castanho-claro);
-    font-size:0.9rem;
-    transition:transform .15s ease;
-  }
-  .bloco-editor[open] summary .bloco-seta{ transform:rotate(90deg); }
-  .bloco-editor[open] summary{ border-bottom:1px solid var(--linha); }
-  .bloco-editor .bloco-conteudo{
-    padding:16px 16px 18px;
-  }
-  .bloco-editor .bloco-conteudo > label:first-child,
-  .bloco-editor .bloco-conteudo > .check-ativar:first-child{ margin-top:0; }
-  .bloco-editor .bloco-estado-tag{
-    font-size:0.68rem;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    padding:2px 7px;
-    border-radius:20px;
-    flex:0 0 auto;
-    background:var(--bege);
-    color:var(--castanho-claro);
-  }
-  .bloco-editor .bloco-estado-tag.ligado{
-    background:#eef5ee;
-    color:var(--verde);
-  }
-
-.campo-cor-linha{ display:flex; align-items:center; gap:10px; margin-top:6px; }
-.campo-cor-linha input[type=color]{
-  width:52px; height:40px;
-  padding:2px;
-  border-radius:8px;
-  border:1px solid var(--linha);
-  background:var(--bege-claro);
-  cursor:pointer;
-}
-.btn-repor{
-  flex:0 0 auto;
-  background:var(--bege);
-  border:1px solid var(--linha);
-  border-radius:10px;
-  padding:0 12px;
-  height:40px;
-  cursor:pointer;
-  font-size:0.8rem;
-  color:var(--castanho);
-}
-.btn-repor:hover{ border-color:var(--dourado); }
-.cabecalho-preview{
-  margin-top:12px;
-  padding:20px 16px;
-  border-radius:12px;
-  text-align:center;
-  background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
-}
-.cabecalho-preview-nome{
-  font-size:1.3rem;
-  font-weight:600;
-  color:#ffffff;
-  text-shadow:0 1px 6px rgba(0,0,0,0.55);
-}
-.cabecalho-preview-frase{
-  font-size:0.78rem;
-  font-style:italic;
-  color:#f5e2d3;
-  margin-top:3px;
-  text-shadow:0 1px 6px rgba(0,0,0,0.55);
-}
-.cabecalho-pos-caixa{
-  position:relative;
-  width:100%;
-  max-width:480px;
-  overflow:hidden;
-  border-radius:10px;
-  border:1px solid var(--linha);
-  background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
-  padding:20px 16px 14px;
-  text-align:center;
-  touch-action:none;
-  user-select:none;
-}
-.cabecalho-pos-nome, .cabecalho-pos-frase{
-  position:relative;
-  display:inline-block;
-  cursor:grab;
-  text-shadow:0 1px 6px rgba(0,0,0,0.55);
-  white-space:pre-line;
-}
-.cabecalho-pos-nome{
-  font-family:'Fredoka',sans-serif;
-  font-size:1.7rem;
-  font-weight:600;
-  color:#ffffff;
-}
-.cabecalho-pos-frase{
-  font-family:'Fredoka',sans-serif;
-  font-size:0.82rem;
-  font-style:italic;
-  color:#f5e2d3;
-  margin-top:3px;
-}
-.cabecalho-pos-nome.arrastando, .cabecalho-pos-frase.arrastando{ cursor:grabbing; }
-  .anuncio-pos-caixa{
-    position:relative; width:100%; max-width:480px; min-height:140px;
-    display:flex; align-items:center; justify-content:center;
-    overflow:visible; border-radius:12px; border:1px solid var(--linha);
-    background:linear-gradient(160deg, #6b4a2c 0%, #3a2717 100%);
-    touch-action:none; user-select:none; padding:10px;
-  }
-  .anuncio-pos-img{
-    position:relative; max-width:70%; max-height:120px;
-    cursor:grab; display:block;
-  }
-  .anuncio-pos-img.arrastando{ cursor:grabbing; }
-</style>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rest & Bar — Editor do Cardápio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --branco: #ffffff;
+      --bege-claro: #fbf8f2;
+      --bege: #f5efe2;
+      --castanho: #4a3820;
+      --castanho-suave: #8a7350;
+      --dourado: #a8712f;
+      --linha: #e6dcc8;
+    }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bege-claro);
+      color: var(--castanho);
+      padding: 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { font-family: 'Fredoka', sans-serif; font-size: 1.8rem; margin-bottom: 10px; }
+    .subtitle { color: var(--castanho-suave); margin-bottom: 30px; }
+    .secao {
+      background: var(--branco);
+      border: 1px solid var(--linha);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .secao h2 {
+      font-family: 'Fredoka', sans-serif;
+      color: var(--dourado);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--linha);
+      padding-bottom: 10px;
+    }
+    .campo {
+      margin-bottom: 15px;
+    }
+    .campo label {
+      display: block;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+    .campo input[type="text"],
+    .campo input[type="number"],
+    .campo input[type="time"],
+    .campo textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--linha);
+      border-radius: 8px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+    }
+    .campo input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    .campo-inline {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .campo-inline label { margin-bottom: 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .btn {
+      background: var(--castanho);
+      color: var(--branco);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--dourado); }
+    .btn-pequeno { padding: 8px 16px; font-size: 0.85rem; }
+    .success { color: #4a7a2e; }
+    .foto-preview {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 10px;
+      border: 1px solid var(--linha);
+    }
+    .lista-categoria {
+      background: var(--bege-claro);
+      border-left: 3px solid var(--dourado);
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .stats {
+      background: var(--bege);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 0.95rem;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      border: 1px solid var(--linha);
+      background: var(--branco);
+      color: var(--castanho);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn.ativo {
+      background: var(--castanho);
+      color: var(--branco);
+      border-color: var(--castanho);
+    }
+    .tab-content { display: none; }
+    .tab-content.ativo { display: block; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🍽️ Rest & Bar — Editor do Cardápio</h1>
+    <p class="subtitle">Edita aqui as informações e fotos que aparecem no cardápio</p>
 
-<div class="caixa">
-  <a class="voltar" href="cardapio.html">← Voltar ao cardápio</a>
-  <h1>Editar cabeçalho e rodapé</h1>
-  <div class="subtitulo">
-    Toca num bloco abaixo para o abrir e editar só essa parte. Isto não precisa de código nem do GitHub — só de um token de acesso (explico abaixo como criar).
-  </div>
+    <div class="tabs">
+      <button class="tab-btn ativo" onclick="abrirTab('fotos')">📸 Fotos</button>
+      <button class="tab-btn" onclick="abrirTab('publicidade')">📢 Publicidade</button>
+      <button class="tab-btn" onclick="abrirTab('rodape')">📝 Rodapé</button>
+      <button class="tab-btn" onclick="abrirTab('stop')">🎮 Jogo do Stop</button>
+      <button class="tab-btn" onclick="abrirTab('stats')">📊 Estatísticas</button>
+    </div>
 
-  <div class="estado erro mostrar" id="avisoDesatualizado" style="display:none;">
-    Esta página foi atualizada entretanto (tens esta aba aberta há algum tempo). Para não corrermos o risco de apagar alterações mais recentes, recarrega a página (F5) antes de continuares a editar ou a guardar.
-  </div>
+    <!-- TAB: FOTOS -->
+    <div id="tab-fotos" class="tab-content ativo">
+      <div class="secao">
+        <h2>Fotos do Cabeçalho</h2>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 15px;">As fotos rodam automaticamente a cada X segundos (configurável por foto)</p>
 
-  <label for="token">Token de acesso do GitHub</label>
-  <div class="campo-token">
-    <input type="password" id="token" placeholder="cola aqui o teu token (github_pat_...)">
-    <button type="button" id="mostrarToken">Ver</button>
-  </div>
-  <div class="lembrar">
-    <input type="checkbox" id="lembrar" checked="">
-    <label for="lembrar" style="margin:0; font-weight:400; color:inherit;">Lembrar neste aparelho (fica só guardado no teu telemóvel/computador)</label>
-  </div>
+        <div class="campo">
+          <label>Foto 1 — URL da imagem</label>
+          <input type="text" id="headerFoto1" placeholder="https://..." value="imagens/1783697899032-img_1575.jpg">
+          <label style="margin-top: 8px;">Duração (segundos)</label>
+          <input type="number" id="headerFoto1Duracao" value="30" min="1" max="120">
+          <img id="preview1" class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto('headerFoto1', 'preview1')">Pré-visualizar</button>
+        </div>
 
-  <details>
-    <summary>Ainda não tenho token — como crio um?</summary>
-    <ol>
-      <li>Entra no GitHub e vai a <code>Settings → Developer settings → Personal access tokens → Fine-grained tokens</code>.</li>
-      <li>Clica em <code>Generate new token</code>.</li>
-      <li>Em "Repository access", escolhe <code>Only select repositories</code> e seleciona <code>cardapio-parque-sao-caetano</code>.</li>
-      <li>Em "Permissions", abre <code>Repository permissions</code> e muda <code>Contents</code> para <code>Read and write</code>.</li>
-      <li>Escolhe uma validade (ex: 1 ano) e clica em <code>Generate token</code>.</li>
-      <li>Copia o token (começa por <code>github_pat_</code>) e cola-o no campo acima. Só tu o vês — fica só no teu aparelho.</li>
-    </ol>
-  </details>
+        <div class="campo">
+          <label>Foto 2 — URL da imagem</label>
+          <input type="text" id="headerFoto2" placeholder="https://..." value="imagens/1783698961451-gemini_generated_image_l4woqpl4woqpl4wo.png">
+          <label style="margin-top: 8px;">Duração (segundos)</label>
+          <input type="number" id="headerFoto2Duracao" value="30" min="1" max="120">
+          <img id="preview2" class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto('headerFoto2', 'preview2')">Pré-visualizar</button>
+        </div>
 
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">📝</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Texto do rodapé</span>
-        <span class="bloco-resumo">Nome, horário, morada e telefone — e o texto especial automático</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <label for="linha1">Linha 1 (aparece a negrito)</label>
-      <input type="text" id="linha1" placeholder="Ex: Contamos contigo!">
-
-      <label for="linha2">Linha 2</label>
-      <input type="text" id="linha2" placeholder="Ex: Terça a Domingo — Almoço e Jantar">
-
-      <label for="linha3">Linha 3</label>
-      <input type="text" id="linha3" placeholder="Ex: Reservas: 962 202 622">
-
-      <label for="linha4">Linha 4</label>
-      <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
-
-      <div class="check-ativar">
-        <input type="checkbox" id="especialAtivo">
-        <label for="especialAtivo">Ativar texto especial com horário automático</label>
-      </div>
-      <div class="subtitulo" style="margin:6px 0 0;">
-        Enquanto estiver ativo, o rodapé muda sozinho para o texto abaixo durante o horário indicado, e volta ao texto normal automaticamente fora desse horário — não precisas de fazer nada nessa hora.
+        <button class="btn" onclick="guardarFotosHeader()">💾 Guardar Fotos do Cabeçalho</button>
       </div>
 
-      <div class="bloco-especial">
-        <div class="linha-horas">
-          <div>
-            <label for="horaInicio">Começa às</label>
-            <input type="time" id="horaInicio">
+      <div class="secao">
+        <h2>Fotos de Categorias (Herói)</h2>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 15px;">Foto que aparece no topo de cada secção de categoria</p>
+
+        <div id="fotoCategorias"></div>
+        <button class="btn" onclick="guardarFotosCategoria()">💾 Guardar Fotos de Categorias</button>
+      </div>
+    </div>
+
+    <!-- TAB: PUBLICIDADE -->
+    <div id="tab-publicidade" class="tab-content">
+      <div class="secao">
+        <h2>Publicidade — Vinho do Mês</h2>
+        <div class="campo">
+          <label><input type="checkbox" id="vinhoPubAtivo" checked> Ativar publicidade</label>
+        </div>
+        <div class="campo">
+          <label>Foto</label>
+          <input type="text" id="vinhoAnuncioImg" value="imagens/1783607170442-img_1474.jpeg">
+          <img id="previewVinho" class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto('vinhoAnuncioImg', 'previewVinho')">Pré-visualizar</button>
+        </div>
+        <div class="campo">
+          <label>Título</label>
+          <input type="text" id="vinhoAnuncioTitulo" value="Vinho do mês">
+        </div>
+        <div class="campo">
+          <label>Subtítulo</label>
+          <input type="text" id="vinhoAnuncioSubtitulo" value="Aproveita">
+        </div>
+        <button class="btn" onclick="guardarAnuncio('vinho')">💾 Guardar</button>
+      </div>
+
+      <div class="secao">
+        <h2>Publicidade — Fundo do Rodapé</h2>
+        <div class="campo">
+          <label><input type="checkbox" id="fundoAtivo" checked> Ativar imagem de fundo</label>
+        </div>
+        <div class="campo">
+          <label>Foto (será escurecida)</label>
+          <input type="text" id="fundoAnuncioImg" value="imagens/1783701851177-img_1577.jpg">
+          <img id="previewFundo" class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto('fundoAnuncioImg', 'previewFundo')">Pré-visualizar</button>
+        </div>
+        <div class="campo">
+          <label>Posição X (px)</label>
+          <input type="number" id="fundoPosX" value="0">
+        </div>
+        <div class="campo">
+          <label>Posição Y (px)</label>
+          <input type="number" id="fundoPosY" value="-3">
+        </div>
+        <div class="campo">
+          <label>Escala (zoom)</label>
+          <input type="number" id="fundoScale" value="1.15" step="0.05" min="0.5" max="3">
+        </div>
+        <button class="btn" onclick="guardarAnuncio('fundo')">💾 Guardar</button>
+      </div>
+
+      <div class="secao">
+        <h2>Publicidade por Categoria</h2>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 15px;">Foto/banner que aparece no topo de cada secção de comida</p>
+
+        <div id="pubCategorias"></div>
+        <button class="btn" onclick="guardarPubCategorias()">💾 Guardar Publicidades</button>
+      </div>
+    </div>
+
+    <!-- TAB: RODAPÉ -->
+    <div id="tab-rodape" class="tab-content">
+      <div class="secao">
+        <h2>Informações do Rodapé (Texto Fixo)</h2>
+        <div class="campo">
+          <label>Linha 1 (a negrito/dourado)</label>
+          <input type="text" id="rodapeLinha1" value="Contamos contigo!!!">
+        </div>
+        <div class="campo">
+          <label>Linha 2</label>
+          <input type="text" id="rodapeLinha2" value="Terça a Domingo-Almoço e Jantar">
+        </div>
+        <div class="campo">
+          <label>Linha 3</label>
+          <input type="text" id="rodapeLinha3" value="">
+        </div>
+        <div class="campo">
+          <label>Linha 4</label>
+          <input type="text" id="rodapeLinha4" value="">
+        </div>
+        <button class="btn" onclick="guardarRodape()">💾 Guardar Rodapé</button>
+      </div>
+
+      <div class="secao">
+        <h2>Mensagem Especial (Com Horário)</h2>
+        <div class="campo">
+          <label><input type="checkbox" id="especial-ativo"> Ativar mensagem especial</label>
+        </div>
+        <div class="grid-2">
+          <div class="campo">
+            <label>Início (HH:MM)</label>
+            <input type="time" id="especial-inicio" value="08:51">
           </div>
-          <div>
-            <label for="horaFim">Termina às</label>
-            <input type="time" id="horaFim">
+          <div class="campo">
+            <label>Fim (HH:MM)</label>
+            <input type="time" id="especial-fim" value="08:52">
           </div>
         </div>
-
-        <label for="especial1">Linha 1 especial (negrito)</label>
-        <input type="text" id="especial1" placeholder="Ex: Estamos fechados">
-
-        <label for="especial2">Linha 2 especial</label>
-        <input type="text" id="especial2">
-
-        <label for="especial3">Linha 3 especial</label>
-        <input type="text" id="especial3">
-
-        <label for="especial4">Linha 4 especial</label>
-        <input type="text" id="especial4">
+        <div class="campo">
+          <label>Linha 1</label>
+          <input type="text" id="especial-l1" value="">
+        </div>
+        <div class="campo">
+          <label>Linha 2</label>
+          <input type="text" id="especial-l2" value="Bla">
+        </div>
+        <div class="campo">
+          <label>Linha 3</label>
+          <input type="text" id="especial-l3" value="Bkgfd">
+        </div>
+        <div class="campo">
+          <label>Linha 4</label>
+          <input type="text" id="especial-l4" value="Ghjjj">
+        </div>
+        <button class="btn" onclick="guardarEspecial()">💾 Guardar Mensagem Especial</button>
       </div>
     </div>
-  </details>
 
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🔤</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Texto do cabeçalho</span>
-        <span class="bloco-resumo">Nome do restaurante, frase por baixo, tipo de letra e cor</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <label for="cabecalhoNome">Nome do restaurante</label>
-      <textarea id="cabecalhoNome" rows="2" placeholder="Ex: Rest &amp; Bar Parque São Caetano"></textarea>
+    <!-- TAB: STOP -->
+    <div id="tab-stop" class="tab-content">
+      <div class="secao">
+        <h2>🎮 Jogo do Stop — Administração</h2>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 15px;">O jogo está integrado no cardápio. Os dados são guardados no Firebase automaticamente.</p>
 
-      <label for="cabecalhoFrase">Frase por baixo do nome</label>
-      <input type="text" id="cabecalhoFrase" placeholder="Ex: Tradição, sabor e conforto à mesa">
+        <div class="stats">
+          <strong>Firebase Database:</strong><br>
+          cardapio-parque-sao-caetano-default-rtdb.firebaseio.com
+        </div>
 
-      <label for="cabecalhoFonte">Tipo de letra</label>
-      <select id="cabecalhoFonte">
-        <option value="">Padrão (Fredoka)</option>
-        <option value="Playfair Display">Elegante (Playfair Display)</option>
-        <option value="Merriweather">Clássica (Merriweather)</option>
-        <option value="Poppins">Moderna (Poppins)</option>
-        <option value="Pacifico">Divertida (Pacifico)</option>
-        <option value="Dancing Script">Manuscrita (Dancing Script)</option>
-      </select>
+        <div class="campo">
+          <label>Limpar todas as salas</label>
+          <p style="font-size: 0.85rem; color: var(--castanho-suave); margin: 8px 0;">Elimina todas as salas de jogo activas</p>
+          <button class="btn" style="background: #b3452c;" onclick="if(confirm('Tens a certeza?')) limparSalas()">🗑️ Limpar Salas</button>
+        </div>
 
-      <label for="cabecalhoTamanho">Tamanho da letra</label>
-      <div class="campo-numero">
-        <input type="range" id="cabecalhoTamanho" min="1.0" max="3.2" step="0.1" value="1.7" style="flex:1;">
-        <span id="cabecalhoTamanhoValor">1.7rem</span>
-      </div>
-
-      <label for="cabecalhoCor">Cor do texto</label>
-      <div class="campo-cor-linha">
-        <input type="color" id="cabecalhoCor" value="#ffffff">
-        <button type="button" class="btn-repor" id="cabecalhoRepor">Repor predefinição</button>
-      </div>
-
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta o nome ou a frase para os reposicionares):</div>
-      <div class="cabecalho-pos-caixa" id="cabecalhoPosCaixa">
-        <div class="cabecalho-pos-nome" id="cabecalhoPosNome">Rest &amp; Bar Parque São Caetano</div>
-        <div class="cabecalho-pos-frase" id="cabecalhoPosFrase">Tradição, sabor e conforto à mesa</div>
-      </div>
-    </div>
-  </details>
-
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🖼️</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Fotos do cabeçalho</span>
-        <span class="bloco-resumo">As fotos que rodam no topo do cardápio</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Estas fotos aparecem a rodar no topo do cardápio, por trás do nome do restaurante. Define a ordem, quantos segundos cada uma fica visível antes de passar para a seguinte (dissolvem suavemente entre si), e adiciona ou remove fotos.
-      </div>
-
-      <div id="listaFotos"></div>
-
-      <label for="novaFoto">Adicionar nova(s) foto(s) ao cabeçalho</label>
-      <input type="file" id="novaFoto" accept="image/*" multiple="">
-    </div>
-  </details>
-
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">📢</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — barra fixa</span>
-        <span class="bloco-resumo">Imagem de fundo na barra sempre visível no fundo do ecrã</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma imagem de fundo (de um anunciante) na barra fixa que fica sempre visível no fundo do ecrã, por baixo do texto de cima — ou deixá-la sem foto, só com o texto sobre fundo liso.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="fundoAtivo">
-        <label for="fundoAtivo">Mostrar imagem de publicidade na barra fixa</label>
-      </div>
-
-      <div class="linha-foto" id="linhaPublicidade" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaPublicidade" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomePublicidade">—</div>
+        <div class="campo">
+          <label>Ver dados no Firebase</label>
+          <p style="font-size: 0.85rem; color: var(--castanho-suave); margin: 8px 0;">Acede ao Firebase Console</p>
+          <a href="https://console.firebase.google.com/project/cardapio-parque-sao-caetano" target="_blank" class="btn">🔗 Firebase Console</a>
         </div>
       </div>
-
-      <label for="novaPublicidade">Substituir imagem ou vídeo de publicidade</label>
-      <input type="file" id="novaPublicidade" accept="image/*,video/mp4,video/webm">
-
-      <label for="fundoPubTamanho">Tamanho da imagem</label>
-      <div class="campo-numero">
-        <input type="range" id="fundoPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
-        <span id="fundoPubTamanhoValor">100%</span>
-      </div>
-
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
-      <div class="anuncio-pos-caixa" id="fundoPubPosCaixa">
-        <img id="fundoPubPosImg" class="anuncio-pos-img" src="" alt="">
-      </div>
-      <button type="button" class="btn-repor" id="fundoPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
-  </details>
 
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍷</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Vinho da Casa</span>
-        <span class="bloco-resumo">Foto no fundo do grupo "Vinho da Casa"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade (ex: "Vinho do Mês") no fundo do grupo "Vinho da Casa", dentro da secção de Vinhos &amp; Bebidas. Aparece sempre que o cliente abrir esse grupo, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="vinhoPubAtivo">
-        <label for="vinhoPubAtivo">Mostrar publicidade no grupo "Vinho da Casa"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaVinhoPub" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaVinhoPub" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeVinhoPub">—</div>
-        </div>
-      </div>
-
-      <label for="novaVinhoPub">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaVinhoPub" accept="image/*,video/mp4,video/webm">
-
-      <label for="vinhoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="vinhoPubTitulo" placeholder="Ex: Vinho do Mês — Almotriga">
-
-      <label for="vinhoPubSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="vinhoPubSubtitulo" placeholder="Ex: 20,00€ a garrafa">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🦞</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Entradas</span>
-        <span class="bloco-resumo">Foto no início da categoria "Entradas"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Entradas". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubEntradasAtivo">
-        <label for="catPubEntradasAtivo">Mostrar publicidade na categoria "Entradas"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubEntradas" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubEntradas" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubEntradas">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubEntradas">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubEntradas" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubEntradasTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubEntradasTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubEntradasSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubEntradasSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🥗</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Sopas e Saladas</span>
-        <span class="bloco-resumo">Foto no início da categoria "Sopas e Saladas"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Sopas e Saladas". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubSopasSaladasAtivo">
-        <label for="catPubSopasSaladasAtivo">Mostrar publicidade na categoria "Sopas e Saladas"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubSopasSaladas" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubSopasSaladas" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubSopasSaladas">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubSopasSaladas">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubSopasSaladas" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubSopasSaladasTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubSopasSaladasTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubSopasSaladasSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubSopasSaladasSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🔥</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Especialidades na Brasa</span>
-        <span class="bloco-resumo">Foto no início da categoria "Especialidades na Brasa"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Especialidades na Brasa". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubBrasaAtivo">
-        <label for="catPubBrasaAtivo">Mostrar publicidade na categoria "Especialidades na Brasa"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubBrasa" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubBrasa" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubBrasa">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubBrasa">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubBrasa" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubBrasaTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubBrasaTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubBrasaSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubBrasaSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍖</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Partilhados</span>
-        <span class="bloco-resumo">Foto no início da categoria "Partilhados"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Partilhados". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubPartilhadosAtivo">
-        <label for="catPubPartilhadosAtivo">Mostrar publicidade na categoria "Partilhados"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubPartilhados" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubPartilhados" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubPartilhados">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubPartilhados">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubPartilhados" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubPartilhadosTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubPartilhadosTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubPartilhadosSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubPartilhadosSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🧑‍🤝‍🧑</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Infantil</span>
-        <span class="bloco-resumo">Foto no início da categoria "Infantil"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Infantil". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubInfantilAtivo">
-        <label for="catPubInfantilAtivo">Mostrar publicidade na categoria "Infantil"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubInfantil" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubInfantil" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubInfantil">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubInfantil">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubInfantil" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubInfantilTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubInfantilTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubInfantilSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubInfantilSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍽️</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Pratos</span>
-        <span class="bloco-resumo">Foto no início da categoria "Pratos"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Pratos". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubIndividuaisAtivo">
-        <label for="catPubIndividuaisAtivo">Mostrar publicidade na categoria "Pratos"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubIndividuais" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubIndividuais" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubIndividuais">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubIndividuais">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubIndividuais" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubIndividuaisTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubIndividuaisTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubIndividuaisSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubIndividuaisSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🐟</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Peixe</span>
-        <span class="bloco-resumo">Foto no início da categoria "Peixe"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Peixe". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubPeixeAtivo">
-        <label for="catPubPeixeAtivo">Mostrar publicidade na categoria "Peixe"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubPeixe" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubPeixe" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubPeixe">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubPeixe">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubPeixe" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubPeixeTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubPeixeTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubPeixeSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubPeixeSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🥩</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Carne</span>
-        <span class="bloco-resumo">Foto no início da categoria "Carne"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Carne". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubCarneAtivo">
-        <label for="catPubCarneAtivo">Mostrar publicidade na categoria "Carne"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubCarne" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubCarne" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubCarne">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubCarne">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubCarne" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubCarneTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubCarneTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubCarneSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubCarneSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🥦</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Vegetariana</span>
-        <span class="bloco-resumo">Foto no início da categoria "Vegetariana"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Vegetariana". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubVegetarianaAtivo">
-        <label for="catPubVegetarianaAtivo">Mostrar publicidade na categoria "Vegetariana"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubVegetariana" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubVegetariana" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubVegetariana">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubVegetariana">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubVegetariana" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubVegetarianaTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubVegetarianaTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubVegetarianaSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubVegetarianaSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍿</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Snacks</span>
-        <span class="bloco-resumo">Foto no início da categoria "Snacks"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Snacks". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubSnacksAtivo">
-        <label for="catPubSnacksAtivo">Mostrar publicidade na categoria "Snacks"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubSnacks" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubSnacks" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubSnacks">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubSnacks">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubSnacks" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubSnacksTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubSnacksTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubSnacksSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubSnacksSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🥪</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Sandes</span>
-        <span class="bloco-resumo">Foto no início da categoria "Sandes"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Sandes". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubSandesAtivo">
-        <label for="catPubSandesAtivo">Mostrar publicidade na categoria "Sandes"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubSandes" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubSandes" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubSandes">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubSandes">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubSandes" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubSandesTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubSandesTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubSandesSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubSandesSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details>
-
-<details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍲</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — Domingo</span>
-        <span class="bloco-resumo">Foto no início da categoria "Domingo"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no início da categoria "Domingo". Aparece sempre que o cliente abrir esta categoria, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="catPubDomingoAtivo">
-        <label for="catPubDomingoAtivo">Mostrar publicidade na categoria "Domingo"</label>
-      </div>
-
-      <div class="linha-foto" id="linhaCatPubDomingo" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaCatPubDomingo" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeCatPubDomingo">—</div>
-        </div>
-      </div>
-
-      <label for="novaCatPubDomingo">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaCatPubDomingo" accept="image/*,video/mp4,video/webm">
-
-      <label for="catPubDomingoTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="catPubDomingoTitulo" placeholder="Ex: Prato em destaque">
-
-      <label for="catPubDomingoSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="catPubDomingoSubtitulo" placeholder="Ex: Só esta semana">
-    </div>
-  </details><details class="bloco-editor"><summary><span class="bloco-icone">🦞</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Entradas</span><span class="bloco-resumo">Foto grande no topo da categoria "Entradas"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Entradas" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroEntradas"><img class="miniatura" id="miniaturaCatHeroEntradas"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroEntradas"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroEntradas" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🥗</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Sopas e Saladas</span><span class="bloco-resumo">Foto grande no topo da categoria "Sopas e Saladas"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Sopas e Saladas" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroSopasSaladas"><img class="miniatura" id="miniaturaCatHeroSopasSaladas"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroSopasSaladas"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroSopasSaladas" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🔥</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Especialidades na Brasa</span><span class="bloco-resumo">Foto grande no topo da categoria "Especialidades na Brasa"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Especialidades na Brasa" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroBrasa"><img class="miniatura" id="miniaturaCatHeroBrasa"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroBrasa"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroBrasa" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🍖</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Partilhados</span><span class="bloco-resumo">Foto grande no topo da categoria "Partilhados"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Partilhados" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroPartilhados"><img class="miniatura" id="miniaturaCatHeroPartilhados"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroPartilhados"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroPartilhados" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🧑‍🤝‍🧑</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Infantil</span><span class="bloco-resumo">Foto grande no topo da categoria "Infantil"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Infantil" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroInfantil"><img class="miniatura" id="miniaturaCatHeroInfantil"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroInfantil"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroInfantil" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🍽️</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Pratos</span><span class="bloco-resumo">Foto grande no topo da categoria "Pratos"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Pratos" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroIndividuais"><img class="miniatura" id="miniaturaCatHeroIndividuais"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroIndividuais"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroIndividuais" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🐟</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Peixe</span><span class="bloco-resumo">Foto grande no topo da categoria "Peixe"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Peixe" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroPeixe"><img class="miniatura" id="miniaturaCatHeroPeixe"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroPeixe"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroPeixe" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🥩</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Carne</span><span class="bloco-resumo">Foto grande no topo da categoria "Carne"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Carne" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroCarne"><img class="miniatura" id="miniaturaCatHeroCarne"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroCarne"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroCarne" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🥦</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Vegetariana</span><span class="bloco-resumo">Foto grande no topo da categoria "Vegetariana"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Vegetariana" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroVegetariana"><img class="miniatura" id="miniaturaCatHeroVegetariana"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroVegetariana"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroVegetariana" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🍿</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Snacks</span><span class="bloco-resumo">Foto grande no topo da categoria "Snacks"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Snacks" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroSnacks"><img class="miniatura" id="miniaturaCatHeroSnacks"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroSnacks"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroSnacks" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🥪</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Sandes</span><span class="bloco-resumo">Foto grande no topo da categoria "Sandes"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Sandes" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroSandes"><img class="miniatura" id="miniaturaCatHeroSandes"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroSandes"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroSandes" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🍲</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Domingo</span><span class="bloco-resumo">Foto grande no topo da categoria "Domingo"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Domingo" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroDomingo"><img class="miniatura" id="miniaturaCatHeroDomingo"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroDomingo"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroDomingo" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🍷</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Vinhos &amp; Bebidas</span><span class="bloco-resumo">Foto grande no topo da categoria "Vinhos &amp; Bebidas"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Vinhos &amp; Bebidas" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroVinhos"><img class="miniatura" id="miniaturaCatHeroVinhos"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroVinhos"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroVinhos" accept="image/*"></div></details><details class="bloco-editor"><summary><span class="bloco-icone">🎮</span><span class="bloco-titulos"><span class="bloco-titulo">Foto da categoria — Jogos</span><span class="bloco-resumo">Foto grande no topo da categoria "Jogos"</span></span><span class="bloco-seta"></span></summary><div class="bloco-conteudo"><div class="subtitulo">Esta é a foto principal mostrada no topo da categoria "Jogos" no cardápio. Enquanto não carregares uma foto, aparece um ícone.</div><div class="linha-foto" id="linhaCatHeroJogosMenu"><img class="miniatura" id="miniaturaCatHeroJogosMenu"><div class="linha-foto-info"><div class="linha-foto-nome" id="nomeCatHeroJogosMenu"></div></div></div><label>Nova foto</label><input type="file" id="novaCatHeroJogosMenu" accept="image/*"></div></details>
-
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🍾</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — secção Vinhos &amp; Bebidas</span>
-        <span class="bloco-resumo">Foto no fundo da secção, abaixo do grupo "Sangrias"</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Podes mostrar uma foto de publicidade no espaço em branco que fica no fundo da secção de Vinhos &amp; Bebidas, logo abaixo do grupo "Sangrias". Aparece sempre que o cliente abrir essa secção, sem horários.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="vinhosSeccaoPubAtivo">
-        <label for="vinhosSeccaoPubAtivo">Mostrar publicidade no fundo da secção de Vinhos &amp; Bebidas</label>
-      </div>
-
-      <div class="linha-foto" id="linhaVinhosSeccaoPub" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaVinhosSeccaoPub" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeVinhosSeccaoPub">—</div>
-        </div>
-      </div>
-
-      <label for="novaVinhosSeccaoPub">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaVinhosSeccaoPub" accept="image/*,video/mp4,video/webm">
-
-      <label for="vinhosSeccaoPubTitulo" style="margin-top:10px;">Título (aparece a negrito sobre a foto)</label>
-      <input type="text" id="vinhosSeccaoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
-
-      <label for="vinhosSeccaoPubSubtitulo">Linha 2 (opcional)</label>
-      <input type="text" id="vinhosSeccaoPubSubtitulo">
-
-      <label for="vinhosSeccaoPubLinha3">Linha 3 (opcional)</label>
-      <input type="text" id="vinhosSeccaoPubLinha3">
-
-      <label for="vinhosSeccaoPubLinha4">Linha 4 (opcional)</label>
-      <input type="text" id="vinhosSeccaoPubLinha4">
-    </div>
-  </details>
-
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">📄</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — fim da página</span>
-        <span class="bloco-resumo">Foto de patrocínio agendada, no rodapé com morada e telefone</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Este é o rodapé com o nome, morada e telefone que aparece quando se faz scroll até ao fim do cardápio. Podes pôr aí uma foto de patrocínio que aparece a cobrir esse espaço de vez em quando, e tu decides os horários, o intervalo e quantas vezes por dia.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="pubFimAtivo">
-        <label for="pubFimAtivo">Ativar publicidade no fim da página</label>
-      </div>
-
-      <div class="bloco-especial">
-        <div class="linha-horas">
-          <div>
-            <label for="pubFimInicio">Só entre</label>
-            <input type="time" id="pubFimInicio">
-          </div>
-          <div>
-            <label for="pubFimFim">e</label>
-            <input type="time" id="pubFimFim">
+    <!-- TAB: STATS -->
+    <div id="tab-stats" class="tab-content">
+      <div class="secao">
+        <h2>📊 Estatísticas de Tráfego</h2>
+        <p style="font-size: 0.9rem; color: var(--castanho-suave); margin-bottom: 15px;">Dados recolhidos automaticamente</p>
+
+        <div id="statsContainer">
+          <div class="stats">
+            <strong>Carregando estatísticas...</strong>
           </div>
         </div>
 
-        <label for="pubFimIntervalo">De quantos em quantos minutos aparece</label>
-        <div class="campo-numero">
-          <input type="number" id="pubFimIntervalo" min="1" max="240" step="1">
-          <span>minutos</span>
-        </div>
-
-        <label for="pubFimDuracao">Quantos segundos fica visível cada vez</label>
-        <div class="campo-numero">
-          <input type="number" id="pubFimDuracao" min="1" max="60" step="1">
-          <span>segundos</span>
-        </div>
-
-        <label for="pubFimMax">Máximo de vezes por dia</label>
-        <div class="campo-numero">
-          <input type="number" id="pubFimMax" min="0" max="200" step="1">
-          <span>(0 = sem limite)</span>
-        </div>
-        <div class="subtitulo" style="margin:6px 0 0; font-size:0.76rem;">
-          Nota: esta contagem é feita no telemóvel/computador de cada pessoa que visita o cardápio (não há um contador central), por isso serve para não repetir demasiadas vezes ao mesmo cliente, não como contagem exata de exibições.
-        </div>
+        <button class="btn" onclick="recarregarStats()">🔄 Atualizar</button>
       </div>
-
-      <label for="novaPubFim" style="margin-top:16px;">Foto do patrocínio</label>
-      <input type="file" id="novaPubFim" accept="image/*,video/mp4,video/webm">
-      <div class="pub-editor-dica" id="pubFimNomeFicheiro" style="margin:4px 0 0;">Ficheiro atual: —</div>
-
-      <label for="pubFimPubTamanho">Tamanho da imagem</label>
-      <div class="campo-numero">
-        <input type="range" id="pubFimPubTamanho" min="0.5" max="2" step="0.05" value="1" style="flex:1;">
-        <span id="pubFimPubTamanhoValor">100%</span>
-      </div>
-
-      <div class="pub-editor-vazio" id="pubFimVazio">Ainda não há foto. Escolhe uma acima.</div>
-      <div class="subtitulo" style="margin-top:10px;">Pré-visualização (arrasta a imagem para a reposicionares):</div>
-      <div class="anuncio-pos-caixa" id="pubFimPubPosCaixa">
-        <img id="pubFimPubPosImg" class="anuncio-pos-img" src="" alt="">
-      </div>
-      <button type="button" class="btn-repor" id="pubFimPubReporPos" style="margin-top:8px;">Repor predefinição</button>
     </div>
-  </details>
 
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">🎮</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Publicidade — depois de um jogo</span>
-        <span class="bloco-resumo">Popup que aparece no fim do Jogo da Velha, Forca ou Adivinhas</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div class="subtitulo" style="margin:0 0 10px;">
-        Sempre que um cliente termina uma partida (Jogo da Velha, Forca ou Adivinhas), aparece um popup por alguns segundos — só se carregares aqui uma foto e ativares a opção abaixo. Se não ativares, não aparece nenhum popup no fim dos jogos.
-      </div>
-
-      <div class="check-ativar" style="margin-top:0;">
-        <input type="checkbox" id="jogoPubAtivo">
-        <label for="jogoPubAtivo">Mostrar publicidade após os jogos</label>
-      </div>
-
-      <div class="linha-foto" id="linhaJogoPub" style="margin-top:10px;">
-        <img class="miniatura" id="miniaturaJogoPub" src="" alt="">
-        <div class="linha-foto-info">
-          <div class="linha-foto-nome" id="nomeJogoPub">—</div>
-        </div>
-      </div>
-
-      <label for="novaJogoPub">Substituir foto ou vídeo da publicidade</label>
-      <input type="file" id="novaJogoPub" accept="image/*,video/mp4,video/webm">
-
-      <label for="jogoPubTitulo" style="margin-top:10px;">Título</label>
-      <input type="text" id="jogoPubTitulo" placeholder="Ex: Peça a nossa carta especial">
-
-      <label for="jogoPubSubtitulo">Texto secundário (opcional)</label>
-      <input type="text" id="jogoPubSubtitulo">
+    <div style="margin-top: 40px; padding: 20px; background: var(--bege); border-radius: 12px; text-align: center;">
+      <p style="font-size: 0.9rem; color: var(--castanho-suave);">
+        Última atualização: <span id="lastUpdate">—</span><br>
+        <a href="cardapio.html" style="color: var(--dourado); text-decoration: none; font-weight: 600;">← Voltar ao cardápio</a>
+      </p>
     </div>
-  </details>
-
-  <details class="bloco-editor">
-    <summary>
-      <span class="bloco-icone">📊</span>
-      <span class="bloco-titulos">
-        <span class="bloco-titulo">Estatísticas</span>
-        <span class="bloco-resumo">Visitas ao cardápio e impressões da publicidade do rodapé</span>
-      </span>
-      <span class="bloco-seta">▸</span>
-    </summary>
-    <div class="bloco-conteudo">
-      <div id="estatisticasCaixa" style="font-size:0.85rem; color:var(--castanho-suave); line-height:1.7;">A carregar…</div>
-      <button type="button" class="acao carregar" id="btnAtualizarEstatisticas" style="margin-top:10px; width:100%;">Atualizar estatísticas</button>
-    </div>
-  </details>
-
-  <div class="preview-titulo">Pré-visualização</div>
-  <div class="preview">
-    <div class="p-negrito" id="pvLinha1">Contamos contigo!</div>
-    <div class="p-linha" id="pvLinha2">Terça a Domingo — Almoço e Jantar</div>
-    <div class="p-linha" id="pvLinha3">Reservas: 962 202 622</div>
-    <div class="p-linha" id="pvLinha4">Avenida de São Caetano, nº17</div>
   </div>
 
-  <div class="botoes">
-    <button type="button" class="acao carregar" id="btnCarregar">Carregar texto atual</button>
-    <button type="button" class="acao guardar" id="btnGuardar">Guardar alterações</button>
-  </div>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script>
+    const CARDAPIO_URL = 'cardapio.html';
+    const CATEGORIAS = [
+      { id: 'entradas', nome: 'Entradas' },
+      { id: 'sopas-saladas', nome: 'Sopas e Saladas' },
+      { id: 'brasa', nome: 'Especialidades na Brasa' },
+      { id: 'partilhados', nome: 'Partilhados' },
+      { id: 'infantil', nome: 'Infantil' },
+      { id: 'individuais', nome: 'Pratos Individuais' },
+      { id: 'peixe', nome: 'Peixe' },
+      { id: 'carne', nome: 'Carne' },
+      { id: 'vegetariana', nome: 'Vegetariana' },
+      { id: 'snacks', nome: 'Snacks' },
+      { id: 'sandes', nome: 'Sandes' },
+      { id: 'domingo', nome: 'Domingo' }
+    ];
 
-  <div class="estado" id="estado"></div>
-</div>
-
-<script>
-  const REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
-  const FILE_PATH = 'cardapio.html';
-  // Mesma base de dados Firebase usada pelo Jogo do Stop e pelas estatísticas no cardapio.html.
-  const FIREBASE_DB_URL = 'https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com';
-  const API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + FILE_PATH;
-  const EDITOR_FILE_PATH = 'editar.html';
-  const EDITOR_API_URL = 'https://api.github.com/repos/' + REPO + '/contents/' + EDITOR_FILE_PATH;
-  // Marca de versão desta página. Muda sempre que este ficheiro for publicado
-  // de novo, para conseguirmos detetar (ver verificarPaginaAtualizada) se uma
-  // aba foi deixada aberta há muito tempo com uma versão antiga do código —
-  // isso já causou, no passado, que alterações fossem apagadas sem querer.
-  const EDITOR_VERSION = '2026-07-12-01';
-
-  const tokenInput = document.getElementById('token');
-  const lembrarInput = document.getElementById('lembrar');
-  const estadoEl = document.getElementById('estado');
-  const btnCarregar = document.getElementById('btnCarregar');
-  const btnGuardar = document.getElementById('btnGuardar');
-  const campos = {
-    1: document.getElementById('linha1'),
-    2: document.getElementById('linha2'),
-    3: document.getElementById('linha3'),
-    4: document.getElementById('linha4'),
-  };
-  const especialAtivoInput = document.getElementById('especialAtivo');
-  const horaInicioInput = document.getElementById('horaInicio');
-  const horaFimInput = document.getElementById('horaFim');
-  const camposEspecial = {
-    1: document.getElementById('especial1'),
-    2: document.getElementById('especial2'),
-    3: document.getElementById('especial3'),
-    4: document.getElementById('especial4'),
-  };
-  const listaFotosEl = document.getElementById('listaFotos');
-  const novaFotoInput = document.getElementById('novaFoto');
-  let fotosState = [];
-  const novaPublicidadeInput = document.getElementById('novaPublicidade');
-  const miniaturaPublicidadeEl = document.getElementById('miniaturaPublicidade');
-  const nomePublicidadeEl = document.getElementById('nomePublicidade');
-  const fundoAtivoInput = document.getElementById('fundoAtivo');
-  let publicidadeState = null;
-  const novaVinhoPubInput = document.getElementById('novaVinhoPub');
-  const miniaturaVinhoPubEl = document.getElementById('miniaturaVinhoPub');
-  const nomeVinhoPubEl = document.getElementById('nomeVinhoPub');
-  const vinhoPubAtivoInput = document.getElementById('vinhoPubAtivo');
-  const vinhoPubTituloInput = document.getElementById('vinhoPubTitulo');
-  const vinhoPubSubtituloInput = document.getElementById('vinhoPubSubtitulo');
-  let vinhoPubState = null;
-  const novaVinhosSeccaoPubInput = document.getElementById('novaVinhosSeccaoPub');
-  const miniaturaVinhosSeccaoPubEl = document.getElementById('miniaturaVinhosSeccaoPub');
-  const nomeVinhosSeccaoPubEl = document.getElementById('nomeVinhosSeccaoPub');
-  const vinhosSeccaoPubAtivoInput = document.getElementById('vinhosSeccaoPubAtivo');
-  const vinhosSeccaoPubTituloInput = document.getElementById('vinhosSeccaoPubTitulo');
-  const vinhosSeccaoPubSubtituloInput = document.getElementById('vinhosSeccaoPubSubtitulo');
-  const vinhosSeccaoPubLinha3Input = document.getElementById('vinhosSeccaoPubLinha3');
-  const vinhosSeccaoPubLinha4Input = document.getElementById('vinhosSeccaoPubLinha4');
-  let vinhosSeccaoPubState = null;
-  const novaJogoPubInput = document.getElementById('novaJogoPub');
-  const miniaturaJogoPubEl = document.getElementById('miniaturaJogoPub');
-  const nomeJogoPubEl = document.getElementById('nomeJogoPub');
-  const jogoPubAtivoInput = document.getElementById('jogoPubAtivo');
-  const jogoPubTituloInput = document.getElementById('jogoPubTitulo');
-  const jogoPubSubtituloInput = document.getElementById('jogoPubSubtitulo');
-  let jogoPubState = null;
-  const pubFimAtivoInput = document.getElementById('pubFimAtivo');
-  const pubFimInicioInput = document.getElementById('pubFimInicio');
-  const pubFimFimInput = document.getElementById('pubFimFim');
-  const pubFimIntervaloInput = document.getElementById('pubFimIntervalo');
-  const pubFimDuracaoInput = document.getElementById('pubFimDuracao');
-  const pubFimMaxInput = document.getElementById('pubFimMax');
-  const novaPubFimInput = document.getElementById('novaPubFim');
-  const pubFimVazioEl = document.getElementById('pubFimVazio');
-  const pubFimNomeFicheiroEl = document.getElementById('pubFimNomeFicheiro');
-  let pubFimState = null; // { caminho, novoFicheiro, previewUrl, nomePreview }
-  const previews = {
-    1: document.getElementById('pvLinha1'),
-    2: document.getElementById('pvLinha2'),
-    3: document.getElementById('pvLinha3'),
-    4: document.getElementById('pvLinha4'),
-  };
-
-  const cabecalhoNomeInput = document.getElementById('cabecalhoNome');
-  const cabecalhoFraseInput = document.getElementById('cabecalhoFrase');
-  const cabecalhoFonteInput = document.getElementById('cabecalhoFonte');
-  const cabecalhoCorInput = document.getElementById('cabecalhoCor');
-  const cabecalhoReporBtn = document.getElementById('cabecalhoRepor');
-  const cabecalhoTamanhoInput = document.getElementById('cabecalhoTamanho');
-  const cabecalhoTamanhoValorEl = document.getElementById('cabecalhoTamanhoValor');
-  const cabecalhoPosCaixaEl = document.getElementById('cabecalhoPosCaixa');
-  const cabecalhoPosNomeEl = document.getElementById('cabecalhoPosNome');
-  const cabecalhoPosFraseEl = document.getElementById('cabecalhoPosFrase');
-  const COR_CABECALHO_PREDEFINIDA = '#ffffff';
-  const TAMANHO_NOME_PREDEFINIDO = 1.7;
-  const TAMANHO_FRASE_PREDEFINIDO = 0.82;
-  let cabecalhoPosState = { nome: { x: 0, y: 0 }, frase: { x: 0, y: 0 } };
-
-  function extrairEstiloPorId(html, id){
-    const regexTag = new RegExp('<[a-zA-Z][a-zA-Z0-9]*[^>]*\\bid="' + id + '"[^>]*>');
-    const m = html.match(regexTag);
-    if(!m) return '';
-    const styleM = m[0].match(/style="([^"]*)"/);
-    return styleM ? styleM[1] : '';
-  }
-
-  function substituirEstiloPorId(html, id, novoEstilo){
-    const regexTag = new RegExp('<[a-zA-Z][a-zA-Z0-9]*[^>]*\\bid="' + id + '"[^>]*>');
-    const m = html.match(regexTag);
-    if(!m) return html;
-    const novaTag = /style="[^"]*"/.test(m[0]) ? m[0].replace(/style="[^"]*"/, 'style="' + novoEstilo + '"') : m[0];
-    return html.replace(m[0], novaTag);
-  }
-
-  function construirEstiloCabecalho(fonte, cor){
-    const partes = [];
-    if(fonte) partes.push("font-family:'" + fonte + "'");
-    if(cor && cor.toLowerCase() !== COR_CABECALHO_PREDEFINIDA) partes.push('color:' + cor);
-    return partes.join('; ');
-  }
-
-  function textoParaHtmlComQuebras(texto){
-    return (texto || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
-  }
-  function htmlComQuebrasParaTexto(html){
-    return (html || '')
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&amp;/g, '&')
-      .trim();
-  }
-  function extrairLinhaComQuebras(html, id){
-    const regex = new RegExp('id="' + id + '">([\\s\\S]*?)<\\/div>');
-    const m = html.match(regex);
-    return m ? htmlComQuebrasParaTexto(m[1]) : '';
-  }
-  function substituirLinhaComQuebras(html, id, novoTexto){
-    const conteudo = textoParaHtmlComQuebras(novoTexto);
-    const regex = new RegExp('(id="' + id + '">)([\\s\\S]*?)(<\\/div>)');
-    return html.replace(regex, '$1' + conteudo + '$3');
-  }
-
-  function extrairInfoEstiloElemento(estilo){
-    const fonteM = estilo.match(/font-family:\s*'([^']+)'/);
-    const corM = estilo.match(/color:\s*(#[0-9a-fA-F]{3,8})/);
-    const tamanhoM = estilo.match(/font-size:\s*([\d.]+)rem/);
-    const transM = estilo.match(/transform:\s*translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/);
-    return {
-      fonte: fonteM ? fonteM[1] : '',
-      cor: corM ? corM[1] : '',
-      tamanho: tamanhoM ? parseFloat(tamanhoM[1]) : null,
-      x: transM ? parseFloat(transM[1]) : 0,
-      y: transM ? parseFloat(transM[2]) : 0
-    };
-  }
-
-  function construirEstiloElemento(fonte, cor, tamanhoRem, tamanhoPredefinido, offsetX, offsetY){
-    const partes = [];
-    if(fonte) partes.push("font-family:'" + fonte + "'");
-    if(cor && cor.toLowerCase() !== COR_CABECALHO_PREDEFINIDA) partes.push('color:' + cor);
-    if(Math.abs(tamanhoRem - tamanhoPredefinido) > 0.001) partes.push('font-size:' + tamanhoRem.toFixed(2) + 'rem');
-    if(Math.round(offsetX) !== 0 || Math.round(offsetY) !== 0) partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px)');
-    return partes.join('; ');
-  }
-
-  function aplicarPosicaoPreview(){
-    cabecalhoPosNomeEl.style.transform = 'translate(' + cabecalhoPosState.nome.x + 'px, ' + cabecalhoPosState.nome.y + 'px)';
-    cabecalhoPosFraseEl.style.transform = 'translate(' + cabecalhoPosState.frase.x + 'px, ' + cabecalhoPosState.frase.y + 'px)';
-  }
-
-  function tornarArrastavel(el, chave){
-    let arrastando = false;
-    let inicio = { x: 0, y: 0 };
-    let posInicio = { x: 0, y: 0 };
-    el.addEventListener('pointerdown', (e) => {
-      arrastando = true;
-      el.classList.add('arrastando');
-      inicio = { x: e.clientX, y: e.clientY };
-      posInicio = { x: cabecalhoPosState[chave].x, y: cabecalhoPosState[chave].y };
-      el.setPointerCapture(e.pointerId);
-    });
-    el.addEventListener('pointermove', (e) => {
-      if(!arrastando) return;
-      const dx = e.clientX - inicio.x;
-      const dy = e.clientY - inicio.y;
-      cabecalhoPosState[chave] = { x: posInicio.x + dx, y: posInicio.y + dy };
-      aplicarPosicaoPreview();
-    });
-    function terminar(){ arrastando = false; el.classList.remove('arrastando'); }
-    el.addEventListener('pointerup', terminar);
-    el.addEventListener('pointercancel', terminar);
-    el.addEventListener('pointerleave', terminar);
-  }
-  tornarArrastavel(cabecalhoPosNomeEl, 'nome');
-  tornarArrastavel(cabecalhoPosFraseEl, 'frase');
-
-  function atualizarPreviewCabecalho(){
-    cabecalhoPosNomeEl.innerHTML = textoParaHtmlComQuebras(cabecalhoNomeInput.value);
-    cabecalhoPosFraseEl.textContent = cabecalhoFraseInput.value || '';
-    const fonte = cabecalhoFonteInput.value;
-    const cor = cabecalhoCorInput.value;
-    const fontFamily = fonte ? ("'" + fonte + "', sans-serif") : "'Fredoka', sans-serif";
-    const tamanhoNome = parseFloat(cabecalhoTamanhoInput.value) || TAMANHO_NOME_PREDEFINIDO;
-    const tamanhoFrase = Math.round(tamanhoNome * (TAMANHO_FRASE_PREDEFINIDO / TAMANHO_NOME_PREDEFINIDO) * 100) / 100;
-    cabecalhoPosNomeEl.style.fontFamily = fontFamily;
-    cabecalhoPosFraseEl.style.fontFamily = fontFamily;
-    cabecalhoPosNomeEl.style.color = cor;
-    cabecalhoPosFraseEl.style.color = cor;
-    cabecalhoPosNomeEl.style.fontSize = tamanhoNome + 'rem';
-    cabecalhoPosFraseEl.style.fontSize = tamanhoFrase + 'rem';
-    cabecalhoTamanhoValorEl.textContent = tamanhoNome.toFixed(1) + 'rem';
-  }
-  cabecalhoTamanhoInput.addEventListener('input', atualizarPreviewCabecalho);
-  [cabecalhoNomeInput, cabecalhoFraseInput, cabecalhoFonteInput, cabecalhoCorInput].forEach(el => {
-    el.addEventListener('input', atualizarPreviewCabecalho);
-  });
-  cabecalhoReporBtn.addEventListener('click', () => {
-    cabecalhoFonteInput.value = '';
-    cabecalhoCorInput.value = COR_CABECALHO_PREDEFINIDA;
-    cabecalhoTamanhoInput.value = TAMANHO_NOME_PREDEFINIDO;
-    cabecalhoPosState = { nome: { x: 0, y: 0 }, frase: { x: 0, y: 0 } };
-    atualizarPreviewCabecalho();
-    aplicarPosicaoPreview();
-  });
-
-  let shaAtual = null;
-  let conteudoOriginal = null;
-
-  // ---- Lembrar token neste aparelho ----
-  const tokenGuardado = localStorage.getItem('cardapioEditorToken');
-  if(tokenGuardado){
-    tokenInput.value = tokenGuardado;
-  } else {
-    lembrarInput.checked = false;
-  }
-
-  document.getElementById('mostrarToken').addEventListener('click', () => {
-    tokenInput.type = tokenInput.type === 'password' ? 'text' : 'password';
-  });
-
-  function setEstado(msg, tipo){
-    estadoEl.textContent = msg;
-    estadoEl.className = 'estado mostrar ' + tipo;
-  }
-
-  function atualizarPreview(){
-    for(const n of [1,2,3,4]){
-      previews[n].textContent = campos[n].value || '';
+    function abrirTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('ativo'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('ativo'));
+      document.getElementById('tab-' + tab).classList.add('ativo');
+      event.target.classList.add('ativo');
     }
-  }
-  Object.values(campos).forEach(c => c.addEventListener('input', atualizarPreview));
 
-  // ---- Codificação UTF-8 segura (emojis, acentos) ----
-  function utf8ParaBase64(str){
-    const bytes = new TextEncoder().encode(str);
-    let binario = '';
-    bytes.forEach(b => binario += String.fromCharCode(b));
-    return btoa(binario);
-  }
-  function base64ParaUtf8(base64){
-    const binario = atob(base64.replace(/\n/g, ''));
-    const bytes = new Uint8Array(binario.length);
-    for(let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
-    return new TextDecoder('utf-8').decode(bytes);
-  }
-
-  function extrairLinha(html, id){
-    const regex = new RegExp('id="' + id + '">([\\s\\S]*?)<\\/div>');
-    const m = html.match(regex);
-    return m ? m[1].trim() : '';
-  }
-
-  function substituirLinha(html, id, novoTexto){
-    const escapado = novoTexto
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    const regex = new RegExp('(id="' + id + '">)([\\s\\S]*?)(<\\/div>)');
-    return html.replace(regex, '$1' + escapado + '$3');
-  }
-
-  function extrairAtributo(html, nome){
-    const regex = new RegExp(nome + '="([^"]*)"');
-    const m = html.match(regex);
-    return m ? m[1] : '';
-  }
-
-  function substituirAtributo(html, nome, novoValor){
-    const escapado = String(novoValor)
-      .replace(/&/g, '&amp;')
-      .replace(/"/g, '&quot;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-    const regex = new RegExp('(' + nome + '=")([^"]*)(")');
-    return html.replace(regex, '$1' + escapado + '$3');
-  }
-
-  // ---- Publicidade: deteção e construção de foto OU vídeo ----
-  // Vídeos usam data-src (não src) para carregarem só quando ficam visíveis — ver o
-  // IntersectionObserver em cardapio.html. Isto mantém a app leve mesmo com vídeos ativos.
-  function ficheiroEhVideo(file){
-    return !!file && file.type.startsWith('video/');
-  }
-  function extrairMediaDoInner(innerHtml){
-    const videoM = innerHtml.match(/<video[^>]*><\/video>/);
-    if(videoM){
-      const srcM = videoM[0].match(/data-src="([^"]*)"/);
-      return { tipo: 'video', caminho: srcM ? srcM[1] : '' };
+    function previewFoto(inputId, previewId) {
+      const url = document.getElementById(inputId).value;
+      const img = document.getElementById(previewId);
+      img.src = url;
+      img.onerror = () => img.src = '';
     }
-    const imgM = innerHtml.match(/<img[^>]*>/);
-    if(imgM){
-      const srcM = imgM[0].match(/src="([^"]*)"/);
-      return { tipo: 'foto', caminho: srcM ? srcM[1] : '' };
+
+    function guardarFotosHeader() {
+      const foto1 = document.getElementById('headerFoto1').value;
+      const foto1Duracao = document.getElementById('headerFoto1Duracao').value;
+      const foto2 = document.getElementById('headerFoto2').value;
+      const foto2Duracao = document.getElementById('headerFoto2Duracao').value;
+
+      const html = `<img src="${foto1}" data-duracao="${foto1Duracao}" class="ativa" alt="Rest & Bar Parque São Caetano">
+    <img src="${foto2}" data-duracao="${foto2Duracao}" alt="Rest & Bar Parque São Caetano">`;
+
+      alert(`Copia isto para o cardapio.html na tag <div class="header-fotos" id="headerFotos">:\n\n${html}`);
+      console.log(html);
     }
-    return null;
-  }
-  function construirMediaTag(pub, atributosExtra){
-    const extra = atributosExtra || '';
-    if(pub.tipo === 'video'){
-      return '<video data-src="' + pub.caminho + '" muted loop playsinline preload="none"' + extra + '></video>';
+
+    function gerarFotoCategorias() {
+      const container = document.getElementById('fotoCategorias');
+      container.innerHTML = CATEGORIAS.map(cat => `
+        <div class="campo">
+          <label>${cat.nome} — URL da imagem</label>
+          <input type="text" class="foto-cat-url" data-cat="${cat.id}" value="">
+          <img class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto(this.previousElementSibling.previousElementSibling, this.previousElementSibling)">Pré-visualizar</button>
+        </div>
+      `).join('');
     }
-    return '<img src="' + pub.caminho + '" alt="Publicidade"' + extra + '>';
-  }
-  function renderizarMiniaturaOuVideo(pub, imgEl, nomeEl){
-    if(!pub){
-      imgEl.style.display = '';
-      imgEl.src = '';
-      nomeEl.textContent = '—';
-      return;
+
+    function guardarFotosCategoria() {
+      alert('As fotos de categorias editam-se por upload direto no cardapio.html.\n\nCada categoria tem um <img id="catHero[Nome]Img">');
     }
-    if(pub.tipo === 'video'){
-      imgEl.style.display = 'none';
-      imgEl.src = '';
-      nomeEl.textContent = '🎬 ' + (pub.nomePreview || (pub.caminho ? pub.caminho.split('/').pop() : '—'));
-      return;
+
+    function gerarPubCategorias() {
+      const container = document.getElementById('pubCategorias');
+      container.innerHTML = CATEGORIAS.map(cat => `
+        <div class="campo">
+          <label><input type="checkbox" class="pub-cat-ativo" data-cat="${cat.id}" checked> ${cat.nome}</label>
+          <input type="text" class="pub-cat-img" data-cat="${cat.id}" placeholder="URL da imagem" value="">
+          <img class="foto-preview" src="" alt="">
+          <button class="btn btn-pequeno" onclick="previewFoto(this.previousElementSibling.previousElementSibling, this.previousElementSibling)">Pré-visualizar</button>
+        </div>
+      `).join('');
     }
-    imgEl.style.display = '';
-    const src = pub.previewUrl || (pub.caminho ? ('https://raw.githubusercontent.com/' + REPO + '/main/' + pub.caminho) : '');
-    imgEl.src = src;
-    nomeEl.textContent = pub.nomePreview || pub.caminho || '—';
-  }
 
-  // ---- Fotos do cabeçalho ----
-  function extrairFotos(html){
-    const regexBloco = /<div class="header-fotos" id="headerFotos">([\s\S]*?)<\/div>/;
-    const m = html.match(regexBloco);
-    if(!m) return [];
-    const imgTags = m[1].match(/<img[^>]*>/g) || [];
-    return imgTags.map(tag => {
-      const srcM = tag.match(/src="([^"]*)"/);
-      const durM = tag.match(/data-duracao="([^"]*)"/);
-      const src = srcM ? srcM[1] : '';
-      return {
-        caminho: src,
-        duracao: durM ? (parseFloat(durM[1]) || 3) : 3,
-        novoFicheiro: null,
-        previewUrl: null,
-        nomePreview: src.split('/').pop()
-      };
-    });
-  }
-
-  function construirImgsHtml(lista){
-    return lista.map((f, i) => {
-      const ativa = i === 0 ? ' class="ativa"' : '';
-      return '\n    <img src="' + f.caminho + '" data-duracao="' + f.duracao + '"' + ativa + ' alt="Rest & Bar Parque São Caetano">';
-    }).join('') + '\n  ';
-  }
-
-  function substituirFotosImgs(html, novoInnerHTML){
-    const regex = /(<div class="header-fotos" id="headerFotos">)([\s\S]*?)(<\/div>)/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  // ---- Texto e estilo do cabeçalho ----
-  function extrairEstiloCabecalhoAtual(html){
-    const estilo = extrairEstiloPorId(html, 'brandMark');
-    const fonteM = estilo.match(/font-family:\s*'([^']+)'/);
-    const corM = estilo.match(/color:\s*(#[0-9a-fA-F]{3,8})/);
-    return {
-      fonte: fonteM ? fonteM[1] : '',
-      cor: corM ? corM[1] : ''
-    };
-  }
-
-  // ---- Publicidade do rodapé ----
-  function extrairPublicidade(html){
-    const regexBloco = /<div class="info-fixa-fundo" id="infoFixaFundo"[^>]*>([\s\S]*?)<\/div>/;
-    const m = html.match(regexBloco);
-    if(!m) return null;
-    const media = extrairMediaDoInner(m[1]);
-    if(!media) return null;
-    return {
-      caminho: media.caminho,
-      tipo: media.tipo,
-      novoFicheiro: null,
-      previewUrl: null,
-      nomePreview: media.caminho.split('/').pop()
-    };
-  }
-
-  function construirFundoImgHtml(pub){
-    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub, ' id="fundoAnuncioImg" style=""') + '\n  ';
-  }
-
-  function substituirFundoImg(html, novoInnerHTML){
-    const regex = /(<div class="info-fixa-fundo" id="infoFixaFundo"[^>]*>)([\s\S]*?)(<\/div>)/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  function renderizarPublicidade(){
-    renderizarMiniaturaOuVideo(publicidadeState, miniaturaPublicidadeEl, nomePublicidadeEl);
-  }
-
-  novaPublicidadeInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    publicidadeState = {
-      caminho: publicidadeState ? publicidadeState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarPublicidade();
-    if(!ficheiroEhVideo(file)){ fundoPubPosImgEl.src = publicidadeState.previewUrl; }
-    e.target.value = '';
-  });
-
-  // ---- Publicidade dentro do grupo "Vinho da Casa" ----
-  function extrairVinhoPub(html){
-    const regexBloco = /<div class="vinho-anuncio" id="vinhoAnuncio"[^>]*>([\s\S]*?)<div class="vinho-anuncio-texto">/;
-    const m = html.match(regexBloco);
-    if(!m) return null;
-    const media = extrairMediaDoInner(m[1]);
-    if(!media) return null;
-    return {
-      caminho: media.caminho,
-      tipo: media.tipo,
-      novoFicheiro: null,
-      previewUrl: null,
-      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
-    };
-  }
-
-  function construirVinhoPubImgHtml(pub){
-    return '\n          <!-- Foto do anúncio (ex: vinho do mês). Ativa-se e edita-se em editar.html -->\n          ' + construirMediaTag(pub, ' id="vinhoAnuncioImg" style=""') + '\n          ';
-  }
-
-  function substituirVinhoPubImg(html, novoInnerHTML){
-    const regex = /(<div class="vinho-anuncio" id="vinhoAnuncio"[^>]*>)([\s\S]*?)(<div class="vinho-anuncio-texto">)/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  function renderizarVinhoPub(){
-    if(!vinhoPubState || !vinhoPubState.caminho && !vinhoPubState.novoFicheiro){
-      miniaturaVinhoPubEl.src = '';
-      miniaturaVinhoPubEl.style.display = '';
-      nomeVinhoPubEl.textContent = '—';
-      return;
+    function guardarPubCategorias() {
+      alert('As publicidades de categorias editam-se directamente no cardapio.html.\n\nCada categoria tem um <div id="catAnuncio[Nome]"> com atributo data-cat-pub-ativo-[slug]="true/false"');
     }
-    renderizarMiniaturaOuVideo(vinhoPubState, miniaturaVinhoPubEl, nomeVinhoPubEl);
-  }
 
-  novaVinhoPubInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    vinhoPubState = {
-      caminho: vinhoPubState ? vinhoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarVinhoPub();
-    e.target.value = '';
-  });
+    function guardarRodape() {
+      const l1 = document.getElementById('rodapeLinha1').value;
+      const l2 = document.getElementById('rodapeLinha2').value;
+      const l3 = document.getElementById('rodapeLinha3').value;
+      const l4 = document.getElementById('rodapeLinha4').value;
 
-  // ---- Publicidade no fundo da secção de Vinhos & Bebidas (abaixo de Sangrias) ----
-  function extrairVinhosSeccaoPub(html){
-    const regexBloco = /<div class="vinho-anuncio alto" id="vinhosAnuncioSeccao"[^>]*>([\s\S]*?)<div class="vinho-anuncio-texto">/;
-    const m = html.match(regexBloco);
-    if(!m) return null;
-    const media = extrairMediaDoInner(m[1]);
-    if(!media) return null;
-    return {
-      caminho: media.caminho,
-      tipo: media.tipo,
-      novoFicheiro: null,
-      previewUrl: null,
-      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
-    };
-  }
+      const html = `<div class="linha-negrito" id="rodapeLinha1">${l1}</div>
+    <div class="linha" id="rodapeLinha2">${l2}</div>
+    <div class="linha" id="rodapeLinha3">${l3}</div>
+    <div class="linha" id="rodapeLinha4">${l4}</div>`;
 
-  function construirVinhosSeccaoPubImgHtml(pub){
-    return '\n      <!-- Foto do anúncio no fundo da secção de Vinhos & Bebidas. Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="vinhosSeccaoPubImg" style=""') + '\n      ';
-  }
-
-  function substituirVinhosSeccaoPubImg(html, novoInnerHTML){
-    const regex = /(<div class="vinho-anuncio alto" id="vinhosAnuncioSeccao"[^>]*>)([\s\S]*?)(<div class="vinho-anuncio-texto">)/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  function renderizarVinhosSeccaoPub(){
-    if(!vinhosSeccaoPubState || !vinhosSeccaoPubState.caminho && !vinhosSeccaoPubState.novoFicheiro){
-      miniaturaVinhosSeccaoPubEl.src = '';
-      miniaturaVinhosSeccaoPubEl.style.display = '';
-      nomeVinhosSeccaoPubEl.textContent = '—';
-      return;
+      alert(`Copia isto para o cardapio.html no <div class="info-fixa-texto" id="infoFixaTexto">:\n\n${html}`);
+      console.log(html);
     }
-    renderizarMiniaturaOuVideo(vinhosSeccaoPubState, miniaturaVinhosSeccaoPubEl, nomeVinhosSeccaoPubEl);
-  }
 
-  novaVinhosSeccaoPubInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    vinhosSeccaoPubState = {
-      caminho: vinhosSeccaoPubState ? vinhosSeccaoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarVinhosSeccaoPub();
-    e.target.value = '';
-  });
+    function guardarEspecial() {
+      const ativo = document.getElementById('especial-ativo').checked;
+      const inicio = document.getElementById('especial-inicio').value;
+      const fim = document.getElementById('especial-fim').value;
+      const l1 = document.getElementById('especial-l1').value;
+      const l2 = document.getElementById('especial-l2').value;
+      const l3 = document.getElementById('especial-l3').value;
+      const l4 = document.getElementById('especial-l4').value;
 
-  // ---- Publicidade após terminar um jogo (Jogo da Velha / Forca / Adivinhas) ----
-  function extrairJogoPub(html){
-    const regexBloco = /<div class="jogo-anuncio" id="jogoAnuncio"[^>]*>([\s\S]*?)<div class="jogo-anuncio-titulo"/;
-    const m = html.match(regexBloco);
-    if(!m) return null;
-    const media = extrairMediaDoInner(m[1]);
-    if(!media) return null;
-    return {
-      caminho: media.caminho,
-      tipo: media.tipo,
-      novoFicheiro: null,
-      previewUrl: null,
-      nomePreview: media.caminho ? media.caminho.split('/').pop() : ''
-    };
-  }
+      const atributo = `data-especial-ativo="${ativo ? 'true' : 'false'}" data-especial-inicio="${inicio}" data-especial-fim="${fim}" data-especial-l1="${l1}" data-especial-l2="${l2}" data-especial-l3="${l3}" data-especial-l4="${l4}"`;
 
-  function construirJogoPubImgHtml(pub){
-    return '\n      <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->\n      ' + construirMediaTag(pub, ' id="jogoAnuncioImg" style=""') + '\n      ';
-  }
-
-  function substituirJogoPubImg(html, novoInnerHTML){
-    const regex = /(<div class="jogo-anuncio" id="jogoAnuncio"[^>]*>)([\s\S]*?)(<div class="jogo-anuncio-titulo")/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  function renderizarJogoPub(){
-    if(!jogoPubState || !jogoPubState.caminho && !jogoPubState.novoFicheiro){
-      miniaturaJogoPubEl.src = '';
-      miniaturaJogoPubEl.style.display = '';
-      nomeJogoPubEl.textContent = '—';
-      return;
+      alert(`Atualiza o atributo do <div class="info-fixa-texto" id="infoFixaTexto">:\n\n${atributo}`);
+      console.log(atributo);
     }
-    renderizarMiniaturaOuVideo(jogoPubState, miniaturaJogoPubEl, nomeJogoPubEl);
-  }
 
-  novaJogoPubInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    jogoPubState = {
-      caminho: jogoPubState ? jogoPubState.caminho : null,
-      tipo: ficheiroEhVideo(file) ? 'video' : 'foto',
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarJogoPub();
-    e.target.value = '';
-  });
+    function guardarAnuncio(tipo) {
+      if(tipo === 'vinho') {
+        const ativo = document.getElementById('vinhoPubAtivo').checked;
+        const img = document.getElementById('vinhoAnuncioImg').value;
+        const titulo = document.getElementById('vinhoAnuncioTitulo').value;
+        const subtitulo = document.getElementById('vinhoAnuncioSubtitulo').value;
 
-  // ---- Publicidade no fim da página: editor de arrastar e ampliar ----
-  function pubFimMostrarVideo(nome){
-    // Vídeos não têm editor de posição/zoom (ficam sempre centrados, a cobrir a caixa toda).
-    pubFimVazioEl.style.display = '';
-    pubFimVazioEl.textContent = '🎬 vídeo: ' + (nome || '—') + ' — sem edição de posição/zoom para vídeo, fica sempre centrado.';
-    pubFimPubPosImgEl.style.display = 'none';
-    pubFimNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (nome || '—');
-  }
+        alert(`data-vinho-pub-ativo="${ativo ? 'true' : 'false'}"\nsrc="${img}"\nTítulo: ${titulo}\nSubtítulo: ${subtitulo}`);
+      } else if(tipo === 'fundo') {
+        const ativo = document.getElementById('fundoAtivo').checked;
+        const img = document.getElementById('fundoAnuncioImg').value;
+        const x = document.getElementById('fundoPosX').value;
+        const y = document.getElementById('fundoPosY').value;
+        const scale = document.getElementById('fundoScale').value;
 
-  novaPubFimInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    const ehVideo = ficheiroEhVideo(file);
-    if(ehVideo){
-      pubFimState = {
-        caminho: pubFimState ? pubFimState.caminho : null,
-        tipo: 'video',
-        novoFicheiro: file,
-        previewUrl: null,
-        nomePreview: file.name
-      };
-      pubFimMostrarVideo(file.name);
-      e.target.value = '';
-      return;
+        alert(`data-fundo-ativo="${ativo ? 'true' : 'false'}"\nsrc="${img}"\nstyle="object-fit:cover; transform:translate(${x}px, ${y}px) scale(${scale})"`);
+      }
     }
-    pubFimState = {
-      caminho: pubFimState ? pubFimState.caminho : null,
-      tipo: 'foto',
-      novoFicheiro: file,
-      previewUrl: URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    pubFimVazioEl.style.display = 'none';
-    pubFimPubPosImgEl.style.display = '';
-    pubFimPubPosImgEl.src = pubFimState.previewUrl;
-    e.target.value = '';
-  });
 
-  function extrairPubFim(html){
-    const regexBloco = /<div class="footer-publicidade" id="footerPublicidade"[^>]*>([\s\S]*?)<\/div>/;
-    const m = html.match(regexBloco);
-    if(!m) return null;
-    const media = extrairMediaDoInner(m[1]);
-    if(!media) return null;
-    if(media.tipo === 'video'){
-      return {
-        caminho: media.caminho,
-        tipo: 'video',
-        novoFicheiro: null,
-        previewUrl: null,
-        nomePreview: media.caminho.split('/').pop(),
-        posX: 50, posY: 50, escala: 1
-      };
-    }
-    const imgM = m[1].match(/<img[^>]*>/);
-    const tag = imgM ? imgM[0] : '';
-    const posM = tag.match(/object-position:\s*([\d.]+)%\s+([\d.]+)%/);
-    const scaleM = tag.match(/scale\(([\d.]+)\)/);
-    return {
-      caminho: media.caminho,
-      tipo: 'foto',
-      novoFicheiro: null,
-      previewUrl: null,
-      nomePreview: media.caminho.split('/').pop(),
-      posX: posM ? parseFloat(posM[1]) : 50,
-      posY: posM ? parseFloat(posM[2]) : 50,
-      escala: scaleM ? parseFloat(scaleM[1]) : 1
-    };
-  }
-
-  function construirPubFimImgHtml(pub){
-    if(pub.tipo === 'video'){
-      return '\n    <!-- Vídeo de patrocínio (sem posição/ampliação) e horários: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
-    }
-    return '\n    <!-- Foto de patrocínio, posição, ampliação e horários: edita-se em editar.html -->\n    ' + construirMediaTag(pub, ' id="pubFimAnuncioImg" style=""') + '\n  ';
-  }
-
-  function substituirPubFimImg(html, novoInnerHTML){
-    const regex = /(<div class="footer-publicidade" id="footerPublicidade"[^>]*>)([\s\S]*?)(<\/div>)/;
-    return html.replace(regex, '$1' + novoInnerHTML + '$3');
-  }
-
-  function nomeFicheiroLimpo(nome){
-    // Qualquer acento ou carácter especial (inclui espaços) vira "-"; letras e números normais mantêm-se.
-    return nome
-      .replace(/[^a-zA-Z0-9.\-_]/g, '-')
-      .toLowerCase();
-  }
-
-  async function enviarFoto(file, token){
-    const caminho = 'imagens/' + Date.now() + '-' + nomeFicheiroLimpo(file.name);
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result).split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-    const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + caminho, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: 'Adicionar foto do rodapé: ' + file.name,
-        content: base64
-      })
-    });
-    if(!resp.ok){
-      const errData = await resp.json().catch(() => ({}));
-      throw new Error(errData.message || ('HTTP ' + resp.status));
-    }
-    return caminho;
-  }
-
-  function renderizarFotos(){
-    listaFotosEl.innerHTML = '';
-    if(fotosState.length === 0){
-      listaFotosEl.innerHTML = '<div class="sem-fotos">Ainda não há fotos. Adiciona uma abaixo.</div>';
-      return;
-    }
-    fotosState.forEach((foto, i) => {
-      const src = foto.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + foto.caminho);
-      const linha = document.createElement('div');
-      linha.className = 'linha-foto';
-      linha.innerHTML =
-        '<img class="miniatura" src="' + src + '" alt="">' +
-        '<div class="linha-foto-info">' +
-          '<div class="linha-foto-nome">' + (foto.nomePreview || foto.caminho) + '</div>' +
-          '<div class="linha-foto-duracao">' +
-            '<label>Segundos:</label>' +
-            '<input type="number" min="1" max="30" step="1" class="input-duracao" value="' + foto.duracao + '">' +
-          '</div>' +
-        '</div>' +
-        '<div class="linha-foto-acoes">' +
-          '<button type="button" class="btn-mini btn-subir"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
-          '<button type="button" class="btn-mini btn-descer"' + (i === fotosState.length - 1 ? ' disabled' : '') + '>↓</button>' +
-          '<button type="button" class="btn-mini btn-remover">✕</button>' +
-        '</div>';
-
-      linha.querySelector('.input-duracao').addEventListener('input', (e) => {
-        fotosState[i].duracao = parseFloat(e.target.value) || 3;
+    function limparSalas() {
+      if(typeof firebase === 'undefined') {
+        alert('Firebase não carregou.');
+        return;
+      }
+      const db = firebase.database();
+      db.ref('salas').remove().then(() => {
+        alert('✓ Salas limpas!');
+      }).catch(err => {
+        alert('Erro: ' + err.message);
       });
-      linha.querySelector('.btn-subir').addEventListener('click', () => {
-        if(i > 0){
-          [fotosState[i - 1], fotosState[i]] = [fotosState[i], fotosState[i - 1]];
-          renderizarFotos();
-        }
+    }
+
+    function recarregarStats() {
+      if(typeof firebase === 'undefined') {
+        document.getElementById('statsContainer').innerHTML = '<div class="stats"><strong>Firebase não carregou</strong></div>';
+        return;
+      }
+      const db = firebase.database();
+      Promise.all([
+        db.ref('estatisticas/visitas').get(),
+        db.ref('estatisticas/impressoesAnuncio').get()
+      ]).then(([visitasSnap, anunciosSnap]) => {
+        const visitas = (visitasSnap.val() || {});
+        const anuncios = (anunciosSnap.val() || {});
+        const totalVisitas = Object.keys(visitas).length;
+        const totalAnuncios = Object.keys(anuncios).length;
+
+        document.getElementById('statsContainer').innerHTML = `
+          <div class="stats">
+            <strong>Visitas ao cardápio:</strong> ${totalVisitas}<br>
+            <strong>Impressões de anúncio (rodapé):</strong> ${totalAnuncios}
+          </div>
+        `;
+      }).catch(err => {
+        document.getElementById('statsContainer').innerHTML = `<div class="stats"><strong>Erro:</strong> ${err.message}</div>`;
       });
-      linha.querySelector('.btn-descer').addEventListener('click', () => {
-        if(i < fotosState.length - 1){
-          [fotosState[i + 1], fotosState[i]] = [fotosState[i], fotosState[i + 1]];
-          renderizarFotos();
-        }
-      });
-      linha.querySelector('.btn-remover').addEventListener('click', () => {
-        fotosState.splice(i, 1);
-        renderizarFotos();
-      });
-
-      listaFotosEl.appendChild(linha);
-    });
-  }
-
-  novaFotoInput.addEventListener('change', (e) => {
-    const ficheiros = Array.from(e.target.files || []);
-    ficheiros.forEach(file => {
-      fotosState.push({
-        caminho: null,
-        duracao: 3,
-        novoFicheiro: file,
-        previewUrl: URL.createObjectURL(file),
-        nomePreview: file.name
-      });
-    });
-    renderizarFotos();
-    e.target.value = '';
-  });
-
-  function cabecalhos(comAuth){
-    const h = { 'Accept': 'application/vnd.github+json' };
-    const token = tokenInput.value.trim();
-    if(comAuth && token) h['Authorization'] = 'Bearer ' + token;
-    return h;
-  }
-
-  async function carregarTexto(){
-    setEstado('A carregar texto atual…', 'info');
-    btnCarregar.disabled = true;
-    try{
-      const resp = await fetch(API_URL + '?t=' + Date.now(), { headers: cabecalhos(true) });
-      if(!resp.ok) throw new Error('HTTP ' + resp.status + ' — verifica o token ou tenta novamente');
-      const data = await resp.json();
-      const conteudo = base64ParaUtf8(data.content);
-      shaAtual = data.sha;
-      conteudoOriginal = conteudo;
-
-      campos[1].value = extrairLinha(conteudo, 'rodapeLinha1');
-      campos[2].value = extrairLinha(conteudo, 'rodapeLinha2');
-      campos[3].value = extrairLinha(conteudo, 'rodapeLinha3');
-      campos[4].value = extrairLinha(conteudo, 'rodapeLinha4');
-
-      especialAtivoInput.checked = extrairAtributo(conteudo, 'data-especial-ativo') === 'true';
-      horaInicioInput.value = extrairAtributo(conteudo, 'data-especial-inicio');
-      horaFimInput.value = extrairAtributo(conteudo, 'data-especial-fim');
-      camposEspecial[1].value = extrairAtributo(conteudo, 'data-especial-l1');
-      camposEspecial[2].value = extrairAtributo(conteudo, 'data-especial-l2');
-      camposEspecial[3].value = extrairAtributo(conteudo, 'data-especial-l3');
-      camposEspecial[4].value = extrairAtributo(conteudo, 'data-especial-l4');
-
-      cabecalhoNomeInput.value = extrairLinhaComQuebras(conteudo, 'brandMark');
-      cabecalhoFraseInput.value = extrairLinha(conteudo, 'brandSub');
-      const estiloNomeAtual = extrairInfoEstiloElemento(extrairEstiloPorId(conteudo, 'brandMark'));
-      const estiloFraseAtual = extrairInfoEstiloElemento(extrairEstiloPorId(conteudo, 'brandSub'));
-      cabecalhoFonteInput.value = estiloNomeAtual.fonte;
-      cabecalhoCorInput.value = estiloNomeAtual.cor || COR_CABECALHO_PREDEFINIDA;
-      cabecalhoTamanhoInput.value = estiloNomeAtual.tamanho || TAMANHO_NOME_PREDEFINIDO;
-      cabecalhoPosState = {
-        nome: { x: estiloNomeAtual.x, y: estiloNomeAtual.y },
-        frase: { x: estiloFraseAtual.x, y: estiloFraseAtual.y }
-      };
-      atualizarPreviewCabecalho();
-      aplicarPosicaoPreview();
-
-      fotosState = extrairFotos(conteudo);
-      renderizarFotos();
-
-      publicidadeState = extrairPublicidade(conteudo);
-      renderizarPublicidade();
-      fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
-      const fundoPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'fundoAnuncioImg'));
-      fundoPubTamanhoInput.value = fundoPubEstiloAtual.tamanho;
-      fundoPubTamanhoValorEl.textContent = Math.round(fundoPubEstiloAtual.tamanho*100) + '%';
-      fundoPubPosState.x = fundoPubEstiloAtual.x;
-      fundoPubPosState.y = fundoPubEstiloAtual.y;
-      aplicarPosFundoPub();
-      if(publicidadeState && publicidadeState.caminho){ fundoPubPosImgEl.src = publicidadeState.caminho; }
-
-      vinhoPubState = extrairVinhoPub(conteudo);
-      renderizarVinhoPub();
-      vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
-      vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
-      vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
-
-      vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
-      renderizarVinhosSeccaoPub();
-      vinhosSeccaoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinhos-pub-ativo') === 'true';
-      vinhosSeccaoPubTituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoTitulo');
-      vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
-      vinhosSeccaoPubLinha3Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha3');
-      vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
-
-      jogoPubState = extrairJogoPub(conteudo);
-      renderizarJogoPub();
-      jogoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-jogo-pub-ativo') === 'true';
-      jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
-      jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
-
-      pubFimState = extrairPubFim(conteudo);
-      if(pubFimState && pubFimState.tipo === 'video'){
-        pubFimMostrarVideo(pubFimState.nomePreview);
-      } else if(pubFimState && pubFimState.caminho){
-        pubFimVazioEl.style.display = 'none';
-        pubFimPubPosImgEl.style.display = '';
-        pubFimPubPosImgEl.src = 'https://raw.githubusercontent.com/' + REPO + '/main/' + pubFimState.caminho;
-      }
-      const pubFimPubEstiloAtual = extrairInfoEstiloImagemAnuncio(extrairEstiloPorId(conteudo, 'pubFimAnuncioImg'));
-      pubFimPubTamanhoInput.value = pubFimPubEstiloAtual.tamanho;
-      pubFimPubTamanhoValorEl.textContent = Math.round(pubFimPubEstiloAtual.tamanho*100) + '%';
-      pubFimPubPosState.x = pubFimPubEstiloAtual.x;
-      pubFimPubPosState.y = pubFimPubEstiloAtual.y;
-      aplicarPosPubFimPub();
-      pubFimAtivoInput.checked = extrairAtributo(conteudo, 'data-pub-ativo') === 'true';
-      pubFimInicioInput.value = extrairAtributo(conteudo, 'data-pub-inicio');
-      pubFimFimInput.value = extrairAtributo(conteudo, 'data-pub-fim');
-      pubFimIntervaloInput.value = extrairAtributo(conteudo, 'data-pub-intervalo');
-      pubFimDuracaoInput.value = extrairAtributo(conteudo, 'data-pub-duracao');
-      pubFimMaxInput.value = extrairAtributo(conteudo, 'data-pub-max-dia');
-
-      atualizarPreview();
-
-      setEstado('Texto atual carregado. Já podes editar os campos.', 'ok');
-    
-    CATEGORIAS_ANUNCIO.forEach(function(slug){
-      const pascal = pascalCaseSlug(slug);
-      catPubState[slug] = extrairCategoriaPub(conteudo, slug);
-      renderizarCategoriaPub(slug);
-      const ativoEl = document.getElementById("catPub" + pascal + "Ativo");
-      const tituloEl = document.getElementById("catPub" + pascal + "Titulo");
-      const subtituloEl = document.getElementById("catPub" + pascal + "Subtitulo");
-      if(ativoEl) ativoEl.checked = extrairAtributo(conteudo, "data-cat-pub-ativo-" + slug) === "true";
-      if(tituloEl) tituloEl.value = extrairLinha(conteudo, "catAnuncio" + pascal + "Titulo");
-      if(subtituloEl) subtituloEl.value = extrairLinha(conteudo, "catAnuncio" + pascal + "Subtitulo");
-    });
-
-    
-      CATEGORIAS_HERO.forEach(function(slug){
-        const pascalH = pascalCaseSlug(slug);
-        const caminhoH = obterImgSrcPorId(conteudo, 'catHero' + pascalH + 'Img');
-        catHeroState[slug] = catHeroState[slug] || {};
-        catHeroState[slug].caminho = caminhoH;
-        const imgH = document.getElementById('miniaturaCatHero' + pascalH);
-        const nomeH = document.getElementById('nomeCatHero' + pascalH);
-        if(caminhoH){
-          if(imgH){ imgH.src = caminhoH; imgH.style.display = 'block'; }
-          if(nomeH) nomeH.textContent = caminhoH.split('/').pop();
-        } else {
-          if(imgH){ imgH.removeAttribute('src'); imgH.style.display = 'none'; }
-          if(nomeH) nomeH.textContent = 'Sem foto ainda';
-        }
-      });
-
-    } catch(err){
-      setEstado('Não consegui carregar: ' + err.message, 'erro');
-    } finally {
-      btnCarregar.disabled = false;
-    }
-  }
-
-  // ---- Deteção de aba desatualizada ----
-  // Se este ficheiro (editar.html) foi publicado de novo desde que esta aba
-  // abriu, o código que está a correr aqui em memória pode já não ter as
-  // proteções mais recentes. Comparamos a nossa EDITOR_VERSION com a que está
-  // publicada agora mesmo no GitHub Pages, e avisamos/bloqueamos se diferirem.
-  const avisoDesatualizadoEl = document.getElementById('avisoDesatualizado');
-  async function buscarVersaoPublicada(){
-    try{
-      const resp = await fetch('https://rest-bar-parque-sao-caetano.github.io/cardapio-parque-sao-caetano/editar.html?t=' + Date.now(), { cache: 'no-store' });
-      if(!resp.ok) return undefined; // não conseguimos confirmar
-      const texto = await resp.text();
-      const m = texto.match(/EDITOR_VERSION\s*=\s*'([^']+)'/);
-      return m ? m[1] : undefined;
-    } catch(e){
-      return undefined; // falha de rede — não conseguimos confirmar
-    }
-  }
-  // A CDN do GitHub Pages por vezes serve versões ligeiramente atrasadas em
-  // alguns nós, o que pode indicar "desatualizado" por engano mesmo quando a
-  // aba está com a versão mais recente. Por isso, só bloqueamos se uma
-  // segunda verificação (com um pequeno intervalo) confirmar a discrepância.
-  async function paginaEstaAtualizada(){
-    const v1 = await buscarVersaoPublicada();
-    if(v1 === undefined || v1 === EDITOR_VERSION) return true;
-    await new Promise(r => setTimeout(r, 1500));
-    const v2 = await buscarVersaoPublicada();
-    if(v2 === undefined) return true;
-    return v2 === EDITOR_VERSION;
-  }
-  async function verificarPaginaAtualizada(){
-    const atualizada = await paginaEstaAtualizada();
-    avisoDesatualizadoEl.style.display = atualizada ? 'none' : 'block';
-    return atualizada;
-  }
-  verificarPaginaAtualizada();
-  setInterval(verificarPaginaAtualizada, 3 * 60 * 1000);
-
-  async function guardarTexto(){
-    const token = tokenInput.value.trim();
-    if(!token){
-      setEstado('Cola primeiro o teu token de acesso do GitHub.', 'erro');
-      return;
-    }
-    setEstado('A verificar se esta página está atualizada…', 'info');
-    if(!(await verificarPaginaAtualizada())){
-      setEstado('Esta página foi atualizada entretanto. Recarrega (F5) antes de guardar, para não perderes nem apagares alterações.', 'erro');
-      return;
-    }
-    if(!conteudoOriginal){
-      setEstado('Carrega primeiro o texto atual (botão "Carregar texto atual").', 'erro');
-      return;
-    }
-    if(fotosState.length === 0){
-      setEstado('Precisas de pelo menos 1 foto no cabeçalho.', 'erro');
-      return;
-    }
-    if(fundoAtivoInput.checked && (!publicidadeState || (!publicidadeState.caminho && !publicidadeState.novoFicheiro))){
-      setEstado('Ativaste a imagem de publicidade mas ainda não escolheste nenhuma. Escolhe um ficheiro ou desativa a opção.', 'erro');
-      return;
-    }
-    if(vinhoPubAtivoInput.checked && (!vinhoPubState || (!vinhoPubState.caminho && !vinhoPubState.novoFicheiro))){
-      setEstado('Ativaste a publicidade do "Vinho da Casa" mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
-      return;
-    }
-    if(vinhosSeccaoPubAtivoInput.checked && (!vinhosSeccaoPubState || (!vinhosSeccaoPubState.caminho && !vinhosSeccaoPubState.novoFicheiro))){
-      setEstado('Ativaste a publicidade do fundo da secção de Vinhos & Bebidas mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
-      return;
-    }
-    if(jogoPubAtivoInput.checked && (!jogoPubState || (!jogoPubState.caminho && !jogoPubState.novoFicheiro))){
-      setEstado('Ativaste a publicidade após os jogos mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
-      return;
-    }
-    if(pubFimAtivoInput.checked && (!pubFimState || (!pubFimState.caminho && !pubFimState.novoFicheiro))){
-      setEstado('Ativaste a publicidade no fim da página mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
-      return;
     }
 
-    if(lembrarInput.checked){
-      localStorage.setItem('cardapioEditorToken', token);
-    } else {
-      localStorage.removeItem('cardapioEditorToken');
+    function atualizarUltimaAtualizacao() {
+      const agora = new Date().toLocaleString('pt-PT');
+      document.getElementById('lastUpdate').textContent = agora;
     }
 
-    setEstado('A guardar…', 'info');
-    btnGuardar.disabled = true;
-    try{
-      for(const foto of fotosState){
-        if(foto.novoFicheiro){
-          setEstado('A enviar foto: ' + foto.nomePreview + '…', 'info');
-          foto.caminho = await enviarFoto(foto.novoFicheiro, token);
-          foto.novoFicheiro = null;
-        }
-      }
-
-      if(publicidadeState && publicidadeState.novoFicheiro){
-        setEstado('A enviar imagem de publicidade: ' + publicidadeState.nomePreview + '…', 'info');
-        publicidadeState.caminho = await enviarFoto(publicidadeState.novoFicheiro, token);
-        publicidadeState.novoFicheiro = null;
-      }
-
-      if(vinhoPubState && vinhoPubState.novoFicheiro){
-        setEstado('A enviar foto do "Vinho da Casa": ' + vinhoPubState.nomePreview + '…', 'info');
-        vinhoPubState.caminho = await enviarFoto(vinhoPubState.novoFicheiro, token);
-        vinhoPubState.novoFicheiro = null;
-      }
-
-      if(vinhosSeccaoPubState && vinhosSeccaoPubState.novoFicheiro){
-        setEstado('A enviar foto do fundo da secção de Vinhos & Bebidas: ' + vinhosSeccaoPubState.nomePreview + '…', 'info');
-        vinhosSeccaoPubState.caminho = await enviarFoto(vinhosSeccaoPubState.novoFicheiro, token);
-        vinhosSeccaoPubState.novoFicheiro = null;
-      }
-
-      if(jogoPubState && jogoPubState.novoFicheiro){
-        setEstado('A enviar foto da publicidade após jogos: ' + jogoPubState.nomePreview + '…', 'info');
-        jogoPubState.caminho = await enviarFoto(jogoPubState.novoFicheiro, token);
-        jogoPubState.novoFicheiro = null;
-      }
-
-      if(pubFimState && pubFimState.novoFicheiro){
-        setEstado('A enviar foto de patrocínio: ' + pubFimState.nomePreview + '…', 'info');
-        pubFimState.caminho = await enviarFoto(pubFimState.novoFicheiro, token);
-        pubFimState.novoFicheiro = null;
-      }
-
-      // Vai sempre buscar a versão mais recente do ficheiro mesmo agora, em vez de usar
-      // a que foi carregada quando a página abriu. Isto evita que uma aba desta página
-      // deixada aberta durante muito tempo apague, sem querer, alterações feitas entretanto
-      // por outra pessoa (ou por ti noutra aba/aparelho).
-      setEstado('A confirmar a versão mais recente…', 'info');
-      const respAtual = await fetch(API_URL + '?t=' + Date.now(), { headers: cabecalhos(true) });
-      if(!respAtual.ok) throw new Error('HTTP ' + respAtual.status + ' — não consegui confirmar a versão mais recente antes de guardar');
-      const dataAtual = await respAtual.json();
-      shaAtual = dataAtual.sha;
-
-      setEstado('A guardar…', 'info');
-      let novo = base64ParaUtf8(dataAtual.content);
-      novo = substituirLinha(novo, 'rodapeLinha1', campos[1].value);
-      novo = substituirLinha(novo, 'rodapeLinha2', campos[2].value);
-      novo = substituirLinha(novo, 'rodapeLinha3', campos[3].value);
-      novo = substituirLinha(novo, 'rodapeLinha4', campos[4].value);
-
-      novo = substituirAtributo(novo, 'data-especial-ativo', especialAtivoInput.checked ? 'true' : 'false');
-      novo = substituirAtributo(novo, 'data-especial-inicio', horaInicioInput.value);
-      novo = substituirAtributo(novo, 'data-especial-fim', horaFimInput.value);
-      novo = substituirAtributo(novo, 'data-especial-l1', camposEspecial[1].value);
-      novo = substituirAtributo(novo, 'data-especial-l2', camposEspecial[2].value);
-      novo = substituirAtributo(novo, 'data-especial-l3', camposEspecial[3].value);
-      novo = substituirAtributo(novo, 'data-especial-l4', camposEspecial[4].value);
-
-      novo = substituirLinhaComQuebras(novo, 'brandMark', cabecalhoNomeInput.value);
-      novo = substituirLinha(novo, 'brandSub', cabecalhoFraseInput.value);
-      const tamanhoNomeSalvar = parseFloat(cabecalhoTamanhoInput.value) || TAMANHO_NOME_PREDEFINIDO;
-      const tamanhoFraseSalvar = Math.round(tamanhoNomeSalvar * (TAMANHO_FRASE_PREDEFINIDO / TAMANHO_NOME_PREDEFINIDO) * 100) / 100;
-      const estiloNomeSalvar = construirEstiloElemento(cabecalhoFonteInput.value, cabecalhoCorInput.value, tamanhoNomeSalvar, TAMANHO_NOME_PREDEFINIDO, cabecalhoPosState.nome.x, cabecalhoPosState.nome.y);
-      const estiloFraseSalvar = construirEstiloElemento(cabecalhoFonteInput.value, cabecalhoCorInput.value, tamanhoFraseSalvar, TAMANHO_FRASE_PREDEFINIDO, cabecalhoPosState.frase.x, cabecalhoPosState.frase.y);
-      novo = substituirEstiloPorId(novo, 'brandMark', estiloNomeSalvar);
-      novo = substituirEstiloPorId(novo, 'brandSub', estiloFraseSalvar);
-
-      novo = substituirFotosImgs(novo, construirImgsHtml(fotosState));
-      if(publicidadeState){
-        novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
-      novo = substituirEstiloPorId(novo, 'fundoAnuncioImg', construirEstiloImagemAnuncio(parseFloat(fundoPubTamanhoInput.value)||1, fundoPubPosState.x, fundoPubPosState.y));
-      }
-      novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
-
-      if(vinhoPubState){
-        novo = substituirVinhoPubImg(novo, construirVinhoPubImgHtml(vinhoPubState));
-      }
-      novo = substituirAtributo(novo, 'data-vinho-pub-ativo', vinhoPubAtivoInput.checked ? 'true' : 'false');
-      novo = substituirLinha(novo, 'vinhoAnuncioTitulo', vinhoPubTituloInput.value);
-      novo = substituirLinha(novo, 'vinhoAnuncioSubtitulo', vinhoPubSubtituloInput.value);
-
-      if(vinhosSeccaoPubState){
-        novo = substituirVinhosSeccaoPubImg(novo, construirVinhosSeccaoPubImgHtml(vinhosSeccaoPubState));
-      }
-      novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
-      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoTitulo', vinhosSeccaoPubTituloInput.value);
-      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoSubtitulo', vinhosSeccaoPubSubtituloInput.value);
-      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoLinha3', vinhosSeccaoPubLinha3Input.value);
-      novo = substituirLinha(novo, 'vinhosAnuncioSeccaoLinha4', vinhosSeccaoPubLinha4Input.value);
-
-      if(jogoPubState){
-        novo = substituirJogoPubImg(novo, construirJogoPubImgHtml(jogoPubState));
-      }
-      novo = substituirAtributo(novo, 'data-jogo-pub-ativo', jogoPubAtivoInput.checked ? 'true' : 'false');
-      novo = substituirLinha(novo, 'jogoAnuncioTitulo', jogoPubTituloInput.value);
-      novo = substituirLinha(novo, 'jogoAnuncioSubtitulo', jogoPubSubtituloInput.value);
-
-      if(pubFimState){
-        novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
-        if(pubFimState.tipo !== 'video'){
-          novo = substituirEstiloPorId(novo, 'pubFimAnuncioImg', construirEstiloImagemAnuncio(parseFloat(pubFimPubTamanhoInput.value)||1, pubFimPubPosState.x, pubFimPubPosState.y));
-        }
-      }
-      novo = substituirAtributo(novo, 'data-pub-ativo', pubFimAtivoInput.checked ? 'true' : 'false');
-      novo = substituirAtributo(novo, 'data-pub-inicio', pubFimInicioInput.value);
-      novo = substituirAtributo(novo, 'data-pub-fim', pubFimFimInput.value);
-      novo = substituirAtributo(novo, 'data-pub-intervalo', pubFimIntervaloInput.value);
-      novo = substituirAtributo(novo, 'data-pub-duracao', pubFimDuracaoInput.value);
-      novo = substituirAtributo(novo, 'data-pub-max-dia', pubFimMaxInput.value);
-
-      for (const catSlug of CATEGORIAS_ANUNCIO) {
-      const catState = catPubState[catSlug];
-      if (catState && catState.novoFicheiro) {
-        setEstado("A enviar foto da categoria: " + catState.nomePreview + "…", "info");
-        catState.caminho = await enviarFoto(catState.novoFicheiro, token);
-        catState.novoFicheiro = null;
-      }
-    }
-CATEGORIAS_ANUNCIO.forEach(function(slug){
-      const pascal = pascalCaseSlug(slug);
-      if(catPubState[slug]){
-        novo = substituirCategoriaPubImg(novo, slug, construirCategoriaPubImgHtml(catPubState[slug], slug));
-      }
-      const ativoEl = document.getElementById("catPub" + pascal + "Ativo");
-      const tituloEl = document.getElementById("catPub" + pascal + "Titulo");
-      const subtituloEl = document.getElementById("catPub" + pascal + "Subtitulo");
-      novo = substituirAtributo(novo, "data-cat-pub-ativo-" + slug, ativoEl && ativoEl.checked ? "true" : "false");
-      if(tituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Titulo", tituloEl.value);
-      if(subtituloEl) novo = substituirLinha(novo, "catAnuncio" + pascal + "Subtitulo", subtituloEl.value);
-    });
-
-    
-      for (const heroSlug of CATEGORIAS_HERO) {
-        const heroState = catHeroState[heroSlug];
-        if (heroState && heroState.novoFicheiro) {
-          const heroPascal = pascalCaseSlug(heroSlug);
-          setEstado('A enviar foto da categoria: ' + heroState.novoFicheiro.name + '…', 'info');
-          const heroCaminho = await enviarFoto(heroState.novoFicheiro, token);
-          novo = substituirImgSrcPorId(novo, 'catHero' + heroPascal + 'Img', heroCaminho);
-          heroState.caminho = heroCaminho;
-          heroState.novoFicheiro = null;
-        }
-      }
-
-const resp = await fetch(API_URL, {
-        method: 'PUT',
-        headers: { ...cabecalhos(true), 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: 'Atualização do rodapé via editor',
-          content: utf8ParaBase64(novo),
-          sha: shaAtual
-        })
-      });
-
-      if(!resp.ok){
-        const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.message || ('HTTP ' + resp.status));
-      }
-
-      const data = await resp.json();
-      shaAtual = data.content.sha;
-      conteudoOriginal = novo;
-
-      setEstado('Guardado! Demora uns 10 a 30 segundos a aparecer no cardápio.', 'ok');
-    
-        
-
-    } catch(err){
-      setEstado('Não consegui guardar: ' + err.message, 'erro');
-    } finally {
-      btnGuardar.disabled = false;
-    }
-  }
-
-  // ---- Estatísticas (visitas + impressões do anúncio do rodapé) ----
-  const estatisticasCaixaEl = document.getElementById('estatisticasCaixa');
-  const btnAtualizarEstatisticas = document.getElementById('btnAtualizarEstatisticas');
-  function contarUltimosDias(obj, dias){
-    const limite = Date.now() - dias * 24 * 60 * 60 * 1000;
-    return Object.values(obj).filter(v => v && typeof v.quando === 'number' && v.quando >= limite).length;
-  }
-  async function carregarEstatisticas(){
-    if(!estatisticasCaixaEl) return;
-    estatisticasCaixaEl.textContent = 'A carregar…';
-    try{
-      const [respVisitas, respImpressoes] = await Promise.all([
-        fetch(FIREBASE_DB_URL + '/estatisticas/visitas.json'),
-        fetch(FIREBASE_DB_URL + '/estatisticas/impressoesAnuncio.json')
-      ]);
-      if(!respVisitas.ok || !respImpressoes.ok) throw new Error('não consegui ler a base de dados');
-      const visitas = (await respVisitas.json()) || {};
-      const impressoes = (await respImpressoes.json()) || {};
-      const totalVisitas = Object.keys(visitas).length;
-      const visitas7d = contarUltimosDias(visitas, 7);
-      const visitasQr = Object.values(visitas).filter(v => v && v.origem === 'qr').length;
-      const totalImpressoes = Object.keys(impressoes).length;
-      const impressoes7d = contarUltimosDias(impressoes, 7);
-      estatisticasCaixaEl.innerHTML =
-        '<div>👀 Visitas totais ao cardápio: <strong>' + totalVisitas + '</strong></div>' +
-        '<div>📅 Visitas nos últimos 7 dias: <strong>' + visitas7d + '</strong></div>' +
-        '<div>📱 Das quais vindas do QR code: <strong>' + visitasQr + '</strong></div>' +
-        '<div style="margin-top:6px;">📢 Publicidade do rodapé mostrada (total): <strong>' + totalImpressoes + '</strong></div>' +
-        '<div>📢 Publicidade mostrada nos últimos 7 dias: <strong>' + impressoes7d + '</strong></div>';
-    } catch(err){
-      estatisticasCaixaEl.textContent = 'Não consegui carregar as estatísticas: ' + err.message;
-    }
-  }
-  if(btnAtualizarEstatisticas) btnAtualizarEstatisticas.addEventListener('click', carregarEstatisticas);
-  carregarEstatisticas();
-  const fundoPubTamanhoInput = document.getElementById('fundoPubTamanho');
-  const fundoPubTamanhoValorEl = document.getElementById('fundoPubTamanhoValor');
-  const fundoPubPosImgEl = document.getElementById('fundoPubPosImg');
-  const fundoPubReporPosBtn = document.getElementById('fundoPubReporPos');
-  let fundoPubPosState = { x: 0, y: 0 };
-  const aplicarPosFundoPub = tornarArrastavelImagemAnuncio(fundoPubPosImgEl, fundoPubPosState, fundoPubTamanhoInput);
-  fundoPubTamanhoInput.addEventListener('input', function(){
-    fundoPubTamanhoValorEl.textContent = Math.round(parseFloat(fundoPubTamanhoInput.value)*100) + '%';
-    aplicarPosFundoPub();
-  });
-  fundoPubReporPosBtn.addEventListener('click', function(){
-    fundoPubTamanhoInput.value = 1;
-    fundoPubTamanhoValorEl.textContent = '100%';
-    fundoPubPosState.x = 0; fundoPubPosState.y = 0;
-    aplicarPosFundoPub();
-  });
-
-
-  const pubFimPubTamanhoInput = document.getElementById('pubFimPubTamanho');
-  const pubFimPubTamanhoValorEl = document.getElementById('pubFimPubTamanhoValor');
-  const pubFimPubPosImgEl = document.getElementById('pubFimPubPosImg');
-  const pubFimPubReporPosBtn = document.getElementById('pubFimPubReporPos');
-  let pubFimPubPosState = { x: 0, y: 0 };
-  const aplicarPosPubFimPub = tornarArrastavelImagemAnuncio(pubFimPubPosImgEl, pubFimPubPosState, pubFimPubTamanhoInput);
-  pubFimPubTamanhoInput.addEventListener('input', function(){
-    pubFimPubTamanhoValorEl.textContent = Math.round(parseFloat(pubFimPubTamanhoInput.value)*100) + '%';
-    aplicarPosPubFimPub();
-  });
-  pubFimPubReporPosBtn.addEventListener('click', function(){
-    pubFimPubTamanhoInput.value = 1;
-    pubFimPubTamanhoValorEl.textContent = '100%';
-    pubFimPubPosState.x = 0; pubFimPubPosState.y = 0;
-    aplicarPosPubFimPub();
-  });
-  
-
-  
-// ---- Publicidade dentro das categorias de comida (genérico, reutilizado para todas) ----
-const CATEGORIAS_ANUNCIO = ["entradas","sopas-saladas","brasa","partilhados","infantil","individuais","peixe","carne","vegetariana","snacks","sandes","domingo"];
-let catPubState = {};
-function pascalCaseSlug(slug){ return slug.split("-").map(function(p){ return p.charAt(0).toUpperCase()+p.slice(1); }).join(""); }
-
-function extrairCategoriaPub(html, slug){
-  const pascal = pascalCaseSlug(slug);
-  const regexBloco = new RegExp("<div class=\"categoria-anuncio\" id=\"catAnuncio" + pascal + "\"[^>]*>([\\s\\S]*?)<div class=\"categoria-anuncio-texto\">");
-  const m = html.match(regexBloco);
-  if(!m) return null;
-  const media = extrairMediaDoInner(m[1]);
-  if(!media) return null;
-  return {
-    caminho: media.caminho,
-    tipo: media.tipo,
-    novoFicheiro: null,
-    previewUrl: null,
-    nomePreview: media.caminho ? media.caminho.split("/").pop() : ""
-  };
-}
-
-function construirCategoriaPubImgHtml(pub, slug){
-  const pascal = pascalCaseSlug(slug);
-  return "\n          <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->\n          " + construirMediaTag(pub, " id=\"catAnuncio" + pascal + "Img\" style=\"\"") + "\n          ";
-}
-
-function substituirCategoriaPubImg(html, slug, novoInnerHTML){
-  const pascal = pascalCaseSlug(slug);
-  const regex = new RegExp("(<div class=\"categoria-anuncio\" id=\"catAnuncio" + pascal + "\"[^>]*>)([\\s\\S]*?)(<div class=\"categoria-anuncio-texto\">)");
-  return html.replace(regex, "$1" + novoInnerHTML + "$3");
-}
-
-function renderizarCategoriaPub(slug){
-  const pascal = pascalCaseSlug(slug);
-  const state = catPubState[slug];
-  const miniEl = document.getElementById("miniaturaCatPub" + pascal);
-  const nomeEl = document.getElementById("nomeCatPub" + pascal);
-  if(!miniEl || !nomeEl) return;
-  if(!state || (!state.caminho && !state.novoFicheiro)){
-    miniEl.src = "";
-    miniEl.style.display = "";
-    nomeEl.textContent = "—";
-    return;
-  }
-  renderizarMiniaturaOuVideo(state, miniEl, nomeEl);
-}
-
-CATEGORIAS_ANUNCIO.forEach(function(slug){
-  const pascal = pascalCaseSlug(slug);
-  const inputEl = document.getElementById("novaCatPub" + pascal);
-  if(!inputEl) return;
-  inputEl.addEventListener("change", function(e){
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    catPubState[slug] = {
-      caminho: catPubState[slug] ? catPubState[slug].caminho : null,
-      tipo: ficheiroEhVideo(file) ? "video" : "foto",
-      novoFicheiro: file,
-      previewUrl: ficheiroEhVideo(file) ? null : URL.createObjectURL(file),
-      nomePreview: file.name
-    };
-    renderizarCategoriaPub(slug);
-    e.target.value = "";
-  });
-});
-
-    btnCarregar.addEventListener('click', carregarTexto);
-  btnGuardar.addEventListener('click', guardarTexto);
-
-  function extrairInfoEstiloImagemAnuncio(estilo){
-  const transM = estilo.match(/transform:\s*translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)\s*scale\(\s*([\d.]+)\s*\)/);
-  return {
-    tamanho: transM ? parseFloat(transM[3]) : 1,
-    x: transM ? parseFloat(transM[1]) : 0,
-    y: transM ? parseFloat(transM[2]) : 0
-  };
-}
-function construirEstiloImagemAnuncio(tamanho, offsetX, offsetY){
-  const partes = ['object-fit:cover'];
-  const tamanhoArred = Math.round(tamanho*100)/100;
-  if(Math.abs(tamanhoArred-1) > 0.001 || Math.round(offsetX)!==0 || Math.round(offsetY)!==0){
-    partes.push('transform:translate(' + Math.round(offsetX) + 'px, ' + Math.round(offsetY) + 'px) scale(' + tamanhoArred.toFixed(2) + ')');
-  }
-  return partes.join('; ');
-}
-function tornarArrastavelImagemAnuncio(el, estado, sliderTamanho){
-  let arrastando = false, inicio = {x:0,y:0}, posInicio = {x:0,y:0};
-  function aplicar(){
-    const escala = parseFloat(sliderTamanho.value) || 1;
-    el.style.transform = 'translate(' + estado.x + 'px, ' + estado.y + 'px) scale(' + escala + ')';
-  }
-  el.addEventListener('pointerdown', function(e){
-    arrastando = true; el.classList.add('arrastando');
-    inicio = { x: e.clientX, y: e.clientY };
-    posInicio = { x: estado.x, y: estado.y };
-    el.setPointerCapture(e.pointerId);
-  });
-  el.addEventListener('pointermove', function(e){
-    if(!arrastando) return;
-    const dx = e.clientX - inicio.x, dy = e.clientY - inicio.y;
-    estado.x = posInicio.x + dx; estado.y = posInicio.y + dy;
-    aplicar();
-  });
-  function terminar(){ arrastando = false; el.classList.remove('arrastando'); }
-  el.addEventListener('pointerup', terminar);
-  el.addEventListener('pointercancel', terminar);
-  el.addEventListener('pointerleave', terminar);
-  return aplicar;
-}
-
-
-
-  // carrega automaticamente ao abrir a página
-  carregarTexto();
-
-
-/* ---- Foto principal por categoria (hero) ---- */
-const CATEGORIAS_HERO = ["entradas","sopas-saladas","brasa","partilhados","infantil","individuais","peixe","carne","vegetariana","snacks","sandes","domingo","vinhos","jogos-menu"];
-const catHeroState = {};
-
-function obterImgSrcPorId(html, id){
-  const m = html.match(new RegExp('<img[^>]*id="' + id + '"[^>]*>'));
-  if(!m) return '';
-  return extrairAtributo(m[0], 'src');
-}
-function substituirImgSrcPorId(html, id, novoSrc){
-  const m = html.match(new RegExp('<img[^>]*id="' + id + '"[^>]*>'));
-  if(!m) return html;
-  const novaTag = substituirAtributo(m[0], 'src', novoSrc);
-  return html.replace(m[0], novaTag);
-}
-
-CATEGORIAS_HERO.forEach(function(slug){
-  const pascalH2 = pascalCaseSlug(slug);
-  const inputH = document.getElementById('novaCatHero' + pascalH2);
-  if(!inputH) return;
-  inputH.addEventListener('change', function(){
-    const file = inputH.files && inputH.files[0];
-    if(!file) return;
-    catHeroState[slug] = catHeroState[slug] || {};
-    catHeroState[slug].novoFicheiro = file;
-    const nomeElH = document.getElementById('nomeCatHero' + pascalH2);
-    if(nomeElH) nomeElH.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const imgElH = document.getElementById('miniaturaCatHero' + pascalH2);
-      if(imgElH){ imgElH.src = e.target.result; imgElH.style.display = 'block'; }
-    };
-    reader.readAsDataURL(file);
-  });
-});
-</script>
-
-
-
-</body></html>
+    // Inicializar
+    gerarFotoCategorias();
+    gerarPubCategorias();
+    atualizarUltimaAtualizacao();
+    recarregarStats();
+  </script>
+</body>
+</html>
