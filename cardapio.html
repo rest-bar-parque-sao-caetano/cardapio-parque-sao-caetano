@@ -107,7 +107,7 @@
 
   .categoria-grid{
     display:grid;
-    grid-template-columns:repeat(4, 1fr);
+    grid-template-columns:repeat(3, 1fr);
     gap:8px;
     padding:14px 12px;
     background:var(--branco);
@@ -1439,28 +1439,7 @@
   .categoria-anuncio-texto 
   .categoria-anuncio-texto .subtitulo-anuncio:empty{ display:none; }
 </style>
-<style id="estiloLayoutCategoriasV2">/* ---- Layout v2: nav fina + fotos por categoria + acordeao ---- */
-#categoriaNavFina{position:sticky;top:0;z-index:40;display:flex;overflow-x:auto;gap:6px;background:var(--branco);border-bottom:1px solid var(--linha);padding:10px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-#categoriaNavFina::-webkit-scrollbar{display:none;}
-#categoriaNavFina .nav-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--bege);border:1px solid var(--linha);border-radius:10px;padding:6px 10px;cursor:pointer;font-family:Fredoka,sans-serif;}
-#categoriaNavFina .nav-item.active{background:var(--castanho);border-color:var(--castanho);}
-#categoriaNavFina .nav-item.active .nav-label{color:var(--branco);}
-#categoriaNavFina .nav-emoji{font-size:1.05rem;line-height:1;}
-#categoriaNavFina .nav-label{font-size:.58rem;font-weight:600;text-transform:uppercase;color:var(--castanho-suave);white-space:nowrap;}
-main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
-.categoria-hero{position:relative;border-radius:14px;overflow:hidden;min-height:120px;cursor:pointer;}
-.categoria-hero-media{position:relative;width:100%;height:120px;background:var(--bege);}
-.categoria-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:14px;}
-.categoria-hero-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--bege),var(--linha-suave));border-radius:14px;}
-.categoria-hero-placeholder-emoji{font-size:2.2rem;opacity:.55;}
-.categoria-hero-overlay{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));border-radius:0 0 14px 14px;}
-.categoria-hero-titulo{font-family:Fredoka,sans-serif;font-weight:600;color:#fff;font-size:1rem;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-.categoria-hero-seta{color:#fff;font-size:.85rem;transition:transform .25s;}
-.categoria-v2.expandida .categoria-hero-seta{transform:rotate(180deg);}
-.categoria-corpo{display:none;padding-top:0;}
-.categoria-v2.expandida .categoria-corpo{display:block;}
-.categoria-corpo > details.grupo-prato > summary{display:none;}
-.categoria-corpo > details.grupo-prato{margin-top:12px;}</style></head>
+</head>
 <body>
 
 <div class="ad-popup-overlay" id="adPopup">
@@ -1484,8 +1463,8 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
 
 <header>
   <div class="header-fotos" id="headerFotos">
-    <img src="imagens/1783697899032-img_1575.jpg" data-duracao="30" class="ativa" alt="Rest & Bar Parque São Caetano">
-    <img src="imagens/1783698961451-gemini_generated_image_l4woqpl4woqpl4wo.png" data-duracao="30" alt="Rest & Bar Parque São Caetano">
+    <img src="imagens/1783697899032-img_1575.jpg" data-duracao="30" class="ativa" alt="Rest &amp; Bar Parque São Caetano">
+    <img src="imagens/1783698961451-gemini_generated_image_l4woqpl4woqpl4wo.png" data-duracao="30" alt="Rest &amp; Bar Parque São Caetano">
   </div>
   <div class="brand-mark" style="font-size:1.80rem; transform:translate(3px, -12px)" id="brandMark">Rest &amp; Bar<br>Parque São Caetano</div>
   <div class="brand-sub" style="font-size:0.87rem; transform:translate(0px, -8px)" data-en="Tradition, flavor and comfort at the table" data-fr="Tradition, saveur et confort à table" id="brandSub">Tradição, Sabor e conforto à mesa</div>
@@ -1506,66 +1485,66 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
   </div>
 </header>
 
-<nav id="categoriaNavFina" class="categoria-nav-fina"><button type="button" class="nav-item" data-target="entradas"><span class="nav-emoji">🥖</span><span class="nav-label">Entradas</span></button><button type="button" class="nav-item" data-target="sopas-saladas"><span class="nav-emoji">🥗</span><span class="nav-label">Sopas e Saladas</span></button><button type="button" class="nav-item" data-target="brasa"><span class="nav-emoji">🔥</span><span class="nav-label">Especialidades na Brasa</span></button><button type="button" class="nav-item" data-target="partilhados"><span class="nav-emoji">🍖</span><span class="nav-label">Partilhados</span></button><button type="button" class="nav-item" data-target="infantil"><span class="nav-emoji">🧑‍🤝‍🧑</span><span class="nav-label">Infantil</span></button><button type="button" class="nav-item" data-target="individuais"><span class="nav-emoji">🍽️</span><span class="nav-label">Pratos</span></button><button type="button" class="nav-item" data-target="peixe"><span class="nav-emoji">🐟</span><span class="nav-label">Peixe</span></button><button type="button" class="nav-item" data-target="carne"><span class="nav-emoji">🥩</span><span class="nav-label">Carne</span></button><button type="button" class="nav-item" data-target="vegetariana"><span class="nav-emoji">🥦</span><span class="nav-label">Vegetariana</span></button><button type="button" class="nav-item" data-target="snacks"><span class="nav-emoji">🌭</span><span class="nav-label">Snacks</span></button><button type="button" class="nav-item" data-target="sandes"><span class="nav-emoji">🥪</span><span class="nav-label">Sandes</span></button><button type="button" class="nav-item" data-target="domingo"><span class="nav-emoji">🍲</span><span class="nav-label">Domingo</span></button><button type="button" class="nav-item" data-target="vinhos"><span class="nav-emoji">🍷</span><span class="nav-label">Vinhos &amp; Bebidas</span></button><button type="button" class="nav-item" data-target="jogos-menu"><span class="nav-emoji">🎮</span><span class="nav-label">Jogos</span></button></nav><div class="categoria-grid" id="categoriaGrid" aria-hidden="true" style="display: none;">
+<div class="categoria-grid" id="categoriaGrid" style="">
   <button class="tile" data-target="entradas" type="button">
-    <span class="tile-emoji">🥖</span>
+    
     <span class="tile-label" data-en="Starters" data-fr="Entrées">Entradas</span>
   </button>
   <button class="tile" data-target="sopas-saladas" type="button">
-    <span class="tile-emoji">🥗</span>
+    
     <span class="tile-label" data-en="Soups &amp; Salads" data-fr="Soupes et Salades">Sopas e Saladas</span>
   </button>
   <button class="tile" data-target="brasa" type="button">
-    <span class="tile-emoji">🔥</span>
+    
     <span class="tile-label" data-en="Charcoal Grill Specialties" data-fr="Spécialités à la Braise">Especialidades na Brasa</span>
   </button>
   <button class="tile" data-target="partilhados" type="button">
-    <span class="tile-emoji">🍖</span>
+    
     <span class="tile-label" data-en="Sharing" data-fr="À partager">Partilhados</span>
   </button>
   <button class="tile" data-target="infantil" type="button">
-    <span class="tile-emoji">🧑‍🤝‍🧑</span>
+    
     <span class="tile-label" data-en="Kids" data-fr="Enfants">Infantil</span>
   </button>
   <button class="tile" data-target="individuais" type="button">
-    <span class="tile-emoji">🍽️</span>
+    
     <span class="tile-label" data-en="Mains" data-fr="Plats">Pratos</span>
   </button>
   <button class="tile" data-target="peixe" type="button">
-    <span class="tile-emoji">🐟</span>
+    
     <span class="tile-label" data-en="Fish" data-fr="Poisson">Peixe</span>
   </button>
   <button class="tile" data-target="carne" type="button">
-    <span class="tile-emoji">🥩</span>
+    
     <span class="tile-label" data-en="Meat" data-fr="Viande">Carne</span>
   </button>
   <button class="tile" data-target="vegetariana" type="button">
-    <span class="tile-emoji">🥦</span>
+    
     <span class="tile-label" data-en="Vegetarian" data-fr="Végétarien">Vegetariana</span>
   </button>
   <button class="tile" data-target="snacks" type="button">
-    <span class="tile-emoji">🌭</span>
+    
     <span class="tile-label" data-en="Snacks" data-fr="Snacks">Snacks</span>
   </button>
   <button class="tile" data-target="sandes" type="button">
-    <span class="tile-emoji">🥪</span>
+    
     <span class="tile-label" data-en="Sandwiches" data-fr="Sandwichs">Sandes</span>
   </button>
   <button class="tile" data-target="domingo" type="button">
-    <span class="tile-emoji">🍲</span>
+    
     <span class="tile-label" data-en="Sunday" data-fr="Dimanche">Domingo</span>
   </button>
   <button class="tile" data-target="vinhos" type="button">
-    <span class="tile-emoji">🍷</span>
+    
     <span class="tile-label" data-en="Wines &amp; Drinks" data-fr="Vins &amp; Boissons">Vinhos &amp; Bebidas</span>
   </button>
   <button class="tile" data-target="jogos-menu" type="button">
-    <span class="tile-emoji">🎮</span>
+    
     <span class="tile-label" data-en="Games" data-fr="Jeux">Jogos</span>
   </button>
 </div>
 
-<div class="categoria-painel" id="categoriaPainel" aria-hidden="true" style="display: none;">
+<div class="categoria-painel" id="categoriaPainel" style="">
   <div class="categoria-painel-header">
     <button type="button" id="fecharPainel" class="voltar" aria-label="Voltar">←</button>
     <div class="titulo" id="painelTitulo"></div>
@@ -1574,7 +1553,7 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
 </div>
 
 <main>
-  <section class="categoria categoria-v2 expandida" id="entradas"><div class="categoria-hero" data-target="entradas"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroEntradasImg" alt="Entradas" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🥖</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Entradas</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="entradas">
 
       <div class="categoria-anuncio" id="catAnuncioEntradas" data-cat-pub-ativo-entradas="true">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1601,9 +1580,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Ham Board" data-fr="Planche de Jambon">Tábua de Presunto</div><div class="preco">15,00€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="sopas-saladas"><div class="categoria-hero" data-target="sopas-saladas"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroSopasSaladasImg" alt="Sopas e Saladas" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🥗</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Sopas e Saladas</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="sopas-saladas">
 
       <div class="categoria-anuncio" id="catAnuncioSopasSaladas" data-cat-pub-ativo-sopas-saladas="true">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1621,9 +1600,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Tuna Salad" data-fr="Salade de Thon">Salada de Atum</div><div class="preco">11,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="brasa"><div class="categoria-hero" data-target="brasa"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroBrasaImg" alt="Especialidades na Brasa" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🔥</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Especialidades na Brasa</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="brasa">
 
       <div class="categoria-anuncio" id="catAnuncioBrasa" data-cat-pub-ativo-brasa="true">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1645,9 +1624,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Chicken without Side Dish" data-fr="Poulet sans Accompagnement">Frango s/ guarnição</div><div class="preco">4,50€ / 17,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="infantil"><div class="categoria-hero" data-target="infantil"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroInfantilImg" alt="Infantil" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🧑‍🤝‍🧑</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Infantil</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="infantil">
 
       <div class="categoria-anuncio" id="catAnuncioInfantil" data-cat-pub-ativo-infantil="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1665,9 +1644,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Mini Steak Sandwich" data-fr="Mini Sandwich à la Viande">Mini Prego</div><div class="preco">8,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="partilhados"><div class="categoria-hero" data-target="partilhados"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroPartilhadosImg" alt="Partilhados" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🍖</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Partilhados</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="partilhados">
 
       <div class="categoria-anuncio" id="catAnuncioPartilhados" data-cat-pub-ativo-partilhados="true">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1691,9 +1670,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Mixed Grill – 4 people" data-fr="Grillade Mixte – 4 personnes">Grelhado Misto – 4 pessoas</div><div class="preco">29,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="individuais"><div class="categoria-hero" data-target="individuais"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroIndividuaisImg" alt="Pratos" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🍽️</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Pratos</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="individuais">
 
       <div class="categoria-anuncio" id="catAnuncioIndividuais" data-cat-pub-ativo-individuais="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1715,9 +1694,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Pica-Pau (Diced Beef Bites)" data-fr="Pica-Pau (Émincé de Bœuf)">Pica-Pau</div><div class="preco">10,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="peixe"><div class="categoria-hero" data-target="peixe"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroPeixeImg" alt="Peixe" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🐟</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Peixe</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="peixe">
 
       <div class="categoria-anuncio" id="catAnuncioPeixe" data-cat-pub-ativo-peixe="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1742,9 +1721,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Smashed Octopus with Potatoes" data-fr="Poulpe Écrasé aux Pommes de Terre">Escangalhado de Polvo</div><div class="preco">27,00€ / 40,00€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="carne"><div class="categoria-hero" data-target="carne"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroCarneImg" alt="Carne" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🥩</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Carne</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="carne">
 
       <div class="categoria-anuncio" id="catAnuncioCarne" data-cat-pub-ativo-carne="true">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1765,9 +1744,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Charcoal Grill at the Table" data-fr="Braise à Table">Brasa na Mesa</div><div class="preco">34,00€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="vegetariana"><div class="categoria-hero" data-target="vegetariana"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroVegetarianaImg" alt="Vegetariana" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🥦</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Vegetariana</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="vegetariana">
 
       <div class="categoria-anuncio" id="catAnuncioVegetariana" data-cat-pub-ativo-vegetariana="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1784,9 +1763,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Sautéed Pasta with Mixed Vegetables" data-fr="Pâtes Sautées aux Légumes Variés">Massa Salteada c/ Variedade de Legumes</div><div class="preco">10,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="snacks"><div class="categoria-hero" data-target="snacks"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroSnacksImg" alt="Snacks" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🌭</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Snacks</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="snacks">
 
       <div class="categoria-anuncio" id="catAnuncioSnacks" data-cat-pub-ativo-snacks="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1811,9 +1790,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Burger São Caetano-Style" data-fr="Hamburger à la São Caetano">Hambúrguer à São Caetano</div><div class="preco">12,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="sandes"><div class="categoria-hero" data-target="sandes"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroSandesImg" alt="Sandes" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🥪</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Sandes</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="sandes">
 
       <div class="categoria-anuncio" id="catAnuncioSandes" data-cat-pub-ativo-sandes="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1835,9 +1814,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Special Steak Sandwich" data-fr="Sandwich à la Viande Spécial">Prego no Pão Especial</div><div class="preco">15,00€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="domingo"><div class="categoria-hero" data-target="domingo"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroDomingoImg" alt="Domingo" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🍲</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Domingo</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="domingo">
 
       <div class="categoria-anuncio" id="catAnuncioDomingo" data-cat-pub-ativo-domingo="false">
           <!-- Foto de publicidade da categoria. Ativa-se e edita-se em editar.html -->
@@ -1858,9 +1837,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="item"><div class="nome" data-en="Portuguese Boiled Dinner" data-fr="Pot-au-Feu à la Portugaise">Cozido à Portuguesa</div><div class="preco">15,00€ / 24,50€</div></div>
       </div>
     </details>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="vinhos"><div class="categoria-hero" data-target="vinhos"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroVinhosImg" alt="Vinhos &amp; Bebidas" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🍷</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Vinhos &amp; Bebidas</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="vinhos">
     <h2 data-en="Wines &amp; Drinks" data-fr="Vins &amp; Boissons">Vinhos &amp; Bebidas</h2>
     <div class="subtitulo" data-en="Wine List — Parque São Caetano" data-fr="Carte des Vins — Parque São Caetano">Carta de Vinhos — Parque São Caetano</div>
 
@@ -2006,9 +1985,9 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha4"></div>
       </div>
     </div>
-  </div></section>
+  </section>
 
-  <section class="categoria categoria-v2" id="jogos-menu"><div class="categoria-hero" data-target="jogos-menu"><div class="categoria-hero-media"><img class="categoria-hero-img" id="catHeroJogosMenuImg" alt="Jogos" src="" style="display: none;"><div class="categoria-hero-placeholder"><span class="categoria-hero-placeholder-emoji">🎮</span></div></div><div class="categoria-hero-overlay"><span class="categoria-hero-titulo">Jogos</span><span class="categoria-hero-seta">▾</span></div></div><div class="categoria-corpo">
+  <section class="categoria" id="jogos-menu">
     <h2 data-en="Games" data-fr="Jeux">Jogos</h2>
     <div class="subtitulo" data-en="Choose a game and have fun while you wait!" data-fr="Choisis un jeu et amuse-toi en attendant !">Escolhe um jogo e diverte-te enquanto esperas!</div>
 
@@ -2174,7 +2153,7 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
         <button type="button" class="adiv-seguinte" id="adivSeguinte" data-en="Next riddle" data-fr="Devinette suivante">Próxima adivinha</button>
       </div>
     </div>
-  </div></section>
+  </section>
 </main>
 
 <div class="modal-overlay" id="modalVinho">
@@ -3819,33 +3798,5 @@ main section.categoria.categoria-v2{display:block !important;margin-top:14px;}
 
 
 
-<script id="scriptLayoutCategoriasV2">(function(){
-  function toggleCategoria(slug, doScroll){
-    var section = document.getElementById(slug);
-    if(!section) return;
-    var jaAberta = section.classList.contains('expandida');
-    document.querySelectorAll('main section.categoria-v2.expandida').forEach(function(s){ s.classList.remove('expandida'); });
-    document.querySelectorAll('#categoriaNavFina .nav-item.active').forEach(function(b){ b.classList.remove('active'); });
-    if(!jaAberta){
-      section.classList.add('expandida');
-      var grupo = section.querySelector('.grupo-prato');
-      if(grupo) grupo.open = true;
-      var navBtn = document.querySelector('#categoriaNavFina .nav-item[data-target="'+slug+'"]');
-      if(navBtn) navBtn.classList.add('active');
-      if(doScroll){ requestAnimationFrame(function(){ section.scrollIntoView({behavior:'smooth', block:'start'}); }); }
-    }
-  }
-  document.querySelectorAll('.categoria-hero').forEach(function(hero){
-    hero.addEventListener('click', function(){ toggleCategoria(hero.dataset.target, false); });
-  });
-  document.querySelectorAll('#categoriaNavFina .nav-item').forEach(function(btn){
-    btn.addEventListener('click', function(){ toggleCategoria(btn.dataset.target, true); });
-  });
-  document.querySelectorAll('.categoria-hero-img').forEach(function(img){
-    img.addEventListener('error', function(){ img.style.display='none'; });
-    img.addEventListener('load', function(){ if(img.getAttribute('src')){ img.style.display='block'; } });
-    if(img.getAttribute('src')){ img.style.display='block'; }
-  });
-  var navBtn0 = document.querySelector('#categoriaNavFina .nav-item[data-target="entradas"]');
-  if(navBtn0) navBtn0.classList.add('active');
-})();</script></body></html>
+
+</body></html>
