@@ -685,27 +685,124 @@
       const l2 = document.getElementById('rodape2').value;
       const l3 = document.getElementById('rodape3').value;
       const l4 = document.getElementById('rodape4').value;
+
+      // Guardar em localStorage
+      localStorage.setItem('rodape1', l1);
+      localStorage.setItem('rodape2', l2);
+      localStorage.setItem('rodape3', l3);
+      localStorage.setItem('rodape4', l4);
+
       document.getElementById('previewRodape1').textContent = l1;
       document.getElementById('previewRodape2').textContent = l2;
       document.getElementById('previewRodape3').textContent = l3;
       document.getElementById('previewRodape4').textContent = l4;
-      mostrarEstado('estadoRodape', '✓ Rodapé guardado', 'ok');
+
+      // Gerar código para copiar
+      const codigo = `<div class="linha-negrito" id="rodapeLinha1">${l1}</div>
+    <div class="linha" id="rodapeLinha2">${l2}</div>
+    <div class="linha" id="rodapeLinha3">${l3}</div>
+    <div class="linha" id="rodapeLinha4">${l4}</div>`;
+
+      mostrarEstado('estadoRodape', '✓ Rodapé guardado (copia o código abaixo para o cardapio.html)', 'ok');
+      alert(`Copia este código para o cardapio.html (procura <div class="info-fixa-texto" id="infoFixaTexto">):\n\n${codigo}`);
     }
 
     function guardarEspecial() {
+      const ativo = document.getElementById('especial').checked;
+      const inicio = document.getElementById('especialInicio').value;
+      const fim = document.getElementById('especialFim').value;
+      const l1 = document.getElementById('especial1').value;
+      const l2 = document.getElementById('especial2').value;
+      const l3 = document.getElementById('especial3').value;
+      const l4 = document.getElementById('especial4').value;
+
+      // Guardar em localStorage
+      localStorage.setItem('especialAtivo', ativo);
+      localStorage.setItem('especialInicio', inicio);
+      localStorage.setItem('especialFim', fim);
+      localStorage.setItem('especial1', l1);
+      localStorage.setItem('especial2', l2);
+      localStorage.setItem('especial3', l3);
+      localStorage.setItem('especial4', l4);
+
+      const atributo = `data-especial-ativo="${ativo ? 'true' : 'false'}" data-especial-inicio="${inicio}" data-especial-fim="${fim}" data-especial-l1="${l1}" data-especial-l2="${l2}" data-especial-l3="${l3}" data-especial-l4="${l4}"`;
+
       mostrarEstado('estadoEspecial', '✓ Mensagem especial guardada', 'ok');
+      alert(`Atualiza o atributo do <div class="info-fixa-texto" id="infoFixaTexto">:\n\n${atributo}`);
     }
 
     function guardarPublicidade() {
+      const ativo = document.getElementById('pubAtiva').checked;
+      const img = document.getElementById('pubFoto').value;
+      const posX = document.getElementById('pubPosX').value;
+      const posY = document.getElementById('pubPosY').value;
+      const scale = document.getElementById('pubScale').value;
+
+      // Guardar em localStorage
+      localStorage.setItem('pubAtivo', ativo);
+      localStorage.setItem('pubFoto', img);
+      localStorage.setItem('pubPosX', posX);
+      localStorage.setItem('pubPosY', posY);
+      localStorage.setItem('pubScale', scale);
+
+      const atributo = `data-fundo-ativo="${ativo ? 'true' : 'false'}" style="object-fit:cover; transform:translate(${posX}px, ${posY}px) scale(${scale})"`;
+      const html = `<img src="${img}" alt="Publicidade" id="fundoAnuncioImg" ${atributo}>`;
+
       mostrarEstado('estadoPub', '✓ Publicidade guardada', 'ok');
+      alert(`Atualiza a imagem em #infoFixaFundo:\n\n${html}`);
     }
 
     function guardarVinhoPub() {
+      const ativo = document.getElementById('vinhoPubAtiva').checked;
+      const img = document.getElementById('vinhoPubFoto').value;
+      const titulo = document.getElementById('vinhoPubTitulo').value;
+      const sub = document.getElementById('vinhoPubSub').value;
+
+      // Guardar em localStorage
+      localStorage.setItem('vinhoPubAtivo', ativo);
+      localStorage.setItem('vinhoPubFoto', img);
+      localStorage.setItem('vinhoPubTitulo', titulo);
+      localStorage.setItem('vinhoPubSub', sub);
+
+      const atributo = `data-vinho-pub-ativo="${ativo ? 'true' : 'false'}"`;
+      const html = `<div class="vinho-anuncio" id="vinhoAnuncio" ${atributo}>
+          <img src="${img}" alt="Publicidade" id="vinhoAnuncioImg" style="">
+          <div class="vinho-anuncio-texto">
+            <div class="titulo" id="vinhoAnuncioTitulo">${titulo}</div>
+            <div class="subtitulo-anuncio" id="vinhoAnuncioSubtitulo">${sub}</div>
+          </div>
+        </div>`;
+
       mostrarEstado('estadoVinhoPub', '✓ Vinho do mês guardado', 'ok');
+      alert(`Atualiza o bloco em #vinhoAnuncio:\n\n${html}`);
     }
 
     function guardarVinhosSecPub() {
+      const ativo = document.getElementById('vinhosSecPubAtiva').checked;
+      const img = document.getElementById('vinhosSecPubImg').value;
+      const titulo = document.getElementById('vinhosSecPubTitulo').value;
+      const sub1 = document.getElementById('vinhosSecPubSub').value;
+      const sub2 = document.getElementById('vinhosSecPubSub2').value;
+      const sub3 = document.getElementById('vinhosSecPubSub3').value;
+
+      // Guardar em localStorage
+      localStorage.setItem('vinhosSecPubAtivo', ativo);
+      localStorage.setItem('vinhosSecPubImg', img);
+      localStorage.setItem('vinhosSecPubTitulo', titulo);
+
+      const atributo = `data-vinhos-pub-ativo="${ativo ? 'true' : 'false'}"`;
+      const html = `<div class="vinho-anuncio alto" id="vinhosAnuncioSeccao" ${atributo}>
+      <img src="${img}" alt="Publicidade" id="vinhosSeccaoPubImg" style="">
+      <div class="vinho-anuncio-texto">
+        <div class="titulo" id="vinhosAnuncioSeccaoTitulo">${titulo}</div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo">${sub1}</div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha3">${sub2}</div>
+        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha4">${sub3}</div>
+      </div>
+    </div>`;
+
       mostrarEstado('estadoVinhosSecPub', '✓ Publicidade de bebidas guardada', 'ok');
+      alert(`Atualiza o bloco em #vinhosAnuncioSeccao:\n\n${html}`);
     }
 
     // Upload de imagens
