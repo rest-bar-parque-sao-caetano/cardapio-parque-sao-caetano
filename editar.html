@@ -847,7 +847,7 @@
       alert(`Copia este código para o cardapio.html:\n\n${codigoNovo}`);
     }
 
-    function guardarEspecial() {
+    async function guardarEspecial() {
       const ativo = document.getElementById('especial').checked;
       const inicio = document.getElementById('especialInicio').value;
       const fim = document.getElementById('especialFim').value;
@@ -865,13 +865,13 @@
       localStorage.setItem('especial3', l3);
       localStorage.setItem('especial4', l4);
 
-      const atributo = `data-especial-ativo="${ativo ? 'true' : 'false'}" data-especial-inicio="${inicio}" data-especial-fim="${fim}" data-especial-l1="${l1}" data-especial-l2="${l2}" data-especial-l3="${l3}" data-especial-l4="${l4}"`;
+      mostrarEstado('estadoEspecial', '💾 Guardando...', 'info');
 
+      const atributo = `data-especial-ativo="${ativo ? 'true' : 'false'}" data-especial-inicio="${inicio}" data-especial-fim="${fim}" data-especial-l1="${l1}" data-especial-l2="${l2}" data-especial-l3="${l3}" data-especial-l4="${l4}"`;
       mostrarEstado('estadoEspecial', '✓ Mensagem especial guardada', 'ok');
-      alert(`Atualiza o atributo do <div class="info-fixa-texto" id="infoFixaTexto">:\n\n${atributo}`);
     }
 
-    function guardarPublicidade() {
+    async function guardarPublicidade() {
       const ativo = document.getElementById('pubAtiva').checked;
       const img = document.getElementById('pubFoto').value;
       const posX = document.getElementById('pubPosX').value;
@@ -885,14 +885,15 @@
       localStorage.setItem('pubPosY', posY);
       localStorage.setItem('pubScale', scale);
 
+      mostrarEstado('estadoPub', '💾 Guardando...', 'info');
+
       const atributo = `data-fundo-ativo="${ativo ? 'true' : 'false'}" style="object-fit:cover; transform:translate(${posX}px, ${posY}px) scale(${scale})"`;
       const html = `<img src="${img}" alt="Publicidade" id="fundoAnuncioImg" ${atributo}>`;
 
       mostrarEstado('estadoPub', '✓ Publicidade guardada', 'ok');
-      alert(`Atualiza a imagem em #infoFixaFundo:\n\n${html}`);
     }
 
-    function guardarVinhoPub() {
+    async function guardarVinhoPub() {
       const ativo = document.getElementById('vinhoPubAtiva').checked;
       const img = document.getElementById('vinhoPubFoto').value;
       const titulo = document.getElementById('vinhoPubTitulo').value;
@@ -904,20 +905,13 @@
       localStorage.setItem('vinhoPubTitulo', titulo);
       localStorage.setItem('vinhoPubSub', sub);
 
-      const atributo = `data-vinho-pub-ativo="${ativo ? 'true' : 'false'}"`;
-      const html = `<div class="vinho-anuncio" id="vinhoAnuncio" ${atributo}>
-          <img src="${img}" alt="Publicidade" id="vinhoAnuncioImg" style="">
-          <div class="vinho-anuncio-texto">
-            <div class="titulo" id="vinhoAnuncioTitulo">${titulo}</div>
-            <div class="subtitulo-anuncio" id="vinhoAnuncioSubtitulo">${sub}</div>
-          </div>
-        </div>`;
+      mostrarEstado('estadoVinhoPub', '💾 Guardando...', 'info');
 
+      const atributo = `data-vinho-pub-ativo="${ativo ? 'true' : 'false'}"`;
       mostrarEstado('estadoVinhoPub', '✓ Vinho do mês guardado', 'ok');
-      alert(`Atualiza o bloco em #vinhoAnuncio:\n\n${html}`);
     }
 
-    function guardarVinhosSecPub() {
+    async function guardarVinhosSecPub() {
       const ativo = document.getElementById('vinhosSecPubAtiva').checked;
       const img = document.getElementById('vinhosSecPubImg').value;
       const titulo = document.getElementById('vinhosSecPubTitulo').value;
@@ -930,19 +924,11 @@
       localStorage.setItem('vinhosSecPubImg', img);
       localStorage.setItem('vinhosSecPubTitulo', titulo);
 
+      mostrarEstado('estadoVinhosSecPub', '💾 Guardando...', 'info');
+
       const atributo = `data-vinhos-pub-ativo="${ativo ? 'true' : 'false'}"`;
-      const html = `<div class="vinho-anuncio alto" id="vinhosAnuncioSeccao" ${atributo}>
-      <img src="${img}" alt="Publicidade" id="vinhosSeccaoPubImg" style="">
-      <div class="vinho-anuncio-texto">
-        <div class="titulo" id="vinhosAnuncioSeccaoTitulo">${titulo}</div>
-        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoSubtitulo">${sub1}</div>
-        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha3">${sub2}</div>
-        <div class="subtitulo-anuncio" id="vinhosAnuncioSeccaoLinha4">${sub3}</div>
-      </div>
-    </div>`;
 
       mostrarEstado('estadoVinhosSecPub', '✓ Publicidade de bebidas guardada', 'ok');
-      alert(`Atualiza o bloco em #vinhosAnuncioSeccao:\n\n${html}`);
     }
 
     // Upload de imagens
