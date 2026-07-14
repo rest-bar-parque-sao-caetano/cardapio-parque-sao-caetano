@@ -2320,7 +2320,9 @@
 
       if(publicidadeState && publicidadeState.novoFicheiro){
         setEstado('A enviar imagem de publicidade: ' + publicidadeState.nomePreview + '…', 'info');
-        publicidadeState.caminho = await enviarFoto(publicidadeState.novoFicheiro, token);
+        const novoCaminho = await enviarFoto(publicidadeState.novoFicheiro, token);
+        console.log('[DEBUG] Foto enviada! Caminho antigo:', publicidadeState.caminho, ' → Novo:', novoCaminho);
+        publicidadeState.caminho = novoCaminho;
         publicidadeState.novoFicheiro = null;
       }
 
