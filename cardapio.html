@@ -3460,6 +3460,22 @@
         infoFixaFundo.setAttribute('data-fundo-ativo', dados.pubAtivo !== false ? 'true' : 'false');
       }
 
+      // Atualizar publicidade do rodapé
+      const pubRodapeFundo = document.getElementById('pubRodapeFundo');
+      if(pubRodapeFundo) {
+        pubRodapeFundo.setAttribute('data-rodape-pub-ativo', dados.pubRodapeAtivo !== false ? 'true' : 'false');
+        if(dados.pubRodapeFoto) {
+          let img = pubRodapeFundo.querySelector('img');
+          if(!img) {
+            img = document.createElement('img');
+            pubRodapeFundo.appendChild(img);
+          }
+          img.src = dados.pubRodapeFoto;
+          const transform = `translate(${dados.pubRodapePosX || 0}px, ${dados.pubRodapePosY || 0}px) scale(${dados.pubRodapeScale || 1})`;
+          img.style.transform = transform;
+        }
+      }
+
       // Atualizar vinho do mês
       const vinhoAnuncio = document.getElementById('vinhoAnuncio');
       if(vinhoAnuncio) {
