@@ -3446,15 +3446,6 @@
     db.ref('editor').on('value', (snap) => {
       const dados = snap.val() || {};
       atualizarRodape(dados);
-    });
-
-    // Atualizar a cada minuto para refletir mudanças de horário
-    setInterval(() => {
-      db.ref('editor').once('value', (snap) => {
-        const dados = snap.val() || {};
-        atualizarRodape(dados);
-      });
-    }, 60000);
 
       // Atualizar publicidade do rodapé
       const fundoAnuncioImg = document.getElementById('fundoAnuncioImg');
@@ -3489,6 +3480,14 @@
         if(dados.vinhosSecPubSub3) document.getElementById('vinhosAnuncioSeccaoLinha4').textContent = dados.vinhosSecPubSub3;
       }
     });
+
+    // Atualizar a cada minuto para refletir mudanças de horário
+    setInterval(() => {
+      db.ref('editor').once('value', (snap) => {
+        const dados = snap.val() || {};
+        atualizarRodape(dados);
+      });
+    }, 60000);
   })();
 </script>
 
