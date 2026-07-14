@@ -1990,6 +1990,7 @@
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+    console.log('[DEBUG] enviandoFoto - iniciando fetch para:', caminho);
     const resp = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + caminho, {
       method: 'PUT',
       headers: {
@@ -1998,10 +1999,11 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: 'Adicionar foto do rodapé: ' + file.name,
+        message: 'Adicionar foto: ' + file.name,
         content: base64
       })
     });
+    console.log('[DEBUG] enviandoFoto - resposta recebida, status:', resp.status, 'ok:', resp.ok);
     if(!resp.ok){
       const errData = await resp.json().catch(() => ({}));
       console.error('[DEBUG] ERRO no upload! Status:', resp.status, 'Mensagem:', errData.message);
