@@ -935,6 +935,24 @@
   let pubFimArrastando = false;
   let pubFimArrastoInicio = { x: 0, y: 0 };
   let pubFimPosInicio = { left: 0, top: 0 };
+  const pubRodapeAtivoInput = document.getElementById('pubRodapeAtivo');
+  const pubRodapeFotoInput = document.getElementById('pubRodapeFoto');
+  const pubRodapeFotoUrlInput = document.getElementById('pubRodapeFotoUrl');
+  const pubRodapePosXInput = document.getElementById('pubRodapePosX');
+  const pubRodapePosYInput = document.getElementById('pubRodapePosY');
+  const pubRodapeScaleInput = document.getElementById('pubRodapeScale');
+  const pubRodapeCaixaEl = document.getElementById('pubRodapeCaixa');
+  const pubRodapeVazioEl = document.getElementById('pubRodapeVazio');
+  const pubRodapeImgEl = document.getElementById('pubRodapeImg');
+  const pubRodapeZoomInput = document.getElementById('pubRodapeZoom');
+  const pubRodapeNomeFicheiroEl = document.getElementById('pubRodapeNomeFicheiro');
+  let pubRodapeState = null; // { caminho, novoFicheiro, previewUrl, nomePreview, posX, posY, escala }
+  let pubRodapeNatW = 0, pubRodapeNatH = 0;
+  let pubRodapeDispW = 0, pubRodapeDispH = 0;
+  let pubRodapeLeft = 0, pubRodapeTop = 0;
+  let pubRodapeArrastando = false;
+  let pubRodapeArrastoInicio = { x: 0, y: 0 };
+  let pubRodapePosInicio = { left: 0, top: 0 };
   const previews = {
     1: document.getElementById('pvLinha1'),
     2: document.getElementById('pvLinha2'),
@@ -1396,6 +1414,178 @@
     if(pubFimNatW) pubFimRecalcular(true);
   });
 
+  // ---- Publicidade no rodapé: editor de arrastar e ampliar ----
+  function pubRodapeCaixaRect(){
+    return pubRodapeCaixaEl.getBoundingClientRect();
+  }
+
+  function pubRodapeAplicarTransform(){
+    pubRodapeImgEl.style.width = pubRodapeDispW + 'px';
+    pubRodapeImgEl.style.height = pubRodapeDispH + 'px';
+    pubRodapeImgEl.style.left = pubRodapeLeft + 'px';
+    pubRodapeImgEl.style.top = pubRodapeTop + 'px';
+  }
+
+  function pubRodapeClamp(boxW, boxH){
+    const minLeft = boxW - pubRodapeDispW;
+    const minTop = boxH - pubRodapeDispH;
+    pubRodapeLeft = Math.max(minLeft, Math.min(0, pubRodapeLeft));
+    pubRodapeTop = Math.max(minTop, Math.min(0, pubRodapeTop));
+  }
+
+  function pubRodapeRecalcular(manterCentro){
+    if(!pubRodapeNatW || !pubRodapeNatH) return;
+    const rect = pubRodapeCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    const coverScale = Math.max(boxW / pubRodapeNatW, boxH / pubRodapeNatH);
+    const zoom = (parseFloat(pubRodapeZoomInput.value) || 100) / 100;
+    const novoDispW = pubRodapeNatW * coverScale * zoom;
+    const novoDispH = pubRodapeNatH * coverScale * zoom;
+
+    if(manterCentro && pubRodapeDispW > 0 && pubRodapeDispH > 0){
+      const fracX = (-pubRodapeLeft + boxW / 2) / pubRodapeDispW;
+      const fracY = (-pubRodapeTop + boxH / 2) / pubRodapeDispH;
+      pubRodapeLeft = boxW / 2 - fracX * novoDispW;
+      pubRodapeTop = boxH / 2 - fracY * novoDispH;
+    } else {
+      pubRodapeLeft = (boxW - novoDispW) / 2;
+      pubRodapeTop = (boxH - novoDispH) / 2;
+    }
+
+    pubRodapeDispW = novoDispW;
+    pubRodapeDispH = novoDispH;
+    pubRodapeClamp(boxW, boxH);
+    pubRodapeAplicarTransform();
+  }
+
+  function pubRodapeCarregarImagem(src){
+    pubRodapeVazioEl.style.display = 'none';
+    pubRodapeImgEl.style.display = 'block';
+    pubRodapeNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (pubRodapeState && pubRodapeState.nomePreview ? pubRodapeState.nomePreview : '—');
+    pubRodapeImgEl.onload = () => {
+      pubRodapeNatW = pubRodapeImgEl.naturalWidth;
+      pubRodapeNatH = pubRodapeImgEl.naturalHeight;
+      const zoomPercent = pubRodapeState && pubRodapeState.escala ? Math.round(pubRodapeState.escala * 100) : 100;
+      pubRodapeZoomInput.value = zoomPercent;
+      const rect = pubRodapeCaixaRect();
+      const boxW = rect.width, boxH = rect.height;
+      const coverScale = Math.max(boxW / pubRodapeNatW, boxH / pubRodapeNatH);
+      const zoom = zoomPercent / 100;
+      pubRodapeDispW = pubRodapeNatW * coverScale * zoom;
+      pubRodapeDispH = pubRodapeNatH * coverScale * zoom;
+      if(pubRodapeState && typeof pubRodapeState.posX === 'number'){
+        pubRodapeLeft = pubRodapeDispW > boxW ? -(pubRodapeState.posX / 100) * (pubRodapeDispW - boxW) : (boxW - pubRodapeDispW) / 2;
+        pubRodapeTop = pubRodapeDispH > boxH ? -(pubRodapeState.posY / 100) * (pubRodapeDispH - boxH) : (boxH - pubRodapeDispH) / 2;
+      } else {
+        pubRodapeLeft = (boxW - pubRodapeDispW) / 2;
+        pubRodapeTop = (boxH - pubRodapeDispH) / 2;
+      }
+      pubRodapeClamp(boxW, boxH);
+      pubRodapeAplicarTransform();
+    };
+    pubRodapeImgEl.src = src;
+  }
+
+  function pubRodapeCapturarEstadoAtual(){
+    if(!pubRodapeState || !pubRodapeNatW) return;
+    const rect = pubRodapeCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    pubRodapeState.posX = pubRodapeDispW > boxW ? (-pubRodapeLeft / (pubRodapeDispW - boxW)) * 100 : 50;
+    pubRodapeState.posY = pubRodapeDispH > boxH ? (-pubRodapeTop / (pubRodapeDispH - boxH)) * 100 : 50;
+    pubRodapeState.escala = (parseFloat(pubRodapeZoomInput.value) || 100) / 100;
+  }
+
+  pubRodapeCaixaEl.addEventListener('pointerdown', (e) => {
+    if(pubRodapeImgEl.style.display === 'none' || !pubRodapeNatW) return;
+    pubRodapeArrastando = true;
+    pubRodapeCaixaEl.classList.add('arrastando');
+    pubRodapeArrastoInicio = { x: e.clientX, y: e.clientY };
+    pubRodapePosInicio = { left: pubRodapeLeft, top: pubRodapeTop };
+    pubRodapeCaixaEl.setPointerCapture(e.pointerId);
+  });
+  pubRodapeCaixaEl.addEventListener('pointermove', (e) => {
+    if(!pubRodapeArrastando) return;
+    const dx = e.clientX - pubRodapeArrastoInicio.x;
+    const dy = e.clientY - pubRodapeArrastoInicio.y;
+    const rect = pubRodapeCaixaRect();
+    pubRodapeLeft = pubRodapePosInicio.left + dx;
+    pubRodapeTop = pubRodapePosInicio.top + dy;
+    pubRodapeClamp(rect.width, rect.height);
+    pubRodapeAplicarTransform();
+  });
+  function pubRodapeTerminarArrasto(){
+    pubRodapeArrastando = false;
+    pubRodapeCaixaEl.classList.remove('arrastando');
+    pubRodapeCapturarEstadoAtual();
+    pubRodapePosXInput.value = Math.round(pubRodapeState.posX * 10) / 10;
+    pubRodapePosYInput.value = Math.round(pubRodapeState.posY * 10) / 10;
+  }
+  pubRodapeCaixaEl.addEventListener('pointerup', pubRodapeTerminarArrasto);
+  pubRodapeCaixaEl.addEventListener('pointercancel', pubRodapeTerminarArrasto);
+  pubRodapeCaixaEl.addEventListener('pointerleave', pubRodapeTerminarArrasto);
+
+  pubRodapeZoomInput.addEventListener('input', () => {
+    pubRodapeRecalcular(true);
+    pubRodapeCapturarEstadoAtual();
+    pubRodapeScaleInput.value = Math.round(pubRodapeState.escala * 100) / 100;
+  });
+
+  pubRodapePosXInput.addEventListener('input', () => {
+    if(!pubRodapeState) pubRodapeState = { posX: 50, posY: 50, escala: 1 };
+    pubRodapeState.posX = parseFloat(pubRodapePosXInput.value) || 50;
+  });
+
+  pubRodapePosYInput.addEventListener('input', () => {
+    if(!pubRodapeState) pubRodapeState = { posX: 50, posY: 50, escala: 1 };
+    pubRodapeState.posY = parseFloat(pubRodapePosYInput.value) || 50;
+  });
+
+  pubRodapeScaleInput.addEventListener('input', () => {
+    if(!pubRodapeState) pubRodapeState = { posX: 50, posY: 50, escala: 1 };
+    pubRodapeState.escala = parseFloat(pubRodapeScaleInput.value) || 1;
+    const zoomPercent = Math.round(pubRodapeState.escala * 100);
+    pubRodapeZoomInput.value = zoomPercent;
+    pubRodapeRecalcular(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if(pubRodapeNatW) pubRodapeRecalcular(true);
+  });
+
+  pubRodapeFotoInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    pubRodapeState = {
+      caminho: pubRodapeState ? pubRodapeState.caminho : null,
+      tipo: 'foto',
+      novoFicheiro: file,
+      previewUrl: URL.createObjectURL(file),
+      nomePreview: file.name,
+      posX: parseFloat(pubRodapePosXInput.value) || 50,
+      posY: parseFloat(pubRodapePosYInput.value) || 50,
+      escala: parseFloat(pubRodapeScaleInput.value) || 1
+    };
+    pubRodapeCarregarImagem(pubRodapeState.previewUrl);
+    e.target.value = '';
+  });
+
+  pubRodapeFotoUrlInput.addEventListener('change', () => {
+    const url = pubRodapeFotoUrlInput.value.trim();
+    if(!url) return;
+    pubRodapeState = {
+      caminho: url,
+      tipo: 'foto',
+      novoFicheiro: null,
+      previewUrl: null,
+      nomePreview: url.split('/').pop(),
+      posX: parseFloat(pubRodapePosXInput.value) || 50,
+      posY: parseFloat(pubRodapePosYInput.value) || 50,
+      escala: parseFloat(pubRodapeScaleInput.value) || 1
+    };
+    const fotoUrl = 'https://raw.githubusercontent.com/' + REPO + '/main/' + url;
+    pubRodapeCarregarImagem(fotoUrl);
+  });
+
   function pubFimMostrarVideo(nome){
     // Vídeos não têm editor de posição/zoom (ficam sempre centrados, a cobrir a caixa toda).
     pubFimVazioEl.style.display = '';
@@ -1728,6 +1918,10 @@
       setEstado('Ativaste a publicidade no fim da página mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
       return;
     }
+    if(pubRodapeAtivoInput.checked && (!pubRodapeState || (!pubRodapeState.caminho && !pubRodapeState.novoFicheiro))){
+      setEstado('Ativaste a publicidade no rodapé mas ainda não escolheste nenhuma foto. Escolhe um ficheiro ou desativa a opção.', 'erro');
+      return;
+    }
 
     if(lembrarInput.checked){
       localStorage.setItem('cardapioEditorToken', token);
@@ -1776,6 +1970,13 @@
         pubFimState.novoFicheiro = null;
       }
       pubFimCapturarEstadoAtual();
+
+      if(pubRodapeState && pubRodapeState.novoFicheiro){
+        setEstado('A enviar foto do rodapé: ' + pubRodapeState.nomePreview + '…', 'info');
+        pubRodapeState.caminho = await enviarFoto(pubRodapeState.novoFicheiro, token);
+        pubRodapeState.novoFicheiro = null;
+      }
+      pubRodapeCapturarEstadoAtual();
 
       // Vai sempre buscar a versão mais recente do ficheiro mesmo agora, em vez de usar
       // a que foi carregada quando a página abriu. Isto evita que uma aba desta página
