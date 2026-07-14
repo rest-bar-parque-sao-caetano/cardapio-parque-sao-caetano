@@ -2398,11 +2398,11 @@
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
       if(publicidadeState){
         console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
-        // Guardar atributos NA TAG IMG dentro de infoFixaFundo
-        // Substituir cada atributo especificamente dentro da tag img
-        novo = novo.replace(/<div class="info-fixa-fundo"[^>]*>\s*<!--[^>]*-->\s*<img([^>]*)>/,
-          '<div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    <img data-pub-barra-posX="' + (publicidadeState.posX || 50) + '" data-pub-barra-posY="' + (publicidadeState.posY || 50) + '" data-pub-barra-escala="' + (publicidadeState.escala || 1) + '"$1>');
-        console.log('[DEBUG] Guardado publicidadeState no GitHub');
+        // Guardar atributos na img tag — substituir cada um individualmente
+        novo = substituirAtributo(novo, 'data-pub-barra-posX', publicidadeState.posX || 50);
+        novo = substituirAtributo(novo, 'data-pub-barra-posY', publicidadeState.posY || 50);
+        novo = substituirAtributo(novo, 'data-pub-barra-escala', publicidadeState.escala || 1);
+        console.log('[DEBUG] Guardado publicidadeState com sucesso');
       }
 
       if(vinhoPubState){
