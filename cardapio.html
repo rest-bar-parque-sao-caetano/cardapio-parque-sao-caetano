@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2012,7 +2012,7 @@
 </footer>
 
 <div class="info-fixa">
-  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="true">
+  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade">
   </div>
@@ -2035,8 +2035,6 @@
     <div class="linha" id="rodapeLinha2">De Terça a Domingo — Almoço e Jantar</div>
     <div class="linha" id="rodapeLinha3"></div>
     <div class="linha" id="rodapeLinha4"></div>
-  </div>
-  <div id="pubRodapeFundo" data-rodape-pub-ativo="true" style="width: 100%; height: 120px; position: relative; overflow: hidden; margin-top: 16px;">
   </div>
   <div class="chef-mascote" id="chefMascote" role="button" aria-label="Cozinheiro" tabindex="0">
     <div class="chef-balao" id="chefBalao"></div>
@@ -3463,20 +3461,6 @@
       }
 
       // Atualizar publicidade do rodapé
-      const pubRodapeFundo = document.getElementById('pubRodapeFundo');
-      if(pubRodapeFundo) {
-        pubRodapeFundo.setAttribute('data-rodape-pub-ativo', dados.pubRodapeAtivo !== false ? 'true' : 'false');
-        if(dados.pubRodapeFoto) {
-          let img = pubRodapeFundo.querySelector('img');
-          if(!img) {
-            img = document.createElement('img');
-            pubRodapeFundo.appendChild(img);
-          }
-          img.src = dados.pubRodapeFoto;
-          const transform = `translate(${dados.pubRodapePosX || 0}px, ${dados.pubRodapePosY || 0}px) scale(${dados.pubRodapeScale || 1})`;
-          img.style.transform = transform;
-        }
-      }
 
       // Atualizar vinho do mês
       const vinhoAnuncio = document.getElementById('vinhoAnuncio');
