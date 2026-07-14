@@ -302,9 +302,9 @@
           <label>Ativar publicidade no rodapé</label>
         </div>
 
-        <label style="margin-top: 16px;">Foto</label>
-        <input type="file" id="pubRodapeFoto" accept="image/*">
-        <small style="display: block; margin-top: 8px; color: var(--castanho-suave);">Formato: JPG, PNG, WebP (máx. 5MB)</small>
+        <label style="margin-top: 16px;">Foto (URL ou caminho relativo)</label>
+        <input type="text" id="pubRodapeFoto" placeholder="Ex: imagens/foto-rodape.jpg ou https://...">
+        <small style="display: block; margin-top: 8px; color: var(--castanho-suave);">Coloca um URL ou caminho relativo da foto (ex: imagens/foto.jpg)</small>
 
         <label style="margin-top: 20px;">Posição X (px)</label>
         <input type="number" id="pubRodapePosX" value="0">
@@ -530,34 +530,17 @@
     }
 
     async function guardarPubRodape() {
-      const fileInput = document.getElementById('pubRodapeFoto');
-      const file = fileInput.files[0];
+      const dados = {
+        pubRodapeAtivo: document.getElementById('pubRodapeAtiva').checked,
+        pubRodapeFoto: document.getElementById('pubRodapeFoto').value,
+        pubRodapePosX: parseInt(document.getElementById('pubRodapePosX').value) || 0,
+        pubRodapePosY: parseInt(document.getElementById('pubRodapePosY').value) || 0,
+        pubRodapeScale: parseFloat(document.getElementById('pubRodapeScale').value) || 1
+      };
 
       mostrarEstado('estadoPubRodape', '💾 Guardando...', 'info');
 
       try {
-        let fotoUrl = '';
-        if(file) {
-          if(file.size > 5 * 1024 * 1024) {
-            throw new Error('Foto muito grande (máx. 5MB)');
-          }
-
-          const reader = new FileReader();
-          fotoUrl = await new Promise((resolve, reject) => {
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        }
-
-        const dados = {
-          pubRodapeAtivo: document.getElementById('pubRodapeAtiva').checked,
-          pubRodapeFoto: fotoUrl,
-          pubRodapePosX: parseInt(document.getElementById('pubRodapePosX').value) || 0,
-          pubRodapePosY: parseInt(document.getElementById('pubRodapePosY').value) || 0,
-          pubRodapeScale: parseFloat(document.getElementById('pubRodapeScale').value) || 1
-        };
-
         await db.ref('editor').update(dados);
         mostrarEstado('estadoPubRodape', '✓ Publicidade rodapé guardada!', 'ok');
       } catch(err) {
