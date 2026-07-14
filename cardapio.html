@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2012,9 +2012,9 @@
 </footer>
 
 <div class="info-fixa">
-  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="true">
+  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
-    <img src="imagens/1784032618121-gemini_generated_image_j4r8ccj4r8ccj4r8.png" alt="Publicidade" data-pub-barra-posX="52.00931386651323" data-pub-barra-posY="55.93760093669251" data-pub-barra-escala="1.79">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="50" data-pub-barra-escala="1">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
     data-especial-ativo="false"
@@ -2031,7 +2031,7 @@
     <!-- Este texto NÃO muda com o idioma (fica igual em PT/EN/FR)-->
     <!-- O texto "especial" (com horário) edita-se em editar.html.-->
     <!-- ======================================================= -->
-    <div class="linha-negrito" id="rodapeLinha1">Contamos</div>
+    <div class="linha-negrito" id="rodapeLinha1">Contamos contigo!</div>
     <div class="linha" id="rodapeLinha2">De Terça a Domingo — Almoço e Jantar</div>
     <div class="linha" id="rodapeLinha3"></div>
     <div class="linha" id="rodapeLinha4"></div>
@@ -3443,27 +3443,44 @@
       }
     }
 
-    // Fazer fetch do cardapio.html direto do GitHub para ler a foto mais recente
+    // Fazer fetch do cardapio.html direto do GitHub para ler a foto e posição/zoom
     async function recarregarFotos(){
       try {
         const url = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/cardapio.html?t=' + Date.now();
         const resp = await fetch(url);
         const html = await resp.text();
 
-        // Extrair src de cada imagem
-        function extrairSrc(html, elementId){
-          const regex = new RegExp(`<div[^>]*id="${elementId}"[\\s\\S]*?<img[^>]*src="([^"]*)"`, 'm');
+        // Extrair atributos da img tag dentro de um elemento
+        function extrairAtributosImg(html, elementId){
+          const regex = new RegExp(`<div[^>]*id="${elementId}"[\\s\\S]*?<img[^>]*`, 'm');
           const m = html.match(regex);
-          return m ? m[1] : null;
+          if(!m) return null;
+
+          const imgTag = m[0];
+          const srcMatch = imgTag.match(/src="([^"]*)"/);
+          const posXMatch = imgTag.match(/data-pub-barra-posX="([^"]*)"/);
+          const posYMatch = imgTag.match(/data-pub-barra-posY="([^"]*)"/);
+          const scaleMatch = imgTag.match(/data-pub-barra-escala="([^"]*)"/);
+
+          return {
+            src: srcMatch ? srcMatch[1] : null,
+            posX: posXMatch ? parseFloat(posXMatch[1]) : 50,
+            posY: posYMatch ? parseFloat(posYMatch[1]) : 50,
+            scale: scaleMatch ? parseFloat(scaleMatch[1]) : 1
+          };
         }
 
-        // Atualizar foto da barra fixa
+        // Atualizar foto e posição da barra fixa
         const img1 = document.querySelector('#infoFixaFundo img');
         if(img1){
-          const src = extrairSrc(html, 'infoFixaFundo');
-          if(src){
-            img1.src = src;
-            console.log('[DEBUG] Foto barra fixa atualizada:', src);
+          const attrs = extrairAtributosImg(html, 'infoFixaFundo');
+          if(attrs && attrs.src){
+            img1.src = attrs.src;
+            img1.style.objectFit = 'cover';
+            img1.style.objectPosition = `${attrs.posX}% ${attrs.posY}%`;
+            img1.style.transform = `scale(${attrs.scale})`;
+            img1.style.transformOrigin = `${attrs.posX}% ${attrs.posY}%`;
+            console.log('[DEBUG] Barra fixa atualizada - src:', attrs.src, 'posX:', attrs.posX, 'posY:', attrs.posY, 'scale:', attrs.scale);
           }
         }
       } catch(e){
