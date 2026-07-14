@@ -2398,11 +2398,7 @@
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
       if(publicidadeState){
         console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
-        // Guardar atributos na img tag — substituir cada um individualmente
-        novo = substituirAtributo(novo, 'data-pub-barra-posX', publicidadeState.posX || 50);
-        novo = substituirAtributo(novo, 'data-pub-barra-posY', publicidadeState.posY || 50);
-        novo = substituirAtributo(novo, 'data-pub-barra-escala', publicidadeState.escala || 1);
-        console.log('[DEBUG] Guardado publicidadeState com sucesso');
+        novo = substituirFundoImg(novo, construirFundoImgHtml(publicidadeState));
       }
 
       if(vinhoPubState){
