@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2012,9 +2012,9 @@
 </footer>
 
 <div class="info-fixa">
-  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="true">
+  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
-    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="50" data-pub-barra-escala="1">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
     data-especial-ativo="false"
@@ -3445,15 +3445,12 @@
 
     // Ler posição/zoom da barra fixa (infoFixaFundo) — atributos guardados no HTML pelo editar.html
     function aplicarPosicaoBarra(){
-      const infoFixaFundo = document.getElementById('infoFixaFundo');
-      if(!infoFixaFundo) return;
-
-      const img = infoFixaFundo.querySelector('img');
+      const img = document.querySelector('#infoFixaFundo img');
       if(!img) return;
 
-      const posX = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posX')) || 50;
-      const posY = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posY')) || 50;
-      const scale = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-escala')) || 1;
+      const posX = parseFloat(img.getAttribute('data-pub-barra-posX')) || 50;
+      const posY = parseFloat(img.getAttribute('data-pub-barra-posY')) || 50;
+      const scale = parseFloat(img.getAttribute('data-pub-barra-escala')) || 1;
 
       img.style.objectPosition = `${posX}% ${posY}%`;
       img.style.transform = `scale(${scale})`;
