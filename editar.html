@@ -1149,7 +1149,121 @@
       nomePreview: file.name
     };
     renderizarPublicidade();
+    pubBarraCarregarImagem(publicidadeState.previewUrl || ('https://raw.githubusercontent.com/' + REPO + '/main/' + publicidadeState.caminho));
     e.target.value = '';
+  });
+
+  // ---- Publicidade barra fixa: editor de arrastar e ampliar ----
+  let pubBarraNatW = 0, pubBarraNatH = 0;
+  let pubBarraDispW = 0, pubBarraDispH = 0;
+  let pubBarraLeft = 0, pubBarraTop = 0;
+  let pubBarraArrastando = false;
+  let pubBarraArrastoInicio = { x: 0, y: 0 };
+  let pubBarraPosInicio = { left: 0, top: 0 };
+  const pubBarraCaixaEl = document.getElementById('pubBarraCaixa');
+  const pubBarraVazioEl = document.getElementById('pubBarraVazio');
+  const pubBarraImgEl = document.getElementById('pubBarraImg');
+  const pubBarraZoomInput = document.getElementById('pubBarraZoom');
+  const pubBarraNomeFicheiroEl = document.getElementById('pubBarraNomeFicheiro');
+
+  function pubBarraCaixaRect(){
+    return pubBarraCaixaEl.getBoundingClientRect();
+  }
+
+  function pubBarraAplicarTransform(){
+    pubBarraImgEl.style.width = pubBarraDispW + 'px';
+    pubBarraImgEl.style.height = pubBarraDispH + 'px';
+    pubBarraImgEl.style.left = pubBarraLeft + 'px';
+    pubBarraImgEl.style.top = pubBarraTop + 'px';
+  }
+
+  function pubBarraClamp(boxW, boxH){
+    const minLeft = boxW - pubBarraDispW;
+    const minTop = boxH - pubBarraDispH;
+    pubBarraLeft = Math.max(minLeft, Math.min(0, pubBarraLeft));
+    pubBarraTop = Math.max(minTop, Math.min(0, pubBarraTop));
+  }
+
+  function pubBarraRecalcular(manterCentro){
+    if(!pubBarraNatW || !pubBarraNatH) return;
+    const rect = pubBarraCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    const coverScale = Math.max(boxW / pubBarraNatW, boxH / pubBarraNatH);
+    const zoom = (parseFloat(pubBarraZoomInput.value) || 100) / 100;
+    const novoDispW = pubBarraNatW * coverScale * zoom;
+    const novoDispH = pubBarraNatH * coverScale * zoom;
+
+    if(manterCentro && pubBarraDispW > 0 && pubBarraDispH > 0){
+      const fracX = (-pubBarraLeft + boxW / 2) / pubBarraDispW;
+      const fracY = (-pubBarraTop + boxH / 2) / pubBarraDispH;
+      pubBarraLeft = boxW / 2 - fracX * novoDispW;
+      pubBarraTop = boxH / 2 - fracY * novoDispH;
+    } else {
+      pubBarraLeft = (boxW - novoDispW) / 2;
+      pubBarraTop = (boxH - novoDispH) / 2;
+    }
+
+    pubBarraDispW = novoDispW;
+    pubBarraDispH = novoDispH;
+    pubBarraClamp(boxW, boxH);
+    pubBarraAplicarTransform();
+  }
+
+  function pubBarraCarregarImagem(src){
+    pubBarraVazioEl.style.display = 'none';
+    pubBarraImgEl.style.display = 'block';
+    pubBarraNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (publicidadeState && publicidadeState.nomePreview ? publicidadeState.nomePreview : '—');
+    pubBarraImgEl.onload = () => {
+      pubBarraNatW = pubBarraImgEl.naturalWidth;
+      pubBarraNatH = pubBarraImgEl.naturalHeight;
+      const zoomPercent = 100;
+      pubBarraZoomInput.value = zoomPercent;
+      const rect = pubBarraCaixaRect();
+      const boxW = rect.width, boxH = rect.height;
+      const coverScale = Math.max(boxW / pubBarraNatW, boxH / pubBarraNatH);
+      const zoom = zoomPercent / 100;
+      pubBarraDispW = pubBarraNatW * coverScale * zoom;
+      pubBarraDispH = pubBarraNatH * coverScale * zoom;
+      pubBarraLeft = (boxW - pubBarraDispW) / 2;
+      pubBarraTop = (boxH - pubBarraDispH) / 2;
+      pubBarraClamp(boxW, boxH);
+      pubBarraAplicarTransform();
+    };
+    pubBarraImgEl.src = src;
+  }
+
+  pubBarraCaixaEl.addEventListener('pointerdown', (e) => {
+    if(pubBarraImgEl.style.display === 'none' || !pubBarraNatW) return;
+    pubBarraArrastando = true;
+    pubBarraCaixaEl.classList.add('arrastando');
+    pubBarraArrastoInicio = { x: e.clientX, y: e.clientY };
+    pubBarraPosInicio = { left: pubBarraLeft, top: pubBarraTop };
+    pubBarraCaixaEl.setPointerCapture(e.pointerId);
+  });
+  pubBarraCaixaEl.addEventListener('pointermove', (e) => {
+    if(!pubBarraArrastando) return;
+    const dx = e.clientX - pubBarraArrastoInicio.x;
+    const dy = e.clientY - pubBarraArrastoInicio.y;
+    const rect = pubBarraCaixaRect();
+    pubBarraLeft = pubBarraPosInicio.left + dx;
+    pubBarraTop = pubBarraPosInicio.top + dy;
+    pubBarraClamp(rect.width, rect.height);
+    pubBarraAplicarTransform();
+  });
+  function pubBarraTerminarArrasto(){
+    pubBarraArrastando = false;
+    pubBarraCaixaEl.classList.remove('arrastando');
+  }
+  pubBarraCaixaEl.addEventListener('pointerup', pubBarraTerminarArrasto);
+  pubBarraCaixaEl.addEventListener('pointercancel', pubBarraTerminarArrasto);
+  pubBarraCaixaEl.addEventListener('pointerleave', pubBarraTerminarArrasto);
+
+  pubBarraZoomInput.addEventListener('input', () => {
+    pubBarraRecalcular(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if(pubBarraNatW) pubBarraRecalcular(true);
   });
 
   // ---- Publicidade dentro do grupo "Vinho da Casa" ----
@@ -1198,7 +1312,123 @@
       nomePreview: file.name
     };
     renderizarVinhoPub();
+    if(!ficheiroEhVideo(file)){
+      pubVinhoCarregarImagem(vinhoPubState.previewUrl);
+    }
     e.target.value = '';
+  });
+
+  // ---- Publicidade Vinho da Casa: editor de arrastar e ampliar ----
+  let pubVinhoNatW = 0, pubVinhoNatH = 0;
+  let pubVinhoDispW = 0, pubVinhoDispH = 0;
+  let pubVinhoLeft = 0, pubVinhoTop = 0;
+  let pubVinhoArrastando = false;
+  let pubVinhoArrastoInicio = { x: 0, y: 0 };
+  let pubVinhoPosInicio = { left: 0, top: 0 };
+  const pubVinhoCaixaEl = document.getElementById('pubVinhoCaixa');
+  const pubVinhoVazioEl = document.getElementById('pubVinhoVazio');
+  const pubVinhoImgEl = document.getElementById('pubVinhoImg');
+  const pubVinhoZoomInput = document.getElementById('pubVinhoZoom');
+  const pubVinhoNomeFicheiroEl = document.getElementById('pubVinhoNomeFicheiro');
+
+  function pubVinhoCaixaRect(){
+    return pubVinhoCaixaEl.getBoundingClientRect();
+  }
+
+  function pubVinhoAplicarTransform(){
+    pubVinhoImgEl.style.width = pubVinhoDispW + 'px';
+    pubVinhoImgEl.style.height = pubVinhoDispH + 'px';
+    pubVinhoImgEl.style.left = pubVinhoLeft + 'px';
+    pubVinhoImgEl.style.top = pubVinhoTop + 'px';
+  }
+
+  function pubVinhoClamp(boxW, boxH){
+    const minLeft = boxW - pubVinhoDispW;
+    const minTop = boxH - pubVinhoDispH;
+    pubVinhoLeft = Math.max(minLeft, Math.min(0, pubVinhoLeft));
+    pubVinhoTop = Math.max(minTop, Math.min(0, pubVinhoTop));
+  }
+
+  function pubVinhoRecalcular(manterCentro){
+    if(!pubVinhoNatW || !pubVinhoNatH) return;
+    const rect = pubVinhoCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    const coverScale = Math.max(boxW / pubVinhoNatW, boxH / pubVinhoNatH);
+    const zoom = (parseFloat(pubVinhoZoomInput.value) || 100) / 100;
+    const novoDispW = pubVinhoNatW * coverScale * zoom;
+    const novoDispH = pubVinhoNatH * coverScale * zoom;
+
+    if(manterCentro && pubVinhoDispW > 0 && pubVinhoDispH > 0){
+      const fracX = (-pubVinhoLeft + boxW / 2) / pubVinhoDispW;
+      const fracY = (-pubVinhoTop + boxH / 2) / pubVinhoDispH;
+      pubVinhoLeft = boxW / 2 - fracX * novoDispW;
+      pubVinhoTop = boxH / 2 - fracY * novoDispH;
+    } else {
+      pubVinhoLeft = (boxW - novoDispW) / 2;
+      pubVinhoTop = (boxH - novoDispH) / 2;
+    }
+
+    pubVinhoDispW = novoDispW;
+    pubVinhoDispH = novoDispH;
+    pubVinhoClamp(boxW, boxH);
+    pubVinhoAplicarTransform();
+  }
+
+  function pubVinhoCarregarImagem(src){
+    pubVinhoVazioEl.style.display = 'none';
+    pubVinhoImgEl.style.display = 'block';
+    pubVinhoNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (vinhoPubState && vinhoPubState.nomePreview ? vinhoPubState.nomePreview : '—');
+    pubVinhoImgEl.onload = () => {
+      pubVinhoNatW = pubVinhoImgEl.naturalWidth;
+      pubVinhoNatH = pubVinhoImgEl.naturalHeight;
+      const zoomPercent = 100;
+      pubVinhoZoomInput.value = zoomPercent;
+      const rect = pubVinhoCaixaRect();
+      const boxW = rect.width, boxH = rect.height;
+      const coverScale = Math.max(boxW / pubVinhoNatW, boxH / pubVinhoNatH);
+      const zoom = zoomPercent / 100;
+      pubVinhoDispW = pubVinhoNatW * coverScale * zoom;
+      pubVinhoDispH = pubVinhoNatH * coverScale * zoom;
+      pubVinhoLeft = (boxW - pubVinhoDispW) / 2;
+      pubVinhoTop = (boxH - pubVinhoDispH) / 2;
+      pubVinhoClamp(boxW, boxH);
+      pubVinhoAplicarTransform();
+    };
+    pubVinhoImgEl.src = src;
+  }
+
+  pubVinhoCaixaEl.addEventListener('pointerdown', (e) => {
+    if(pubVinhoImgEl.style.display === 'none' || !pubVinhoNatW) return;
+    pubVinhoArrastando = true;
+    pubVinhoCaixaEl.classList.add('arrastando');
+    pubVinhoArrastoInicio = { x: e.clientX, y: e.clientY };
+    pubVinhoPosInicio = { left: pubVinhoLeft, top: pubVinhoTop };
+    pubVinhoCaixaEl.setPointerCapture(e.pointerId);
+  });
+  pubVinhoCaixaEl.addEventListener('pointermove', (e) => {
+    if(!pubVinhoArrastando) return;
+    const dx = e.clientX - pubVinhoArrastoInicio.x;
+    const dy = e.clientY - pubVinhoArrastoInicio.y;
+    const rect = pubVinhoCaixaRect();
+    pubVinhoLeft = pubVinhoPosInicio.left + dx;
+    pubVinhoTop = pubVinhoPosInicio.top + dy;
+    pubVinhoClamp(rect.width, rect.height);
+    pubVinhoAplicarTransform();
+  });
+  function pubVinhoTerminarArrasto(){
+    pubVinhoArrastando = false;
+    pubVinhoCaixaEl.classList.remove('arrastando');
+  }
+  pubVinhoCaixaEl.addEventListener('pointerup', pubVinhoTerminarArrasto);
+  pubVinhoCaixaEl.addEventListener('pointercancel', pubVinhoTerminarArrasto);
+  pubVinhoCaixaEl.addEventListener('pointerleave', pubVinhoTerminarArrasto);
+
+  pubVinhoZoomInput.addEventListener('input', () => {
+    pubVinhoRecalcular(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if(pubVinhoNatW) pubVinhoRecalcular(true);
   });
 
   // ---- Publicidade no fundo da secção de Vinhos & Bebidas (abaixo de Sangrias) ----
@@ -1247,7 +1477,123 @@
       nomePreview: file.name
     };
     renderizarVinhosSeccaoPub();
+    if(!ficheiroEhVideo(file)){
+      pubVinhosCarregarImagem(vinhosSeccaoPubState.previewUrl);
+    }
     e.target.value = '';
+  });
+
+  // ---- Publicidade secção Vinhos & Bebidas: editor de arrastar e ampliar ----
+  let pubVinhosNatW = 0, pubVinhosNatH = 0;
+  let pubVinhosDispW = 0, pubVinhosDispH = 0;
+  let pubVinhosLeft = 0, pubVinhosTop = 0;
+  let pubVinhosArrastando = false;
+  let pubVinhosArrastoInicio = { x: 0, y: 0 };
+  let pubVinhosPosInicio = { left: 0, top: 0 };
+  const pubVinhosCaixaEl = document.getElementById('pubVinhosCaixa');
+  const pubVinhosVazioEl = document.getElementById('pubVinhosVazio');
+  const pubVinhosImgEl = document.getElementById('pubVinhosImg');
+  const pubVinhosZoomInput = document.getElementById('pubVinhosZoom');
+  const pubVinhosNomeFicheiroEl = document.getElementById('pubVinhosNomeFicheiro');
+
+  function pubVinhosCaixaRect(){
+    return pubVinhosCaixaEl.getBoundingClientRect();
+  }
+
+  function pubVinhosAplicarTransform(){
+    pubVinhosImgEl.style.width = pubVinhosDispW + 'px';
+    pubVinhosImgEl.style.height = pubVinhosDispH + 'px';
+    pubVinhosImgEl.style.left = pubVinhosLeft + 'px';
+    pubVinhosImgEl.style.top = pubVinhosTop + 'px';
+  }
+
+  function pubVinhosClamp(boxW, boxH){
+    const minLeft = boxW - pubVinhosDispW;
+    const minTop = boxH - pubVinhosDispH;
+    pubVinhosLeft = Math.max(minLeft, Math.min(0, pubVinhosLeft));
+    pubVinhosTop = Math.max(minTop, Math.min(0, pubVinhosTop));
+  }
+
+  function pubVinhosRecalcular(manterCentro){
+    if(!pubVinhosNatW || !pubVinhosNatH) return;
+    const rect = pubVinhosCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    const coverScale = Math.max(boxW / pubVinhosNatW, boxH / pubVinhosNatH);
+    const zoom = (parseFloat(pubVinhosZoomInput.value) || 100) / 100;
+    const novoDispW = pubVinhosNatW * coverScale * zoom;
+    const novoDispH = pubVinhosNatH * coverScale * zoom;
+
+    if(manterCentro && pubVinhosDispW > 0 && pubVinhosDispH > 0){
+      const fracX = (-pubVinhosLeft + boxW / 2) / pubVinhosDispW;
+      const fracY = (-pubVinhosTop + boxH / 2) / pubVinhosDispH;
+      pubVinhosLeft = boxW / 2 - fracX * novoDispW;
+      pubVinhosTop = boxH / 2 - fracY * novoDispH;
+    } else {
+      pubVinhosLeft = (boxW - novoDispW) / 2;
+      pubVinhosTop = (boxH - novoDispH) / 2;
+    }
+
+    pubVinhosDispW = novoDispW;
+    pubVinhosDispH = novoDispH;
+    pubVinhosClamp(boxW, boxH);
+    pubVinhosAplicarTransform();
+  }
+
+  function pubVinhosCarregarImagem(src){
+    pubVinhosVazioEl.style.display = 'none';
+    pubVinhosImgEl.style.display = 'block';
+    pubVinhosNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (vinhosSeccaoPubState && vinhosSeccaoPubState.nomePreview ? vinhosSeccaoPubState.nomePreview : '—');
+    pubVinhosImgEl.onload = () => {
+      pubVinhosNatW = pubVinhosImgEl.naturalWidth;
+      pubVinhosNatH = pubVinhosImgEl.naturalHeight;
+      const zoomPercent = 100;
+      pubVinhosZoomInput.value = zoomPercent;
+      const rect = pubVinhosCaixaRect();
+      const boxW = rect.width, boxH = rect.height;
+      const coverScale = Math.max(boxW / pubVinhosNatW, boxH / pubVinhosNatH);
+      const zoom = zoomPercent / 100;
+      pubVinhosDispW = pubVinhosNatW * coverScale * zoom;
+      pubVinhosDispH = pubVinhosNatH * coverScale * zoom;
+      pubVinhosLeft = (boxW - pubVinhosDispW) / 2;
+      pubVinhosTop = (boxH - pubVinhosDispH) / 2;
+      pubVinhosClamp(boxW, boxH);
+      pubVinhosAplicarTransform();
+    };
+    pubVinhosImgEl.src = src;
+  }
+
+  pubVinhosCaixaEl.addEventListener('pointerdown', (e) => {
+    if(pubVinhosImgEl.style.display === 'none' || !pubVinhosNatW) return;
+    pubVinhosArrastando = true;
+    pubVinhosCaixaEl.classList.add('arrastando');
+    pubVinhosArrastoInicio = { x: e.clientX, y: e.clientY };
+    pubVinhosPosInicio = { left: pubVinhosLeft, top: pubVinhosTop };
+    pubVinhosCaixaEl.setPointerCapture(e.pointerId);
+  });
+  pubVinhosCaixaEl.addEventListener('pointermove', (e) => {
+    if(!pubVinhosArrastando) return;
+    const dx = e.clientX - pubVinhosArrastoInicio.x;
+    const dy = e.clientY - pubVinhosArrastoInicio.y;
+    const rect = pubVinhosCaixaRect();
+    pubVinhosLeft = pubVinhosPosInicio.left + dx;
+    pubVinhosTop = pubVinhosPosInicio.top + dy;
+    pubVinhosClamp(rect.width, rect.height);
+    pubVinhosAplicarTransform();
+  });
+  function pubVinhosTerminarArrasto(){
+    pubVinhosArrastando = false;
+    pubVinhosCaixaEl.classList.remove('arrastando');
+  }
+  pubVinhosCaixaEl.addEventListener('pointerup', pubVinhosTerminarArrasto);
+  pubVinhosCaixaEl.addEventListener('pointercancel', pubVinhosTerminarArrasto);
+  pubVinhosCaixaEl.addEventListener('pointerleave', pubVinhosTerminarArrasto);
+
+  pubVinhosZoomInput.addEventListener('input', () => {
+    pubVinhosRecalcular(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if(pubVinhosNatW) pubVinhosRecalcular(true);
   });
 
   // ---- Publicidade após terminar um jogo (Jogo da Velha / Forca / Adivinhas) ----
@@ -1296,7 +1642,123 @@
       nomePreview: file.name
     };
     renderizarJogoPub();
+    if(!ficheiroEhVideo(file)){
+      pubJogoCarregarImagem(jogoPubState.previewUrl);
+    }
     e.target.value = '';
+  });
+
+  // ---- Publicidade após jogo: editor de arrastar e ampliar ----
+  let pubJogoNatW = 0, pubJogoNatH = 0;
+  let pubJogoDispW = 0, pubJogoDispH = 0;
+  let pubJogoLeft = 0, pubJogoTop = 0;
+  let pubJogoArrastando = false;
+  let pubJogoArrastoInicio = { x: 0, y: 0 };
+  let pubJogoPosInicio = { left: 0, top: 0 };
+  const pubJogoCaixaEl = document.getElementById('pubJogoCaixa');
+  const pubJogoVazioEl = document.getElementById('pubJogoVazio');
+  const pubJogoImgEl = document.getElementById('pubJogoImg');
+  const pubJogoZoomInput = document.getElementById('pubJogoZoom');
+  const pubJogoNomeFicheiroEl = document.getElementById('pubJogoNomeFicheiro');
+
+  function pubJogoCaixaRect(){
+    return pubJogoCaixaEl.getBoundingClientRect();
+  }
+
+  function pubJogoAplicarTransform(){
+    pubJogoImgEl.style.width = pubJogoDispW + 'px';
+    pubJogoImgEl.style.height = pubJogoDispH + 'px';
+    pubJogoImgEl.style.left = pubJogoLeft + 'px';
+    pubJogoImgEl.style.top = pubJogoTop + 'px';
+  }
+
+  function pubJogoClamp(boxW, boxH){
+    const minLeft = boxW - pubJogoDispW;
+    const minTop = boxH - pubJogoDispH;
+    pubJogoLeft = Math.max(minLeft, Math.min(0, pubJogoLeft));
+    pubJogoTop = Math.max(minTop, Math.min(0, pubJogoTop));
+  }
+
+  function pubJogoRecalcular(manterCentro){
+    if(!pubJogoNatW || !pubJogoNatH) return;
+    const rect = pubJogoCaixaRect();
+    const boxW = rect.width, boxH = rect.height;
+    const coverScale = Math.max(boxW / pubJogoNatW, boxH / pubJogoNatH);
+    const zoom = (parseFloat(pubJogoZoomInput.value) || 100) / 100;
+    const novoDispW = pubJogoNatW * coverScale * zoom;
+    const novoDispH = pubJogoNatH * coverScale * zoom;
+
+    if(manterCentro && pubJogoDispW > 0 && pubJogoDispH > 0){
+      const fracX = (-pubJogoLeft + boxW / 2) / pubJogoDispW;
+      const fracY = (-pubJogoTop + boxH / 2) / pubJogoDispH;
+      pubJogoLeft = boxW / 2 - fracX * novoDispW;
+      pubJogoTop = boxH / 2 - fracY * novoDispH;
+    } else {
+      pubJogoLeft = (boxW - novoDispW) / 2;
+      pubJogoTop = (boxH - novoDispH) / 2;
+    }
+
+    pubJogoDispW = novoDispW;
+    pubJogoDispH = novoDispH;
+    pubJogoClamp(boxW, boxH);
+    pubJogoAplicarTransform();
+  }
+
+  function pubJogoCarregarImagem(src){
+    pubJogoVazioEl.style.display = 'none';
+    pubJogoImgEl.style.display = 'block';
+    pubJogoNomeFicheiroEl.textContent = 'Ficheiro atual: ' + (jogoPubState && jogoPubState.nomePreview ? jogoPubState.nomePreview : '—');
+    pubJogoImgEl.onload = () => {
+      pubJogoNatW = pubJogoImgEl.naturalWidth;
+      pubJogoNatH = pubJogoImgEl.naturalHeight;
+      const zoomPercent = 100;
+      pubJogoZoomInput.value = zoomPercent;
+      const rect = pubJogoCaixaRect();
+      const boxW = rect.width, boxH = rect.height;
+      const coverScale = Math.max(boxW / pubJogoNatW, boxH / pubJogoNatH);
+      const zoom = zoomPercent / 100;
+      pubJogoDispW = pubJogoNatW * coverScale * zoom;
+      pubJogoDispH = pubJogoNatH * coverScale * zoom;
+      pubJogoLeft = (boxW - pubJogoDispW) / 2;
+      pubJogoTop = (boxH - pubJogoDispH) / 2;
+      pubJogoClamp(boxW, boxH);
+      pubJogoAplicarTransform();
+    };
+    pubJogoImgEl.src = src;
+  }
+
+  pubJogoCaixaEl.addEventListener('pointerdown', (e) => {
+    if(pubJogoImgEl.style.display === 'none' || !pubJogoNatW) return;
+    pubJogoArrastando = true;
+    pubJogoCaixaEl.classList.add('arrastando');
+    pubJogoArrastoInicio = { x: e.clientX, y: e.clientY };
+    pubJogoPosInicio = { left: pubJogoLeft, top: pubJogoTop };
+    pubJogoCaixaEl.setPointerCapture(e.pointerId);
+  });
+  pubJogoCaixaEl.addEventListener('pointermove', (e) => {
+    if(!pubJogoArrastando) return;
+    const dx = e.clientX - pubJogoArrastoInicio.x;
+    const dy = e.clientY - pubJogoArrastoInicio.y;
+    const rect = pubJogoCaixaRect();
+    pubJogoLeft = pubJogoPosInicio.left + dx;
+    pubJogoTop = pubJogoPosInicio.top + dy;
+    pubJogoClamp(rect.width, rect.height);
+    pubJogoAplicarTransform();
+  });
+  function pubJogoTerminarArrasto(){
+    pubJogoArrastando = false;
+    pubJogoCaixaEl.classList.remove('arrastando');
+  }
+  pubJogoCaixaEl.addEventListener('pointerup', pubJogoTerminarArrasto);
+  pubJogoCaixaEl.addEventListener('pointercancel', pubJogoTerminarArrasto);
+  pubJogoCaixaEl.addEventListener('pointerleave', pubJogoTerminarArrasto);
+
+  pubJogoZoomInput.addEventListener('input', () => {
+    pubJogoRecalcular(true);
+  });
+
+  window.addEventListener('resize', () => {
+    if(pubJogoNatW) pubJogoRecalcular(true);
   });
 
   // ---- Publicidade no fim da página: editor de arrastar e ampliar ----
@@ -1797,16 +2259,25 @@
 
       publicidadeState = extrairPublicidade(conteudo);
       renderizarPublicidade();
+      if(publicidadeState && publicidadeState.caminho){
+        pubBarraCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + publicidadeState.caminho);
+      }
       fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
 
       vinhoPubState = extrairVinhoPub(conteudo);
       renderizarVinhoPub();
+      if(vinhoPubState && vinhoPubState.caminho && vinhoPubState.tipo === 'foto'){
+        pubVinhoCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhoPubState.caminho);
+      }
       vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
       vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
       vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
 
       vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
       renderizarVinhosSeccaoPub();
+      if(vinhosSeccaoPubState && vinhosSeccaoPubState.caminho && vinhosSeccaoPubState.tipo === 'foto'){
+        pubVinhosCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhosSeccaoPubState.caminho);
+      }
       vinhosSeccaoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinhos-pub-ativo') === 'true';
       vinhosSeccaoPubTituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoTitulo');
       vinhosSeccaoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoSubtitulo');
@@ -1815,6 +2286,9 @@
 
       jogoPubState = extrairJogoPub(conteudo);
       renderizarJogoPub();
+      if(jogoPubState && jogoPubState.caminho && jogoPubState.tipo === 'foto'){
+        pubJogoCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + jogoPubState.caminho);
+      }
       jogoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-jogo-pub-ativo') === 'true';
       jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
       jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
