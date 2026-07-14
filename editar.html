@@ -2004,8 +2004,10 @@
     });
     if(!resp.ok){
       const errData = await resp.json().catch(() => ({}));
+      console.error('[DEBUG] ERRO no upload! Status:', resp.status, 'Mensagem:', errData.message);
       throw new Error(errData.message || ('HTTP ' + resp.status));
     }
+    console.log('[DEBUG] Arquivo enviado com sucesso para:', caminho);
     return caminho;
   }
 
@@ -2109,8 +2111,13 @@
       renderizarFotos();
       console.log('[DEBUG] fotosState carregado:', fotosState.length, 'fotos');
 
-      publicidadeState = extrairPublicidade(conteudo);
-      console.log('[DEBUG] publicidadeState extraído:', publicidadeState);
+      // Só carrega publicidadeState do ficheiro se não foi já alterado pelo utilizador
+      if(!publicidadeState){
+        publicidadeState = extrairPublicidade(conteudo);
+        console.log('[DEBUG] publicidadeState extraído:', publicidadeState);
+      } else {
+        console.log('[DEBUG] publicidadeState já foi alterado, não sobrescreve');
+      }
       if(publicidadeState){
         publicidadeState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posX')) || 50;
         publicidadeState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posY')) || 50;
