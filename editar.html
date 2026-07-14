@@ -2356,6 +2356,11 @@
       }
       fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
 
+      // Atualizar input zoom da barra
+      if(publicidadeState && typeof publicidadeState.escala === 'number'){
+        pubBarraZoomInput.value = Math.round(publicidadeState.escala * 100);
+      }
+
       vinhoPubState = extrairVinhoPub(conteudo);
       console.log('[DEBUG] vinhoPubState extraído:', vinhoPubState);
       if(vinhoPubState){
@@ -2371,6 +2376,11 @@
       vinhoPubAtivoInput.checked = extrairAtributo(conteudo, 'data-vinho-pub-ativo') === 'true';
       vinhoPubTituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioTitulo');
       vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
+
+      // Atualizar input zoom da publicidade Vinho da Casa
+      if(vinhoPubState && typeof vinhoPubState.escala === 'number'){
+        pubVinhoZoomInput.value = Math.round(vinhoPubState.escala * 100);
+      }
 
       vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
       console.log('[DEBUG] vinhosSeccaoPubState extraído:', vinhosSeccaoPubState);
@@ -2390,6 +2400,11 @@
       vinhosSeccaoPubLinha3Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha3');
       vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
 
+      // Atualizar input zoom da publicidade secção Vinhos & Bebidas
+      if(vinhosSeccaoPubState && typeof vinhosSeccaoPubState.escala === 'number'){
+        pubVinhosZoomInput.value = Math.round(vinhosSeccaoPubState.escala * 100);
+      }
+
       jogoPubState = extrairJogoPub(conteudo);
       console.log('[DEBUG] jogoPubState extraído:', jogoPubState);
       if(jogoPubState){
@@ -2406,6 +2421,11 @@
       jogoPubTituloInput.value = extrairLinha(conteudo, 'jogoAnuncioTitulo');
       jogoPubSubtituloInput.value = extrairLinha(conteudo, 'jogoAnuncioSubtitulo');
 
+      // Atualizar input zoom da publicidade após jogos
+      if(jogoPubState && typeof jogoPubState.escala === 'number'){
+        pubJogoZoomInput.value = Math.round(jogoPubState.escala * 100);
+      }
+
       pubFimState = extrairPubFim(conteudo);
       if(pubFimState && pubFimState.tipo === 'video'){
         pubFimMostrarVideo(pubFimState.nomePreview);
@@ -2418,6 +2438,25 @@
       pubFimIntervaloInput.value = extrairAtributo(conteudo, 'data-pub-intervalo');
       pubFimDuracaoInput.value = extrairAtributo(conteudo, 'data-pub-duracao');
       pubFimMaxInput.value = extrairAtributo(conteudo, 'data-pub-max-dia');
+
+      // Atualizar input zoom da publicidade fim da página
+      if(pubFimState && typeof pubFimState.escala === 'number'){
+        pubFimZoomInput.value = Math.round(pubFimState.escala * 100);
+      }
+
+      // Recuperar e atualizar dados de pubRodape
+      const pubRodapePosXVal = extrairAtributo(conteudo, 'data-pub-rodape-posX');
+      const pubRodapePosYVal = extrairAtributo(conteudo, 'data-pub-rodape-posY');
+      const pubRodapeEscalaVal = extrairAtributo(conteudo, 'data-pub-rodape-escala');
+      if(pubRodapePosXVal){
+        pubRodapePosXInput.value = parseFloat(pubRodapePosXVal) || 0;
+      }
+      if(pubRodapePosYVal){
+        pubRodapePosYInput.value = parseFloat(pubRodapePosYVal) || 0;
+      }
+      if(pubRodapeEscalaVal){
+        pubRodapeScaleInput.value = parseFloat(pubRodapeEscalaVal) || 1;
+      }
 
       atualizarPreview();
 
