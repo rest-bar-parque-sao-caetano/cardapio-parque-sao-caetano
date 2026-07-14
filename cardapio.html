@@ -30,20 +30,20 @@
   }
   header{
     position:sticky; top:0; z-index:50;
-    background:var(--branco);
+    background:var(--castanho);
     padding:20px 16px 14px;
-    border-bottom:1px solid var(--linha);
+    border-bottom:1px solid var(--castanho);
     text-align:center;
   }
   header .brand-mark{
     font-family:'Fredoka',sans-serif;
-    color:var(--castanho);
+    color:var(--branco);
     font-size:1.7rem;
     font-weight:600;
     letter-spacing:0.3px;
   }
   header .brand-sub{
-    color:var(--castanho-suave);
+    color:var(--bege-claro);
     font-size:0.82rem;
     font-style:italic;
     margin-top:3px;
@@ -57,11 +57,11 @@
     display:flex; gap:4px;
   }
   .lang-switch button{
-    background:var(--bege); border:1px solid var(--linha); border-radius:8px;
+    background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); border-radius:8px;
     padding:2px 5px; font-size:0.5rem; cursor:pointer; line-height:1.3;
-    transition:all .15s ease;
+    transition:all .15s ease; color:var(--branco);
   }
-  .lang-switch button.active{ background:var(--castanho); border-color:var(--castanho); }
+  .lang-switch button.active{ background:rgba(255,255,255,0.4); border-color:rgba(255,255,255,0.6); }
 
   .social-links{
     display:flex; gap:10px;
@@ -69,17 +69,17 @@
   .social-links a{
     width:34px; height:34px;
     border-radius:50%;
-    background:var(--bege);
-    border:1px solid var(--linha);
+    background:rgba(255,255,255,0.2);
+    border:1px solid rgba(255,255,255,0.3);
     display:flex; align-items:center; justify-content:center;
-    color:var(--castanho-suave);
+    color:var(--branco);
     transition:all .15s ease;
     overflow:visible;
   }
   .social-links a:hover{
-    background:var(--castanho);
+    background:rgba(255,255,255,0.3);
     color:var(--branco);
-    border-color:var(--castanho);
+    border-color:rgba(255,255,255,0.5);
   }
   .social-links svg{width:17px;height:17px;fill:currentColor;}
 
@@ -297,14 +297,15 @@
 
   footer{
     text-align:center;
-    color:var(--castanho-suave);
+    color:var(--bege-claro);
     font-size:0.8rem;
     margin-top:44px;
     padding:22px 16px;
-    border-top:1px solid var(--linha);
+    border-top:1px solid var(--castanho);
+    background:var(--castanho);
   }
-  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1rem; margin-bottom:4px; font-weight:600;}
-  footer a{color:var(--castanho-suave);}
+  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--branco); font-size:1rem; margin-bottom:4px; font-weight:600;}
+  footer a{color:var(--bege-claro);}
 
   .item.vinho-clicavel{
     cursor:pointer;
