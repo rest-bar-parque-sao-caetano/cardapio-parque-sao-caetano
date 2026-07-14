@@ -711,8 +711,11 @@
         <label for="pubRodapeAtivo">Ativar publicidade no rodapé</label>
       </div>
 
-      <label for="pubRodapeFoto" style="margin-top:10px;">Caminho da foto (relativo)</label>
-      <input type="text" id="pubRodapeFoto" placeholder="Ex: imagens/rodape-pub.jpg">
+      <label for="pubRodapeFoto" style="margin-top:10px;">Foto</label>
+      <input type="file" id="pubRodapeFoto" accept="image/*">
+
+      <label for="pubRodapeFotoUrl" style="margin-top:10px;">Ou caminho direto (se já está no GitHub)</label>
+      <input type="text" id="pubRodapeFotoUrl" placeholder="Ex: imagens/rodape-pub.jpg">
 
       <label for="pubRodapePosX" style="margin-top:10px;">Posição X (pixels)</label>
       <input type="number" id="pubRodapePosX" value="0">
