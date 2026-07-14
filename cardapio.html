@@ -535,6 +535,10 @@
   </div>
 </header>
 
+<div class="header-fotos" id="headerFotos" style="display:none;">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" class="ativa" data-duracao="3" alt="Rest & Bar Parque São Caetano">
+</div>
+
 <div class="categoria-grid" id="categoriaGrid">
   <button class="tile" data-target="entradas" type="button">
     <span class="tile-emoji">🥖</span>
@@ -950,13 +954,13 @@
     <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" class="ativa" alt="Rest & Bar Parque São Caetano">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
-    data-especial-ativo="false"
-    data-especial-inicio="08:51"
-    data-especial-fim="08:50"
-    data-especial-l1="Estamos Fechados "
-    data-especial-l2="Voltamos amanha"
-    data-especial-l3=""
-    data-especial-l4="">
+    data-especial-ativo="true"
+    data-especial-inicio="23:48"
+    data-especial-fim="23:50"
+    data-especial-l1="4-Feira Prato do Dia"
+    data-especial-l2="Francesinha"
+    data-especial-l3="Bife na Pucara"
+    data-especial-l4="Filetes de Pescada">
     <div class="linha-negrito" id="rodapeLinha1">Contamos contigo!</div>
     <div class="linha" id="rodapeLinha2">De Terça a Domingo — Almoço e Jantar</div>
     <div class="linha" id="rodapeLinha3"></div>
@@ -1202,10 +1206,50 @@
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalVinho(); });
 
   const PASTA_IMAGENS = 'imagens/';
+  const FIREBASE_DB_URL = 'https://cardapio-parque-sao-caetano-default-rtdb.firebaseio.com';
   const modalFoto = document.getElementById('modalFoto');
   const fotoImg = document.getElementById('fotoImg');
   const fotoPlaceholder = document.getElementById('fotoPlaceholder');
   const modalFotoNome = document.getElementById('modalFotoNome');
+
+  // Carrega fotos do Firebase
+  async function carregarFotosDoFirebase(){
+    try{
+      const resp = await fetch(FIREBASE_DB_URL + '/config.json');
+      if(!resp.ok) return;
+      const config = await resp.json();
+      if(!config) return;
+
+      // Carregar fotos do header
+      if(config.fotosHeader && Array.isArray(config.fotosHeader)){
+        const containerFotos = document.querySelector('#infoFixaFotos');
+        if(containerFotos){
+          containerFotos.innerHTML = '';
+          config.fotosHeader.forEach((foto, i) => {
+            if(foto && foto.caminho){
+              const img = document.createElement('img');
+              img.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + foto.caminho;
+              img.alt = 'Foto ' + (i+1);
+              if(i === 0) img.classList.add('ativa');
+              containerFotos.appendChild(img);
+            }
+          });
+        }
+      }
+
+      // Carregar publicidade da barra fixa
+      if(config.publicidade && config.publicidade.caminho){
+        const pubImg = document.querySelector('#infoFixaFotos img:last-child');
+        if(pubImg){
+          pubImg.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + config.publicidade.caminho;
+        }
+      }
+    } catch(err){
+      console.log('[INFO] Não foi possível carregar fotos do Firebase (é normal se não houver config):', err.message);
+    }
+  }
+
+  carregarFotosDoFirebase();
 
   document.querySelectorAll('.prato-clicavel').forEach(el => {
     el.addEventListener('click', () => {
