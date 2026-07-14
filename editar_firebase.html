@@ -302,9 +302,9 @@
           <label>Ativar publicidade no rodapé</label>
         </div>
 
-        <label style="margin-top: 16px;">Foto (URL ou caminho relativo)</label>
-        <input type="text" id="pubRodapeFoto" placeholder="Ex: imagens/foto-rodape.jpg ou https://...">
-        <small style="display: block; margin-top: 8px; color: var(--castanho-suave);">Coloca um URL ou caminho relativo da foto (ex: imagens/foto.jpg)</small>
+        <label style="margin-top: 16px;">Foto</label>
+        <input type="file" id="pubRodapeFoto" accept="image/*">
+        <small style="display: block; margin-top: 8px; color: var(--castanho-suave);">Seleciona uma foto JPG, PNG ou WebP (máx. 5MB)</small>
 
         <label style="margin-top: 20px;">Posição X (px)</label>
         <input type="number" id="pubRodapePosX" value="0">
@@ -383,6 +383,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
 
   <script>
     // Firebase Config
@@ -530,17 +531,33 @@
     }
 
     async function guardarPubRodape() {
-      const dados = {
-        pubRodapeAtivo: document.getElementById('pubRodapeAtiva').checked,
-        pubRodapeFoto: document.getElementById('pubRodapeFoto').value,
-        pubRodapePosX: parseInt(document.getElementById('pubRodapePosX').value) || 0,
-        pubRodapePosY: parseInt(document.getElementById('pubRodapePosY').value) || 0,
-        pubRodapeScale: parseFloat(document.getElementById('pubRodapeScale').value) || 1
-      };
+      const fileInput = document.getElementById('pubRodapeFoto');
+      const file = fileInput.files[0];
 
       mostrarEstado('estadoPubRodape', '💾 Guardando...', 'info');
 
       try {
+        let fotoUrl = '';
+
+        if(file) {
+          // Upload para Firebase Storage
+          const storage = firebase.storage();
+          const timestamp = Date.now();
+          const nomeArquivo = `pub-rodape-${timestamp}-${file.name}`;
+          const ref = storage.ref().child(`rodape/${nomeArquivo}`);
+
+          const snapshot = await ref.put(file);
+          fotoUrl = await snapshot.ref.getDownloadURL();
+        }
+
+        const dados = {
+          pubRodapeAtivo: document.getElementById('pubRodapeAtiva').checked,
+          pubRodapeFoto: fotoUrl,
+          pubRodapePosX: parseInt(document.getElementById('pubRodapePosX').value) || 0,
+          pubRodapePosY: parseInt(document.getElementById('pubRodapePosY').value) || 0,
+          pubRodapeScale: parseFloat(document.getElementById('pubRodapeScale').value) || 1
+        };
+
         await db.ref('editor').update(dados);
         mostrarEstado('estadoPubRodape', '✓ Publicidade rodapé guardada!', 'ok');
       } catch(err) {
