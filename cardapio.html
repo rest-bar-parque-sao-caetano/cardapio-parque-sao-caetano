@@ -3397,19 +3397,43 @@
 
     const db = firebase.database();
 
-    db.ref('editor').on('value', (snap) => {
-      const dados = snap.val() || {};
+    function atualizarRodape(dados) {
+      // Verificar se está no horário da mensagem especial
+      const agora = new Date();
+      const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+      const mostraEspecial = dados.especialAtivo && dados.especialInicio && dados.especialFim;
 
-      // Atualizar rodapé
-      if(dados.rodape1) document.getElementById('rodapeLinha1').textContent = dados.rodape1;
-      if(dados.rodape2) document.getElementById('rodapeLinha2').textContent = dados.rodape2;
-      if(dados.rodape3) document.getElementById('rodapeLinha3').textContent = dados.rodape3;
-      if(dados.rodape4) document.getElementById('rodapeLinha4').textContent = dados.rodape4;
+      let usarEspecial = false;
+      if(mostraEspecial) {
+        const [hiEsp, miEsp] = dados.especialInicio.split(':').map(Number);
+        const [hfEsp, mfEsp] = dados.especialFim.split(':').map(Number);
+        const inicioEsp = hiEsp * 60 + miEsp;
+        const fimEsp = hfEsp * 60 + mfEsp;
 
-      // Atualizar mensagem especial
+        if(inicioEsp <= fimEsp) {
+          usarEspecial = horaAtual >= inicioEsp && horaAtual < fimEsp;
+        } else {
+          usarEspecial = horaAtual >= inicioEsp || horaAtual < fimEsp;
+        }
+      }
+
+      // Atualizar texto do rodapé
+      if(usarEspecial) {
+        if(dados.especial1) document.getElementById('rodapeLinha1').textContent = dados.especial1;
+        if(dados.especial2) document.getElementById('rodapeLinha2').textContent = dados.especial2;
+        if(dados.especial3) document.getElementById('rodapeLinha3').textContent = dados.especial3;
+        if(dados.especial4) document.getElementById('rodapeLinha4').textContent = dados.especial4;
+      } else {
+        if(dados.rodape1) document.getElementById('rodapeLinha1').textContent = dados.rodape1;
+        if(dados.rodape2) document.getElementById('rodapeLinha2').textContent = dados.rodape2;
+        if(dados.rodape3) document.getElementById('rodapeLinha3').textContent = dados.rodape3;
+        if(dados.rodape4) document.getElementById('rodapeLinha4').textContent = dados.rodape4;
+      }
+
+      // Atualizar atributos da mensagem especial
       const infoFixaTexto = document.getElementById('infoFixaTexto');
-      if(dados.especialAtivo && infoFixaTexto) {
-        infoFixaTexto.setAttribute('data-especial-ativo', 'true');
+      if(infoFixaTexto) {
+        infoFixaTexto.setAttribute('data-especial-ativo', dados.especialAtivo ? 'true' : 'false');
         if(dados.especialInicio) infoFixaTexto.setAttribute('data-especial-inicio', dados.especialInicio);
         if(dados.especialFim) infoFixaTexto.setAttribute('data-especial-fim', dados.especialFim);
         if(dados.especial1) infoFixaTexto.setAttribute('data-especial-l1', dados.especial1);
@@ -3417,6 +3441,20 @@
         if(dados.especial3) infoFixaTexto.setAttribute('data-especial-l3', dados.especial3);
         if(dados.especial4) infoFixaTexto.setAttribute('data-especial-l4', dados.especial4);
       }
+    }
+
+    db.ref('editor').on('value', (snap) => {
+      const dados = snap.val() || {};
+      atualizarRodape(dados);
+    });
+
+    // Atualizar a cada minuto para refletir mudanças de horário
+    setInterval(() => {
+      db.ref('editor').once('value', (snap) => {
+        const dados = snap.val() || {};
+        atualizarRodape(dados);
+      });
+    }, 60000);
 
       // Atualizar publicidade do rodapé
       const fundoAnuncioImg = document.getElementById('fundoAnuncioImg');
