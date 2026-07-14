@@ -103,7 +103,7 @@
       color:var(--dourado-escuro);
       margin:16px 0 8px;
     }
-    input[type=text], input[type=number], input[type=time], textarea{
+    input[type=text], input[type=number], input[type=time], input[type=file], textarea{
       width:100%;
       padding:12px 14px;
       border-radius:10px;
@@ -192,6 +192,7 @@
     <div class="tabs">
       <button class="tab-btn ativo" onclick="abrirTab('rodape', this)">📝 Rodapé</button>
       <button class="tab-btn" onclick="abrirTab('publicidade', this)">📢 Publicidade</button>
+      <button class="tab-btn" onclick="abrirTab('pub-rodape', this)">📸 Publicidade Rodapé</button>
       <button class="tab-btn" onclick="abrirTab('vinhos', this)">🍷 Vinhos</button>
     </div>
 
@@ -287,6 +288,37 @@
           <button class="acao guardar" onclick="guardarPublicidade()">💾 Guardar</button>
         </div>
         <div id="estadoPub" class="estado"></div>
+      </div>
+    </div>
+
+    <!-- PUBLICIDADE RODAPÉ -->
+    <div id="tab-pub-rodape" class="tab-content">
+      <div class="secao">
+        <h2>Foto de Publicidade do Rodapé</h2>
+        <p class="secao-subtitulo">Faz upload de uma foto que aparece como publicidade no rodapé.</p>
+
+        <div class="check-ativar">
+          <input type="checkbox" id="pubRodapeAtiva" checked>
+          <label>Ativar publicidade no rodapé</label>
+        </div>
+
+        <label style="margin-top: 16px;">Foto</label>
+        <input type="file" id="pubRodapeFoto" accept="image/*">
+        <small style="display: block; margin-top: 8px; color: var(--castanho-suave);">Formato: JPG, PNG, WebP (máx. 5MB)</small>
+
+        <label style="margin-top: 20px;">Posição X (px)</label>
+        <input type="number" id="pubRodapePosX" value="0">
+
+        <label>Posição Y (px)</label>
+        <input type="number" id="pubRodapePosY" value="0">
+
+        <label>Escala (zoom)</label>
+        <input type="number" id="pubRodapeScale" value="1" step="0.05">
+
+        <div class="botoes">
+          <button class="acao guardar" onclick="guardarPubRodape()">💾 Guardar</button>
+        </div>
+        <div id="estadoPubRodape" class="estado"></div>
       </div>
     </div>
 
@@ -414,6 +446,12 @@
         document.getElementById('vinhosSecPubSub1').value = dados.vinhosSecPubSub1 || '';
         document.getElementById('vinhosSecPubSub2').value = dados.vinhosSecPubSub2 || '';
         document.getElementById('vinhosSecPubSub3').value = dados.vinhosSecPubSub3 || '';
+
+        // Publicidade Rodapé
+        document.getElementById('pubRodapeAtiva').checked = dados.pubRodapeAtivo !== false;
+        document.getElementById('pubRodapePosX').value = dados.pubRodapePosX || 0;
+        document.getElementById('pubRodapePosY').value = dados.pubRodapePosY || 0;
+        document.getElementById('pubRodapeScale').value = dados.pubRodapeScale || 1;
       });
     }
 
@@ -488,6 +526,42 @@
         mostrarEstado('estadoPub', '✓ Publicidade guardada!', 'ok');
       } catch(err) {
         mostrarEstado('estadoPub', '❌ Erro: ' + err.message, 'erro');
+      }
+    }
+
+    async function guardarPubRodape() {
+      const fileInput = document.getElementById('pubRodapeFoto');
+      const file = fileInput.files[0];
+
+      mostrarEstado('estadoPubRodape', '💾 Guardando...', 'info');
+
+      try {
+        let fotoUrl = '';
+        if(file) {
+          if(file.size > 5 * 1024 * 1024) {
+            throw new Error('Foto muito grande (máx. 5MB)');
+          }
+
+          const reader = new FileReader();
+          fotoUrl = await new Promise((resolve, reject) => {
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        }
+
+        const dados = {
+          pubRodapeAtivo: document.getElementById('pubRodapeAtiva').checked,
+          pubRodapeFoto: fotoUrl,
+          pubRodapePosX: parseInt(document.getElementById('pubRodapePosX').value) || 0,
+          pubRodapePosY: parseInt(document.getElementById('pubRodapePosY').value) || 0,
+          pubRodapeScale: parseFloat(document.getElementById('pubRodapeScale').value) || 1
+        };
+
+        await db.ref('editor').update(dados);
+        mostrarEstado('estadoPubRodape', '✓ Publicidade rodapé guardada!', 'ok');
+      } catch(err) {
+        mostrarEstado('estadoPubRodape', '❌ Erro: ' + err.message, 'erro');
       }
     }
 
