@@ -2395,9 +2395,16 @@
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
       if(publicidadeState){
         console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
-        novo = substituirAtributo(novo, 'data-pub-barra-posX', publicidadeState.posX || 50);
-        novo = substituirAtributo(novo, 'data-pub-barra-posY', publicidadeState.posY || 50);
-        novo = substituirAtributo(novo, 'data-pub-barra-escala', publicidadeState.escala || 1);
+        // Guardar atributos NA TAG IMG dentro de infoFixaFundo
+        const regexImg = /(<div class="info-fixa-fundo"[^>]*>\s*<!--[^>]*-->\s*<img[^>]*)(>)/;
+        const m = novo.match(regexImg);
+        if(m){
+          let imgTag = m[1];
+          imgTag = substituirAtributo(imgTag, 'data-pub-barra-posX', publicidadeState.posX || 50);
+          imgTag = substituirAtributo(imgTag, 'data-pub-barra-posY', publicidadeState.posY || 50);
+          imgTag = substituirAtributo(imgTag, 'data-pub-barra-escala', publicidadeState.escala || 1);
+          novo = novo.replace(regexImg, imgTag + m[2]);
+        }
       }
 
       if(vinhoPubState){
