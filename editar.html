@@ -1067,7 +1067,10 @@
   }
 
   function construirFundoImgHtml(pub){
-    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub) + '\n  ';
+    const posX = pub.posX || 50;
+    const posY = pub.posY || 50;
+    const escala = pub.escala || 1;
+    return '\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    ' + construirMediaTag(pub, ` data-pub-barra-posX="${posX}" data-pub-barra-posY="${posY}" data-pub-barra-escala="${escala}"`) + '\n  ';
   }
 
   function substituirFundoImg(html, novoInnerHTML){
@@ -2396,7 +2399,7 @@
       if(publicidadeState){
         console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
         // Guardar atributos NA TAG IMG dentro de infoFixaFundo
-        const regexImg = /(<div class="info-fixa-fundo"[^>]*>\s*<!--[^>]*-->\s*<img[^>]*)(>)/;
+        const regexImg = /(<div class="info-fixa-fundo"[\s\S]*?<img[^>]*)(>)/;
         const m = novo.match(regexImg);
         if(m){
           let imgTag = m[1];
@@ -2404,6 +2407,9 @@
           imgTag = substituirAtributo(imgTag, 'data-pub-barra-posY', publicidadeState.posY || 50);
           imgTag = substituirAtributo(imgTag, 'data-pub-barra-escala', publicidadeState.escala || 1);
           novo = novo.replace(regexImg, imgTag + m[2]);
+          console.log('[DEBUG] Guardado com sucesso. Nova img tag:', imgTag + m[2]);
+        } else {
+          console.log('[DEBUG] Regex NÃO ENCONTROU a img tag!');
         }
       }
 
