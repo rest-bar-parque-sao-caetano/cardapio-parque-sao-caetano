@@ -3443,62 +3443,79 @@
       }
     }
 
-    db.ref('editor').on('value', (snap) => {
-      const dados = snap.val() || {};
-      atualizarRodape(dados);
-
-      // Atualizar publicidade do rodapé
-      const fundoAnuncioImg = document.getElementById('fundoAnuncioImg');
-      if(fundoAnuncioImg) {
-        if(dados.pubFoto) fundoAnuncioImg.src = dados.pubFoto;
-        const transform = `translate(${dados.pubPosX || 0}px, ${dados.pubPosY || -3}px) scale(${dados.pubScale || 1.15})`;
-        fundoAnuncioImg.style.transform = transform;
-      }
-
+    // Ler posição/zoom da barra fixa (infoFixaFundo) — atributos guardados no HTML pelo editar.html
+    function aplicarPosicaoBarra(){
       const infoFixaFundo = document.getElementById('infoFixaFundo');
-      if(infoFixaFundo) {
-        infoFixaFundo.setAttribute('data-fundo-ativo', dados.pubAtivo !== false ? 'true' : 'false');
-        if(dados.pubFoto) {
-          let img = infoFixaFundo.querySelector('img');
-          if(!img) {
-            img = document.createElement('img');
-            infoFixaFundo.appendChild(img);
-          }
-          img.src = dados.pubFoto;
-          const transform = `translate(${dados.pubPosX || 0}px, ${dados.pubPosY || 0}px) scale(${dados.pubScale || 1})`;
-          img.style.transform = transform;
-        }
-      }
+      if(!infoFixaFundo) return;
 
-      // Atualizar publicidade do rodapé
+      const img = infoFixaFundo.querySelector('img');
+      if(!img) return;
 
-      // Atualizar vinho do mês
+      const posX = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posX')) || 0;
+      const posY = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posY')) || 0;
+      const scale = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-escala')) || 1;
+
+      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+      img.style.transform = transform;
+    }
+
+    // Ler posição/zoom de vinho da casa
+    function aplicarPosicaoVinho(){
       const vinhoAnuncio = document.getElementById('vinhoAnuncio');
-      if(vinhoAnuncio) {
-        vinhoAnuncio.setAttribute('data-vinho-pub-ativo', dados.vinhoPubAtivo !== false ? 'true' : 'false');
-        if(dados.vinhoPubFoto) vinhoAnuncio.querySelector('img').src = dados.vinhoPubFoto;
-        if(dados.vinhoPubTitulo) document.getElementById('vinhoAnuncioTitulo').textContent = dados.vinhoPubTitulo;
-        if(dados.vinhoPubSub) document.getElementById('vinhoAnuncioSubtitulo').textContent = dados.vinhoPubSub;
-      }
+      if(!vinhoAnuncio) return;
 
-      // Atualizar publicidade de bebidas
-      const vinhosAnuncioSeccao = document.getElementById('vinhosAnuncioSeccao');
-      if(vinhosAnuncioSeccao) {
-        vinhosAnuncioSeccao.setAttribute('data-vinhos-pub-ativo', dados.vinhosSecPubAtivo !== false ? 'true' : 'false');
-        if(dados.vinhosSecPubImg) vinhosAnuncioSeccao.querySelector('img').src = dados.vinhosSecPubImg;
-        if(dados.vinhosSecPubTitulo) document.getElementById('vinhosAnuncioSeccaoTitulo').textContent = dados.vinhosSecPubTitulo;
-        if(dados.vinhosSecPubSub1) document.getElementById('vinhosAnuncioSeccaoSubtitulo').textContent = dados.vinhosSecPubSub1;
-        if(dados.vinhosSecPubSub2) document.getElementById('vinhosAnuncioSeccaoLinha3').textContent = dados.vinhosSecPubSub2;
-        if(dados.vinhosSecPubSub3) document.getElementById('vinhosAnuncioSeccaoLinha4').textContent = dados.vinhosSecPubSub3;
-      }
-    });
+      const img = vinhoAnuncio.querySelector('img');
+      if(!img) return;
 
-    // Atualizar a cada minuto para refletir mudanças de horário
+      const posX = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-posX')) || 50;
+      const posY = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-posY')) || 50;
+      const scale = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-escala')) || 1;
+
+      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+      img.style.transform = transform;
+    }
+
+    // Ler posição/zoom de vinhos & bebidas
+    function aplicarPosicaoVinhos(){
+      const vinhosAnuncio = document.getElementById('vinhosAnuncioSeccao');
+      if(!vinhosAnuncio) return;
+
+      const img = vinhosAnuncio.querySelector('img');
+      if(!img) return;
+
+      const posX = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-posX')) || 50;
+      const posY = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-posY')) || 50;
+      const scale = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-escala')) || 1;
+
+      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+      img.style.transform = transform;
+    }
+
+    // Ler posição/zoom de jogo
+    function aplicarPosicaoJogo(){
+      const jogoAnuncio = document.getElementById('jogoAnuncio');
+      if(!jogoAnuncio) return;
+
+      const img = jogoAnuncio.querySelector('img');
+      if(!img) return;
+
+      const posX = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-posX')) || 50;
+      const posY = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-posY')) || 50;
+      const scale = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-escala')) || 1;
+
+      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+      img.style.transform = transform;
+    }
+
+    // Aplicar posições ao carregar
+    aplicarPosicaoBarra();
+    aplicarPosicaoVinho();
+    aplicarPosicaoVinhos();
+    aplicarPosicaoJogo();
+
+    // Recarregar dados do rodapé a cada minuto para refletir mudanças de horário (sem Firebase)
     setInterval(() => {
-      db.ref('editor').once('value', (snap) => {
-        const dados = snap.val() || {};
-        atualizarRodape(dados);
-      });
+      atualizarRodape({});
     }, 60000);
   })();
 </script>
