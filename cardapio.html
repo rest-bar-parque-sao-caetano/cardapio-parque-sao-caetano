@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2014,7 +2014,7 @@
 <div class="info-fixa">
   <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
-    <img data-pub-barra-posX="50" data-pub-barra-posY="61.95464117590691" data-pub-barra-escala="1.83" src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="61.95464117590691" data-pub-barra-escala="1.83">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="50" data-pub-barra-escala="1">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
     data-especial-ativo="false"
@@ -3443,83 +3443,37 @@
       }
     }
 
-    // Fazer fetch do cardapio.html direto do GitHub (sem cache) para ler atributos mais recentes
-    async function carregarAtributosDoGitHub(){
-      console.log('[DEBUG] carregarAtributosDoGitHub() INICIADO');
+    // Fazer fetch do cardapio.html direto do GitHub para ler a foto mais recente
+    async function recarregarFotos(){
       try {
         const url = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/cardapio.html?t=' + Date.now();
-        console.log('[DEBUG] URL fetch:', url);
         const resp = await fetch(url);
         const html = await resp.text();
-        console.log('[DEBUG] Ficheiro carregado do GitHub, tamanho:', html.length);
 
-        // Extrair atributos de forma mais robusta
-        function extrairAtributo(html, atributo){
-          const regex = new RegExp(`${atributo}="([^"]*)"`);
+        // Extrair src de cada imagem
+        function extrairSrc(html, elementId){
+          const regex = new RegExp(`<div[^>]*id="${elementId}"[\\s\\S]*?<img[^>]*src="([^"]*)"`, 'm');
           const m = html.match(regex);
-          return m ? parseFloat(m[1]) : null;
+          return m ? m[1] : null;
         }
 
-        // Barra fixa — extrair de <div class="info-fixa-fundo"...
+        // Atualizar foto da barra fixa
         const img1 = document.querySelector('#infoFixaFundo img');
         if(img1){
-          const posX = extrairAtributo(html, 'data-pub-barra-posX') || 50;
-          const posY = extrairAtributo(html, 'data-pub-barra-posY') || 50;
-          const scale = extrairAtributo(html, 'data-pub-barra-escala') || 1;
-          console.log('[DEBUG] Barra fixa ENCONTRADO! Aplicando: posX=' + posX + ', posY=' + posY + ', scale=' + scale);
-          img1.style.objectFit = 'cover';
-          img1.style.objectPosition = `${posX}% ${posY}%`;
-          img1.style.transform = `scale(${scale})`;
-          img1.style.transformOrigin = `${posX}% ${posY}%`;
-          console.log('[DEBUG] Barra fixa CSS aplicado:', img1.style.cssText);
-        } else {
-          console.log('[DEBUG] Barra fixa NÃO ENCONTRADO!');
-        }
-
-        // Vinho da casa
-        const img2 = document.querySelector('#vinhoAnuncio img');
-        if(img2){
-          const posX = extrairAtributo(html, 'data-pub-vinho-posX') || 50;
-          const posY = extrairAtributo(html, 'data-pub-vinho-posY') || 50;
-          const scale = extrairAtributo(html, 'data-pub-vinho-escala') || 1;
-          console.log('[DEBUG] Vinho carregado: posX=' + posX + ', posY=' + posY + ', scale=' + scale);
-          img2.style.objectPosition = `${posX}% ${posY}%`;
-          img2.style.transform = `scale(${scale})`;
-        }
-
-        // Vinhos & Bebidas
-        const img3 = document.querySelector('#vinhosAnuncioSeccao img');
-        if(img3){
-          const posX = extrairAtributo(html, 'data-pub-vinhos-posX') || 50;
-          const posY = extrairAtributo(html, 'data-pub-vinhos-posY') || 50;
-          const scale = extrairAtributo(html, 'data-pub-vinhos-escala') || 1;
-          console.log('[DEBUG] Vinhos carregado: posX=' + posX + ', posY=' + posY + ', scale=' + scale);
-          img3.style.objectPosition = `${posX}% ${posY}%`;
-          img3.style.transform = `scale(${scale})`;
-        }
-
-        // Jogo
-        const img4 = document.querySelector('#jogoAnuncio img');
-        if(img4){
-          const posX = extrairAtributo(html, 'data-pub-jogo-posX') || 50;
-          const posY = extrairAtributo(html, 'data-pub-jogo-posY') || 50;
-          const scale = extrairAtributo(html, 'data-pub-jogo-escala') || 1;
-          console.log('[DEBUG] Jogo carregado: posX=' + posX + ', posY=' + posY + ', scale=' + scale);
-          img4.style.objectPosition = `${posX}% ${posY}%`;
-          img4.style.transform = `scale(${scale})`;
+          const src = extrairSrc(html, 'infoFixaFundo');
+          if(src){
+            img1.src = src;
+            console.log('[DEBUG] Foto barra fixa atualizada:', src);
+          }
         }
       } catch(e){
-        console.error('[DEBUG] Erro ao carregar atributos do GitHub:', e);
+        console.error('[DEBUG] Erro ao recarregar fotos:', e);
       }
     }
 
-    // Carregar ao abrir a página
-    carregarAtributosDoGitHub();
-
-    // Recarregar a cada 5 segundos para apanhar updates do editor
-    setInterval(() => {
-      carregarAtributosDoGitHub();
-    }, 5000);
+    // Recarregar fotos ao abrir a página e a cada 5 segundos
+    recarregarFotos();
+    setInterval(recarregarFotos, 5000);
 
     // Recarregar dados do rodapé a cada minuto para refletir mudanças de horário (sem Firebase)
     setInterval(() => {
