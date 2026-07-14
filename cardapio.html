@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2012,9 +2012,9 @@
 </footer>
 
 <div class="info-fixa">
-  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="true">
+  <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
-    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="50" data-pub-barra-escala="1">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
     data-especial-ativo="false"
@@ -3443,72 +3443,69 @@
       }
     }
 
-    // Ler posição/zoom da barra fixa (infoFixaFundo) — atributos guardados no HTML pelo editar.html
-    function aplicarPosicaoBarra(){
-      const img = document.querySelector('#infoFixaFundo img');
-      if(!img) return;
+    // Fazer fetch do cardapio.html direto do GitHub (sem cache) para ler atributos mais recentes
+    async function carregarAtributosDoGitHub(){
+      try {
+        const url = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/cardapio.html?t=' + Date.now();
+        const resp = await fetch(url);
+        const html = await resp.text();
 
-      const posX = parseFloat(img.getAttribute('data-pub-barra-posX')) || 50;
-      const posY = parseFloat(img.getAttribute('data-pub-barra-posY')) || 50;
-      const scale = parseFloat(img.getAttribute('data-pub-barra-escala')) || 1;
+        // Parser para extrair atributos da img dentro de infoFixaFundo
+        function extrairAtributoImg(html, seletor, atributo){
+          const regex = new RegExp(`<${seletor}[^>]*${atributo}="([^"]*)"[^>]*>`);
+          const m = html.match(regex);
+          return m ? parseFloat(m[1]) : null;
+        }
 
-      img.style.objectPosition = `${posX}% ${posY}%`;
-      img.style.transform = `scale(${scale})`;
+        // Barra fixa
+        const img1 = document.querySelector('#infoFixaFundo img');
+        if(img1){
+          const posX = extrairAtributoImg(html, 'img', 'data-pub-barra-posX') || 50;
+          const posY = extrairAtributoImg(html, 'img', 'data-pub-barra-posY') || 50;
+          const scale = extrairAtributoImg(html, 'img', 'data-pub-barra-escala') || 1;
+          img1.style.objectPosition = `${posX}% ${posY}%`;
+          img1.style.transform = `scale(${scale})`;
+        }
+
+        // Vinho da casa
+        const img2 = document.querySelector('#vinhoAnuncio img');
+        if(img2){
+          const posX = extrairAtributoImg(html, 'img', 'data-pub-vinho-posX') || 50;
+          const posY = extrairAtributoImg(html, 'img', 'data-pub-vinho-posY') || 50;
+          const scale = extrairAtributoImg(html, 'img', 'data-pub-vinho-escala') || 1;
+          img2.style.objectPosition = `${posX}% ${posY}%`;
+          img2.style.transform = `scale(${scale})`;
+        }
+
+        // Vinhos & Bebidas
+        const img3 = document.querySelector('#vinhosAnuncioSeccao img');
+        if(img3){
+          const posX = extrairAtributoImg(html, 'img', 'data-pub-vinhos-posX') || 50;
+          const posY = extrairAtributoImg(html, 'img', 'data-pub-vinhos-posY') || 50;
+          const scale = extrairAtributoImg(html, 'img', 'data-pub-vinhos-escala') || 1;
+          img3.style.objectPosition = `${posX}% ${posY}%`;
+          img3.style.transform = `scale(${scale})`;
+        }
+
+        // Jogo
+        const img4 = document.querySelector('#jogoAnuncio img');
+        if(img4){
+          const posX = extrairAtributoImg(html, 'img', 'data-pub-jogo-posX') || 50;
+          const posY = extrairAtributoImg(html, 'img', 'data-pub-jogo-posY') || 50;
+          const scale = extrairAtributoImg(html, 'img', 'data-pub-jogo-escala') || 1;
+          img4.style.objectPosition = `${posX}% ${posY}%`;
+          img4.style.transform = `scale(${scale})`;
+        }
+      } catch(e){
+        console.error('[DEBUG] Erro ao carregar atributos do GitHub:', e);
+      }
     }
 
-    // Ler posição/zoom de vinho da casa
-    function aplicarPosicaoVinho(){
-      const vinhoAnuncio = document.getElementById('vinhoAnuncio');
-      if(!vinhoAnuncio) return;
+    // Carregar ao abrir a página
+    carregarAtributosDoGitHub();
 
-      const img = vinhoAnuncio.querySelector('img');
-      if(!img) return;
-
-      const posX = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-posX')) || 50;
-      const posY = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-posY')) || 50;
-      const scale = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-escala')) || 1;
-
-      img.style.objectPosition = `${posX}% ${posY}%`;
-      img.style.transform = `scale(${scale})`;
-    }
-
-    // Ler posição/zoom de vinhos & bebidas
-    function aplicarPosicaoVinhos(){
-      const vinhosAnuncio = document.getElementById('vinhosAnuncioSeccao');
-      if(!vinhosAnuncio) return;
-
-      const img = vinhosAnuncio.querySelector('img');
-      if(!img) return;
-
-      const posX = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-posX')) || 50;
-      const posY = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-posY')) || 50;
-      const scale = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-escala')) || 1;
-
-      img.style.objectPosition = `${posX}% ${posY}%`;
-      img.style.transform = `scale(${scale})`;
-    }
-
-    // Ler posição/zoom de jogo
-    function aplicarPosicaoJogo(){
-      const jogoAnuncio = document.getElementById('jogoAnuncio');
-      if(!jogoAnuncio) return;
-
-      const img = jogoAnuncio.querySelector('img');
-      if(!img) return;
-
-      const posX = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-posX')) || 50;
-      const posY = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-posY')) || 50;
-      const scale = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-escala')) || 1;
-
-      img.style.objectPosition = `${posX}% ${posY}%`;
-      img.style.transform = `scale(${scale})`;
-    }
-
-    // Aplicar posições ao carregar
-    aplicarPosicaoBarra();
-    aplicarPosicaoVinho();
-    aplicarPosicaoVinhos();
-    aplicarPosicaoJogo();
+    // Recarregar a cada 10 segundos para apanhar updates do editor
+    setInterval(carregarAtributosDoGitHub, 10000);
 
     // Recarregar dados do rodapé a cada minuto para refletir mudanças de horário (sem Firebase)
     setInterval(() => {
