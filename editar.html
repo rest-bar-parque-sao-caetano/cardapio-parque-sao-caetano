@@ -2399,18 +2399,10 @@
       if(publicidadeState){
         console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
         // Guardar atributos NA TAG IMG dentro de infoFixaFundo
-        const regexImg = /(<div class="info-fixa-fundo"[\s\S]*?<img[^>]*)(>)/;
-        const m = novo.match(regexImg);
-        if(m){
-          let imgTag = m[1];
-          imgTag = substituirAtributo(imgTag, 'data-pub-barra-posX', publicidadeState.posX || 50);
-          imgTag = substituirAtributo(imgTag, 'data-pub-barra-posY', publicidadeState.posY || 50);
-          imgTag = substituirAtributo(imgTag, 'data-pub-barra-escala', publicidadeState.escala || 1);
-          novo = novo.replace(regexImg, imgTag + m[2]);
-          console.log('[DEBUG] Guardado com sucesso. Nova img tag:', imgTag + m[2]);
-        } else {
-          console.log('[DEBUG] Regex NÃO ENCONTROU a img tag!');
-        }
+        // Substituir cada atributo especificamente dentro da tag img
+        novo = novo.replace(/<div class="info-fixa-fundo"[^>]*>\s*<!--[^>]*-->\s*<img([^>]*)>/,
+          '<div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">\n    <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->\n    <img data-pub-barra-posX="' + (publicidadeState.posX || 50) + '" data-pub-barra-posY="' + (publicidadeState.posY || 50) + '" data-pub-barra-escala="' + (publicidadeState.escala || 1) + '"$1>');
+        console.log('[DEBUG] Guardado publicidadeState no GitHub');
       }
 
       if(vinhoPubState){
