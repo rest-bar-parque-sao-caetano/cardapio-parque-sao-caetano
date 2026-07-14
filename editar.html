@@ -2060,6 +2060,7 @@
     pubRodapeAplicarTransform();
   });
   function pubRodapeTerminarArrasto(){
+    if(!pubRodapeState) return;
     pubRodapeArrastando = false;
     pubRodapeCaixaEl.classList.remove('arrastando');
     pubRodapeCapturarEstadoAtual();
@@ -2071,6 +2072,7 @@
   pubRodapeCaixaEl.addEventListener('pointerleave', pubRodapeTerminarArrasto);
 
   pubRodapeZoomInput.addEventListener('input', () => {
+    if(!pubRodapeState) return;
     pubRodapeRecalcular(true);
     pubRodapeCapturarEstadoAtual();
     pubRodapeScaleInput.value = Math.round(pubRodapeState.escala * 100) / 100;
