@@ -1945,6 +1945,7 @@
   function pubFimTerminarArrasto(){
     pubFimArrastando = false;
     pubFimCaixaEl.classList.remove('arrastando');
+    pubFimCapturarEstadoAtual();
   }
   pubFimCaixaEl.addEventListener('pointerup', pubFimTerminarArrasto);
   pubFimCaixaEl.addEventListener('pointercancel', pubFimTerminarArrasto);
@@ -1952,6 +1953,7 @@
 
   pubFimZoomInput.addEventListener('input', () => {
     pubFimRecalcular(true);
+    pubFimCapturarEstadoAtual();
   });
 
   window.addEventListener('resize', () => {
@@ -2315,6 +2317,7 @@
   async function carregarTexto(){
     setEstado('A carregar texto atual…', 'info');
     btnCarregar.disabled = true;
+    console.log('[DEBUG] Iniciando carregarTexto()');
     try{
       const resp = await fetch(API_URL + '?t=' + Date.now(), { headers: cabecalhos(true) });
       if(!resp.ok) throw new Error('HTTP ' + resp.status + ' — verifica o token ou tenta novamente');
@@ -2338,11 +2341,15 @@
 
       fotosState = extrairFotos(conteudo);
       renderizarFotos();
+      console.log('[DEBUG] fotosState carregado:', fotosState.length, 'fotos');
 
       publicidadeState = extrairPublicidade(conteudo);
-      publicidadeState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posX')) || 50;
-      publicidadeState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posY')) || 50;
-      publicidadeState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-escala')) || 1;
+      console.log('[DEBUG] publicidadeState extraído:', publicidadeState);
+      if(publicidadeState){
+        publicidadeState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posX')) || 50;
+        publicidadeState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-posY')) || 50;
+        publicidadeState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-barra-escala')) || 1;
+      }
       renderizarPublicidade();
       if(publicidadeState && publicidadeState.caminho){
         pubBarraCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + publicidadeState.caminho);
@@ -2350,9 +2357,13 @@
       fundoAtivoInput.checked = extrairAtributo(conteudo, 'data-fundo-ativo') === 'true';
 
       vinhoPubState = extrairVinhoPub(conteudo);
-      vinhoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-posX')) || 50;
-      vinhoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-posY')) || 50;
-      vinhoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-escala')) || 1;
+      console.log('[DEBUG] vinhoPubState extraído:', vinhoPubState);
+      if(vinhoPubState){
+        vinhoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-posX')) || 50;
+        vinhoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-posY')) || 50;
+        vinhoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-vinho-escala')) || 1;
+        console.log('[DEBUG] vinhoPubState posição/zoom:', vinhoPubState.posX, vinhoPubState.posY, vinhoPubState.escala);
+      }
       renderizarVinhoPub();
       if(vinhoPubState && vinhoPubState.caminho && vinhoPubState.tipo === 'foto'){
         pubVinhoCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhoPubState.caminho);
@@ -2362,9 +2373,13 @@
       vinhoPubSubtituloInput.value = extrairLinha(conteudo, 'vinhoAnuncioSubtitulo');
 
       vinhosSeccaoPubState = extrairVinhosSeccaoPub(conteudo);
-      vinhosSeccaoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-posX')) || 50;
-      vinhosSeccaoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-posY')) || 50;
-      vinhosSeccaoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-escala')) || 1;
+      console.log('[DEBUG] vinhosSeccaoPubState extraído:', vinhosSeccaoPubState);
+      if(vinhosSeccaoPubState){
+        vinhosSeccaoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-posX')) || 50;
+        vinhosSeccaoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-posY')) || 50;
+        vinhosSeccaoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-vinhos-escala')) || 1;
+        console.log('[DEBUG] vinhosSeccaoPubState posição/zoom:', vinhosSeccaoPubState.posX, vinhosSeccaoPubState.posY, vinhosSeccaoPubState.escala);
+      }
       renderizarVinhosSeccaoPub();
       if(vinhosSeccaoPubState && vinhosSeccaoPubState.caminho && vinhosSeccaoPubState.tipo === 'foto'){
         pubVinhosCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + vinhosSeccaoPubState.caminho);
@@ -2376,9 +2391,13 @@
       vinhosSeccaoPubLinha4Input.value = extrairLinha(conteudo, 'vinhosAnuncioSeccaoLinha4');
 
       jogoPubState = extrairJogoPub(conteudo);
-      jogoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-posX')) || 50;
-      jogoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-posY')) || 50;
-      jogoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-escala')) || 1;
+      console.log('[DEBUG] jogoPubState extraído:', jogoPubState);
+      if(jogoPubState){
+        jogoPubState.posX = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-posX')) || 50;
+        jogoPubState.posY = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-posY')) || 50;
+        jogoPubState.escala = parseFloat(extrairAtributo(conteudo, 'data-pub-jogo-escala')) || 1;
+        console.log('[DEBUG] jogoPubState posição/zoom:', jogoPubState.posX, jogoPubState.posY, jogoPubState.escala);
+      }
       renderizarJogoPub();
       if(jogoPubState && jogoPubState.caminho && jogoPubState.tipo === 'foto'){
         pubJogoCarregarImagem('https://raw.githubusercontent.com/' + REPO + '/main/' + jogoPubState.caminho);
@@ -2403,7 +2422,10 @@
       atualizarPreview();
 
       setEstado('Texto atual carregado. Já podes editar os campos.', 'ok');
+      console.log('[DEBUG] carregarTexto() completado com sucesso');
     } catch(err){
+      console.error('[DEBUG] Erro em carregarTexto():', err);
+      console.error('[DEBUG] Stack:', err.stack);
       setEstado('Não consegui carregar: ' + err.message, 'erro');
     } finally {
       btnCarregar.disabled = false;
@@ -2448,6 +2470,7 @@
   setInterval(verificarPaginaAtualizada, 3 * 60 * 1000);
 
   async function guardarTexto(){
+    console.log('[DEBUG] Iniciando guardarTexto()');
     const token = tokenInput.value.trim();
     if(!token){
       setEstado('Cola primeiro o teu token de acesso do GitHub.', 'erro');
@@ -2462,6 +2485,7 @@
       setEstado('Carrega primeiro o texto atual (botão "Carregar texto atual").', 'erro');
       return;
     }
+    console.log('[DEBUG] Validações iniciais OK');
     if(fotosState.length === 0){
       setEstado('Precisas de pelo menos 1 foto no cabeçalho.', 'erro');
       return;
@@ -2537,20 +2561,33 @@
         pubFimState.caminho = await enviarFoto(pubFimState.novoFicheiro, token);
         pubFimState.novoFicheiro = null;
       }
+      console.log('[DEBUG] pubFimState antes captura:', pubFimState);
       pubFimCapturarEstadoAtual();
+      console.log('[DEBUG] pubFimState depois captura:', pubFimState);
 
       if(pubRodapeState && pubRodapeState.novoFicheiro){
         setEstado('A enviar foto do rodapé: ' + pubRodapeState.nomePreview + '…', 'info');
         pubRodapeState.caminho = await enviarFoto(pubRodapeState.novoFicheiro, token);
         pubRodapeState.novoFicheiro = null;
       }
+      console.log('[DEBUG] pubRodapeState antes captura:', pubRodapeState);
       pubRodapeCapturarEstadoAtual();
+      console.log('[DEBUG] pubRodapeState depois captura:', pubRodapeState);
 
       // Capturar estado de todas as outras publicidades
+      console.log('[DEBUG] Capturando estados antes de guardar...');
+      console.log('[DEBUG] publicidadeState antes captura:', publicidadeState);
       pubBarraCapturarEstadoAtual();
+      console.log('[DEBUG] publicidadeState depois captura:', publicidadeState);
+
       pubVinhoCapturarEstadoAtual();
+      console.log('[DEBUG] vinhoPubState depois captura:', vinhoPubState);
+
       pubVinhosCapturarEstadoAtual();
+      console.log('[DEBUG] vinhosSeccaoPubState depois captura:', vinhosSeccaoPubState);
+
       pubJogoCapturarEstadoAtual();
+      console.log('[DEBUG] jogoPubState depois captura:', jogoPubState);
 
       // Vai sempre buscar a versão mais recente do ficheiro mesmo agora, em vez de usar
       // a que foi carregada quando a página abriu. Isto evita que uma aba desta página
@@ -2583,6 +2620,7 @@
       }
       novo = substituirAtributo(novo, 'data-fundo-ativo', fundoAtivoInput.checked ? 'true' : 'false');
       if(publicidadeState){
+        console.log('[DEBUG] Guardando publicidadeState:', publicidadeState.posX, publicidadeState.posY, publicidadeState.escala);
         novo = substituirAtributo(novo, 'data-pub-barra-posX', publicidadeState.posX || 50);
         novo = substituirAtributo(novo, 'data-pub-barra-posY', publicidadeState.posY || 50);
         novo = substituirAtributo(novo, 'data-pub-barra-escala', publicidadeState.escala || 1);
@@ -2593,6 +2631,7 @@
       }
       novo = substituirAtributo(novo, 'data-vinho-pub-ativo', vinhoPubAtivoInput.checked ? 'true' : 'false');
       if(vinhoPubState){
+        console.log('[DEBUG] Guardando vinhoPubState:', vinhoPubState.posX, vinhoPubState.posY, vinhoPubState.escala);
         novo = substituirAtributo(novo, 'data-pub-vinho-posX', vinhoPubState.posX || 50);
         novo = substituirAtributo(novo, 'data-pub-vinho-posY', vinhoPubState.posY || 50);
         novo = substituirAtributo(novo, 'data-pub-vinho-escala', vinhoPubState.escala || 1);
@@ -2605,6 +2644,7 @@
       }
       novo = substituirAtributo(novo, 'data-vinhos-pub-ativo', vinhosSeccaoPubAtivoInput.checked ? 'true' : 'false');
       if(vinhosSeccaoPubState){
+        console.log('[DEBUG] Guardando vinhosSeccaoPubState:', vinhosSeccaoPubState.posX, vinhosSeccaoPubState.posY, vinhosSeccaoPubState.escala);
         novo = substituirAtributo(novo, 'data-pub-vinhos-posX', vinhosSeccaoPubState.posX || 50);
         novo = substituirAtributo(novo, 'data-pub-vinhos-posY', vinhosSeccaoPubState.posY || 50);
         novo = substituirAtributo(novo, 'data-pub-vinhos-escala', vinhosSeccaoPubState.escala || 1);
@@ -2619,6 +2659,7 @@
       }
       novo = substituirAtributo(novo, 'data-jogo-pub-ativo', jogoPubAtivoInput.checked ? 'true' : 'false');
       if(jogoPubState){
+        console.log('[DEBUG] Guardando jogoPubState:', jogoPubState.posX, jogoPubState.posY, jogoPubState.escala);
         novo = substituirAtributo(novo, 'data-pub-jogo-posX', jogoPubState.posX || 50);
         novo = substituirAtributo(novo, 'data-pub-jogo-posY', jogoPubState.posY || 50);
         novo = substituirAtributo(novo, 'data-pub-jogo-escala', jogoPubState.escala || 1);
@@ -2627,6 +2668,7 @@
       novo = substituirLinha(novo, 'jogoAnuncioSubtitulo', jogoPubSubtituloInput.value);
 
       if(pubFimState){
+        console.log('[DEBUG] Guardando pubFimState:', pubFimState.posX, pubFimState.posY, pubFimState.escala);
         novo = substituirPubFimImg(novo, construirPubFimImgHtml(pubFimState));
       }
       novo = substituirAtributo(novo, 'data-pub-ativo', pubFimAtivoInput.checked ? 'true' : 'false');
@@ -2656,7 +2698,10 @@
       conteudoOriginal = novo;
 
       setEstado('Guardado! Demora uns 10 a 30 segundos a aparecer no cardápio.', 'ok');
+      console.log('[DEBUG] guardarTexto() completado com sucesso');
     } catch(err){
+      console.error('[DEBUG] Erro em guardarTexto():', err);
+      console.error('[DEBUG] Stack:', err.stack);
       setEstado('Não consegui guardar: ' + err.message, 'erro');
     } finally {
       btnGuardar.disabled = false;
