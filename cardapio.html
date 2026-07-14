@@ -1346,7 +1346,7 @@
     <button class="fechar-ad" id="fecharPatrocinioPopup" aria-label="Fechar">✕</button>
     <div class="jogo-anuncio" id="jogoAnuncio" data-jogo-pub-ativo="false">
       <!-- Publicidade após terminar um jogo (foto+texto). Ativa-se e edita-se em editar.html -->
-      <img src="" alt="Publicidade" id="jogoAnuncioImg">
+      <img id="jogoAnuncioImg" src="" alt="Publicidade">
       <div class="jogo-anuncio-titulo" id="jogoAnuncioTitulo"></div>
       <div class="jogo-anuncio-subtitulo" id="jogoAnuncioSubtitulo"></div>
     </div>
@@ -2014,7 +2014,7 @@
 <div class="info-fixa">
   <div class="info-fixa-fundo" id="infoFixaFundo" data-fundo-ativo="false">
     <!-- Imagem de publicidade e se aparece ou não: edita-se em editar.html -->
-    <img data-pub-barra-posX="76.82404628441675" data-pub-barra-posY="70.1879923679146" data-pub-barra-escala="1.36" src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="76.82404628441675" data-pub-barra-posY="70.1879923679146" data-pub-barra-escala="1.36">
+    <img src="imagens/PHOTO-2026-04-08-22-57-26.jpg" alt="Publicidade" data-pub-barra-posX="50" data-pub-barra-posY="50" data-pub-barra-escala="1">
   </div>
   <div class="info-fixa-texto" id="infoFixaTexto"
     data-especial-ativo="false"
@@ -3467,8 +3467,10 @@
           const posY = extrairAtributo(html, 'data-pub-barra-posY') || 50;
           const scale = extrairAtributo(html, 'data-pub-barra-escala') || 1;
           console.log('[DEBUG] Barra fixa ENCONTRADO! Aplicando: posX=' + posX + ', posY=' + posY + ', scale=' + scale);
+          img1.style.objectFit = 'cover';
           img1.style.objectPosition = `${posX}% ${posY}%`;
           img1.style.transform = `scale(${scale})`;
+          img1.style.transformOrigin = `${posX}% ${posY}%`;
           console.log('[DEBUG] Barra fixa CSS aplicado:', img1.style.cssText);
         } else {
           console.log('[DEBUG] Barra fixa NÃO ENCONTRADO!');
