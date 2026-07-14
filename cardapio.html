@@ -10,15 +10,15 @@
 <style>
   :root{
     --branco: #ffffff;
-    --bege-claro: #fef5f0;
-    --bege: #ffe8d6;
-    --linha: #ffd9b3;
-    --linha-suave: #ffe8d6;
-    --castanho: #d32f2f;
-    --castanho-suave: #ff6f00;
-    --castanho-claro: #ff9800;
-    --dourado: #ffa500;
-    --dourado-escuro: #e65100;
+    --bege-claro: #fbf8f2;
+    --bege: #f5efe2;
+    --linha: #e6dcc8;
+    --linha-suave: #f0e9d8;
+    --castanho: #4a3820;
+    --castanho-suave: #8a7350;
+    --castanho-claro: #a8987a;
+    --dourado: #a8712f;
+    --dourado-escuro: #8a5a24;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
@@ -109,16 +109,16 @@
     background:var(--castanho);
     border-color:var(--castanho);
   }
-  .tile-emoji{display:none;}
+  .tile-emoji{font-size:1.35rem; line-height:1;}
   .tile-label{
     font-family:'Fredoka',sans-serif;
-    font-size:1.1rem;
+    font-size:0.52rem;
     font-weight:600;
     letter-spacing:0.3px;
     text-transform:uppercase;
     text-align:center;
     color:var(--castanho-suave);
-    line-height:1.2;
+    line-height:1.1;
   }
   .tile.active .tile-label{color:var(--branco);}
 
@@ -536,42 +536,55 @@
 
 <div class="categoria-grid" id="categoriaGrid">
   <button class="tile" data-target="entradas" type="button">
+    <span class="tile-emoji">🥖</span>
     <span class="tile-label" data-en="Starters" data-fr="Entrées" data-es="Entrada">Entradas</span>
   </button>
   <button class="tile" data-target="sopas-saladas" type="button">
+    <span class="tile-emoji">🥗</span>
     <span class="tile-label" data-en="Soups & Salads" data-fr="Soupes et Salades" data-es="Sopas y Ensaladas">Sopas e Saladas</span>
   </button>
   <button class="tile" data-target="brasa" type="button">
+    <span class="tile-emoji">🔥</span>
     <span class="tile-label" data-en="Charcoal Grill Specialties" data-fr="Spécialités à la Braise" data-es="Especialidades a la Parrilla">Especialidades na Brasa</span>
   </button>
   <button class="tile" data-target="partilhados" type="button">
+    <span class="tile-emoji">🍖</span>
     <span class="tile-label" data-en="Sharing" data-fr="À partager" data-es="Para Compartir">Partilhados</span>
   </button>
   <button class="tile" data-target="infantil" type="button">
+    <span class="tile-emoji">🧑‍🤝‍🧑</span>
     <span class="tile-label" data-en="Kids" data-fr="Enfants" data-es="Infantil">Infantil</span>
   </button>
   <button class="tile" data-target="individuais" type="button">
+    <span class="tile-emoji">🍽️</span>
     <span class="tile-label" data-en="Mains" data-fr="Plats" data-es="Platos">Pratos</span>
   </button>
   <button class="tile" data-target="peixe" type="button">
+    <span class="tile-emoji">🐟</span>
     <span class="tile-label" data-en="Fish" data-fr="Poisson" data-es="Pescado">Peixe</span>
   </button>
   <button class="tile" data-target="carne" type="button">
+    <span class="tile-emoji">🥩</span>
     <span class="tile-label" data-en="Meat" data-fr="Viande" data-es="Carne">Carne</span>
   </button>
   <button class="tile" data-target="vegetariana" type="button">
+    <span class="tile-emoji">🥦</span>
     <span class="tile-label" data-en="Vegetarian" data-fr="Végétarien" data-es="Vegetariana">Vegetariana</span>
   </button>
   <button class="tile" data-target="snacks" type="button">
+    <span class="tile-emoji">🌭</span>
     <span class="tile-label" data-en="Snacks" data-fr="Snacks" data-es="Snacks">Snacks</span>
   </button>
   <button class="tile" data-target="sandes" type="button">
+    <span class="tile-emoji">🥪</span>
     <span class="tile-label" data-en="Sandwiches" data-fr="Sandwichs" data-es="Sándwiches">Sandes</span>
   </button>
   <button class="tile" data-target="domingo" type="button">
+    <span class="tile-emoji">🍲</span>
     <span class="tile-label" data-en="Sunday" data-fr="Dimanche" data-es="Domingo">Domingo</span>
   </button>
   <button class="tile" data-target="vinhos" type="button">
+    <span class="tile-emoji">🍷</span>
     <span class="tile-label" data-en="Wines & Drinks" data-fr="Vins & Boissons" data-es="Vinos y Bebidas">Vinhos & Bebidas</span>
   </button>
 </div>
