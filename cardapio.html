@@ -3451,12 +3451,12 @@
       const img = infoFixaFundo.querySelector('img');
       if(!img) return;
 
-      const posX = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posX')) || 0;
-      const posY = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posY')) || 0;
+      const posX = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posX')) || 50;
+      const posY = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-posY')) || 50;
       const scale = parseFloat(infoFixaFundo.getAttribute('data-pub-barra-escala')) || 1;
 
-      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-      img.style.transform = transform;
+      img.style.objectPosition = `${posX}% ${posY}%`;
+      img.style.transform = `scale(${scale})`;
     }
 
     // Ler posição/zoom de vinho da casa
@@ -3471,8 +3471,8 @@
       const posY = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-posY')) || 50;
       const scale = parseFloat(vinhoAnuncio.getAttribute('data-pub-vinho-escala')) || 1;
 
-      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-      img.style.transform = transform;
+      img.style.objectPosition = `${posX}% ${posY}%`;
+      img.style.transform = `scale(${scale})`;
     }
 
     // Ler posição/zoom de vinhos & bebidas
@@ -3487,8 +3487,8 @@
       const posY = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-posY')) || 50;
       const scale = parseFloat(vinhosAnuncio.getAttribute('data-pub-vinhos-escala')) || 1;
 
-      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-      img.style.transform = transform;
+      img.style.objectPosition = `${posX}% ${posY}%`;
+      img.style.transform = `scale(${scale})`;
     }
 
     // Ler posição/zoom de jogo
@@ -3503,8 +3503,8 @@
       const posY = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-posY')) || 50;
       const scale = parseFloat(jogoAnuncio.getAttribute('data-pub-jogo-escala')) || 1;
 
-      const transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
-      img.style.transform = transform;
+      img.style.objectPosition = `${posX}% ${posY}%`;
+      img.style.transform = `scale(${scale})`;
     }
 
     // Aplicar posições ao carregar
