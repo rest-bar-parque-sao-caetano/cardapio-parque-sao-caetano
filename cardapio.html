@@ -530,22 +530,38 @@
 </style>
 
 <!-- Supabase - Inicializar ANTES dos jogos -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0"></script>
+<script async defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // Esperar Supabase carregar
+  // Esperar Supabase carregar com retry
+  let tentativas = 0;
   function initSupabase() {
-    if (window.supabase) {
-      window.supabaseClient = window.supabase.createClient(
-        'https://hobpcvsexzhmichuuab.supabase.co',
-        'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-      );
-      console.log('✅ Supabase inicializado!');
+    tentativas++;
+    console.log('🔄 Tentativa ' + tentativas + ' de carregar Supabase...');
+
+    if (typeof window.supabase !== 'undefined' && window.supabase && window.supabase.createClient) {
+      try {
+        window.supabaseClient = window.supabase.createClient(
+          'https://hobpcvsexzhmichuuab.supabase.co',
+          'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+        );
+        console.log('✅ Supabase inicializado com sucesso!');
+        console.log('Client:', window.supabaseClient);
+      } catch(e) {
+        console.error('❌ Erro ao criar Supabase client:', e);
+        setTimeout(initSupabase, 500);
+      }
+    } else if (tentativas < 50) {
+      console.warn('⏳ Aguardando Supabase...');
+      setTimeout(initSupabase, 200);
     } else {
-      console.warn('⏳ Supabase a carregar, tentando de novo...');
-      setTimeout(initSupabase, 100);
+      console.error('❌ Supabase não carregou após múltiplas tentativas!');
     }
   }
-  initSupabase();
+
+  // Iniciar assim que o script é executado
+  document.addEventListener('DOMContentLoaded', initSupabase);
+  // Também tentar imediatamente
+  setTimeout(initSupabase, 100);
 </script>
 
 </head>
@@ -1751,14 +1767,16 @@
   window.criarSalaStop = async function(){
     // Verificar se Supabase está pronto
     if (!window.supabaseClient) {
-      alert('❌ Supabase ainda não carregou. Aguarda e tenta de novo!');
-      console.error('Supabase não está disponível:', window.supabaseClient);
+      console.error('❌ Supabase não está disponível!', window.supabaseClient);
+      alert('❌ Supabase ainda não carregou. Aguarda uns segundos e tenta de novo!');
       return;
     }
 
     stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
+    console.log('📝 A criar sala:', stopSalaId);
 
     try {
+      console.log('Chamando Supabase para inserir sala...');
       const { data, error } = await window.supabaseClient
         .from('stop_salas')
         .insert({
@@ -1768,6 +1786,8 @@
           criada_em: new Date().toISOString()
         })
         .select();
+
+      console.log('Resposta Supabase - Data:', data, 'Error:', error);
 
       if(error) throw error;
 
