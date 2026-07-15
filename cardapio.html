@@ -956,6 +956,15 @@
   </section>
 </main>
 
+<!-- Modais dos Jogos -->
+<div class="modal-overlay" id="modalJogo">
+  <div class="modal-vinho" style="max-width:500px;">
+    <button class="fechar" id="fecharJogo" aria-label="Fechar">✕</button>
+    <h3 id="jogoTitulo">Jogo</h3>
+    <div id="jogoConteudo" style="min-height:200px;"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalVinho">
   <div class="modal-vinho">
     <button class="fechar" id="fecharModal" aria-label="Fechar">✕</button>
@@ -1336,6 +1345,248 @@
   document.getElementById('fecharModalFoto').addEventListener('click', fecharModalFoto);
   modalFoto.addEventListener('click', (e) => { if(e.target === modalFoto) fecharModalFoto(); });
   document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModalFoto(); });
+
+  // ---- JOGOS ----
+  const modalJogo = document.getElementById('modalJogo');
+  const jogoTitulo = document.getElementById('jogoTitulo');
+  const jogoConteudo = document.getElementById('jogoConteudo');
+
+  function abrirJogo(tipo){
+    jogoTitulo.textContent = tipo === 'velha' ? '🎯 Jogo da Velha' : tipo === 'forca' ? '📝 Forca' : tipo === 'adivinhas' ? '❓ Adivinhas' : '🛑 Jogo do Stop';
+    jogoConteudo.innerHTML = '';
+    modalJogo.classList.add('aberto');
+
+    if(tipo === 'velha') iniciarVelha();
+    else if(tipo === 'forca') iniciarForca();
+    else if(tipo === 'adivinhas') iniciarAdivinhas();
+    else if(tipo === 'stop') iniciarStop();
+  }
+
+  function fecharJogo(){ modalJogo.classList.remove('aberto'); }
+  document.getElementById('fecharJogo').addEventListener('click', fecharJogo);
+  modalJogo.addEventListener('click', (e) => { if(e.target === modalJogo) fecharJogo(); });
+
+  // Jogo da Velha
+  let velhaBoard = ['','','','','','','','',''];
+  let velhaJogadorAtual = 'X';
+  let velhaModo = null; // 'ia' ou '2jogadores'
+  function iniciarVelha(){
+    velhaModo = null;
+    let html = '<p style="text-align:center;margin:20px 0;">Escolha o modo:</p>';
+    html += '<button onclick="selecionarVelhaModo(\'ia\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">1 Jogador (vs IA)</button>';
+    html += '<button onclick="selecionarVelhaModo(\'2jogadores\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">2 Jogadores</button>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.selecionarVelhaModo = function(modo){
+    velhaModo = modo;
+    velhaBoard = ['','','','','','','','',''];
+    velhaJogadorAtual = 'X';
+    renderVelha();
+  };
+  function renderVelha(){
+    let html = `<p style="text-align:center;font-weight:bold;margin:10px 0;">Vez de: <span style="color:var(--castanho);font-size:1.2rem;">${velhaJogadorAtual}</span></p>`;
+    html += '<div style="display:grid;grid-template-columns:repeat(3,80px);gap:10px;margin:20px auto;width:fit-content;">';
+    velhaBoard.forEach((cell, i) => {
+      html += `<button onclick="jogarVelha(${i})" style="width:80px;height:80px;font-size:2rem;background:var(--bege);border:2px solid var(--linha);cursor:pointer;${cell?'pointer-events:none;opacity:0.6':''};">${cell}</button>`;
+    });
+    html += '</div>';
+    let vencedor = verificarVencedorVelha();
+    if(vencedor){
+      html += `<p style="text-align:center;font-weight:bold;margin-top:10px;color:var(--castanho);font-size:1.1rem;">🎉 Vencedor: ${vencedor}</p>`;
+    } else if(velhaBoard.every(c => c)){
+      html += `<p style="text-align:center;font-weight:bold;margin-top:10px;">Empate!</p>`;
+    }
+    html += '<button onclick="iniciarVelha()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;">Novo Jogo</button>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.jogarVelha = function(i){
+    if(velhaBoard[i] || verificarVencedorVelha() || velhaBoard.every(c => c)) return;
+    velhaBoard[i] = velhaJogadorAtual;
+    if(!verificarVencedorVelha() && !velhaBoard.every(c => c)){
+      velhaJogadorAtual = velhaJogadorAtual === 'X' ? 'O' : 'X';
+      if(velhaModo === 'ia' && velhaJogadorAtual === 'O') setTimeout(() => { ia_velha(); }, 500);
+    }
+    renderVelha();
+  };
+  function ia_velha(){
+    let idx = velhaBoard.findIndex(c => !c);
+    if(idx !== -1){ velhaBoard[idx] = 'O'; if(!verificarVencedorVelha()) velhaJogadorAtual = 'X'; }
+    renderVelha();
+  }
+  function verificarVencedorVelha(){
+    const linhas = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let [a,b,c] of linhas){ if(velhaBoard[a] && velhaBoard[a] === velhaBoard[b] && velhaBoard[b] === velhaBoard[c]){ return velhaBoard[a]; } }
+    return null;
+  }
+
+  // Forca
+  let forcaOpcoes = ['CARDINAPIO','RESTAURANTE','DELICIOSO','FACHADA','POLVO','ESPECIAL'];
+  let forcaPalavra = '';
+  let forcaTentativas = 0;
+  let forcaLetrasTentadas = [];
+  function iniciarForca(){
+    forcaPalavra = forcaOpcoes[Math.floor(Math.random() * forcaOpcoes.length)];
+    forcaTentativas = 6;
+    forcaLetrasTentadas = [];
+    renderForca();
+  }
+  function renderForca(){
+    let display = forcaPalavra.split('').map(l => forcaLetrasTentadas.includes(l) ? l : '_').join(' ');
+    let html = `<div style="text-align:center;font-size:2rem;margin:20px 0;font-weight:bold;font-family:monospace;">${display}</div>`;
+    html += `<p style="text-align:center;">Tentativas: ${forcaTentativas}</p>`;
+    html += '<div style="margin:20px 0;">';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
+      let disabled = forcaLetrasTentadas.includes(l);
+      html += `<button onclick="tentarForca('${l}')" style="margin:5px;padding:5px 10px;background:${disabled?'#ccc':'var(--bege)'};border:1px solid var(--linha);border-radius:5px;cursor:${disabled?'not-allowed':'pointer'};" ${disabled?'disabled':''}>${l}</button>`;
+    });
+    html += '</div><button onclick="iniciarForca()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Novo Jogo</button>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.tentarForca = function(letra){
+    forcaLetrasTentadas.push(letra);
+    if(!forcaPalavra.includes(letra)) forcaTentativas--;
+    if(forcaTentativas === 0 || forcaPalavra.split('').every(l => forcaLetrasTentadas.includes(l))){ setTimeout(() => renderForca(), 100); }
+    renderForca();
+  };
+
+  // Adivinhas
+  let adivinhaPergunta = 0;
+  let advinhaPerguntas = [{q:'Qual é o prato especial da semana?',r:'Especial'},{q:'Quantos vinhos temos?',r:'Muitos'},{q:'Qual é a cor do logo?',r:'Castanho'}];
+  function iniciarAdivinhas(){
+    adivinhaPergunta = 0;
+    renderAdivinhas();
+  }
+  function renderAdivinhas(){
+    if(adivinhaPergunta >= advinhaPerguntas.length){ jogoConteudo.innerHTML = '<p style="text-align:center;font-weight:bold;">Parabéns! Acertaste todas!</p><button onclick="iniciarAdivinhas()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Recomeçar</button>'; return; }
+    let p = advinhaPerguntas[adivinhaPergunta];
+    let html = `<p style="text-align:center;font-size:1.1rem;margin:20px 0;">${p.q}</p><input type="text" id="respostaAdivinhas" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Sua resposta..."><button onclick="verificarAdivinhas()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;">Verificar</button>`;
+    jogoConteudo.innerHTML = html;
+    document.getElementById('respostaAdivinhas').focus();
+  }
+  window.verificarAdivinhas = function(){
+    let resposta = document.getElementById('respostaAdivinhas').value.toUpperCase();
+    if(resposta.includes(advinhaPerguntas[adivinhaPergunta].r.toUpperCase())){ adivinhaPergunta++; }
+    renderAdivinhas();
+  };
+
+  // Jogo do Stop
+  let stopLetra = '';
+  let stopModo = null; // 'solo' ou 'multiplayer'
+  let stopSalaId = '';
+  let stopNomeJogador = '';
+  function iniciarStop(){
+    stopModo = null;
+    let html = '<p style="text-align:center;margin:20px 0;">Escolha o modo:</p>';
+    html += '<button onclick="selecionarStopModo(\'solo\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Solo</button>';
+    html += '<button onclick="selecionarStopModo(\'multiplayer\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Multiplayer 👥</button>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.selecionarStopModo = function(modo){
+    stopModo = modo;
+    if(modo === 'solo') iniciarStopSolo();
+    else iniciarStopMultiplayer();
+  };
+  function iniciarStopSolo(){
+    stopLetra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    let palavras = [];
+    let html = `<p style="text-align:center;font-size:3rem;font-weight:bold;margin:20px 0;">${stopLetra}</p><p style="text-align:center;">Escreve palavras que comecem com esta letra!</p><input type="text" id="palavraStop" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Palavra..."><button onclick="adicionarStopSolo()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-bottom:10px;">Adicionar</button><p id="palavrasStop" style="text-align:center;min-height:50px;margin:10px 0;"></p><button onclick="iniciarStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;">Menu</button>`;
+    jogoConteudo.innerHTML = html;
+    document.getElementById('palavraStop').focus();
+  }
+  window.adicionarStopSolo = function(){
+    let palavra = document.getElementById('palavraStop').value.toUpperCase();
+    let para = document.getElementById('palavrasStop');
+    if(palavra && palavra[0] === stopLetra){ para.innerHTML += `<span style="display:inline-block;background:var(--bege);padding:5px 10px;margin:3px;border-radius:8px;border:1px solid var(--linha);">${palavra}</span>`; document.getElementById('palavraStop').value = ''; }
+  };
+  function iniciarStopMultiplayer(){
+    stopNomeJogador = prompt('Qual é o teu nome?');
+    if(!stopNomeJogador) return;
+
+    let html = '<p style="text-align:center;margin:20px 0;">Criar ou Entrar numa Sala?</p>';
+    html += '<button onclick="criarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Criar Sala</button>';
+    html += '<button onclick="entrarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Entrar em Sala</button>';
+    html += '<button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Voltar</button>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.criarSalaStop = function(){
+    stopSalaId = Math.random().toString(36).substr(2, 6).toUpperCase();
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    salas[stopSalaId] = {
+      criada: new Date(),
+      letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+      jogadores: {}
+    };
+    localStorage.setItem('stopSalas', JSON.stringify(salas));
+    jogarStopMultiplayer();
+  };
+  window.entrarSalaStop = function(){
+    let codigo = prompt('Código da sala:').toUpperCase();
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    if(salas[codigo]){
+      stopSalaId = codigo;
+      jogarStopMultiplayer();
+    } else {
+      alert('Sala não encontrada!');
+    }
+  };
+  function jogarStopMultiplayer(){
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+    stopLetra = sala.letra;
+
+    // Inicializar jogador
+    if(!sala.jogadores[stopNomeJogador]) sala.jogadores[stopNomeJogador] = [];
+    localStorage.setItem('stopSalas', JSON.stringify(salas));
+
+    renderStopMultiplayer();
+  }
+  function renderStopMultiplayer(){
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+
+    let html = `<div style="text-align:center;">
+      <p style="font-weight:bold;margin:10px 0;">📍 Sala: <code style="background:var(--bege);padding:5px 10px;border-radius:4px;">${stopSalaId}</code></p>
+      <p style="font-size:2.5rem;font-weight:bold;margin:20px 0;">${stopLetra}</p>
+      <input type="text" id="palavraStopMulti" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Sua palavra...">
+      <button onclick="adicionarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-bottom:10px;">Enviar</button>
+    </div>
+    <p style="text-align:center;font-weight:bold;margin:15px 0;border-top:1px solid var(--linha);padding-top:15px;">Palavras dos Jogadores:</p>
+    <div style="display:grid;gap:10px;">`;
+
+    Object.keys(sala.jogadores).forEach(nome => {
+      let palavras = sala.jogadores[nome];
+      let estiloNome = nome === stopNomeJogador ? 'color:var(--castanho);font-weight:bold;' : '';
+      html += `<div style="background:var(--bege);padding:10px;border-radius:8px;border:1px solid var(--linha);${estiloNome}">
+        <strong>${nome}</strong>: ${palavras.length > 0 ? palavras.join(', ') : '(nenhuma)'}
+      </div>`;
+    });
+
+    html += '</div><button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:15px;">Menu</button>';
+    jogoConteudo.innerHTML = html;
+    document.getElementById('palavraStopMulti').focus();
+  }
+  window.adicionarStopMultiplayer = function(){
+    let palavra = document.getElementById('palavraStopMulti').value.toUpperCase();
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+
+    if(palavra && palavra[0] === stopLetra){
+      if(!sala.jogadores[stopNomeJogador].includes(palavra)){
+        sala.jogadores[stopNomeJogador].push(palavra);
+        localStorage.setItem('stopSalas', JSON.stringify(salas));
+        document.getElementById('palavraStopMulti').value = '';
+        renderStopMultiplayer();
+      }
+    }
+  };
+
+  // Cliques nos jogos
+  document.querySelectorAll('.categoria#jogos .item').forEach((item, i) => {
+    item.addEventListener('click', () => {
+      const tipos = ['velha','forca','adivinhas','stop'];
+      abrirJogo(tipos[i]);
+    });
+  });
 </script>
 
 </body>
