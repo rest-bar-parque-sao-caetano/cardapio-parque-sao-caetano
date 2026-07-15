@@ -534,7 +534,83 @@
   window.SUPABASE_URL = 'https://hobpcvsexzhmiochuuab.supabase.co';
   window.SUPABASE_KEY = 'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-';
 
-  window.supabaseClient={from:t=>({insert:d=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?select=*`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY},body:JSON.stringify(d)});return{data:await r.json(),error:r.ok?null:'erro'};}catch(e){return{data:null,error:e};}})(),select:()=>({eq:(c,v)=>({single:(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}&limit=1`,{headers:{'Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY}});const d=await r.json();return{data:d[0],error:r.ok?null:d};}catch(e){return{data:null,error:e};}})()})}),update:d=>({eq:(c,v)=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY},body:JSON.stringify(d)});return{error:r.ok?null:await r.json()};}catch(e){return{error:e};}})()}),delete:()=>({eq:(c,v)=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}`,{method:'DELETE',headers:{'Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY}});return{error:r.ok?null:await r.json()};}catch(e){return{error:e};}})()})});};
+  window.supabaseClient = {
+    from: (table) => ({
+      insert: async (data) => {
+        try {
+          const res = await fetch(`${window.SUPABASE_URL}/rest/v1/${table}?select=*`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+              'apikey': window.SUPABASE_KEY
+            },
+            body: JSON.stringify(data)
+          });
+          const result = await res.json();
+          return { data: result, error: null };
+        } catch(e) {
+          return { data: null, error: e };
+        }
+      },
+      select: () => ({
+        eq: (col, val) => ({
+          single: async () => {
+            try {
+              const res = await fetch(`${window.SUPABASE_URL}/rest/v1/${table}?${col}=eq.${val}&limit=1`, {
+                headers: {
+                  'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+                  'apikey': window.SUPABASE_KEY
+                }
+              });
+              const result = await res.json();
+              return { data: result[0], error: null };
+            } catch(e) {
+              return { data: null, error: e };
+            }
+          }
+        })
+      }),
+      update: (data) => ({
+        eq: (col, val) => ({
+          then: async (fn) => {
+            try {
+              const res = await fetch(`${window.SUPABASE_URL}/rest/v1/${table}?${col}=eq.${val}`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+                  'apikey': window.SUPABASE_KEY
+                },
+                body: JSON.stringify(data)
+              });
+              return fn(null, { error: null });
+            } catch(e) {
+              return fn(e, { error: e });
+            }
+          }
+        })
+      }),
+      delete: () => ({
+        eq: (col, val) => ({
+          then: async (fn) => {
+            try {
+              await fetch(`${window.SUPABASE_URL}/rest/v1/${table}?${col}=eq.${val}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+                  'apikey': window.SUPABASE_KEY
+                }
+              });
+              return fn(null, { error: null });
+            } catch(e) {
+              return fn(e, { error: e });
+            }
+          }
+        })
+      })
+    })
+  };
 
   console.log('✅ Supabase REST API inicializado!');
 </script>
