@@ -530,38 +530,20 @@
 </style>
 
 <!-- Supabase - Inicializar ANTES dos jogos -->
-<script async defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/main.min.js"></script>
 <script>
-  // Esperar Supabase carregar com retry
-  let tentativas = 0;
-  function initSupabase() {
-    tentativas++;
-    console.log('🔄 Tentativa ' + tentativas + ' de carregar Supabase...');
+  console.log('Inicializando Supabase...');
 
-    if (typeof window.supabase !== 'undefined' && window.supabase && window.supabase.createClient) {
-      try {
-        window.supabaseClient = window.supabase.createClient(
-          'https://hobpcvsexzhmichuuab.supabase.co',
-          'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-        );
-        console.log('✅ Supabase inicializado com sucesso!');
-        console.log('Client:', window.supabaseClient);
-      } catch(e) {
-        console.error('❌ Erro ao criar Supabase client:', e);
-        setTimeout(initSupabase, 500);
-      }
-    } else if (tentativas < 50) {
-      console.warn('⏳ Aguardando Supabase...');
-      setTimeout(initSupabase, 200);
-    } else {
-      console.error('❌ Supabase não carregou após múltiplas tentativas!');
-    }
+  // Criar cliente Supabase imediatamente
+  try {
+    window.supabaseClient = supabase.createClient(
+      'https://hobpcvsexzhmichuuab.supabase.co',
+      'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+    );
+    console.log('✅ Supabase inicializado!', window.supabaseClient);
+  } catch(err) {
+    console.error('❌ Erro ao inicializar Supabase:', err.message);
   }
-
-  // Iniciar assim que o script é executado
-  document.addEventListener('DOMContentLoaded', initSupabase);
-  // Também tentar imediatamente
-  setTimeout(initSupabase, 100);
 </script>
 
 </head>
