@@ -1435,14 +1435,14 @@
 
   const forcaDesenhos = [
     // 0 erros - Forca vazia
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
       <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
     </svg>`,
     // 1 erro - Cabeça
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1450,7 +1450,7 @@
       <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
     </svg>`,
     // 2 erros - Corpo
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1459,7 +1459,7 @@
       <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
     </svg>`,
     // 3 erros - Braço esquerdo
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1469,7 +1469,7 @@
       <line x1="150" y1="105" x2="110" y2="125" stroke="black" stroke-width="3"/>
     </svg>`,
     // 4 erros - Braço direito
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1480,7 +1480,7 @@
       <line x1="150" y1="105" x2="190" y2="125" stroke="black" stroke-width="3"/>
     </svg>`,
     // 5 erros - Perna esquerda
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1492,7 +1492,7 @@
       <line x1="150" y1="150" x2="120" y2="200" stroke="black" stroke-width="3"/>
     </svg>`,
     // 6 erros - Perna direita (GAME OVER)
-    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+    `<svg width="140" height="170" viewBox="0 0 200 250" style="margin:5px auto;display:block;">
       <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
       <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
       <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
@@ -1530,27 +1530,27 @@
     let perdeu = forcaErros >= 6;
 
     let html = `<div style="text-align:center;">
-      <p style="font-size:0.9rem;color:var(--castanho);font-weight:bold;">📂 ${forcaCategoria}</p>
+      <p style="font-size:0.85rem;color:var(--castanho);font-weight:bold;">📂 ${forcaCategoria}</p>
       ${forcaDesenhos[forcaErros]}
-      <div style="font-size:2.5rem;margin:20px 0;font-weight:bold;font-family:monospace;letter-spacing:6px;color:var(--castanho);">${display}</div>
-      <p style="font-size:1rem;margin:10px 0;">Letras tentadas: ${forcaLetrasTentadas.join(', ') || '(nenhuma)'}</p>
-      <p style="font-weight:bold;margin:10px 0;">Erros: <span style="color:${forcaErros<=2?'green':forcaErros<=4?'orange':'red'};font-size:1.2rem;">${forcaErros}/6</span></p>`;
+      <div style="font-size:2rem;margin:15px 0;font-weight:bold;font-family:monospace;letter-spacing:5px;color:var(--castanho);">${display}</div>
+      <p style="font-size:0.85rem;margin:8px 0;">Letras: ${forcaLetrasTentadas.join(', ') || '(nenhuma)'}</p>
+      <p style="font-weight:bold;margin:8px 0;font-size:0.9rem;">Erros: <span style="color:${forcaErros<=2?'green':forcaErros<=4?'orange':'red'};font-size:1rem;">${forcaErros}/6</span></p>`;
 
     if(!perdeu && !acertou){
-      html += '<div style="margin:20px 0;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">';
+      html += '<div style="margin:15px 0;display:flex;flex-wrap:wrap;gap:5px;justify-content:center;">';
       'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
         let usada = forcaLetrasTentadas.includes(l);
-        html += `<button onclick="tentarLetraForca('${l}')" style="padding:8px 12px;font-size:0.95rem;font-weight:bold;background:${usada?'#ddd':'var(--bege)'};border:1px solid var(--linha);border-radius:6px;cursor:${usada?'not-allowed':'pointer'};" ${usada?'disabled':''}>${l}</button>`;
+        html += `<button onclick="tentarLetraForca('${l}')" style="padding:6px 10px;font-size:0.85rem;font-weight:bold;background:${usada?'#ddd':'var(--bege)'};border:1px solid var(--linha);border-radius:5px;cursor:${usada?'not-allowed':'pointer'};" ${usada?'disabled':''}>${l}</button>`;
       });
       html += '</div>';
-      html += '<input type="text" id="chuteInteiro" style="width:80%;padding:10px;border:2px solid var(--linha);border-radius:8px;margin:15px 0;font-size:1rem;" placeholder="Ou chuta a palavra inteira..."><button onclick="chuteInteiro()" style="background:var(--castanho);color:var(--branco);padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;">Chutar Palavra</button>';
+      html += '<input type="text" id="chuteInteiro" style="width:90%;padding:8px;border:2px solid var(--linha);border-radius:8px;margin:12px 0;font-size:0.9rem;" placeholder="Chuta a palavra..."><button onclick="chuteInteiro()" style="background:var(--castanho);color:var(--branco);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">Chutar</button>';
     } else if(acertou){
-      html += `<p style="font-size:1.3rem;color:green;font-weight:bold;margin:20px 0;">🎉 Parabéns! Acertaste a palavra!</p>`;
+      html += `<p style="font-size:1.1rem;color:green;font-weight:bold;margin:15px 0;">🎉 Parabéns! Acertaste!</p>`;
     } else if(perdeu){
-      html += `<p style="font-size:1.3rem;color:red;font-weight:bold;margin:20px 0;">💀 Game Over! A palavra era: <strong>${forcaPalavra}</strong></p>`;
+      html += `<p style="font-size:1rem;color:red;font-weight:bold;margin:15px 0;">💀 Game Over! Era: <strong>${forcaPalavra}</strong></p>`;
     }
 
-    html += '<button onclick="iniciarForca()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:15px;font-weight:bold;">Novo Jogo</button></div>';
+    html += '<button onclick="iniciarForca()" style="background:var(--castanho);color:var(--branco);padding:10px 16px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:10px;font-weight:bold;font-size:0.95rem;">Novo Jogo</button></div>';
     jogoConteudo.innerHTML = html;
   }
 
