@@ -528,6 +528,17 @@
   }
   .header-fotos img.ativa{opacity:1;}
 </style>
+
+<!-- Supabase - Inicializar ANTES dos jogos -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  window.supabaseClient = window.supabase.createClient(
+    'https://hobpcvsexzhmichuuab.supabase.co',
+    'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+  );
+  console.log('✅ Supabase inicializado!');
+</script>
+
 </head>
 <body>
 
@@ -1732,7 +1743,7 @@
     stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await window.supabaseClient
         .from('stop_salas')
         .insert({
           codigo: stopSalaId,
@@ -1745,7 +1756,7 @@
       if(error) throw error;
 
       // Criar entrada do jogador
-      await supabase
+      await window.supabaseClient
         .from('stop_jogadores')
         .insert({
           sala_id: stopSalaId,
@@ -1770,7 +1781,7 @@
     codigo = codigo.toUpperCase().trim();
 
     try {
-      const { data: sala, error: erroSala } = await supabase
+      const { data: sala, error: erroSala } = await window.supabaseClient
         .from('stop_salas')
         .select('*')
         .eq('codigo', codigo)
@@ -1784,7 +1795,7 @@
       stopSalaId = codigo;
 
       // Criar entrada do jogador
-      await supabase
+      await window.supabaseClient
         .from('stop_jogadores')
         .insert({
           sala_id: stopSalaId,
@@ -1847,7 +1858,7 @@
       // Inserir respostas no Supabase
       for(let cat in respostas){
         if(respostas[cat]){
-          await supabase.from('stop_respostas').insert({
+          await window.supabaseClient.from('stop_respostas').insert({
             sala_id: stopSalaId,
             nome: stopNomeJogador,
             categoria: cat,
@@ -1909,7 +1920,7 @@
 
       // Atualizar pontos no Supabase
       for(let nome in jogosPorNome){
-        await supabase
+        await window.supabaseClient
           .from('stop_jogadores')
           .update({ pontos: jogosPorNome[nome].pontos })
           .eq('sala_id', stopSalaId)
@@ -1957,13 +1968,13 @@
       let novaRonda = sala.ronda + 1;
       let novaLetra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
 
-      await supabase
+      await window.supabaseClient
         .from('stop_salas')
         .update({ ronda: novaRonda, letra: novaLetra })
         .eq('codigo', stopSalaId);
 
       // Limpar respostas da ronda anterior
-      await supabase
+      await window.supabaseClient
         .from('stop_respostas')
         .delete()
         .eq('sala_id', stopSalaId);
@@ -1981,17 +1992,6 @@
       abrirJogo(tipos[i]);
     });
   });
-</script>
-
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabase = window.supabase.createClient(
-    'https://hobpcvsexzhmichuuab.supabase.co',
-    'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-  );
-  console.log('✅ Supabase inicializado!');
 </script>
 
 </body>
