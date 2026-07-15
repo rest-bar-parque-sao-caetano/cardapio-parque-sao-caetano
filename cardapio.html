@@ -530,13 +530,22 @@
 </style>
 
 <!-- Supabase - Inicializar ANTES dos jogos -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0"></script>
 <script>
-  window.supabaseClient = window.supabase.createClient(
-    'https://hobpcvsexzhmichuuab.supabase.co',
-    'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-  );
-  console.log('✅ Supabase inicializado!');
+  // Esperar Supabase carregar
+  function initSupabase() {
+    if (window.supabase) {
+      window.supabaseClient = window.supabase.createClient(
+        'https://hobpcvsexzhmichuuab.supabase.co',
+        'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+      );
+      console.log('✅ Supabase inicializado!');
+    } else {
+      console.warn('⏳ Supabase a carregar, tentando de novo...');
+      setTimeout(initSupabase, 100);
+    }
+  }
+  initSupabase();
 </script>
 
 </head>
@@ -1740,6 +1749,13 @@
   }
 
   window.criarSalaStop = async function(){
+    // Verificar se Supabase está pronto
+    if (!window.supabaseClient) {
+      alert('❌ Supabase ainda não carregou. Aguarda e tenta de novo!');
+      console.error('Supabase não está disponível:', window.supabaseClient);
+      return;
+    }
+
     stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
 
     try {
@@ -1776,6 +1792,12 @@
   }
 
   window.entrarSalaStop = async function(){
+    // Verificar se Supabase está pronto
+    if (!window.supabaseClient) {
+      alert('❌ Supabase ainda não carregou. Aguarda e tenta de novo!');
+      return;
+    }
+
     let codigo = prompt('Cole o código da sala:');
     if(!codigo) return;
     codigo = codigo.toUpperCase().trim();
