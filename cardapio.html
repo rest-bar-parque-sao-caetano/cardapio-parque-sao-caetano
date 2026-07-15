@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -531,20 +530,31 @@
 </style>
 
 <!-- Supabase - Inicializar ANTES dos jogos -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/main.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
   console.log('Inicializando Supabase...');
 
-  // Criar cliente Supabase imediatamente
-  try {
-    window.supabaseClient = supabase.createClient(
-      'https://hobpcvsexzhmichuuab.supabase.co',
-      'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-    );
-    console.log('✅ Supabase inicializado!', window.supabaseClient);
-  } catch(err) {
-    console.error('❌ Erro ao inicializar Supabase:', err.message);
+  // Esperar que supabase global esteja disponível
+  let tentativas = 0;
+  function initSupa() {
+    tentativas++;
+    if (window.supabase) {
+      try {
+        window.supabaseClient = window.supabase.createClient(
+          'https://hobpcvsexzhmiochuuab.supabase.co',
+          'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+        );
+        console.log('✅ Supabase inicializado!');
+      } catch(err) {
+        console.error('❌ Erro ao criar client:', err.message);
+      }
+    } else if (tentativas < 30) {
+      setTimeout(initSupa, 100);
+    } else {
+      console.error('❌ Supabase não carregou!');
+    }
   }
+  initSupa();
 </script>
 
 </head>
