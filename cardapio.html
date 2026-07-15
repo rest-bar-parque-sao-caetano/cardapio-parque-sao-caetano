@@ -1420,10 +1420,68 @@
   }
 
   // Forca
-  let forcaOpcoes = ['CARDINAPIO','RESTAURANTE','DELICIOSO','FACHADA','POLVO','ESPECIAL'];
+  let forcaOpcoes = ['CARDINAPIO','RESTAURANTE','DELICIOSO','FACHADA','POLVO','ESPECIAL','VINHO','COMIDA','SOBREMESA','ENTRADA'];
   let forcaPalavra = '';
   let forcaTentativas = 0;
   let forcaLetrasTentadas = [];
+  const forcaDrawings = [
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |
+   |
+   |
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |
+   |
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |    |
+   |
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |   /|
+   |
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |   /|\\
+   |
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |   /|\\
+   |   /
+   |
+   --------</pre>`,
+    `<pre style="font-family:monospace;font-size:0.9rem;">
+   ------
+   |    |
+   |    O
+   |   /|\\
+   |   / \\
+   |
+   --------</pre>`
+  ];
   function iniciarForca(){
     forcaPalavra = forcaOpcoes[Math.floor(Math.random() * forcaOpcoes.length)];
     forcaTentativas = 6;
@@ -1432,20 +1490,38 @@
   }
   function renderForca(){
     let display = forcaPalavra.split('').map(l => forcaLetrasTentadas.includes(l) ? l : '_').join(' ');
-    let html = `<div style="text-align:center;font-size:2rem;margin:20px 0;font-weight:bold;font-family:monospace;">${display}</div>`;
-    html += `<p style="text-align:center;">Tentativas: ${forcaTentativas}</p>`;
-    html += '<div style="margin:20px 0;">';
+    let erros = 6 - forcaTentativas;
+    let html = '<div style="text-align:center;">';
+
+    // Forca no topo
+    html += `<div style="margin:10px 0;font-size:0.85rem;">${forcaDrawings[erros]}</div>`;
+
+    // Palavra no meio
+    html += `<div style="font-size:3rem;margin:20px 0;font-weight:bold;font-family:monospace;letter-spacing:8px;color:var(--castanho);">${display}</div>`;
+    html += `<p style="font-weight:bold;margin:10px 0;font-size:1.1rem;">Tentativas: <span style="color:${forcaTentativas>2?'green':forcaTentativas>0?'orange':'red'};font-size:1.3rem;">${forcaTentativas}</span></p>`;
+
+    // Teclado grande em baixo
+    html += '<div style="margin:25px 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">';
     'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
       let disabled = forcaLetrasTentadas.includes(l);
-      html += `<button onclick="tentarForca('${l}')" style="margin:5px;padding:5px 10px;background:${disabled?'#ccc':'var(--bege)'};border:1px solid var(--linha);border-radius:5px;cursor:${disabled?'not-allowed':'pointer'};" ${disabled?'disabled':''}>${l}</button>`;
+      html += `<button onclick="tentarForca('${l}')" style="margin:0;padding:10px 14px;font-size:1rem;font-weight:bold;background:${disabled?'#ccc':'var(--bege)'};border:2px solid var(--linha);border-radius:8px;cursor:${disabled?'not-allowed':'pointer';width:45px;height:45px;" ${disabled?'disabled':''}>${l}</button>`;
     });
-    html += '</div><button onclick="iniciarForca()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Novo Jogo</button>';
+    html += '</div>';
+
+    let vencedor = forcaPalavra.split('').every(l => forcaLetrasTentadas.includes(l));
+    if(forcaTentativas === 0){
+      html += `<p style="text-align:center;font-weight:bold;color:red;font-size:1.2rem;margin:15px 0;">💀 Game Over! A palavra era: <strong>${forcaPalavra}</strong></p>`;
+    } else if(vencedor){
+      html += `<p style="text-align:center;font-weight:bold;color:green;font-size:1.2rem;margin:15px 0;">🎉 Parabéns! Acertaste!</p>`;
+    }
+    html += '</div>';
+    html += '<button onclick="iniciarForca()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:10px;">Novo Jogo</button>';
     jogoConteudo.innerHTML = html;
   }
   window.tentarForca = function(letra){
+    if(forcaTentativas === 0 || forcaPalavra.split('').every(l => forcaLetrasTentadas.includes(l))) return;
     forcaLetrasTentadas.push(letra);
     if(!forcaPalavra.includes(letra)) forcaTentativas--;
-    if(forcaTentativas === 0 || forcaPalavra.split('').every(l => forcaLetrasTentadas.includes(l))){ setTimeout(() => renderForca(), 100); }
     renderForca();
   };
 
@@ -1469,115 +1545,263 @@
     renderAdivinhas();
   };
 
-  // Jogo do Stop
-  let stopLetra = '';
-  let stopModo = null; // 'solo' ou 'multiplayer'
+  // Jogo do Stop - Versão Melhorada
+  let stopModo = null;
   let stopSalaId = '';
   let stopNomeJogador = '';
+  let stopRonda = 0;
+  const stopCategorias = ['Nome', 'Animal', 'Fruta', 'País', 'Cor', 'Objeto', 'Comida'];
+
   function iniciarStop(){
     stopModo = null;
-    let html = '<p style="text-align:center;margin:20px 0;">Escolha o modo:</p>';
-    html += '<button onclick="selecionarStopModo(\'solo\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Solo</button>';
-    html += '<button onclick="selecionarStopModo(\'multiplayer\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Multiplayer 👥</button>';
+    let html = '<p style="text-align:center;margin:20px 0;font-size:1.1rem;">Escolha o modo:</p>';
+    html += '<button onclick="selecionarStopModo(\'solo\')" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;font-size:1rem;width:100%;max-width:200px;">🎮 Solo</button>';
+    html += '<button onclick="selecionarStopModo(\'multiplayer\')" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;font-size:1rem;width:100%;max-width:200px;">👥 Multiplayer</button>';
     jogoConteudo.innerHTML = html;
   }
+
   window.selecionarStopModo = function(modo){
     stopModo = modo;
-    if(modo === 'solo') iniciarStopSolo();
-    else iniciarStopMultiplayer();
+    if(modo === 'solo'){
+      stopNomeJogador = 'Jogador';
+      stopRonda = 0;
+      novaRondaStop();
+    } else {
+      let nome = prompt('Qual é o teu nome?', 'Jogador');
+      if(!nome) return;
+      stopNomeJogador = nome;
+      menuSalaStop();
+    }
   };
-  function iniciarStopSolo(){
-    stopLetra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-    let palavras = [];
-    let html = `<p style="text-align:center;font-size:3rem;font-weight:bold;margin:20px 0;">${stopLetra}</p><p style="text-align:center;">Escreve palavras que comecem com esta letra!</p><input type="text" id="palavraStop" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Palavra..."><button onclick="adicionarStopSolo()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-bottom:10px;">Adicionar</button><p id="palavrasStop" style="text-align:center;min-height:50px;margin:10px 0;"></p><button onclick="iniciarStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;">Menu</button>`;
-    jogoConteudo.innerHTML = html;
-    document.getElementById('palavraStop').focus();
-  }
-  window.adicionarStopSolo = function(){
-    let palavra = document.getElementById('palavraStop').value.toUpperCase();
-    let para = document.getElementById('palavrasStop');
-    if(palavra && palavra[0] === stopLetra){ para.innerHTML += `<span style="display:inline-block;background:var(--bege);padding:5px 10px;margin:3px;border-radius:8px;border:1px solid var(--linha);">${palavra}</span>`; document.getElementById('palavraStop').value = ''; }
-  };
-  function iniciarStopMultiplayer(){
-    stopNomeJogador = prompt('Qual é o teu nome?');
-    if(!stopNomeJogador) return;
 
-    let html = '<p style="text-align:center;margin:20px 0;">Criar ou Entrar numa Sala?</p>';
-    html += '<button onclick="criarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Criar Sala</button>';
-    html += '<button onclick="entrarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Entrar em Sala</button>';
-    html += '<button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Voltar</button>';
+  function novaRondaStop(){
+    stopRonda++;
+    let letra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+    let html = `<div style="text-align:center;">
+      <p style="font-size:1rem;color:var(--castanho);">Ronda ${stopRonda}</p>
+      <p style="font-size:4rem;font-weight:bold;margin:20px 0;color:var(--castanho);">${letra}</p>
+      <p style="font-size:1.1rem;margin:20px 0;">Preenche todas as categorias com palavras começadas por <strong>${letra}</strong></p>
+      <div id="formStop" style="display:grid;gap:10px;margin:20px 0;"></div>
+      <button onclick="verificarStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;width:100%;">🛑 STOP!</button>
+    </div>`;
+
+    jogoConteudo.innerHTML = html;
+
+    let form = document.getElementById('formStop');
+    stopCategorias.forEach(cat => {
+      form.innerHTML += `<div style="text-align:left;background:var(--bege);padding:10px;border-radius:8px;">
+        <label style="display:block;font-weight:bold;margin-bottom:5px;">${cat}</label>
+        <input type="text" id="stop_${cat}" style="width:100%;padding:8px;border:1px solid var(--linha);border-radius:6px;" placeholder="Escreva uma palavra...">
+      </div>`;
+    });
+
+    document.getElementById(`stop_${stopCategorias[0]}`).focus();
+  }
+
+  window.verificarStop = function(){
+    if(stopModo === 'solo') mostrarPontuacaoStop();
+    else verificarStopMultiplayer();
+  };
+
+  function mostrarPontuacaoStop(){
+    let respostas = {};
+    let pontos = 0;
+
+    stopCategorias.forEach(cat => {
+      let val = document.getElementById(`stop_${cat}`).value.trim();
+      respostas[cat] = val;
+      if(val) pontos += 10;
+    });
+
+    let html = `<div style="text-align:center;">
+      <p style="font-size:2rem;font-weight:bold;color:var(--castanho);margin:20px 0;">Ronda ${stopRonda} - ${pontos} Pontos!</p>
+      <div style="text-align:left;background:var(--bege);padding:15px;border-radius:8px;margin:20px 0;">`;
+
+    stopCategorias.forEach(cat => {
+      let val = respostas[cat] || '(vazio)';
+      html += `<p style="margin:5px 0;"><strong>${cat}:</strong> ${val}</p>`;
+    });
+
+    html += `</div>
+      <button onclick="novaRondaStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Próxima Ronda</button>
+      <button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Menu</button>
+    </div>`;
+
     jogoConteudo.innerHTML = html;
   }
+
+  function menuSalaStop(){
+    let html = '<p style="text-align:center;margin:20px 0;font-size:1.1rem;">Criar ou Entrar?</p>';
+    html += '<button onclick="criarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">➕ Criar Sala</button>';
+    html += '<button onclick="entrarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">🔑 Entrar com Código</button>';
+    html += '<button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Voltar</button>';
+    jogoConteudo.innerHTML = html;
+  }
+
   window.criarSalaStop = function(){
-    stopSalaId = Math.random().toString(36).substr(2, 6).toUpperCase();
+    stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
     let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
     salas[stopSalaId] = {
-      criada: new Date(),
       letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+      ronda: 1,
       jogadores: {}
     };
+    salas[stopSalaId].jogadores[stopNomeJogador] = { respostas: {}, pontos: 0 };
     localStorage.setItem('stopSalas', JSON.stringify(salas));
-    jogarStopMultiplayer();
-  };
+
+    let html = `<p style="text-align:center;font-size:1.2rem;margin:20px 0;">✅ Sala Criada!</p>
+      <p style="text-align:center;font-size:1.5rem;background:var(--bege);padding:20px;border-radius:8px;margin:20px 0;font-weight:bold;">Código: <code style="font-size:2rem;">${stopSalaId}</code></p>
+      <p style="text-align:center;color:var(--castanho);">Compartilha este código com os teus amigos!</p>
+      <button onclick="jogarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:20px;">Começar Jogo</button>`;
+    jogoConteudo.innerHTML = html;
+  }
+
   window.entrarSalaStop = function(){
-    let codigo = prompt('Código da sala:').toUpperCase();
+    let codigo = prompt('Cole o código da sala:');
+    if(!codigo) return;
+    codigo = codigo.toUpperCase();
+
     let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
     if(salas[codigo]){
       stopSalaId = codigo;
+      if(!salas[stopSalaId].jogadores[stopNomeJogador]){
+        salas[stopSalaId].jogadores[stopNomeJogador] = { respostas: {}, pontos: 0 };
+        localStorage.setItem('stopSalas', JSON.stringify(salas));
+      }
       jogarStopMultiplayer();
     } else {
-      alert('Sala não encontrada!');
+      alert('❌ Sala não encontrada!');
     }
-  };
+  }
+
   function jogarStopMultiplayer(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
-    stopLetra = sala.letra;
-
-    // Inicializar jogador
-    if(!sala.jogadores[stopNomeJogador]) sala.jogadores[stopNomeJogador] = [];
-    localStorage.setItem('stopSalas', JSON.stringify(salas));
-
     renderStopMultiplayer();
   }
+
   function renderStopMultiplayer(){
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+    let letra = sala.letra;
+
+    let html = `<div style="text-align:center;">
+      <p style="font-size:0.95rem;color:var(--castanho);">📍 Sala: <code style="background:var(--bege);padding:4px 8px;border-radius:4px;font-weight:bold;">${stopSalaId}</code> | Ronda ${sala.ronda}</p>
+      <p style="font-size:3.5rem;font-weight:bold;margin:15px 0;color:var(--castanho);">${letra}</p>
+      <div id="formStopMulti" style="display:grid;gap:8px;margin:15px 0;"></div>
+      <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;width:100%;font-weight:bold;">🛑 STOP!</button>
+    </div>`;
+
+    jogoConteudo.innerHTML = html;
+
+    let form = document.getElementById('formStopMulti');
+    stopCategorias.forEach(cat => {
+      form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:10px;border:2px solid var(--linha);border-radius:6px;font-size:1rem;" placeholder="${cat}..." onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
+    });
+
+    document.getElementById(`stop_${stopCategorias[0]}`).focus();
+  }
+
+  window.pararStopMultiplayer = function(){
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+    let letra = sala.letra;
+
+    let respostas = {};
+    stopCategorias.forEach(cat => {
+      let val = document.getElementById(`stop_${cat}`).value.trim().toUpperCase();
+      respostas[cat] = val;
+    });
+
+    sala.jogadores[stopNomeJogador].respostas = respostas;
+    localStorage.setItem('stopSalas', JSON.stringify(salas));
+
+    // Verificar se todos pararam
+    let todosPararam = Object.keys(sala.jogadores).every(nome =>
+      Object.keys(sala.jogadores[nome].respostas).length > 0
+    );
+
+    if(todosPararam) calcularPontuacaoMultiplayer();
+    else {
+      alert('⏳ A aguardar outros jogadores...');
+      setTimeout(() => renderStopMultiplayer(), 2000);
+    }
+  }
+
+  function calcularPontuacaoMultiplayer(){
+    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
+    let sala = salas[stopSalaId];
+
+    // Calcular pontos
+    stopCategorias.forEach(cat => {
+      let respostasCategoria = {};
+      Object.keys(sala.jogadores).forEach(nome => {
+        let resposta = sala.jogadores[nome].respostas[cat] || '';
+        if(resposta) {
+          respostasCategoria[nome] = resposta;
+        }
+      });
+
+      // Contar repetições
+      let contagem = {};
+      Object.values(respostasCategoria).forEach(resp => {
+        contagem[resp] = (contagem[resp] || 0) + 1;
+      });
+
+      // Atribuir pontos
+      Object.keys(respostasCategoria).forEach(nome => {
+        let resp = respostasCategoria[nome];
+        let pts = contagem[resp] === 1 ? 10 : 5;
+        sala.jogadores[nome].pontos += pts;
+      });
+    });
+
+    localStorage.setItem('stopSalas', JSON.stringify(salas));
+    mostrarResultadosMultiplayer();
+  }
+
+  function mostrarResultadosMultiplayer(){
     let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
     let sala = salas[stopSalaId];
 
     let html = `<div style="text-align:center;">
-      <p style="font-weight:bold;margin:10px 0;">📍 Sala: <code style="background:var(--bege);padding:5px 10px;border-radius:4px;">${stopSalaId}</code></p>
-      <p style="font-size:2.5rem;font-weight:bold;margin:20px 0;">${stopLetra}</p>
-      <input type="text" id="palavraStopMulti" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Sua palavra...">
-      <button onclick="adicionarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-bottom:10px;">Enviar</button>
-    </div>
-    <p style="text-align:center;font-weight:bold;margin:15px 0;border-top:1px solid var(--linha);padding-top:15px;">Palavras dos Jogadores:</p>
-    <div style="display:grid;gap:10px;">`;
+      <p style="font-size:1.3rem;font-weight:bold;color:var(--castanho);margin:20px 0;">📊 Resultados da Ronda ${sala.ronda}</p>
+      <div style="display:grid;gap:10px;margin:20px 0;">`;
 
-    Object.keys(sala.jogadores).forEach(nome => {
-      let palavras = sala.jogadores[nome];
-      let estiloNome = nome === stopNomeJogador ? 'color:var(--castanho);font-weight:bold;' : '';
-      html += `<div style="background:var(--bege);padding:10px;border-radius:8px;border:1px solid var(--linha);${estiloNome}">
-        <strong>${nome}</strong>: ${palavras.length > 0 ? palavras.join(', ') : '(nenhuma)'}
-      </div>`;
+    let jogadores = Object.keys(sala.jogadores).sort((a, b) => sala.jogadores[b].pontos - sala.jogadores[a].pontos);
+
+    jogadores.forEach((nome, idx) => {
+      let jogador = sala.jogadores[nome];
+      let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
+      let destaque = nome === stopNomeJogador ? 'border:2px solid var(--castanho);' : '';
+      html += `<div style="background:var(--bege);padding:10px;border-radius:8px;${destaque}">
+        <p style="font-weight:bold;font-size:1.1rem;">${medal} ${nome}: <span style="color:var(--castanho);">${jogador.pontos} pts</span></p>`;
+
+      stopCategorias.forEach(cat => {
+        let resp = jogador.respostas[cat] || '(vazio)';
+        html += `<p style="margin:2px 0;font-size:0.9rem;"><strong>${cat}:</strong> ${resp}</p>`;
+      });
+
+      html += `</div>`;
     });
 
-    html += '</div><button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:15px;">Menu</button>';
+    html += `</div>
+      <button onclick="novaRondaMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;margin:10px 0;">Próxima Ronda</button>
+      <button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;">Menu</button>
+    </div>`;
+
     jogoConteudo.innerHTML = html;
-    document.getElementById('palavraStopMulti').focus();
   }
-  window.adicionarStopMultiplayer = function(){
-    let palavra = document.getElementById('palavraStopMulti').value.toUpperCase();
+
+  window.novaRondaMultiplayer = function(){
     let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
     let sala = salas[stopSalaId];
-
-    if(palavra && palavra[0] === stopLetra){
-      if(!sala.jogadores[stopNomeJogador].includes(palavra)){
-        sala.jogadores[stopNomeJogador].push(palavra);
-        localStorage.setItem('stopSalas', JSON.stringify(salas));
-        document.getElementById('palavraStopMulti').value = '';
-        renderStopMultiplayer();
-      }
-    }
+    sala.ronda++;
+    sala.letra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    Object.keys(sala.jogadores).forEach(nome => {
+      sala.jogadores[nome].respostas = {};
+    });
+    localStorage.setItem('stopSalas', JSON.stringify(salas));
+    renderStopMultiplayer();
   };
 
   // Cliques nos jogos
