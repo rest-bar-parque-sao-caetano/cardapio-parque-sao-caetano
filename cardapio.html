@@ -1728,39 +1728,74 @@
     jogoConteudo.innerHTML = html;
   }
 
-  window.criarSalaStop = function(){
+  window.criarSalaStop = async function(){
     stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    salas[stopSalaId] = {
-      letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
-      ronda: 1,
-      jogadores: {}
-    };
-    salas[stopSalaId].jogadores[stopNomeJogador] = { respostas: {}, pontos: 0 };
-    localStorage.setItem('stopSalas', JSON.stringify(salas));
 
-    let html = `<p style="text-align:center;font-size:1.2rem;margin:20px 0;">✅ Sala Criada!</p>
-      <p style="text-align:center;font-size:1.5rem;background:var(--bege);padding:20px;border-radius:8px;margin:20px 0;font-weight:bold;">Código: <code style="font-size:2rem;">${stopSalaId}</code></p>
-      <p style="text-align:center;color:var(--castanho);">Compartilha este código com os teus amigos!</p>
-      <button onclick="jogarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:20px;">Começar Jogo</button>`;
-    jogoConteudo.innerHTML = html;
+    try {
+      const { data, error } = await supabase
+        .from('stop_salas')
+        .insert({
+          codigo: stopSalaId,
+          letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+          ronda: 1,
+          criada_em: new Date().toISOString()
+        })
+        .select();
+
+      if(error) throw error;
+
+      // Criar entrada do jogador
+      await supabase
+        .from('stop_jogadores')
+        .insert({
+          sala_id: stopSalaId,
+          nome: stopNomeJogador,
+          pontos: 0
+        });
+
+      let html = `<p style="text-align:center;font-size:1.1rem;margin:15px 0;">✅ Sala Criada!</p>
+        <p style="text-align:center;font-size:1.4rem;background:var(--bege);padding:15px;border-radius:8px;margin:15px 0;font-weight:bold;">Código: <code style="font-size:1.8rem;color:var(--castanho);">${stopSalaId}</code></p>
+        <p style="text-align:center;font-size:0.9rem;color:var(--castanho);margin:10px 0;">📱 Partilha este código com outro telemóvel!</p>
+        <button onclick="jogarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 16px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:15px;font-size:0.95rem;">Começar Jogo</button>
+        <button onclick="menuSalaStop()" style="background:var(--linha);color:var(--castanho);padding:8px 14px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-size:0.9rem;">Voltar</button>`;
+      jogoConteudo.innerHTML = html;
+    } catch(err) {
+      alert('❌ Erro ao criar sala: ' + err.message);
+    }
   }
 
-  window.entrarSalaStop = function(){
+  window.entrarSalaStop = async function(){
     let codigo = prompt('Cole o código da sala:');
     if(!codigo) return;
-    codigo = codigo.toUpperCase();
+    codigo = codigo.toUpperCase().trim();
 
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    if(salas[codigo]){
-      stopSalaId = codigo;
-      if(!salas[stopSalaId].jogadores[stopNomeJogador]){
-        salas[stopSalaId].jogadores[stopNomeJogador] = { respostas: {}, pontos: 0 };
-        localStorage.setItem('stopSalas', JSON.stringify(salas));
+    try {
+      const { data: sala, error: erroSala } = await supabase
+        .from('stop_salas')
+        .select('*')
+        .eq('codigo', codigo)
+        .single();
+
+      if(erroSala || !sala) {
+        alert(`❌ Sala "${codigo}" não encontrada!`);
+        return;
       }
-      jogarStopMultiplayer();
-    } else {
-      alert('❌ Sala não encontrada!');
+
+      stopSalaId = codigo;
+
+      // Criar entrada do jogador
+      await supabase
+        .from('stop_jogadores')
+        .insert({
+          sala_id: stopSalaId,
+          nome: stopNomeJogador,
+          pontos: 0
+        })
+        .then(() => jogarStopMultiplayer())
+        .catch(() => jogarStopMultiplayer()); // Entrar mesmo se jogador já existe
+
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
     }
   }
 
@@ -1768,129 +1803,175 @@
     renderStopMultiplayer();
   }
 
-  function renderStopMultiplayer(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
-    let letra = sala.letra;
+  async function renderStopMultiplayer(){
+    try {
+      const { data: sala, error } = await supabase
+        .from('stop_salas')
+        .select('*')
+        .eq('codigo', stopSalaId)
+        .single();
 
-    let html = `<div style="text-align:center;padding:0;">
-      <p style="font-size:0.8rem;color:var(--castanho);margin:6px 0;">📍 Sala: <code style="background:var(--bege);padding:3px 6px;border-radius:4px;font-size:0.85rem;font-weight:bold;">${stopSalaId}</code> | R${sala.ronda}</p>
-      <p style="font-size:2.8rem;font-weight:bold;margin:10px 0;color:var(--castanho);">${letra}</p>
-      <div id="formStopMulti" style="display:grid;gap:5px;margin:10px 0;"></div>
-      <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;width:100%;font-weight:bold;">🛑 STOP!</button>
-    </div>`;
+      if(error || !sala) {
+        alert('❌ Erro ao carregar sala');
+        return;
+      }
 
-    jogoConteudo.innerHTML = html;
+      let html = `<div style="text-align:center;padding:0;">
+        <p style="font-size:0.8rem;color:var(--castanho);margin:6px 0;">📍 Sala: <code style="background:var(--bege);padding:3px 6px;border-radius:4px;font-size:0.85rem;font-weight:bold;">${stopSalaId}</code> | R${sala.ronda}</p>
+        <p style="font-size:2.8rem;font-weight:bold;margin:10px 0;color:var(--castanho);">${sala.letra}</p>
+        <div id="formStopMulti" style="display:grid;gap:5px;margin:10px 0;"></div>
+        <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;width:100%;font-weight:bold;">🛑 STOP!</button>
+      </div>`;
 
-    let form = document.getElementById('formStopMulti');
-    stopCategorias.forEach(cat => {
-      form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:6px;border:1px solid var(--linha);border-radius:6px;font-size:0.9rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
-    });
+      jogoConteudo.innerHTML = html;
 
-    document.getElementById(`stop_${stopCategorias[0]}`).focus();
-  }
+      let form = document.getElementById('formStopMulti');
+      stopCategorias.forEach(cat => {
+        form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:6px;border:1px solid var(--linha);border-radius:6px;font-size:0.9rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
+      });
 
-  window.pararStopMultiplayer = function(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
-    let letra = sala.letra;
-
-    let respostas = {};
-    stopCategorias.forEach(cat => {
-      let val = document.getElementById(`stop_${cat}`).value.trim().toUpperCase();
-      respostas[cat] = val;
-    });
-
-    sala.jogadores[stopNomeJogador].respostas = respostas;
-    localStorage.setItem('stopSalas', JSON.stringify(salas));
-
-    // Verificar se todos pararam
-    let todosPararam = Object.keys(sala.jogadores).every(nome =>
-      Object.keys(sala.jogadores[nome].respostas).length > 0
-    );
-
-    if(todosPararam) calcularPontuacaoMultiplayer();
-    else {
-      alert('⏳ A aguardar outros jogadores...');
-      setTimeout(() => renderStopMultiplayer(), 2000);
+      document.getElementById(`stop_${stopCategorias[0]}`).focus();
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
     }
   }
 
-  function calcularPontuacaoMultiplayer(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
+  window.pararStopMultiplayer = async function(){
+    try {
+      let respostas = {};
+      stopCategorias.forEach(cat => {
+        let val = document.getElementById(`stop_${cat}`).value.trim().toUpperCase();
+        respostas[cat] = val;
+      });
 
-    // Calcular pontos
-    stopCategorias.forEach(cat => {
-      let respostasCategoria = {};
-      Object.keys(sala.jogadores).forEach(nome => {
-        let resposta = sala.jogadores[nome].respostas[cat] || '';
-        if(resposta) {
-          respostasCategoria[nome] = resposta;
+      // Inserir respostas no Supabase
+      for(let cat in respostas){
+        if(respostas[cat]){
+          await supabase.from('stop_respostas').insert({
+            sala_id: stopSalaId,
+            nome: stopNomeJogador,
+            categoria: cat,
+            resposta: respostas[cat]
+          });
+        }
+      }
+
+      alert('✅ Respostas enviadas!');
+      mostrarResultadosMultiplayer();
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
+    }
+  };
+
+  async function mostrarResultadosMultiplayer(){
+    try {
+      const { data: respostas } = await supabase
+        .from('stop_respostas')
+        .select('*')
+        .eq('sala_id', stopSalaId);
+
+      const { data: jogadores } = await supabase
+        .from('stop_jogadores')
+        .select('*')
+        .eq('sala_id', stopSalaId);
+
+      // Agrupar respostas por jogador
+      let jogosPorNome = {};
+      jogadores.forEach(j => {
+        jogosPorNome[j.nome] = { pontos: j.pontos, respostas: {} };
+      });
+
+      respostas.forEach(r => {
+        if(jogosPorNome[r.nome]){
+          jogosPorNome[r.nome].respostas[r.categoria] = r.resposta;
         }
       });
 
-      // Contar repetições
-      let contagem = {};
-      Object.values(respostasCategoria).forEach(resp => {
-        contagem[resp] = (contagem[resp] || 0) + 1;
-      });
-
-      // Atribuir pontos
-      Object.keys(respostasCategoria).forEach(nome => {
-        let resp = respostasCategoria[nome];
-        let pts = contagem[resp] === 1 ? 10 : 5;
-        sala.jogadores[nome].pontos += pts;
-      });
-    });
-
-    localStorage.setItem('stopSalas', JSON.stringify(salas));
-    mostrarResultadosMultiplayer();
-  }
-
-  function mostrarResultadosMultiplayer(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
-
-    let html = `<div style="text-align:center;">
-      <p style="font-size:1.3rem;font-weight:bold;color:var(--castanho);margin:20px 0;">📊 Resultados da Ronda ${sala.ronda}</p>
-      <div style="display:grid;gap:10px;margin:20px 0;">`;
-
-    let jogadores = Object.keys(sala.jogadores).sort((a, b) => sala.jogadores[b].pontos - sala.jogadores[a].pontos);
-
-    jogadores.forEach((nome, idx) => {
-      let jogador = sala.jogadores[nome];
-      let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
-      let destaque = nome === stopNomeJogador ? 'border:2px solid var(--castanho);' : '';
-      html += `<div style="background:var(--bege);padding:10px;border-radius:8px;${destaque}">
-        <p style="font-weight:bold;font-size:1.1rem;">${medal} ${nome}: <span style="color:var(--castanho);">${jogador.pontos} pts</span></p>`;
-
+      // Calcular pontos
       stopCategorias.forEach(cat => {
-        let resp = jogador.respostas[cat] || '(vazio)';
-        html += `<p style="margin:2px 0;font-size:0.9rem;"><strong>${cat}:</strong> ${resp}</p>`;
+        let respostasCategoria = {};
+        Object.keys(jogosPorNome).forEach(nome => {
+          let resp = jogosPorNome[nome].respostas[cat];
+          if(resp) respostasCategoria[nome] = resp;
+        });
+
+        let contagem = {};
+        Object.values(respostasCategoria).forEach(resp => {
+          contagem[resp] = (contagem[resp] || 0) + 1;
+        });
+
+        Object.keys(respostasCategoria).forEach(nome => {
+          let resp = respostasCategoria[nome];
+          let pts = contagem[resp] === 1 ? 10 : 5;
+          jogosPorNome[nome].pontos += pts;
+        });
       });
 
-      html += `</div>`;
-    });
+      // Atualizar pontos no Supabase
+      for(let nome in jogosPorNome){
+        await supabase
+          .from('stop_jogadores')
+          .update({ pontos: jogosPorNome[nome].pontos })
+          .eq('sala_id', stopSalaId)
+          .eq('nome', nome);
+      }
 
-    html += `</div>
-      <button onclick="novaRondaMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;margin:10px 0;">Próxima Ronda</button>
-      <button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;width:100%;">Menu</button>
-    </div>`;
+      let html = `<div style="text-align:center;">
+        <p style="font-size:1.1rem;font-weight:bold;color:var(--castanho);margin:15px 0;">📊 Resultados</p>
+        <div style="display:grid;gap:8px;margin:15px 0;">`;
 
-    jogoConteudo.innerHTML = html;
+      let nomes = Object.keys(jogosPorNome).sort((a, b) => jogosPorNome[b].pontos - jogosPorNome[a].pontos);
+      nomes.forEach((nome, idx) => {
+        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
+        let destaque = nome === stopNomeJogador ? 'border:2px solid var(--castanho);' : '';
+        html += `<div style="background:var(--bege);padding:8px;border-radius:8px;font-size:0.9rem;${destaque}">
+          <p style="font-weight:bold;margin:3px 0;">${medal} ${nome}: <span style="color:var(--castanho);">${jogosPorNome[nome].pontos} pts</span></p>`;
+
+        stopCategorias.forEach(cat => {
+          let resp = jogosPorNome[nome].respostas[cat] || '(vazio)';
+          html += `<p style="margin:1px 0;font-size:0.8rem;"><strong>${cat}:</strong> ${resp}</p>`;
+        });
+
+        html += `</div>`;
+      });
+
+      html += `</div>
+        <button onclick="novaRondaMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 14px;border:none;border-radius:8px;cursor:pointer;width:100%;margin:8px 0;font-size:0.9rem;">Próxima</button>
+        <button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:0.9rem;">Menu</button>
+      </div>`;
+
+      jogoConteudo.innerHTML = html;
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
+    }
   }
 
-  window.novaRondaMultiplayer = function(){
-    let salas = JSON.parse(localStorage.getItem('stopSalas') || '{}');
-    let sala = salas[stopSalaId];
-    sala.ronda++;
-    sala.letra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-    Object.keys(sala.jogadores).forEach(nome => {
-      sala.jogadores[nome].respostas = {};
-    });
-    localStorage.setItem('stopSalas', JSON.stringify(salas));
-    renderStopMultiplayer();
+  window.novaRondaMultiplayer = async function(){
+    try {
+      const { data: sala } = await supabase
+        .from('stop_salas')
+        .select('*')
+        .eq('codigo', stopSalaId)
+        .single();
+
+      let novaRonda = sala.ronda + 1;
+      let novaLetra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+      await supabase
+        .from('stop_salas')
+        .update({ ronda: novaRonda, letra: novaLetra })
+        .eq('codigo', stopSalaId);
+
+      // Limpar respostas da ronda anterior
+      await supabase
+        .from('stop_respostas')
+        .delete()
+        .eq('sala_id', stopSalaId);
+
+      renderStopMultiplayer();
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
+    }
   };
 
   // Cliques nos jogos
@@ -1900,6 +1981,17 @@
       abrirJogo(tipos[i]);
     });
   });
+</script>
+
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabase = window.supabase.createClient(
+    'https://hobpcvsexzhmichuuab.supabase.co',
+    'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
+  );
+  console.log('✅ Supabase inicializado!');
 </script>
 
 </body>
