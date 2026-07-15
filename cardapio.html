@@ -1434,62 +1434,76 @@
   let forcaJogoFim = false;
 
   const forcaDesenhos = [
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |
-    |
-    |
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |
-    |
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |   |
-    |
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |  /|
-    |
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |  /|\\
-    |
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |  /|\\
-    |  /
-    |
-    =========</pre>`,
-    `<pre style="text-align:center;font-family:monospace;font-size:1rem;margin:10px 0;">
-    +---+
-    |   |
-    |   O
-    |  /|\\
-    |  / \\
-    |
-    =========</pre>`
+    // 0 erros - Forca vazia
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+    </svg>`,
+    // 1 erro - Cabeça
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+    </svg>`,
+    // 2 erros - Corpo
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+      <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
+    </svg>`,
+    // 3 erros - Braço esquerdo
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+      <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="110" y2="125" stroke="black" stroke-width="3"/>
+    </svg>`,
+    // 4 erros - Braço direito
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+      <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="110" y2="125" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="190" y2="125" stroke="black" stroke-width="3"/>
+    </svg>`,
+    // 5 erros - Perna esquerda
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+      <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="110" y2="125" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="190" y2="125" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="150" x2="120" y2="200" stroke="black" stroke-width="3"/>
+    </svg>`,
+    // 6 erros - Perna direita (GAME OVER)
+    `<svg width="200" height="250" viewBox="0 0 200 250" style="margin:10px auto;display:block;">
+      <line x1="20" y1="230" x2="180" y2="230" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="230" x2="40" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="40" y1="20" x2="150" y2="20" stroke="black" stroke-width="4"/>
+      <line x1="150" y1="20" x2="150" y2="50" stroke="black" stroke-width="2"/>
+      <circle cx="150" cy="70" r="20" stroke="black" stroke-width="3" fill="none"/>
+      <line x1="150" y1="90" x2="150" y2="150" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="110" y2="125" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="105" x2="190" y2="125" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="150" x2="120" y2="200" stroke="black" stroke-width="3"/>
+      <line x1="150" y1="150" x2="180" y2="200" stroke="black" stroke-width="3"/>
+    </svg>`
   ];
 
   function iniciarForca(){
