@@ -1561,23 +1561,80 @@
     renderForca();
   };
 
-  // Adivinhas
-  let adivinhaPergunta = 0;
-  let advinhaPerguntas = [{q:'Qual é o prato especial da semana?',r:'Especial'},{q:'Quantos vinhos temos?',r:'Muitos'},{q:'Qual é a cor do logo?',r:'Castanho'}];
+  // Adivinhas - Qual é a Coisa, Qual é Ela
+  const adivinhasDB = [
+    { pergunta: 'Qual é a coisa, qual é ela, que é branca de dia e preta de noite?', resposta: 'ESTRADA', dicas: ['Tem tráfego', 'Leva de um lado a outro', 'Pode estar molhada ou seca'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que quanto mais seca, mais molhada fica?', resposta: 'TOALHA', dicas: ['Usas no banho', 'De tecido', 'Absorve água'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem pernas e não anda?', resposta: 'MESA', dicas: ['Está numa cozinha', 'Comes nela', 'De quatro pernas'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem boca e não fala?', resposta: 'GARRAFA', dicas: ['Contém bebidas', 'De vidro', 'Faz barulho quando bate'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem olhos e não vê?', resposta: 'BATATA', dicas: ['É comida', 'Cresce debaixo da terra', 'Tubérculo'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que sai do pão e não é do pão?', resposta: 'MIGALHA', dicas: ['Pequenina', 'Fica no chão', 'Acumula'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que anda sempre comigo mas não sou eu?', resposta: 'SOMBRA', dicas: ['Vê-se no chão', 'Quando há luz', 'Segue-te'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que entra por uma janela e sai por outra?', resposta: 'VENTO', dicas: ['Não tem forma', 'Invisível', 'Move as folhas'] }
+  ];
+  let adivinhaAtual = 0;
+  let adivinhaDicaIndex = 0;
+
   function iniciarAdivinhas(){
-    adivinhaPergunta = 0;
+    adivinhaAtual = Math.floor(Math.random() * adivinhasDB.length);
+    adivinhaDicaIndex = 0;
     renderAdivinhas();
   }
+
   function renderAdivinhas(){
-    if(adivinhaPergunta >= advinhaPerguntas.length){ jogoConteudo.innerHTML = '<p style="text-align:center;font-weight:bold;">Parabéns! Acertaste todas!</p><button onclick="iniciarAdivinhas()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;">Recomeçar</button>'; return; }
-    let p = advinhaPerguntas[adivinhaPergunta];
-    let html = `<p style="text-align:center;font-size:1.1rem;margin:20px 0;">${p.q}</p><input type="text" id="respostaAdivinhas" style="width:100%;padding:10px;border:1px solid var(--linha);border-radius:8px;margin:10px 0;" placeholder="Sua resposta..."><button onclick="verificarAdivinhas()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;width:100%;">Verificar</button>`;
+    let adivinha = adivinhasDB[adivinhaAtual];
+    let html = `<div style="text-align:center;">
+      <p style="font-size:1rem;color:var(--castanho);font-weight:bold;margin:10px 0;">❓ ${adivinha.pergunta}</p>
+      <div id="dicasArea" style="background:var(--bege);padding:10px;border-radius:8px;margin:15px 0;min-height:40px;">`;
+
+    if(adivinhaDicaIndex > 0){
+      html += `<p style="font-size:0.9rem;margin:5px 0;"><strong>💡 Dica ${adivinhaDicaIndex}:</strong> ${adivinha.dicas[adivinhaDicaIndex - 1]}</p>`;
+    } else {
+      html += `<p style="font-size:0.9rem;margin:5px 0;color:var(--linha);">Sem dicas ainda...</p>`;
+    }
+
+    html += `</div>
+      <input type="text" id="respostaAdivinha" style="width:90%;padding:8px;border:2px solid var(--linha);border-radius:8px;margin:10px 0;font-size:0.95rem;" placeholder="Qual é a resposta?">
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button onclick="verificarAdivinha()" style="background:var(--castanho);color:var(--branco);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;flex:1;">Responder</button>
+        <button onclick="pedirDicaAdivinha()" style="background:var(--linha);color:var(--castanho);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;flex:1;">💡 Dica</button>
+      </div>
+    </div>`;
+
     jogoConteudo.innerHTML = html;
-    document.getElementById('respostaAdivinhas').focus();
+    document.getElementById('respostaAdivinha').focus();
   }
-  window.verificarAdivinhas = function(){
-    let resposta = document.getElementById('respostaAdivinhas').value.toUpperCase();
-    if(resposta.includes(advinhaPerguntas[adivinhaPergunta].r.toUpperCase())){ adivinhaPergunta++; }
+
+  window.pedirDicaAdivinha = function(){
+    let adivinha = adivinhasDB[adivinhaAtual];
+    if(adivinhaDicaIndex < adivinha.dicas.length){
+      adivinhaDicaIndex++;
+      renderAdivinhas();
+    } else {
+      alert('Acabaram as dicas! A resposta é: ' + adivinha.resposta);
+      novaAdivinha();
+    }
+  };
+
+  window.verificarAdivinha = function(){
+    let adivinha = adivinhasDB[adivinhaAtual];
+    let resposta = document.getElementById('respostaAdivinha').value.toUpperCase().trim();
+
+    if(resposta === adivinha.resposta){
+      let html = `<div style="text-align:center;">
+        <p style="font-size:1.1rem;color:green;font-weight:bold;margin:20px 0;">🎉 Acertaste!</p>
+        <p style="margin:10px 0;">Resposta: <strong>${adivinha.resposta}</strong></p>
+        <button onclick="novaAdivinha()" style="background:var(--castanho);color:var(--branco);padding:10px 16px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:0.95rem;">Próxima Charada</button>
+      </div>`;
+      jogoConteudo.innerHTML = html;
+    } else if(resposta){
+      alert('❌ Errado! Tenta outra resposta ou pede uma dica.');
+    }
+  };
+
+  window.novaAdivinha = function(){
+    adivinhaAtual = Math.floor(Math.random() * adivinhasDB.length);
+    adivinhaDicaIndex = 0;
     renderAdivinhas();
   };
 
