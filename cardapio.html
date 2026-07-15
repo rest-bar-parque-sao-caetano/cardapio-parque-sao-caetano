@@ -1504,7 +1504,7 @@
     html += '<div style="margin:25px 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">';
     'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
       let disabled = forcaLetrasTentadas.includes(l);
-      html += `<button onclick="tentarForca('${l}')" style="margin:0;padding:10px 14px;font-size:1rem;font-weight:bold;background:${disabled?'#ccc':'var(--bege)'};border:2px solid var(--linha);border-radius:8px;cursor:${disabled?'not-allowed':'pointer';width:45px;height:45px;" ${disabled?'disabled':''}>${l}</button>`;
+      html += `<button onclick="tentarForca('${l}')" style="margin:0;padding:10px 14px;font-size:1rem;font-weight:bold;background:${disabled?'#ccc':'var(--bege)'};border:2px solid var(--linha);border-radius:8px;cursor:${disabled?'not-allowed':'pointer'};width:45px;height:45px;" ${disabled?'disabled':''}>${l}</button>`;
     });
     html += '</div>';
 
