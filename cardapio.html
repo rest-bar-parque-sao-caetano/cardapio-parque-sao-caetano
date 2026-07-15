@@ -1543,7 +1543,6 @@
         html += `<button onclick="tentarLetraForca('${l}')" style="padding:6px 10px;font-size:0.85rem;font-weight:bold;background:${usada?'#ddd':'var(--bege)'};border:1px solid var(--linha);border-radius:5px;cursor:${usada?'not-allowed':'pointer'};" ${usada?'disabled':''}>${l}</button>`;
       });
       html += '</div>';
-      html += '<input type="text" id="chuteInteiro" style="width:90%;padding:8px;border:2px solid var(--linha);border-radius:8px;margin:12px 0;font-size:0.9rem;" placeholder="Chuta a palavra..."><button onclick="chuteInteiro()" style="background:var(--castanho);color:var(--branco);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-size:0.85rem;">Chutar</button>';
     } else if(acertou){
       html += `<p style="font-size:1.1rem;color:green;font-weight:bold;margin:15px 0;">🎉 Parabéns! Acertaste!</p>`;
     } else if(perdeu){
@@ -1559,18 +1558,6 @@
     forcaLetrasTentadas.push(letra);
     if(!forcaPalavra.includes(letra)) forcaErros++;
     if(forcaPalavra.split('').every(l => forcaLetrasTentadas.includes(l)) || forcaErros >= 6) forcaJogoFim = true;
-    renderForca();
-  };
-
-  window.chuteInteiro = function(){
-    let chute = document.getElementById('chuteInteiro').value.toUpperCase().trim();
-    if(chute === forcaPalavra){
-      forcaLetrasTentadas = forcaPalavra.split('');
-      forcaJogoFim = true;
-    } else if(chute){
-      forcaErros = 6;
-      forcaJogoFim = true;
-    }
     renderForca();
   };
 
