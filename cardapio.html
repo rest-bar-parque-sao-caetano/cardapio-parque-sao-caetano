@@ -529,32 +529,14 @@
   .header-fotos img.ativa{opacity:1;}
 </style>
 
-<!-- Supabase - Inicializar ANTES dos jogos -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<!-- Supabase REST API (sem biblioteca) -->
 <script>
-  console.log('Inicializando Supabase...');
+  window.SUPABASE_URL = 'https://hobpcvsexzhmiochuuab.supabase.co';
+  window.SUPABASE_KEY = 'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-';
 
-  // Esperar que supabase global esteja disponível
-  let tentativas = 0;
-  function initSupa() {
-    tentativas++;
-    if (window.supabase) {
-      try {
-        window.supabaseClient = window.supabase.createClient(
-          'https://hobpcvsexzhmiochuuab.supabase.co',
-          'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-        );
-        console.log('✅ Supabase inicializado!');
-      } catch(err) {
-        console.error('❌ Erro ao criar client:', err.message);
-      }
-    } else if (tentativas < 30) {
-      setTimeout(initSupa, 100);
-    } else {
-      console.error('❌ Supabase não carregou!');
-    }
-  }
-  initSupa();
+  window.supabaseClient={from:t=>({insert:d=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?select=*`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY},body:JSON.stringify(d)});return{data:await r.json(),error:r.ok?null:'erro'};}catch(e){return{data:null,error:e};}})(),select:()=>({eq:(c,v)=>({single:(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}&limit=1`,{headers:{'Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY}});const d=await r.json();return{data:d[0],error:r.ok?null:d};}catch(e){return{data:null,error:e};}})()})}),update:d=>({eq:(c,v)=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}`,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY},body:JSON.stringify(d)});return{error:r.ok?null:await r.json()};}catch(e){return{error:e};}})()}),delete:()=>({eq:(c,v)=>(async()=>{try{const r=await fetch(`${window.SUPABASE_URL}/rest/v1/${t}?${c}=eq.${v}`,{method:'DELETE',headers:{'Authorization':`Bearer ${window.SUPABASE_KEY}`,'apikey':window.SUPABASE_KEY}});return{error:r.ok?null:await r.json()};}catch(e){return{error:e};}})()})});};
+
+  console.log('✅ Supabase REST API inicializado!');
 </script>
 
 </head>
