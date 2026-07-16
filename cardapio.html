@@ -1194,57 +1194,48 @@
     }, 3000);
   })();
 
-  (function(){
-    const bloco = document.getElementById('infoFixaTexto');
-    if(!bloco) return;
+  // Texto especial por horário na barra fixa — controlado pelo config.json.
+  // window.aplicarEspecialRodape é chamado pelo carregarConfig() depois de ler o config.
+  window.aplicarEspecialRodape = function(especial, normal){
     const linhas = {
       1: document.getElementById('rodapeLinha1'),
       2: document.getElementById('rodapeLinha2'),
       3: document.getElementById('rodapeLinha3'),
       4: document.getElementById('rodapeLinha4')
     };
-    const normal = {
-      1: linhas[1].textContent,
-      2: linhas[2].textContent,
-      3: linhas[3].textContent,
-      4: linhas[4].textContent
-    };
-    const especial = {
-      1: bloco.dataset.especialL1 || '',
-      2: bloco.dataset.especialL2 || '',
-      3: bloco.dataset.especialL3 || '',
-      4: bloco.dataset.especialL4 || ''
-    };
-    const ativo = bloco.dataset.especialAtivo === 'true';
-    const inicio = bloco.dataset.especialInicio || '';
-    const fim = bloco.dataset.especialFim || '';
-    if(!ativo || !inicio || !fim) return;
+    if(!linhas[1]) return;
+    if(window._especialInterval){ clearInterval(window._especialInterval); window._especialInterval = null; }
+
+    if(!especial || !especial.ativo || !especial.inicio || !especial.fim){
+      // Sem especial: mostra sempre o texto normal
+      for(const n of [1,2,3,4]) if(linhas[n]) linhas[n].textContent = normal[n] || '';
+      return;
+    }
 
     function paraMinutos(hhmm){
-      const p = hhmm.split(':');
-      return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
+      const p = String(hhmm).split(':');
+      return (parseInt(p[0],10)||0)*60 + (parseInt(p[1],10)||0);
     }
     function dentroIntervalo(agora, ini, f){
       if(ini === f) return false;
       if(ini < f) return agora >= ini && agora < f;
       return agora >= ini || agora < f;
     }
-
-    const ini = paraMinutos(inicio);
-    const f = paraMinutos(fim);
+    const ini = paraMinutos(especial.inicio);
+    const f = paraMinutos(especial.fim);
+    const esp = { 1:especial.l1||'', 2:especial.l2||'', 3:especial.l3||'', 4:especial.l4||'' };
 
     function atualizar(){
       const d = new Date();
-      const agora = d.getHours() * 60 + d.getMinutes();
+      const agora = d.getHours()*60 + d.getMinutes();
       const mostrarEspecial = dentroIntervalo(agora, ini, f);
-      for(const n of [1, 2, 3, 4]){
-        linhas[n].textContent = mostrarEspecial ? (especial[n] || normal[n]) : normal[n];
+      for(const n of [1,2,3,4]){
+        if(linhas[n]) linhas[n].textContent = mostrarEspecial ? (esp[n] || normal[n] || '') : (normal[n] || '');
       }
     }
-
     atualizar();
-    setInterval(atualizar, 60000);
-  })();
+    window._especialInterval = setInterval(atualizar, 60000);
+  };
 
   (function(){
     const adPopup = document.getElementById('adPopup');
@@ -1495,11 +1486,13 @@
         Object.keys(map).forEach(k => {
           const el = document.getElementById(map[k]);
           if(!el) return;
-          if(config.rodape[k] !== undefined) el.textContent = config.rodape[k];
           if(config.rodape.cor) el.style.color = config.rodape.cor;
           el.style.textShadow = sombraR;
           if(config.rodape.realce !== false) el.style.fontWeight = '700';
         });
+        // Texto normal + especial por horário
+        const normal = { 1:config.rodape.linha1||'', 2:config.rodape.linha2||'', 3:config.rodape.linha3||'', 4:config.rodape.linha4||'' };
+        if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(config.rodape.especial, normal);
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
         }
