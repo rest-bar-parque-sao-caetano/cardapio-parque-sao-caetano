@@ -2156,16 +2156,14 @@
         }
       });
 
-      // Inserir respostas no Supabase
+      // Inserir respostas no Supabase (mesmo que vazias)
       for(let cat in respostas){
-        if(respostas[cat]){
-          await window.supabaseClient.from('stop_respostas').insert({
-            sala_id: stopSalaId,
-            nome: stopNomeJogador,
-            categoria: cat,
-            resposta: respostas[cat]
-          });
-        }
+        await window.supabaseClient.from('stop_respostas').insert({
+          sala_id: stopSalaId,
+          nome: stopNomeJogador,
+          categoria: cat,
+          resposta: respostas[cat] || '(vazio)'
+        });
       }
 
       // Mostrar resultados
@@ -2195,12 +2193,12 @@
       // Filtrar manualmente por sala_id
       const jogadores = jogadoresTemp ? jogadoresTemp.filter(j => j.sala_id === stopSalaId) : [];
 
-      console.log('📊 Respostas:', respostas, 'Erro:', erroRespostas);
-      console.log('👥 Jogadores:', jogadores, 'Erro:', erroJogadores);
+      console.log('📊 Respostas:', respostas);
+      console.log('👥 Jogadores:', jogadores);
 
       // Verificar se dados existem
       if(!jogadores || jogadores.length === 0) {
-        console.error('❌ Nenhum jogador encontrado!', { jogadores, erroJogadores });
+        console.error('❌ Nenhum jogador encontrado!', { jogadores });
         alert('❌ Erro: Nenhum jogador encontrado!\nVerifica a consola para mais detalhes.');
         return;
       }
