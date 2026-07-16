@@ -2,6 +2,7 @@
   "header": {
     "titulo": "",
     "subtitulo": "",
+    "fotosAtivas": false,
     "fotos": [
       "imagens/1784227698896-img-1575.jpg"
     ]
@@ -11,6 +12,7 @@
     "linha2": "Moelas",
     "linha3": "Francesinha",
     "linha4": "Peixe Espada",
+    "fotosAtivas": true,
     "fotos": [
       "imagens/1784227999670-gemini-generated-image-j4r8ccj4r8ccj4r8.jpg"
     ]
