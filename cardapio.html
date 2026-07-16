@@ -2128,19 +2128,25 @@
 
   window.mostrarResultadosMultiplayer = async function(){
     try {
-      const { data: respostas } = await window.supabaseClient
+      console.log('🔍 Debugando - stopSalaId:', stopSalaId);
+
+      const { data: respostas, error: erroRespostas } = await window.supabaseClient
         .from('stop_respostas')
         .select('*')
         .eq('sala_id', stopSalaId);
 
-      const { data: jogadores } = await window.supabaseClient
+      const { data: jogadores, error: erroJogadores } = await window.supabaseClient
         .from('stop_jogadores')
         .select('*')
         .eq('sala_id', stopSalaId);
 
+      console.log('📊 Respostas:', respostas, 'Erro:', erroRespostas);
+      console.log('👥 Jogadores:', jogadores, 'Erro:', erroJogadores);
+
       // Verificar se dados existem
       if(!jogadores || jogadores.length === 0) {
-        alert('❌ Erro: Nenhum jogador encontrado!');
+        console.error('❌ Nenhum jogador encontrado!', { jogadores, erroJogadores });
+        alert('❌ Erro: Nenhum jogador encontrado!\nVerifica a consola para mais detalhes.');
         return;
       }
 
