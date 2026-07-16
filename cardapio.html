@@ -1978,16 +1978,27 @@
 
       stopSalaId = codigo;
 
-      // Criar entrada do jogador
+      // Pedir nome para este jogador (entrada com código)
+      let nomeEntrada = prompt('Qual é o seu nome?', 'Jogador');
+      if(!nomeEntrada) nomeEntrada = 'Jogador';
+      nomeEntrada = nomeEntrada.trim();
+
+      // Criar entrada do jogador com nome específico
       await window.supabaseClient
         .from('stop_jogadores')
         .insert({
           sala_id: stopSalaId,
-          nome: stopNomeJogador,
+          nome: nomeEntrada,
           pontos: 0
         })
-        .then(() => jogarStopMultiplayer())
-        .catch(() => jogarStopMultiplayer()); // Entrar mesmo se jogador já existe
+        .then(() => {
+          stopNomeJogador = nomeEntrada; // Atualizar nome global
+          jogarStopMultiplayer();
+        })
+        .catch(() => {
+          stopNomeJogador = nomeEntrada;
+          jogarStopMultiplayer();
+        });
 
     } catch(err) {
       alert('❌ Erro: ' + err.message);
