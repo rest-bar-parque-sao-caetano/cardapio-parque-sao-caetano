@@ -1444,48 +1444,69 @@
   const fotoPlaceholder = document.getElementById('fotoPlaceholder');
   const modalFotoNome = document.getElementById('modalFotoNome');
 
-  // Carrega fotos diretamente do GitHub (pasta /imagens/)
-  async function carregarFotosDoGitHub(){
+  // ---- Carrega definições do config.json (gerido pelo editar.html) ----
+  const RAW_BASE = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/';
+
+  function preencherFotos(container, fotos){
+    if(!container || !Array.isArray(fotos) || fotos.length === 0) return;
+    container.innerHTML = '';
+    fotos.forEach((caminho, i) => {
+      if(!caminho) return;
+      const img = document.createElement('img');
+      img.src = RAW_BASE + caminho;
+      img.alt = 'Foto ' + (i+1);
+      if(i === 0) img.classList.add('ativa');
+      container.appendChild(img);
+    });
+    iniciarRotacao(container);
+  }
+
+  function iniciarRotacao(container){
+    const imagens = container.querySelectorAll('img');
+    if(imagens.length <= 1) return;
+    let idx = 0;
+    setInterval(() => {
+      imagens[idx].classList.remove('ativa');
+      idx = (idx + 1) % imagens.length;
+      imagens[idx].classList.add('ativa');
+    }, 3500);
+  }
+
+  async function carregarConfig(){
     try{
-      const fotosGitHub = [
-        'imagens/1783607352394-img_1549.jpeg',
-        'imagens/1783697751837-img_1575.jpg',
-        'imagens/1783700508703-img_1578.jpg',
-        'imagens/1784070895152-img_1575.jpg',
-        'imagens/554171704_122100905673037178_5876853051959764857_n.jpg'
-      ];
+      const resp = await fetch(RAW_BASE + 'config.json?t=' + Date.now());
+      if(!resp.ok) return;
+      const config = await resp.json();
+      if(!config) return;
 
-      const containerFotos = document.querySelector('#infoFixaFotos');
-      if(containerFotos){
-        containerFotos.innerHTML = '';
-        fotosGitHub.forEach((caminho, i) => {
-          const img = document.createElement('img');
-          img.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + caminho;
-          img.alt = 'Foto ' + (i+1);
-          if(i === 0) img.classList.add('ativa');
-          containerFotos.appendChild(img);
-        });
+      // Cabeçalho: título e subtítulo
+      if(config.header){
+        if(config.header.titulo){
+          const t = document.querySelector('header .brand-mark');
+          if(t) t.textContent = config.header.titulo;
+        }
+        if(config.header.subtitulo){
+          const s = document.querySelector('header .brand-sub');
+          if(s) s.textContent = config.header.subtitulo;
+        }
+        preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
       }
-    } catch(err){
-      console.log('[INFO] Erro ao carregar fotos:', err.message);
+
+      // Barra fixa: linhas e fotos
+      if(config.rodape){
+        const map = { linha1:'rodapeLinha1', linha2:'rodapeLinha2', linha3:'rodapeLinha3', linha4:'rodapeLinha4' };
+        Object.keys(map).forEach(k => {
+          const el = document.getElementById(map[k]);
+          if(el && config.rodape[k] !== undefined) el.textContent = config.rodape[k];
+        });
+        preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
+      }
+    }catch(err){
+      console.log('[INFO] Sem config.json ou erro ao carregar:', err.message);
     }
   }
 
-  carregarFotosDoGitHub();
-
-  // Rotação de fotos do header
-  const headerFotos = document.querySelector('.header-fotos');
-  if(headerFotos){
-    const imagens = headerFotos.querySelectorAll('img');
-    if(imagens.length > 0){
-      let indiceAtual = 0;
-      setInterval(() => {
-        imagens[indiceAtual].classList.remove('ativa');
-        indiceAtual = (indiceAtual + 1) % imagens.length;
-        imagens[indiceAtual].classList.add('ativa');
-      }, (imagens[indiceAtual].dataset.duracao || 3) * 1000);
-    }
-  }
+  carregarConfig();
 
   document.querySelectorAll('.prato-clicavel').forEach(el => {
     el.addEventListener('click', () => {
