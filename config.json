@@ -2,7 +2,8 @@
   "header": {
     "titulo": "",
     "subtitulo": "",
-    "cor": "#88863f",
+    "cor": "#ffffff",
+    "realce": true,
     "fotosAtivas": true,
     "fotos": [
       "imagens/1784227698896-img-1575.jpg",
@@ -14,7 +15,8 @@
     "linha2": "Moelas",
     "linha3": "Francesinha",
     "linha4": "Peixe Espada",
-    "cor": "#a82929",
+    "cor": "#ebe5e5",
+    "realce": true,
     "fotosAtivas": true,
     "fotos": [
       "imagens/1784227999670-gemini-generated-image-j4r8ccj4r8ccj4r8.jpg"
