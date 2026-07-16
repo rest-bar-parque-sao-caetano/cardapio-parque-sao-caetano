@@ -1463,6 +1463,12 @@
           const s = document.querySelector('header .brand-sub');
           if(s) s.textContent = config.header.subtitulo;
         }
+        if(config.header.cor){
+          const t = document.querySelector('header .brand-mark');
+          const s = document.querySelector('header .brand-sub');
+          if(t) t.style.color = config.header.cor;
+          if(s) s.style.color = config.header.cor;
+        }
         if(config.header.fotosAtivas !== false){
           preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
         }
@@ -1474,6 +1480,7 @@
         Object.keys(map).forEach(k => {
           const el = document.getElementById(map[k]);
           if(el && config.rodape[k] !== undefined) el.textContent = config.rodape[k];
+          if(el && config.rodape.cor) el.style.color = config.rodape.cor;
         });
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
