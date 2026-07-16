@@ -1992,11 +1992,11 @@
     }
   }
 
-  function jogarStopMultiplayer(){
+  window.jogarStopMultiplayer = function(){
     renderStopMultiplayer();
   }
 
-  async function renderStopMultiplayer(){
+  window.renderStopMultiplayer = async function(){
     try {
       const { data: sala, error } = await window.supabaseClient
         .from('stop_salas')
@@ -2056,7 +2056,7 @@
     }
   };
 
-  async function mostrarResultadosMultiplayer(){
+  window.mostrarResultadosMultiplayer = async function(){
     try {
       const { data: respostas } = await window.supabaseClient
         .from('stop_respostas')
