@@ -1996,76 +1996,36 @@
 
   window.jogarStopMultiplayer = async function(){
     try {
-      const { data: sala } = await window.supabaseClient
-        .from('stop_salas')
-        .select('*')
-        .eq('codigo', stopSalaId)
-        .single();
-
+      const { data: sala } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
       if(!sala) return;
 
-      // Se é criador, mostra botão "Começar"
+      // Se é criador, mostra "Começar"
       if(sala.criador === stopNomeJogador) {
-        let html = `<div style="text-align:center;padding:20px;">
+        jogoConteudo.innerHTML = `<div style="text-align:center;padding:20px;">
           <p style="font-size:1.2rem;font-weight:bold;color:var(--castanho);margin:20px 0;">👑 VOCÊ É O CRIADOR</p>
-          <p style="font-size:0.9rem;color:var(--castanho);margin:15px 0;">Clique abaixo para começar o jogo para todos os jogadores!</p>
-          <button onclick="iniciarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:15px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:1.1rem;font-weight:bold;margin:20px 0;">🎮 COMEÇAR JOGO</button>
-          <button onclick="menuSalaStop()" style="background:var(--linha);color:var(--castanho);padding:10px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:0.9rem;">Voltar</button>
+          <button onclick="iniciarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:15px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:1.1rem;font-weight:bold;">🎮 COMEÇAR JOGO</button>
         </div>`;
-        jogoConteudo.innerHTML = html;
       } else {
-        // Outro jogador: aguarda que criador comece
-        jogoConteudo.innerHTML = `<div style="text-align:center;padding:30px;"><p style="font-size:1.1rem;color:var(--castanho);">⏳ Aguardando que ${sala.criador} comece o jogo...</p></div>`;
-
-        // Polling para detectar quando jogo começou
-        let pollingCheck = setInterval(async () => {
-          const { data: salaAtualizada } = await window.supabaseClient
-            .from('stop_salas')
-            .select('*')
-            .eq('codigo', stopSalaId)
-            .single();
-
-          if(salaAtualizada && salaAtualizada.iniciada) {
-            clearInterval(pollingCheck);
-            renderGameStop();
-          }
-        }, 500);
-
-        window.stopPollingCheck = pollingCheck;
+        // Aguarda 2 segundos para criador marcar como iniciado
+        jogoConteudo.innerHTML = `<div style="text-align:center;padding:30px;"><p style="font-size:1.1rem;color:var(--castanho);">⏳ Aguardando...</p></div>`;
+        setTimeout(() => renderGameStop(), 2000);
       }
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
+    } catch(err) { alert('❌ Erro: ' + err.message); }
   }
 
   window.iniciarStopMultiplayer = async function(){
     try {
-      // Atualizar sala como iniciada
-      await window.supabaseClient
-        .from('stop_salas')
-        .update({ iniciada: true })
-        .eq('codigo', stopSalaId);
-
+      await window.supabaseClient.from('stop_salas').update({ iniciada: true }).eq('codigo', stopSalaId);
       renderGameStop();
-    } catch(err) {
-      alert('❌ Erro ao iniciar: ' + err.message);
-    }
+    } catch(err) { alert('❌ Erro: ' + err.message); }
   }
 
   window.renderGameStop = async function(){
     try {
-      if(window.stopPollingCheck) clearInterval(window.stopPollingCheck);
-
-      const { data: sala } = await window.supabaseClient
-        .from('stop_salas')
-        .select('*')
-        .eq('codigo', stopSalaId)
-        .single();
-
+      const { data: sala } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
       if(!sala) return;
 
       let html = `<div style="text-align:center;padding:0;">
-        <p style="font-size:0.75rem;color:var(--castanho);margin:5px 0;">Sala: <code style="background:var(--bege);padding:2px 5px;border-radius:3px;">${stopSalaId}</code></p>
         <p style="font-size:4rem;font-weight:bold;margin:20px 0;color:var(--castanho);font-family:monospace;" id="timerStop">60</p>
         <p style="font-size:2.5rem;font-weight:bold;margin:15px 0;color:var(--castanho);">${sala.letra}</p>
         <div id="formStopMulti" style="display:grid;gap:5px;margin:15px 0;"></div>
@@ -2073,46 +2033,36 @@
       </div>`;
 
       jogoConteudo.innerHTML = html;
-
       let form = document.getElementById('formStopMulti');
       stopCategorias.forEach(cat => {
         form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:8px;border:1px solid var(--linha);border-radius:6px;font-size:0.95rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
       });
-
       document.getElementById(`stop_${stopCategorias[0]}`).focus();
 
-      // Timer
+      // Timer simples
       let tempo = 60;
       let timerInterval = setInterval(() => {
         tempo--;
-        let timerEl = document.getElementById('timerStop');
-        if(timerEl) timerEl.textContent = tempo;
+        let el = document.getElementById('timerStop');
+        if(el) el.textContent = tempo;
         if(tempo <= 0) {
           clearInterval(timerInterval);
           pararStopMultiplayer();
         }
       }, 1000);
-
       window.stopTimerInterval = timerInterval;
 
-      // Polling para detectar quando alguém terminou
-      let pollingTermino = setInterval(async () => {
-        const { data: respostas } = await window.supabaseClient
-          .from('stop_respostas')
-          .select('*')
-          .eq('sala_id', stopSalaId);
-
+      // Polling simples - apenas detectar respostas
+      let polling = setInterval(async () => {
+        const { data: respostas } = await window.supabaseClient.from('stop_respostas').select('*').eq('sala_id', stopSalaId);
         if(respostas && respostas.length > 0) {
           clearInterval(timerInterval);
-          clearInterval(pollingTermino);
-          mostrarResultadosMultiplayer();
+          clearInterval(polling);
+          window.mostrarResultadosMultiplayer();
         }
-      }, 300);
-
-      window.stopPollingTermino = pollingTermino;
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
+      }, 200);
+      window.stopPolling = polling;
+    } catch(err) { alert('❌ Erro: ' + err.message); }
   }
 
   window.pararStopMultiplayer = async function(){
