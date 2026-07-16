@@ -1923,7 +1923,9 @@
         .from('stop_salas')
         .insert({
           codigo: stopSalaId,
-          letra: String.fromCharCode(65 + Math.floor(Math.random() * 26))
+          letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+          criador: stopNomeJogador,
+          iniciada: false
         })
         .select();
 
@@ -1992,53 +1994,109 @@
     }
   }
 
-  window.jogarStopMultiplayer = function(){
-    renderStopMultiplayer();
-  }
-
-  window.renderStopMultiplayer = async function(){
+  window.jogarStopMultiplayer = async function(){
     try {
-      const { data: sala, error } = await window.supabaseClient
+      const { data: sala } = await window.supabaseClient
         .from('stop_salas')
         .select('*')
         .eq('codigo', stopSalaId)
         .single();
 
-      if(error || !sala) {
-        alert('❌ Erro ao carregar sala');
-        return;
+      if(!sala) return;
+
+      // Se é criador, mostra botão "Começar"
+      if(sala.criador === stopNomeJogador) {
+        let html = `<div style="text-align:center;padding:20px;">
+          <p style="font-size:1.2rem;font-weight:bold;color:var(--castanho);margin:20px 0;">👑 VOCÊ É O CRIADOR</p>
+          <p style="font-size:0.9rem;color:var(--castanho);margin:15px 0;">Clique abaixo para começar o jogo para todos os jogadores!</p>
+          <button onclick="iniciarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:15px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:1.1rem;font-weight:bold;margin:20px 0;">🎮 COMEÇAR JOGO</button>
+          <button onclick="menuSalaStop()" style="background:var(--linha);color:var(--castanho);padding:10px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:0.9rem;">Voltar</button>
+        </div>`;
+        jogoConteudo.innerHTML = html;
+      } else {
+        // Outro jogador: aguarda que criador comece
+        jogoConteudo.innerHTML = `<div style="text-align:center;padding:30px;"><p style="font-size:1.1rem;color:var(--castanho);">⏳ Aguardando que ${sala.criador} comece o jogo...</p></div>`;
+
+        // Polling para detectar quando jogo começou
+        let pollingCheck = setInterval(async () => {
+          const { data: salaAtualizada } = await window.supabaseClient
+            .from('stop_salas')
+            .select('*')
+            .eq('codigo', stopSalaId)
+            .single();
+
+          if(salaAtualizada && salaAtualizada.iniciada) {
+            clearInterval(pollingCheck);
+            renderGameStop();
+          }
+        }, 500);
+
+        window.stopPollingCheck = pollingCheck;
       }
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
+    }
+  }
+
+  window.iniciarStopMultiplayer = async function(){
+    try {
+      // Atualizar sala como iniciada
+      await window.supabaseClient
+        .from('stop_salas')
+        .update({ iniciada: true })
+        .eq('codigo', stopSalaId);
+
+      renderGameStop();
+    } catch(err) {
+      alert('❌ Erro ao iniciar: ' + err.message);
+    }
+  }
+
+  window.renderGameStop = async function(){
+    try {
+      if(window.stopPollingCheck) clearInterval(window.stopPollingCheck);
+
+      const { data: sala } = await window.supabaseClient
+        .from('stop_salas')
+        .select('*')
+        .eq('codigo', stopSalaId)
+        .single();
+
+      if(!sala) return;
 
       let html = `<div style="text-align:center;padding:0;">
-        <p style="font-size:0.8rem;color:var(--castanho);margin:6px 0;">📍 Sala: <code style="background:var(--bege);padding:3px 6px;border-radius:4px;font-size:0.85rem;font-weight:bold;">${stopSalaId}</code> | R${sala.ronda}</p>
-        <p style="font-size:3.5rem;font-weight:bold;margin:15px 0;color:var(--castanho);font-family:monospace;" id="timerStop">60</p>
-        <p style="font-size:2.2rem;font-weight:bold;margin:10px 0;color:var(--castanho);">${sala.letra}</p>
-        <div id="formStopMulti" style="display:grid;gap:5px;margin:10px 0;"></div>
-        <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-size:0.95rem;width:100%;font-weight:bold;">🛑 STOP!</button>
+        <p style="font-size:0.75rem;color:var(--castanho);margin:5px 0;">Sala: <code style="background:var(--bege);padding:2px 5px;border-radius:3px;">${stopSalaId}</code></p>
+        <p style="font-size:4rem;font-weight:bold;margin:20px 0;color:var(--castanho);font-family:monospace;" id="timerStop">60</p>
+        <p style="font-size:2.5rem;font-weight:bold;margin:15px 0;color:var(--castanho);">${sala.letra}</p>
+        <div id="formStopMulti" style="display:grid;gap:5px;margin:15px 0;"></div>
+        <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;width:100%;font-weight:bold;">🛑 STOP!</button>
       </div>`;
 
       jogoConteudo.innerHTML = html;
 
       let form = document.getElementById('formStopMulti');
       stopCategorias.forEach(cat => {
-        form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:6px;border:1px solid var(--linha);border-radius:6px;font-size:0.9rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
+        form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:8px;border:1px solid var(--linha);border-radius:6px;font-size:0.95rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
       });
 
       document.getElementById(`stop_${stopCategorias[0]}`).focus();
 
-      // Timer de 60 segundos
+      // Timer
       let tempo = 60;
       let timerInterval = setInterval(() => {
         tempo--;
-        document.getElementById('timerStop').textContent = tempo;
+        let timerEl = document.getElementById('timerStop');
+        if(timerEl) timerEl.textContent = tempo;
         if(tempo <= 0) {
           clearInterval(timerInterval);
-          pararStopMultiplayer(); // Auto-STOP quando tempo acaba
+          pararStopMultiplayer();
         }
       }, 1000);
 
-      // Polling para verificar se outro dispositivo terminou
-      let pollingInterval = setInterval(async () => {
+      window.stopTimerInterval = timerInterval;
+
+      // Polling para detectar quando alguém terminou
+      let pollingTermino = setInterval(async () => {
         const { data: respostas } = await window.supabaseClient
           .from('stop_respostas')
           .select('*')
@@ -2046,28 +2104,31 @@
 
         if(respostas && respostas.length > 0) {
           clearInterval(timerInterval);
-          clearInterval(pollingInterval);
+          clearInterval(pollingTermino);
           mostrarResultadosMultiplayer();
         }
-      }, 500);
+      }, 300);
 
-      window.stopPollingInterval = pollingInterval;
-      window.stopTimerInterval = timerInterval;
+      window.stopPollingTermino = pollingTermino;
     } catch(err) {
       alert('❌ Erro: ' + err.message);
     }
   }
 
   window.pararStopMultiplayer = async function(){
-    // Parar timer e polling
+    // Parar todos os intervalos
     if(window.stopTimerInterval) clearInterval(window.stopTimerInterval);
-    if(window.stopPollingInterval) clearInterval(window.stopPollingInterval);
+    if(window.stopPollingTermino) clearInterval(window.stopPollingTermino);
+    if(window.stopPollingCheck) clearInterval(window.stopPollingCheck);
 
     try {
       let respostas = {};
       stopCategorias.forEach(cat => {
-        let val = document.getElementById(`stop_${cat}`).value.trim().toUpperCase();
-        respostas[cat] = val;
+        let inp = document.getElementById(`stop_${cat}`);
+        if(inp) {
+          let val = inp.value.trim().toUpperCase();
+          respostas[cat] = val;
+        }
       });
 
       // Inserir respostas no Supabase
@@ -2082,8 +2143,8 @@
         }
       }
 
-      // Dar tempo aos outros dispositivos receberem via polling
-      setTimeout(mostrarResultadosMultiplayer, 500);
+      // Mostrar resultados
+      setTimeout(window.mostrarResultadosMultiplayer, 300);
     } catch(err) {
       alert('❌ Erro: ' + err.message);
     }
