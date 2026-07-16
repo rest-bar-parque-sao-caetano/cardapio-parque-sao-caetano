@@ -128,6 +128,11 @@
       <label for="subtitulo">Subtítulo</label>
       <input type="text" id="subtitulo" placeholder="Tradição, sabor e conforto à mesa">
 
+      <div class="lembrar" style="margin-top:16px;">
+        <input type="checkbox" id="fotosHeaderAtivas" checked>
+        <label for="fotosHeaderAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar fotos no cabeçalho</label>
+      </div>
+
       <label>Fotos do cabeçalho (rodam automaticamente)</label>
       <div class="lista-fotos" id="listaFotosHeader"></div>
       <input type="file" id="novaFotoHeader" accept="image/*" multiple>
@@ -149,6 +154,11 @@
 
       <label for="linha4">Linha 4</label>
       <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
+
+      <div class="lembrar" style="margin-top:16px;">
+        <input type="checkbox" id="fotosRodapeAtivas" checked>
+        <label for="fotosRodapeAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar fotos na barra fixa</label>
+      </div>
 
       <label>Fotos da barra fixa (rodam automaticamente)</label>
       <div class="lista-fotos" id="listaFotosRodape"></div>
@@ -172,8 +182,8 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', fotos:[] },
-    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', fotos:[] }
+    header: { titulo:'', subtitulo:'', fotosAtivas:true, fotos:[] },
+    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', fotosAtivas:true, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
 
@@ -261,8 +271,8 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', fotos:[] }, parsed.header || {});
-        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', fotos:[] }, parsed.rodape || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', fotosAtivas:true, fotos:[] }, parsed.header || {});
+        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', fotosAtivas:true, fotos:[] }, parsed.rodape || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -284,6 +294,8 @@
     document.getElementById('linha2').value = config.rodape.linha2 || '';
     document.getElementById('linha3').value = config.rodape.linha3 || '';
     document.getElementById('linha4').value = config.rodape.linha4 || '';
+    document.getElementById('fotosHeaderAtivas').checked = config.header.fotosAtivas !== false;
+    document.getElementById('fotosRodapeAtivas').checked = config.rodape.fotosAtivas !== false;
     renderListaFotos('header');
     renderListaFotos('rodape');
   }
@@ -354,6 +366,8 @@
       config.rodape.linha2 = document.getElementById('linha2').value.trim();
       config.rodape.linha3 = document.getElementById('linha3').value.trim();
       config.rodape.linha4 = document.getElementById('linha4').value.trim();
+      config.header.fotosAtivas = document.getElementById('fotosHeaderAtivas').checked;
+      config.rodape.fotosAtivas = document.getElementById('fotosRodapeAtivas').checked;
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
