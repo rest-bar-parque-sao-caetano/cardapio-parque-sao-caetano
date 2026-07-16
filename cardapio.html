@@ -2017,9 +2017,22 @@
           <button onclick="iniciarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:15px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:1.1rem;font-weight:bold;">🎮 COMEÇAR JOGO</button>
         </div>`;
       } else {
-        // Aguarda 2 segundos para criador marcar como iniciado
+        // Aguarda pelo sinal do criador
         jogoConteudo.innerHTML = `<div style="text-align:center;padding:30px;"><p style="font-size:1.1rem;color:var(--castanho);">⏳ Aguardando...</p></div>`;
-        setTimeout(() => renderGameStop(), 2000);
+
+        // Polling: verificar se criador iniciou
+        let checkInicio = setInterval(async () => {
+          try {
+            const { data: salaCheck } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
+            if(salaCheck && salaCheck.iniciada) {
+              clearInterval(checkInicio);
+              renderGameStop();
+            }
+          } catch(err) {
+            console.error('Erro no polling:', err);
+          }
+        }, 500);
+        window.checkInicioInterval = checkInicio;
       }
     } catch(err) { alert('❌ Erro: ' + err.message); }
   }
@@ -2081,6 +2094,8 @@
     if(window.stopTimerInterval) clearInterval(window.stopTimerInterval);
     if(window.stopPollingTermino) clearInterval(window.stopPollingTermino);
     if(window.stopPollingCheck) clearInterval(window.stopPollingCheck);
+    if(window.checkInicioInterval) clearInterval(window.checkInicioInterval);
+    if(window.stopPolling) clearInterval(window.stopPolling);
 
     try {
       let respostas = {};
