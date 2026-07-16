@@ -1998,7 +1998,7 @@
 
   async function renderStopMultiplayer(){
     try {
-      const { data: sala, error } = await supabase
+      const { data: sala, error } = await window.supabaseClient
         .from('stop_salas')
         .select('*')
         .eq('codigo', stopSalaId)
@@ -2058,12 +2058,12 @@
 
   async function mostrarResultadosMultiplayer(){
     try {
-      const { data: respostas } = await supabase
+      const { data: respostas } = await window.supabaseClient
         .from('stop_respostas')
         .select('*')
         .eq('sala_id', stopSalaId);
 
-      const { data: jogadores } = await supabase
+      const { data: jogadores } = await window.supabaseClient
         .from('stop_jogadores')
         .select('*')
         .eq('sala_id', stopSalaId);
@@ -2141,7 +2141,7 @@
 
   window.novaRondaMultiplayer = async function(){
     try {
-      const { data: sala } = await supabase
+      const { data: sala } = await window.supabaseClient
         .from('stop_salas')
         .select('*')
         .eq('codigo', stopSalaId)
