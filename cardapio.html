@@ -1444,44 +1444,34 @@
   const fotoPlaceholder = document.getElementById('fotoPlaceholder');
   const modalFotoNome = document.getElementById('modalFotoNome');
 
-  // Carrega fotos do Firebase
-  async function carregarFotosDoFirebase(){
+  // Carrega fotos diretamente do GitHub (pasta /imagens/)
+  async function carregarFotosDoGitHub(){
     try{
-      const resp = await fetch(FIREBASE_DB_URL + '/config.json');
-      if(!resp.ok) return;
-      const config = await resp.json();
-      if(!config) return;
+      const fotosGitHub = [
+        'imagens/1783607352394-img_1549.jpeg',
+        'imagens/1783697751837-img_1575.jpg',
+        'imagens/1783700508703-img_1578.jpg',
+        'imagens/1784070895152-img_1575.jpg',
+        'imagens/554171704_122100905673037178_5876853051959764857_n.jpg'
+      ];
 
-      // Carregar fotos do header
-      if(config.fotosHeader && Array.isArray(config.fotosHeader)){
-        const containerFotos = document.querySelector('#infoFixaFotos');
-        if(containerFotos){
-          containerFotos.innerHTML = '';
-          config.fotosHeader.forEach((foto, i) => {
-            if(foto && foto.caminho){
-              const img = document.createElement('img');
-              img.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + foto.caminho;
-              img.alt = 'Foto ' + (i+1);
-              if(i === 0) img.classList.add('ativa');
-              containerFotos.appendChild(img);
-            }
-          });
-        }
-      }
-
-      // Carregar publicidade da barra fixa
-      if(config.publicidade && config.publicidade.caminho){
-        const pubImg = document.querySelector('#infoFixaFotos img:last-child');
-        if(pubImg){
-          pubImg.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + config.publicidade.caminho;
-        }
+      const containerFotos = document.querySelector('#infoFixaFotos');
+      if(containerFotos){
+        containerFotos.innerHTML = '';
+        fotosGitHub.forEach((caminho, i) => {
+          const img = document.createElement('img');
+          img.src = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/' + caminho;
+          img.alt = 'Foto ' + (i+1);
+          if(i === 0) img.classList.add('ativa');
+          containerFotos.appendChild(img);
+        });
       }
     } catch(err){
-      console.log('[INFO] Não foi possível carregar fotos do Firebase (é normal se não houver config):', err.message);
+      console.log('[INFO] Erro ao carregar fotos:', err.message);
     }
   }
 
-  carregarFotosDoFirebase();
+  carregarFotosDoGitHub();
 
   // Rotação de fotos do header
   const headerFotos = document.querySelector('.header-fotos');
