@@ -675,35 +675,9 @@
   console.log('✅ Supabase REST API inicializado!');
 </script>
 
-<!-- Debug Panel + Teste Supabase -->
-<div id="debugPanel" style="position:fixed;bottom:10px;right:10px;width:250px;max-height:300px;background:#000;color:#0f0;font-size:11px;overflow:auto;padding:8px;border-radius:4px;z-index:9999;font-family:monospace;display:none;">
-  <div id="debugLog"></div>
-</div>
-
 <script>
-  // Debug function
-  window.dbg = function(msg) {
-    const log = document.getElementById('debugLog');
-    if(!log) return;
-    document.getElementById('debugPanel').style.display = 'block';
-    log.innerHTML += msg + '<br>';
-    log.parentElement.scrollTop = log.parentElement.scrollHeight;
-  };
-
-  // Teste Supabase
-  window.dbg('🔄 Testando Supabase...');
-  fetch('https://hobpcvsexzhmiochuuab.supabase.co/rest/v1/stop_salas?limit=1', {
-    headers: {
-      'Authorization': 'Bearer sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-',
-      'apikey': 'sb_publishable_A_BZL8gRuXUQGIuix_-fDQ_T_MJ7KE-'
-    }
-  })
-  .then(r => {
-    window.dbg('Resposta: ' + r.status);
-    return r.json();
-  })
-  .then(d => window.dbg('✅ OK: ' + JSON.stringify(d).substring(0, 50)))
-  .catch(e => window.dbg('❌ Erro: ' + e.message));
+  // Função de debug desativada (mantida vazia para compatibilidade)
+  window.dbg = function(){};
 </script>
 
 </head>
@@ -1489,7 +1463,9 @@
           const s = document.querySelector('header .brand-sub');
           if(s) s.textContent = config.header.subtitulo;
         }
-        preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
+        if(config.header.fotosAtivas !== false){
+          preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
+        }
       }
 
       // Barra fixa: linhas e fotos
@@ -1499,7 +1475,9 @@
           const el = document.getElementById(map[k]);
           if(el && config.rodape[k] !== undefined) el.textContent = config.rodape[k];
         });
-        preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
+        if(config.rodape.fotosAtivas !== false){
+          preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
+        }
       }
     }catch(err){
       console.log('[INFO] Sem config.json ou erro ao carregar:', err.message);
