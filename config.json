@@ -15,7 +15,9 @@
     "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
-    "fotos": [],
+    "fotos": [
+      "imagens/1784238865263-gemini-generated-image-l4woqpl4woqpl4wo.jpg"
+    ],
     "especial": {
       "ativo": true,
       "inicio": "22:55",
