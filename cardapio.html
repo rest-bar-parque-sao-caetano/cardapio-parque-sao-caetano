@@ -2179,15 +2179,19 @@
     try {
       console.log('🔍 Debugando - stopSalaId:', stopSalaId);
 
-      const { data: respostas, error: erroRespostas } = await window.supabaseClient
+      const respostaRespostas = await window.supabaseClient
         .from('stop_respostas')
         .select('*')
         .eq('sala_id', stopSalaId);
+      console.log('Resposta completa (respostas):', respostaRespostas);
+      const { data: respostas, error: erroRespostas } = respostaRespostas;
 
-      const { data: jogadores, error: erroJogadores } = await window.supabaseClient
+      const respostaJogadores = await window.supabaseClient
         .from('stop_jogadores')
         .select('*')
         .eq('sala_id', stopSalaId);
+      console.log('Resposta completa (jogadores):', respostaJogadores);
+      const { data: jogadores, error: erroJogadores } = respostaJogadores;
 
       console.log('📊 Respostas:', respostas, 'Erro:', erroRespostas);
       console.log('👥 Jogadores:', jogadores, 'Erro:', erroJogadores);
