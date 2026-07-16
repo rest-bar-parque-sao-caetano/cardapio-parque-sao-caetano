@@ -273,6 +273,7 @@
     footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
+  let configCarregado = false; // só se pode guardar depois de carregar
 
   // ---- Token lembrado ----
   const tokenGuardado = localStorage.getItem('cardapioEditorToken');
@@ -383,6 +384,8 @@
       document.getElementById('secHeader').open = true;
       document.getElementById('secRodape').open = true;
       document.getElementById('secFooter').open = true;
+      configCarregado = true;
+      document.getElementById('btnGuardar').disabled = false;
       if(lembrarInput.checked) localStorage.setItem('cardapioEditorToken', token);
       else localStorage.removeItem('cardapioEditorToken');
     }catch(err){
@@ -475,6 +478,10 @@
   async function guardarTudo(){
     const token = tokenInput.value.trim();
     if(!token){ setEstado('Cola primeiro o teu token.', 'erro'); return; }
+    if(!configCarregado){
+      setEstado('Clica primeiro em "📥 Carregar definições atuais" antes de guardar.', 'erro');
+      return;
+    }
 
     document.getElementById('btnGuardar').disabled = true;
     try{
@@ -584,6 +591,16 @@
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
+
+  // Guardar começa desativado até carregar (evita apagar dados sem querer)
+  document.getElementById('btnGuardar').disabled = true;
+
+  // Auto-carregar ao abrir, se já houver token lembrado
+  if(tokenInput.value.trim()){
+    carregarConfig();
+  } else {
+    setEstado('Cola o token e clica em "Carregar definições atuais" para começar.', 'info');
+  }
 </script>
 </body>
 </html>
