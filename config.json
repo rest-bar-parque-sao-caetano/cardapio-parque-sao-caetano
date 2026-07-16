@@ -7,10 +7,12 @@
     ]
   },
   "rodape": {
-    "linha1": "",
-    "linha2": "",
-    "linha3": "",
-    "linha4": "",
-    "fotos": []
+    "linha1": "Prato do Dia 6ªFeira",
+    "linha2": "Moelas",
+    "linha3": "Francesinha",
+    "linha4": "Peixe Espada",
+    "fotos": [
+      "imagens/1784227999670-gemini-generated-image-j4r8ccj4r8ccj4r8.jpg"
+    ]
   }
 }
