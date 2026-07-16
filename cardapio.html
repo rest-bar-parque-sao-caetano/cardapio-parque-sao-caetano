@@ -297,6 +297,7 @@
   .tabela-doses .preco-dose{font-weight:700; color:var(--dourado); font-family:'Fredoka',sans-serif;}
 
   footer{
+    position:relative;
     text-align:center;
     color:var(--castanho-suave);
     font-size:0.8rem;
@@ -307,6 +308,23 @@
   }
   footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1rem; margin-bottom:8px; font-weight:600;}
   footer a{color:var(--castanho-suave);}
+
+  /* Fotos do rodapé final (com cantos arredondados e texto por cima) */
+  .footer-fotos{
+    position:absolute; top:12px; left:12px; right:12px; bottom:12px;
+    border-radius:16px; overflow:hidden; z-index:0;
+  }
+  .footer-fotos img{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; opacity:0; transition:opacity 0.8s ease;
+  }
+  .footer-fotos img.ativa{opacity:1;}
+  .footer-fotos::after{
+    content:''; position:absolute; inset:0;
+    background:rgba(0,0,0,0.30); pointer-events:none;
+  }
+  footer.tem-foto{ background:var(--branco); }
+  footer .footer-texto{ position:relative; z-index:1; }
 
   .item.vinho-clicavel{
     cursor:pointer;
@@ -1166,10 +1184,13 @@
   </div>
 </div>
 
-<footer>
-  <div class="nome-rest">Rest & Bar Parque São Caetano</div>
-  <div>Avenida de São Caetano, nº17</div>
-  <div>📞 962 202 622 / 227 130 614</div>
+<footer id="rodapeFinal">
+  <div class="footer-fotos" id="footerFotos"></div>
+  <div class="footer-texto">
+    <div class="nome-rest" id="footerNome">Rest & Bar Parque São Caetano</div>
+    <div id="footerMorada">Avenida de São Caetano, nº17</div>
+    <div id="footerTelefone">📞 962 202 622 / 227 130 614</div>
+  </div>
 </footer>
 
 <div class="info-fixa">
@@ -1503,6 +1524,44 @@
         if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(config.rodape.especial, normal);
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
+        }
+      }
+
+      // Rodapé final (aparece ao fazer scroll até ao fim)
+      if(config.footer){
+        if(config.footer.nome !== undefined){
+          const el = document.getElementById('footerNome');
+          if(el) el.textContent = config.footer.nome;
+        }
+        if(config.footer.morada !== undefined){
+          const el = document.getElementById('footerMorada');
+          if(el) el.textContent = config.footer.morada;
+        }
+        if(config.footer.telefone !== undefined){
+          const el = document.getElementById('footerTelefone');
+          if(el) el.textContent = config.footer.telefone;
+        }
+
+        const rodape = document.getElementById('rodapeFinal');
+        const temFotos = config.footer.fotosAtivas !== false && Array.isArray(config.footer.fotos) && config.footer.fotos.length > 0;
+        if(temFotos){
+          rodape.classList.add('tem-foto');
+          preencherFotos(document.querySelector('#footerFotos'), config.footer.fotos);
+          // Texto por cima da foto: cor clara + sombra para legibilidade
+          const cor = config.footer.cor || '#ffffff';
+          const sombra = '0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.4)';
+          ['footerNome','footerMorada','footerTelefone'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el){ el.style.color = cor; el.style.textShadow = sombra; el.style.position='relative'; }
+          });
+        } else {
+          rodape.classList.remove('tem-foto');
+          if(config.footer.cor){
+            ['footerNome','footerMorada','footerTelefone'].forEach(id => {
+              const el = document.getElementById(id);
+              if(el) el.style.color = config.footer.cor;
+            });
+          }
         }
       }
     }catch(err){
