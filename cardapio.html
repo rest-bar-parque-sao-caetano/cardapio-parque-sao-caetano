@@ -123,20 +123,28 @@
   .tile-emoji{display:none;}
   .tile-label{
     font-family:'Fredoka',sans-serif;
-    font-size:1rem;
-    font-weight:600;
-    letter-spacing:0.4px;
+    font-size:1.05rem;
+    font-weight:700;
+    letter-spacing:0.5px;
     text-transform:uppercase;
     text-align:center;
     line-height:1.15;
   }
+  /* Texto com relevo 3D — linhas bege: 3 camadas; linhas castanho: 4 camadas */
   .tile:nth-child(odd) .tile-label{
     color:var(--castanho);
-    text-shadow:0 1px 0 rgba(255,255,255,0.85), 0 2px 2px rgba(74,56,32,0.25);
+    text-shadow:
+      1px 1px 0 #fffaf0,
+      2px 2px 0 rgba(255,250,240,0.85),
+      3px 3px 3px rgba(74,56,32,0.3);
   }
   .tile:nth-child(even) .tile-label{
-    color:var(--branco);
-    text-shadow:0 1px 0 rgba(0,0,0,0.45), 0 -1px 0 rgba(255,255,255,0.15);
+    color:#ffffff;
+    text-shadow:
+      1px 1px 0 rgba(0,0,0,0.45),
+      2px 2px 0 rgba(0,0,0,0.35),
+      3px 3px 1px rgba(0,0,0,0.3),
+      4px 4px 3px rgba(0,0,0,0.3);
   }
 
   .categoria-painel{
@@ -1948,24 +1956,7 @@
       stopRonda = 0;
       novaRondaStop();
     } else {
-      // Pedir código da sala
-      let codigo = prompt('Cole o código da sala:\n(deixa vazio para criar nova sala)', '');
-      if(codigo === null) return; // Cancelou
-
-      if(codigo.trim() === '') {
-        // Criar nova sala - pedir nome e criar
-        let nome = prompt('Qual é o teu nome?', 'Jogador');
-        if(!nome) return;
-        stopNomeJogador = nome;
-        criarSalaStop();
-      } else {
-        // Entrar com código - pedir nome e entrar
-        stopSalaId = codigo.toUpperCase().trim();
-        let nome = prompt('Qual é o teu nome?', 'Jogador');
-        if(!nome) return;
-        stopNomeJogador = nome;
-        processarEntradaSalaMultiplayer();
-      }
+      stopEntrarOuCriar();
     }
   };
 
@@ -2413,6 +2404,257 @@
       alert('❌ Erro: ' + err.message);
     }
   };
+
+  // ==========================================================
+  //  JOGO DO STOP — MULTIPLAYER (versão nova, Supabase direto)
+  // ==========================================================
+  const MP_URL = window.SUPABASE_URL + '/rest/v1/';
+  const MP_HEAD = {
+    'apikey': window.SUPABASE_KEY,
+    'Authorization': 'Bearer ' + window.SUPABASE_KEY,
+    'Content-Type': 'application/json'
+  };
+  async function mpGet(tabela, q){
+    const r = await fetch(MP_URL + tabela + '?' + q, { headers: MP_HEAD });
+    if(!r.ok) throw new Error('GET ' + tabela + ' ' + r.status);
+    return await r.json();
+  }
+  async function mpPost(tabela, obj){
+    const r = await fetch(MP_URL + tabela, { method:'POST', headers:{...MP_HEAD, 'Prefer':'return=representation'}, body: JSON.stringify(obj) });
+    if(!r.ok) throw new Error('POST ' + tabela + ' ' + r.status + ' ' + (await r.text()));
+    return await r.json();
+  }
+  async function mpPatch(tabela, q, obj){
+    const r = await fetch(MP_URL + tabela + '?' + q, { method:'PATCH', headers:{...MP_HEAD, 'Prefer':'return=representation'}, body: JSON.stringify(obj) });
+    if(!r.ok) throw new Error('PATCH ' + tabela + ' ' + r.status);
+    return await r.json();
+  }
+  async function mpDel(tabela, q){
+    const r = await fetch(MP_URL + tabela + '?' + q, { method:'DELETE', headers: MP_HEAD });
+    if(!r.ok) throw new Error('DELETE ' + tabela + ' ' + r.status);
+  }
+
+  let mpSala='', mpNome='', mpCriador=false, mpRonda=1, mpLetra='';
+  let mpSubmetido=false, mpIndoResultados=false, mpIntervals=[], mpTotais={};
+
+  function mpLimpar(){ mpIntervals.forEach(clearInterval); mpIntervals = []; }
+  function mpLetraAleatoria(){
+    const letras = 'ABCDEFGHILMNOPRSTUV';
+    return letras[Math.floor(Math.random() * letras.length)];
+  }
+
+  window.stopEntrarOuCriar = function(){
+    let codigo = prompt('Código da sala\n(deixa vazio para CRIAR uma sala nova):', '');
+    if(codigo === null) return;
+    let nome = prompt('O teu nome:', '');
+    if(!nome || !nome.trim()) return;
+    mpNome = nome.trim();
+    mpTotais = {};
+    codigo = codigo.trim().toUpperCase();
+    if(codigo === '') mpCriarSala();
+    else mpEntrarSala(codigo);
+  };
+
+  async function mpCriarSala(){
+    try{
+      mpSala = Math.random().toString(36).substr(2,4).toUpperCase();
+      mpCriador = true;
+      await mpPost('stop_salas', { codigo:mpSala, letra:mpLetraAleatoria(), ronda:1, iniciada:false, criador:mpNome });
+      await mpPost('stop_jogadores', { sala_id:mpSala, nome:mpNome, pontos:0 });
+      mpLobby();
+    }catch(err){ alert('❌ Erro ao criar sala: ' + err.message); }
+  }
+
+  async function mpEntrarSala(codigo){
+    try{
+      const salas = await mpGet('stop_salas', 'codigo=eq.' + encodeURIComponent(codigo));
+      if(!salas || salas.length === 0){ alert('❌ Sala "' + codigo + '" não encontrada!'); return iniciarStop(); }
+      mpSala = codigo; mpCriador = false;
+      await mpPost('stop_jogadores', { sala_id:mpSala, nome:mpNome, pontos:0 });
+      mpLobby();
+    }catch(err){ alert('❌ Erro ao entrar: ' + err.message); }
+  }
+
+  async function mpAtualizarLista(){
+    try{
+      const js = await mpGet('stop_jogadores', 'sala_id=eq.' + mpSala);
+      const el = document.getElementById('mpLista');
+      if(el) el.innerHTML = js.length ? js.map(j => '👤 ' + j.nome).join('<br>') : '(ninguém ainda)';
+    }catch(e){}
+  }
+
+  function mpLobby(){
+    mpLimpar();
+    if(mpCriador){
+      jogoConteudo.innerHTML =
+        '<div style="text-align:center;">' +
+        '<p style="font-size:1.05rem;margin:10px 0;">✅ Sala criada!</p>' +
+        '<p style="font-size:1.3rem;background:var(--bege);padding:14px;border-radius:8px;margin:10px 0;font-weight:bold;">Código: <span style="color:var(--castanho);letter-spacing:3px;">' + mpSala + '</span></p>' +
+        '<p style="font-size:0.82rem;color:var(--castanho-suave);">Partilha o código. Na sala:</p>' +
+        '<div id="mpLista" style="margin:8px 0;font-size:0.95rem;"></div>' +
+        '<button onclick="stopComecarJogo()" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;width:100%;font-weight:bold;margin-top:6px;">Começar Jogo</button>' +
+        '<button onclick="stopSairStop()" style="background:var(--linha);color:var(--castanho);padding:8px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;">Sair</button>' +
+        '</div>';
+      mpAtualizarLista();
+      mpIntervals.push(setInterval(mpAtualizarLista, 2000));
+    } else {
+      jogoConteudo.innerHTML =
+        '<div style="text-align:center;padding:10px;">' +
+        '<p style="font-size:1.05rem;margin:10px 0;">Entraste na sala <strong>' + mpSala + '</strong></p>' +
+        '<p style="font-size:0.95rem;color:var(--castanho-suave);">⏳ À espera que o criador comece…</p>' +
+        '<div id="mpLista" style="margin:8px 0;font-size:0.95rem;"></div>' +
+        '<button onclick="stopSairStop()" style="background:var(--linha);color:var(--castanho);padding:8px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;">Sair</button>' +
+        '</div>';
+      mpAtualizarLista();
+      mpIntervals.push(setInterval(async () => {
+        mpAtualizarLista();
+        try{
+          const salas = await mpGet('stop_salas', 'codigo=eq.' + mpSala);
+          if(salas[0] && salas[0].iniciada){ mpLimpar(); mpIniciarRonda(salas[0]); }
+        }catch(e){}
+      }, 1500));
+    }
+  }
+
+  window.stopComecarJogo = async function(){
+    try{
+      const letra = mpLetraAleatoria();
+      await mpDel('stop_respostas', 'sala_id=eq.' + mpSala);
+      await mpPatch('stop_salas', 'codigo=eq.' + mpSala, { iniciada:true, letra:letra, ronda:1 });
+      mpIniciarRonda({ letra:letra, ronda:1 });
+    }catch(err){ alert('❌ Erro ao começar: ' + err.message); }
+  };
+
+  function mpIniciarRonda(sala){
+    mpLimpar();
+    mpRonda = sala.ronda || mpRonda;
+    mpLetra = sala.letra;
+    mpSubmetido = false;
+    mpIndoResultados = false;
+
+    let html = '<div style="text-align:center;">' +
+      '<p id="mpTimer" style="font-size:3rem;font-weight:bold;color:var(--castanho);font-family:monospace;margin:6px 0;">60</p>' +
+      '<p style="font-size:2.4rem;font-weight:bold;color:var(--castanho);margin:4px 0;">Letra: ' + mpLetra + '</p>' +
+      '<div id="mpForm" style="display:grid;gap:5px;margin:12px 0;"></div>' +
+      '<button onclick="stopFazerStop()" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;width:100%;font-weight:bold;">🛑 STOP!</button>' +
+      '</div>';
+    jogoConteudo.innerHTML = html;
+    const form = document.getElementById('mpForm');
+    stopCategorias.forEach(cat => {
+      form.innerHTML += '<input type="text" id="mp_' + cat + '" placeholder="' + cat + '" style="padding:8px;border:1px solid var(--linha);border-radius:6px;font-size:0.95rem;">';
+    });
+    document.getElementById('mp_' + stopCategorias[0]).focus();
+
+    let t = 60;
+    mpIntervals.push(setInterval(() => {
+      t--;
+      const el = document.getElementById('mpTimer');
+      if(el) el.textContent = t;
+      if(t <= 0) stopFazerStop();
+    }, 1000));
+
+    // Deteta se alguém já fez STOP (aparecem respostas)
+    mpIntervals.push(setInterval(async () => {
+      try{
+        const rs = await mpGet('stop_respostas', 'sala_id=eq.' + mpSala + '&limit=1');
+        if(rs && rs.length > 0 && !mpIndoResultados){
+          mpIndoResultados = true;
+          await mpSubmeter();
+          setTimeout(mpResultados, 1500);
+        }
+      }catch(e){}
+    }, 500));
+  }
+
+  window.stopFazerStop = async function(){
+    if(mpIndoResultados) return;
+    mpIndoResultados = true;
+    await mpSubmeter();
+    setTimeout(mpResultados, 1500);
+  };
+
+  async function mpSubmeter(){
+    if(mpSubmetido) return;
+    mpSubmetido = true;
+    const linhas = stopCategorias.map(cat => {
+      const el = document.getElementById('mp_' + cat);
+      const val = el ? el.value.trim().toUpperCase() : '';
+      return { sala_id:mpSala, nome:mpNome, categoria:cat, resposta: val || '(vazio)' };
+    });
+    try{ await mpPost('stop_respostas', linhas); }catch(e){ console.log('erro submeter', e); }
+  }
+
+  async function mpResultados(){
+    mpLimpar();
+    try{
+      const respostas = await mpGet('stop_respostas', 'sala_id=eq.' + mpSala);
+      const jogadores = await mpGet('stop_jogadores', 'sala_id=eq.' + mpSala);
+
+      const porNome = {};
+      jogadores.forEach(j => { porNome[j.nome] = { respostas:{}, pontos:0 }; });
+      respostas.forEach(r => {
+        if(!porNome[r.nome]) porNome[r.nome] = { respostas:{}, pontos:0 };
+        porNome[r.nome].respostas[r.categoria] = r.resposta;
+      });
+
+      stopCategorias.forEach(cat => {
+        const map = {};
+        Object.keys(porNome).forEach(n => {
+          const v = porNome[n].respostas[cat];
+          if(v && v !== '(vazio)') map[n] = v;
+        });
+        const cont = {};
+        Object.values(map).forEach(v => cont[v] = (cont[v] || 0) + 1);
+        Object.keys(map).forEach(n => { porNome[n].pontos += cont[map[n]] === 1 ? 10 : 5; });
+      });
+
+      Object.keys(porNome).forEach(n => { mpTotais[n] = (mpTotais[n] || 0) + porNome[n].pontos; });
+
+      const nomes = Object.keys(porNome).sort((a,b) => (mpTotais[b]||0) - (mpTotais[a]||0));
+      let html = '<div style="text-align:center;"><p style="font-size:1.05rem;font-weight:bold;color:var(--castanho);margin:12px 0;">📊 Resultados — Ronda ' + mpRonda + '</p><div style="display:grid;gap:8px;">';
+      nomes.forEach((n, i) => {
+        const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'▪️';
+        const eu = n === mpNome ? 'border:2px solid var(--castanho);' : '';
+        html += '<div style="background:var(--bege);padding:8px;border-radius:8px;text-align:left;' + eu + '">' +
+          '<p style="font-weight:bold;margin:2px 0;">' + medal + ' ' + n + ' — ' + porNome[n].pontos + ' pts <span style="color:var(--castanho-suave);font-size:0.78rem;">(total ' + (mpTotais[n]||0) + ')</span></p>';
+        stopCategorias.forEach(cat => {
+          const v = porNome[n].respostas[cat] || '—';
+          html += '<p style="margin:1px 0;font-size:0.8rem;"><strong>' + cat + ':</strong> ' + v + '</p>';
+        });
+        html += '</div>';
+      });
+      html += '</div>';
+      if(mpCriador){
+        html += '<button onclick="stopProximaRonda()" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:10px;font-weight:bold;">Próxima Ronda</button>';
+      } else {
+        html += '<p style="font-size:0.82rem;color:var(--castanho-suave);margin-top:10px;">⏳ À espera da próxima ronda…</p>';
+      }
+      html += '<button onclick="stopSairStop()" style="background:var(--linha);color:var(--castanho);padding:8px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;">Sair</button></div>';
+      jogoConteudo.innerHTML = html;
+
+      // Espera pela próxima ronda (todos)
+      mpIntervals.push(setInterval(async () => {
+        try{
+          const salas = await mpGet('stop_salas', 'codigo=eq.' + mpSala);
+          if(salas[0] && salas[0].ronda > mpRonda){ mpLimpar(); mpIniciarRonda(salas[0]); }
+        }catch(e){}
+      }, 1500));
+    }catch(err){
+      jogoConteudo.innerHTML = '<p style="text-align:center;color:#b3402f;padding:20px;">Erro ao mostrar resultados: ' + err.message + '</p>';
+    }
+  }
+
+  window.stopProximaRonda = async function(){
+    try{
+      const novaLetra = mpLetraAleatoria();
+      const novaRonda = mpRonda + 1;
+      await mpDel('stop_respostas', 'sala_id=eq.' + mpSala);
+      await mpPatch('stop_salas', 'codigo=eq.' + mpSala, { letra:novaLetra, ronda:novaRonda, iniciada:true });
+      mpIniciarRonda({ letra:novaLetra, ronda:novaRonda });
+    }catch(err){ alert('❌ Erro: ' + err.message); }
+  };
+
+  window.stopSairStop = function(){ mpLimpar(); iniciarStop(); };
 
   // Cliques nos jogos
   document.querySelectorAll('.categoria#jogos .item').forEach((item, i) => {
