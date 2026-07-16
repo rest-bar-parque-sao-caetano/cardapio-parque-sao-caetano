@@ -1443,7 +1443,7 @@
       imagens[idx].classList.remove('ativa');
       idx = (idx + 1) % imagens.length;
       imagens[idx].classList.add('ativa');
-    }, 3500);
+    }, 30000);
   }
 
   async function carregarConfig(){
@@ -1463,11 +1463,17 @@
           const s = document.querySelector('header .brand-sub');
           if(s) s.textContent = config.header.subtitulo;
         }
-        if(config.header.cor){
+        {
           const t = document.querySelector('header .brand-mark');
           const s = document.querySelector('header .brand-sub');
-          if(t) t.style.color = config.header.cor;
-          if(s) s.style.color = config.header.cor;
+          const sombra = config.header.realce !== false ? '0 1px 3px rgba(0,0,0,0.55), 0 0 8px rgba(0,0,0,0.35)' : 'none';
+          const peso = config.header.realce !== false ? '700' : '';
+          [t, s].forEach(el => {
+            if(!el) return;
+            if(config.header.cor) el.style.color = config.header.cor;
+            el.style.textShadow = sombra;
+            if(peso) el.style.fontWeight = peso;
+          });
         }
         if(config.header.fotosAtivas !== false){
           preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
@@ -1477,10 +1483,14 @@
       // Barra fixa: linhas e fotos
       if(config.rodape){
         const map = { linha1:'rodapeLinha1', linha2:'rodapeLinha2', linha3:'rodapeLinha3', linha4:'rodapeLinha4' };
+        const sombraR = config.rodape.realce !== false ? '0 1px 3px rgba(0,0,0,0.55), 0 0 8px rgba(0,0,0,0.35)' : 'none';
         Object.keys(map).forEach(k => {
           const el = document.getElementById(map[k]);
-          if(el && config.rodape[k] !== undefined) el.textContent = config.rodape[k];
-          if(el && config.rodape.cor) el.style.color = config.rodape.cor;
+          if(!el) return;
+          if(config.rodape[k] !== undefined) el.textContent = config.rodape[k];
+          if(config.rodape.cor) el.style.color = config.rodape.cor;
+          el.style.textShadow = sombraR;
+          if(config.rodape.realce !== false) el.style.fontWeight = '700';
         });
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
