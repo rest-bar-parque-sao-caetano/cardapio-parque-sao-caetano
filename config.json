@@ -5,21 +5,25 @@
     "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
-    "fotos": [
-      "imagens/1784227698896-img-1575.jpg",
-      "imagens/1784229074951-gemini-generated-image-eiasa5eiasa5eias.jpg"
-    ]
+    "fotos": []
   },
   "rodape": {
-    "linha1": "Prato do Dia 6ªFeira",
-    "linha2": "Moelas",
-    "linha3": "Francesinha",
-    "linha4": "Peixe Espada",
-    "cor": "#ebe5e5",
+    "linha1": "",
+    "linha2": "",
+    "linha3": "",
+    "linha4": "",
+    "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
-    "fotos": [
-      "imagens/1784227999670-gemini-generated-image-j4r8ccj4r8ccj4r8.jpg"
-    ]
+    "fotos": [],
+    "especial": {
+      "ativo": true,
+      "inicio": "22:55",
+      "fim": "22:57",
+      "l1": "prato do dia",
+      "l2": "francesinha",
+      "l3": "qerf",
+      "l4": "efweg"
+    }
   }
 }
