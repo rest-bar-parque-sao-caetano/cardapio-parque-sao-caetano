@@ -530,6 +530,14 @@
     opacity:0;
     transition:opacity 0.8s ease;
   }
+  @keyframes cairPalavra{
+    0%{ opacity:0; transform:translateY(-26px) rotate(-4deg); }
+    55%{ opacity:1; transform:translateY(5px) rotate(1deg); }
+    100%{ opacity:1; transform:translateY(0) rotate(0); }
+  }
+  header .brand-sub .palavra{ display:inline-block; }
+  header .brand-sub .palavra.cair{ animation:cairPalavra .5s ease both; }
+
   .header-fotos img.ativa{opacity:1;}
   .header-fotos::after{
     content:''; position:absolute; inset:0; z-index:1;
@@ -1503,6 +1511,26 @@
   }
 
   carregarConfig();
+
+  // Animação do subtítulo: cada palavra "cai", de tempos a tempos
+  (function(){
+    const sub = document.querySelector('header .brand-sub');
+    if(!sub) return;
+    function animar(){
+      const texto = (sub.textContent || '').trim();
+      if(!texto) return;
+      const palavras = texto.split(/\s+/);
+      sub.innerHTML = palavras.map(p => '<span class="palavra">' + p + '</span>').join(' ');
+      const spans = sub.querySelectorAll('.palavra');
+      spans.forEach((s, i) => {
+        s.style.animationDelay = (i * 0.12) + 's';
+        void s.offsetWidth; // reinicia a animação
+        s.classList.add('cair');
+      });
+    }
+    setTimeout(animar, 1200);          // primeira vez, após carregar
+    setInterval(animar, 12000);        // repete a cada 12 segundos
+  })();
 
   document.querySelectorAll('.prato-clicavel').forEach(el => {
     el.addEventListener('click', () => {
