@@ -2181,21 +2181,19 @@
 
       const respostaRespostas = await window.supabaseClient
         .from('stop_respostas')
-        .select('*')
-        .eq('sala_id', stopSalaId);
+        .select('*');
       console.log('Resposta completa (respostas):', respostaRespostas);
-      const { data: respostas, error: erroRespostas } = respostaRespostas;
+      const { data: respostasTemp } = respostaRespostas;
+      // Filtrar manualmente por sala_id
+      const respostas = respostasTemp ? respostasTemp.filter(r => r.sala_id === stopSalaId) : [];
 
       const respostaJogadores = await window.supabaseClient
         .from('stop_jogadores')
-        .select('*')
-        .eq('sala_id', stopSalaId);
+        .select('*');
       console.log('Resposta completa (jogadores):', respostaJogadores);
-      console.log('Propriedades da resposta:', Object.keys(respostaJogadores));
-      console.log('respostaJogadores.data:', respostaJogadores.data);
-      console.log('respostaJogadores.error:', respostaJogadores.error);
-      console.log('respostaJogadores.status:', respostaJogadores.status);
-      const { data: jogadores, error: erroJogadores } = respostaJogadores;
+      const { data: jogadoresTemp } = respostaJogadores;
+      // Filtrar manualmente por sala_id
+      const jogadores = jogadoresTemp ? jogadoresTemp.filter(j => j.sala_id === stopSalaId) : [];
 
       console.log('📊 Respostas:', respostas, 'Erro:', erroRespostas);
       console.log('👥 Jogadores:', jogadores, 'Erro:', erroJogadores);
