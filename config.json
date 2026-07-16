@@ -5,10 +5,7 @@
     "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
-    "fotos": [
-      "imagens/1784241353148-gemini-generated-image-l4woqpl4woqpl4wo.jpg",
-      "imagens/1784241356050-img-1575.jpg"
-    ]
+    "fotos": []
   },
   "rodape": {
     "linha1": "",
@@ -19,7 +16,7 @@
     "realce": true,
     "fotosAtivas": true,
     "fotos": [
-      "imagens/1784241449410-gemini-generated-image-j4r8ccj4r8ccj4r8.jpg"
+      "imagens/1784241581465-gemini-generated-image-j4r8ccj4r8ccj4r8.png"
     ],
     "especial": {
       "ativo": false,
