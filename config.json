@@ -5,11 +5,14 @@
     "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
-    "fotos": []
+    "fotos": [
+      "imagens/1784241353148-gemini-generated-image-l4woqpl4woqpl4wo.jpg",
+      "imagens/1784241356050-img-1575.jpg"
+    ]
   },
   "rodape": {
-    "linha1": "Contamos contigo!",
-    "linha2": "De Terça a Domingo — Almoço e Jantar",
+    "linha1": "",
+    "linha2": "",
     "linha3": "",
     "linha4": "",
     "cor": "#ffffff",
@@ -27,13 +30,11 @@
     }
   },
   "footer": {
-    "nome": "Anuncia Aqui",
-    "morada": "Fala Comigo",
-    "telefone": "916254923",
+    "nome": "",
+    "morada": "",
+    "telefone": "",
     "cor": "#ffffff",
-    "fotosAtivas": true,
-    "fotos": [
-      "imagens/1784240661818-img-1563.jpg"
-    ]
+    "fotosAtivas": false,
+    "fotos": []
   }
 }
