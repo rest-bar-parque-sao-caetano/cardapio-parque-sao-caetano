@@ -2180,10 +2180,6 @@
       console.log('🔍 Debugando - stopSalaId:', stopSalaId);
 
       const respostaRespostas = await window.supabaseClient
-        console.log('Resposta completa (jogadores):', respostaJogadores);
-   console.log('Propriedades:', Object.keys(respostaJogadores));
-   console.log('data:', respostaJogadores.data);
-   console.log('error:', respostaJogadores.error);
         .from('stop_respostas')
         .select('*')
         .eq('sala_id', stopSalaId);
