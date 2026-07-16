@@ -494,6 +494,10 @@
     transition:opacity 1s ease;
   }
   .info-fixa-fotos img.ativa{opacity:1;}
+  .info-fixa-fotos::after{
+    content:''; position:absolute; inset:0; z-index:1;
+    background:rgba(0,0,0,0.28); pointer-events:none;
+  }
   .info-fixa-texto{flex:1; text-align:center; min-width:0; position:relative; z-index:102;}
   .info-fixa-texto .linha-negrito{
     font-family:'Fredoka',sans-serif;
@@ -527,6 +531,10 @@
     transition:opacity 0.8s ease;
   }
   .header-fotos img.ativa{opacity:1;}
+  .header-fotos::after{
+    content:''; position:absolute; inset:0; z-index:1;
+    background:rgba(0,0,0,0.28); pointer-events:none;
+  }
 </style>
 
 <!-- Supabase REST API (sem biblioteca) -->
