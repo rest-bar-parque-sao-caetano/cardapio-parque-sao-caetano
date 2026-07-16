@@ -1,0 +1,20 @@
+{
+  "header": {
+    "titulo": "Rest & Bar Parque São Caetano",
+    "subtitulo": "Tradição, sabor e conforto à mesa",
+    "fotos": [
+      "imagens/1783607352394-img_1549.jpeg",
+      "imagens/1783697751837-img_1575.jpg",
+      "imagens/1783700508703-img_1578.jpg"
+    ]
+  },
+  "rodape": {
+    "linha1": "Contamos contigo!",
+    "linha2": "De Terça a Domingo — Almoço e Jantar",
+    "linha3": "",
+    "linha4": "",
+    "fotos": [
+      "imagens/554171704_122100905673037178_5876853051959764857_n.jpg"
+    ]
+  }
+}
