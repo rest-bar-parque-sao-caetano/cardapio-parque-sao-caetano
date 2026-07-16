@@ -141,6 +141,11 @@
         <span id="corHeaderVal">#ffffff</span>
       </div>
 
+      <div class="lembrar" style="margin-top:12px;">
+        <input type="checkbox" id="realceHeader" checked>
+        <label for="realceHeader" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Realçar texto (negrito + sombra)</label>
+      </div>
+
       <div class="lembrar" style="margin-top:16px;">
         <input type="checkbox" id="fotosHeaderAtivas" checked>
         <label for="fotosHeaderAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar fotos no cabeçalho</label>
@@ -174,6 +179,11 @@
         <span id="corRodapeVal">#ffffff</span>
       </div>
 
+      <div class="lembrar" style="margin-top:12px;">
+        <input type="checkbox" id="realceRodape" checked>
+        <label for="realceRodape" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Realçar texto (negrito + sombra)</label>
+      </div>
+
       <div class="lembrar" style="margin-top:16px;">
         <input type="checkbox" id="fotosRodapeAtivas" checked>
         <label for="fotosRodapeAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar fotos na barra fixa</label>
@@ -201,8 +211,8 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', cor:'#ffffff', fotosAtivas:true, fotos:[] },
-    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }
+    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
+    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
 
@@ -290,8 +300,8 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }, parsed.header || {});
-        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }, parsed.rodape || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.header || {});
+        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.rodape || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -321,6 +331,8 @@
     document.getElementById('corHeaderVal').textContent = ch;
     document.getElementById('corRodape').value = cr;
     document.getElementById('corRodapeVal').textContent = cr;
+    document.getElementById('realceHeader').checked = config.header.realce !== false;
+    document.getElementById('realceRodape').checked = config.rodape.realce !== false;
     renderListaFotos('header');
     renderListaFotos('rodape');
   }
@@ -395,6 +407,8 @@
       config.rodape.fotosAtivas = document.getElementById('fotosRodapeAtivas').checked;
       config.header.cor = document.getElementById('corHeader').value;
       config.rodape.cor = document.getElementById('corRodape').value;
+      config.header.realce = document.getElementById('realceHeader').checked;
+      config.rodape.realce = document.getElementById('realceRodape').checked;
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
