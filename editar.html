@@ -221,6 +221,36 @@
     </div>
   </details>
 
+  <!-- RODAPÉ FINAL -->
+  <details id="secFooter">
+    <summary>Rodapé final (só aparece ao fazer scroll até ao fim)</summary>
+    <div class="bloco-conteudo">
+      <label for="footerNome">Nome do restaurante</label>
+      <input type="text" id="footerNome" placeholder="Rest & Bar Parque São Caetano">
+
+      <label for="footerMorada">Morada</label>
+      <input type="text" id="footerMorada" placeholder="Avenida de São Caetano, nº17">
+
+      <label for="footerTelefone">Telefone</label>
+      <input type="text" id="footerTelefone" placeholder="📞 962 202 622 / 227 130 614">
+
+      <label for="corFooter">Cor do texto</label>
+      <div class="campo-cor">
+        <input type="color" id="corFooter" value="#ffffff">
+        <span id="corFooterVal">#ffffff</span>
+      </div>
+
+      <div class="lembrar" style="margin-top:16px;">
+        <input type="checkbox" id="fotosFooterAtivas">
+        <label for="fotosFooterAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar foto no rodapé (cantos arredondados, texto por cima)</label>
+      </div>
+
+      <label>Fotos do rodapé (rodam automaticamente)</label>
+      <div class="lista-fotos" id="listaFotosFooter"></div>
+      <input type="file" id="novaFotoFooter" accept="image/*" multiple>
+    </div>
+  </details>
+
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
 </div>
@@ -239,7 +269,8 @@
   let config = {
     header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
-      especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }
+      especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } },
+    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
 
@@ -330,6 +361,7 @@
         config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.header || {});
         config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
         config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
+        config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }, parsed.footer || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -337,6 +369,7 @@
       preencherFormulario();
       document.getElementById('secHeader').open = true;
       document.getElementById('secRodape').open = true;
+      document.getElementById('secFooter').open = true;
       if(lembrarInput.checked) localStorage.setItem('cardapioEditorToken', token);
       else localStorage.removeItem('cardapioEditorToken');
     }catch(err){
@@ -370,13 +403,22 @@
     document.getElementById('especialL3').value = esp.l3 || '';
     document.getElementById('especialL4').value = esp.l4 || '';
     document.getElementById('blocoEspecial').style.display = esp.ativo ? 'block' : 'none';
+    document.getElementById('footerNome').value = config.footer.nome || '';
+    document.getElementById('footerMorada').value = config.footer.morada || '';
+    document.getElementById('footerTelefone').value = config.footer.telefone || '';
+    const cf = config.footer.cor || '#ffffff';
+    document.getElementById('corFooter').value = cf;
+    document.getElementById('corFooterVal').textContent = cf;
+    document.getElementById('fotosFooterAtivas').checked = config.footer.fotosAtivas === true;
     renderListaFotos('header');
     renderListaFotos('rodape');
+    renderListaFotos('footer');
   }
 
   function renderListaFotos(qual){
-    const lista = qual === 'header' ? config.header.fotos : config.rodape.fotos;
-    const cont = document.getElementById(qual === 'header' ? 'listaFotosHeader' : 'listaFotosRodape');
+    const lista = qual === 'header' ? config.header.fotos : (qual === 'rodape' ? config.rodape.fotos : config.footer.fotos);
+    const idCont = qual === 'header' ? 'listaFotosHeader' : (qual === 'rodape' ? 'listaFotosRodape' : 'listaFotosFooter');
+    const cont = document.getElementById(idCont);
     cont.innerHTML = '';
     if(!lista || lista.length === 0){
       cont.innerHTML = '<div class="vazio">Sem fotos ainda.</div>';
@@ -398,7 +440,7 @@
   }
 
   // ---- Escolher novos ficheiros (guarda em memória; upload só ao Guardar) ----
-  let filasUpload = { header:[], rodape:[] };
+  let filasUpload = { header:[], rodape:[], footer:[] };
   document.getElementById('novaFotoHeader').addEventListener('change', e => {
     filasUpload.header.push(...e.target.files);
     marcarPendentes('header', e.target.files.length);
@@ -407,8 +449,13 @@
     filasUpload.rodape.push(...e.target.files);
     marcarPendentes('rodape', e.target.files.length);
   });
+  document.getElementById('novaFotoFooter').addEventListener('change', e => {
+    filasUpload.footer.push(...e.target.files);
+    marcarPendentes('footer', e.target.files.length);
+  });
   function marcarPendentes(qual, n){
-    setEstado(n + ' foto(s) prontas para enviar em "' + (qual==='header'?'Cabeçalho':'Barra fixa') + '". Clica em Guardar tudo.', 'info');
+    const nome = qual==='header'?'Cabeçalho':(qual==='rodape'?'Barra fixa':'Rodapé');
+    setEstado(n + ' foto(s) prontas para enviar em "' + nome + '". Clica em Guardar tudo.', 'info');
   }
 
   // ---- Guardar tudo ----
@@ -429,9 +476,15 @@
         const caminho = await enviarFoto(file, token);
         config.rodape.fotos.push(caminho);
       }
-      filasUpload = { header:[], rodape:[] };
+      for(const file of filasUpload.footer){
+        setEstado('A enviar foto do rodapé…', 'info');
+        const caminho = await enviarFoto(file, token);
+        config.footer.fotos.push(caminho);
+      }
+      filasUpload = { header:[], rodape:[], footer:[] };
       document.getElementById('novaFotoHeader').value = '';
       document.getElementById('novaFotoRodape').value = '';
+      document.getElementById('novaFotoFooter').value = '';
 
       // 2. Atualizar textos a partir do formulário
       config.header.titulo = document.getElementById('titulo').value.trim();
@@ -454,6 +507,14 @@
         l2: document.getElementById('especialL2').value.trim(),
         l3: document.getElementById('especialL3').value.trim(),
         l4: document.getElementById('especialL4').value.trim()
+      };
+      config.footer = {
+        nome: document.getElementById('footerNome').value.trim(),
+        morada: document.getElementById('footerMorada').value.trim(),
+        telefone: document.getElementById('footerTelefone').value.trim(),
+        cor: document.getElementById('corFooter').value,
+        fotosAtivas: document.getElementById('fotosFooterAtivas').checked,
+        fotos: config.footer.fotos
       };
 
       // 3. Gravar config.json
@@ -503,6 +564,9 @@
   });
   document.getElementById('corRodape').addEventListener('input', e => {
     document.getElementById('corRodapeVal').textContent = e.target.value;
+  });
+  document.getElementById('corFooter').addEventListener('input', e => {
+    document.getElementById('corFooterVal').textContent = e.target.value;
   });
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
