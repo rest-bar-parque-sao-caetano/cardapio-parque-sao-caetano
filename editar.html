@@ -173,6 +173,32 @@
       <label for="linha4">Linha 4</label>
       <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
 
+      <div class="lembrar" style="margin-top:18px;">
+        <input type="checkbox" id="especialAtivo">
+        <label for="especialAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar texto especial por horário</label>
+      </div>
+      <div id="blocoEspecial" style="display:none; margin-top:8px; padding:12px; background:var(--bege); border-radius:10px;">
+        <div style="font-size:0.8rem; color:var(--castanho-suave); margin-bottom:8px;">Durante o horário indicado, a barra mostra este texto em vez do normal.</div>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label for="especialInicio" style="margin-top:0;">Começa às</label>
+            <input type="time" id="especialInicio" style="width:100%; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+          </div>
+          <div style="flex:1;">
+            <label for="especialFim" style="margin-top:0;">Termina às</label>
+            <input type="time" id="especialFim" style="width:100%; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+          </div>
+        </div>
+        <label for="especialL1">Linha 1 especial (negrito)</label>
+        <input type="text" id="especialL1" placeholder="Ex: Prato do Dia">
+        <label for="especialL2">Linha 2 especial</label>
+        <input type="text" id="especialL2" placeholder="Ex: Francesinha">
+        <label for="especialL3">Linha 3 especial</label>
+        <input type="text" id="especialL3">
+        <label for="especialL4">Linha 4 especial</label>
+        <input type="text" id="especialL4">
+      </div>
+
       <label for="corRodape">Cor do texto</label>
       <div class="campo-cor">
         <input type="color" id="corRodape" value="#ffffff">
@@ -212,7 +238,8 @@
   // Estado em memória
   let config = {
     header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
-    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }
+    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
+      especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
 
@@ -301,7 +328,8 @@
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
         config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.header || {});
-        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.rodape || {});
+        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
+        config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -333,6 +361,15 @@
     document.getElementById('corRodapeVal').textContent = cr;
     document.getElementById('realceHeader').checked = config.header.realce !== false;
     document.getElementById('realceRodape').checked = config.rodape.realce !== false;
+    const esp = config.rodape.especial || {};
+    document.getElementById('especialAtivo').checked = !!esp.ativo;
+    document.getElementById('especialInicio').value = esp.inicio || '';
+    document.getElementById('especialFim').value = esp.fim || '';
+    document.getElementById('especialL1').value = esp.l1 || '';
+    document.getElementById('especialL2').value = esp.l2 || '';
+    document.getElementById('especialL3').value = esp.l3 || '';
+    document.getElementById('especialL4').value = esp.l4 || '';
+    document.getElementById('blocoEspecial').style.display = esp.ativo ? 'block' : 'none';
     renderListaFotos('header');
     renderListaFotos('rodape');
   }
@@ -409,6 +446,15 @@
       config.rodape.cor = document.getElementById('corRodape').value;
       config.header.realce = document.getElementById('realceHeader').checked;
       config.rodape.realce = document.getElementById('realceRodape').checked;
+      config.rodape.especial = {
+        ativo: document.getElementById('especialAtivo').checked,
+        inicio: document.getElementById('especialInicio').value,
+        fim: document.getElementById('especialFim').value,
+        l1: document.getElementById('especialL1').value.trim(),
+        l2: document.getElementById('especialL2').value.trim(),
+        l3: document.getElementById('especialL3').value.trim(),
+        l4: document.getElementById('especialL4').value.trim()
+      };
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
@@ -447,6 +493,10 @@
       document.getElementById('btnGuardar').disabled = false;
     }
   }
+
+  document.getElementById('especialAtivo').addEventListener('change', e => {
+    document.getElementById('blocoEspecial').style.display = e.target.checked ? 'block' : 'none';
+  });
 
   document.getElementById('corHeader').addEventListener('input', e => {
     document.getElementById('corHeaderVal').textContent = e.target.value;
