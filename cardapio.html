@@ -1838,10 +1838,24 @@
       stopRonda = 0;
       novaRondaStop();
     } else {
-      let nome = prompt('Qual é o teu nome?', 'Jogador');
-      if(!nome) return;
-      stopNomeJogador = nome;
-      menuSalaStop();
+      // Pedir código da sala
+      let codigo = prompt('Cole o código da sala:\n(deixa vazio para criar nova sala)', '');
+      if(codigo === null) return; // Cancelou
+
+      if(codigo.trim() === '') {
+        // Criar nova sala - pedir nome e criar
+        let nome = prompt('Qual é o teu nome?', 'Jogador');
+        if(!nome) return;
+        stopNomeJogador = nome;
+        criarSalaStop();
+      } else {
+        // Entrar com código - pedir nome e entrar
+        stopSalaId = codigo.toUpperCase().trim();
+        let nome = prompt('Qual é o teu nome?', 'Jogador');
+        if(!nome) return;
+        stopNomeJogador = nome;
+        processarEntradaSalaMultiplayer();
+      }
     }
   };
 
@@ -2004,6 +2018,41 @@
       alert('❌ Erro: ' + err.message);
     }
   }
+
+  // Nova função para processar entrada com código (fluxo simplificado)
+  window.processarEntradaSalaMultiplayer = async function(){
+    try {
+      const { data: sala, error: erroSala } = await window.supabaseClient
+        .from('stop_salas')
+        .select('*')
+        .eq('codigo', stopSalaId)
+        .single();
+
+      if(erroSala || !sala) {
+        alert(`❌ Sala "${stopSalaId}" não encontrada!`);
+        iniciarStop();
+        return;
+      }
+
+      // Inserir jogador na sala
+      await window.supabaseClient
+        .from('stop_jogadores')
+        .insert({
+          sala_id: stopSalaId,
+          nome: stopNomeJogador,
+          pontos: 0
+        })
+        .catch(() => {
+          console.log('Jogador já inserido ou erro silencioso');
+        });
+
+      // Continuar para o jogo
+      jogarStopMultiplayer();
+    } catch(err) {
+      alert('❌ Erro: ' + err.message);
+      iniciarStop();
+    }
+  };
 
   window.jogarStopMultiplayer = async function(){
     try {
