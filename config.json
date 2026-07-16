@@ -2,9 +2,10 @@
   "header": {
     "titulo": "",
     "subtitulo": "",
-    "fotosAtivas": false,
+    "fotosAtivas": true,
     "fotos": [
-      "imagens/1784227698896-img-1575.jpg"
+      "imagens/1784227698896-img-1575.jpg",
+      "imagens/1784229074951-gemini-generated-image-eiasa5eiasa5eias.jpg"
     ]
   },
   "rodape": {
