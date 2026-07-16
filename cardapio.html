@@ -542,34 +542,38 @@
 
       return {
         insert: (data) => {
-          return {
-            select: async () => {
+          const doInsert = async () => {
+            try {
+              const res = await fetch(`${window.SUPABASE_URL}/rest/v1/${table}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+                  'apikey': window.SUPABASE_KEY,
+                  'Prefer': 'return=representation'
+                },
+                body: JSON.stringify(data)
+              });
+
+              const text = await res.text();
+              let result;
               try {
-                const res = await fetch(`${window.SUPABASE_URL}/rest/v1/${table}`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.SUPABASE_KEY}`,
-                    'apikey': window.SUPABASE_KEY,
-                    'Prefer': 'return=representation'
-                  },
-                  body: JSON.stringify(data)
-                });
-
-                const text = await res.text();
-                let result;
-                try {
-                  result = JSON.parse(text);
-                } catch(e) {
-                  result = { message: text, status: res.status };
-                }
-
-                if(!res.ok) return { data: null, error: result };
-                return { data: result, error: null };
+                result = JSON.parse(text);
               } catch(e) {
-                return { data: null, error: { message: e.message } };
+                result = { message: text, status: res.status };
               }
+
+              if(!res.ok) throw result;
+              return { data: result, error: null };
+            } catch(e) {
+              throw e;
             }
+          };
+
+          return {
+            select: () => doInsert(),
+            then: (fn, fnErr) => doInsert().then(fn, fnErr),
+            catch: (fn) => doInsert().catch(fn)
           };
         },
 
