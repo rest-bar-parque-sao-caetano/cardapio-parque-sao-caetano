@@ -67,6 +67,13 @@
   }
   .vazio{font-size:0.8rem; color:var(--castanho-suave); font-style:italic; padding:6px 0;}
 
+  .campo-cor{display:flex; align-items:center; gap:10px;}
+  .campo-cor input[type=color]{
+    width:50px; height:38px; border:1.5px solid var(--linha); border-radius:8px;
+    background:var(--branco); cursor:pointer; padding:2px;
+  }
+  .campo-cor span{font-size:0.85rem; color:var(--castanho-suave); font-family:monospace;}
+
   .acao{
     display:block; width:100%; margin-top:22px; padding:15px;
     background:var(--dourado); color:#fff; border:none; border-radius:12px;
@@ -128,6 +135,12 @@
       <label for="subtitulo">Subtítulo</label>
       <input type="text" id="subtitulo" placeholder="Tradição, sabor e conforto à mesa">
 
+      <label for="corHeader">Cor do texto</label>
+      <div class="campo-cor">
+        <input type="color" id="corHeader" value="#ffffff">
+        <span id="corHeaderVal">#ffffff</span>
+      </div>
+
       <div class="lembrar" style="margin-top:16px;">
         <input type="checkbox" id="fotosHeaderAtivas" checked>
         <label for="fotosHeaderAtivas" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar fotos no cabeçalho</label>
@@ -154,6 +167,12 @@
 
       <label for="linha4">Linha 4</label>
       <input type="text" id="linha4" placeholder="Ex: Avenida de São Caetano, nº17">
+
+      <label for="corRodape">Cor do texto</label>
+      <div class="campo-cor">
+        <input type="color" id="corRodape" value="#ffffff">
+        <span id="corRodapeVal">#ffffff</span>
+      </div>
 
       <div class="lembrar" style="margin-top:16px;">
         <input type="checkbox" id="fotosRodapeAtivas" checked>
@@ -182,8 +201,8 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', fotosAtivas:true, fotos:[] },
-    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', fotosAtivas:true, fotos:[] }
+    header: { titulo:'', subtitulo:'', cor:'#ffffff', fotosAtivas:true, fotos:[] },
+    rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
 
@@ -271,8 +290,8 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', fotosAtivas:true, fotos:[] }, parsed.header || {});
-        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', fotosAtivas:true, fotos:[] }, parsed.rodape || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }, parsed.header || {});
+        config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', fotosAtivas:true, fotos:[] }, parsed.rodape || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -296,6 +315,12 @@
     document.getElementById('linha4').value = config.rodape.linha4 || '';
     document.getElementById('fotosHeaderAtivas').checked = config.header.fotosAtivas !== false;
     document.getElementById('fotosRodapeAtivas').checked = config.rodape.fotosAtivas !== false;
+    const ch = config.header.cor || '#ffffff';
+    const cr = config.rodape.cor || '#ffffff';
+    document.getElementById('corHeader').value = ch;
+    document.getElementById('corHeaderVal').textContent = ch;
+    document.getElementById('corRodape').value = cr;
+    document.getElementById('corRodapeVal').textContent = cr;
     renderListaFotos('header');
     renderListaFotos('rodape');
   }
@@ -368,9 +393,22 @@
       config.rodape.linha4 = document.getElementById('linha4').value.trim();
       config.header.fotosAtivas = document.getElementById('fotosHeaderAtivas').checked;
       config.rodape.fotosAtivas = document.getElementById('fotosRodapeAtivas').checked;
+      config.header.cor = document.getElementById('corHeader').value;
+      config.rodape.cor = document.getElementById('corRodape').value;
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
+
+      // Garantir que temos o sha atual (caso o ficheiro já exista e não tenha sido carregado)
+      if(!configSha){
+        try{
+          const check = await fetch(CONFIG_API + '?t=' + Date.now(), {
+            headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' }
+          });
+          if(check.ok){ const d = await check.json(); configSha = d.sha; }
+        }catch(e){ /* se não existir, fica null e cria de novo */ }
+      }
+
       const corpo = {
         message: 'Atualizar config.json via editor',
         content: utf8ParaBase64(JSON.stringify(config, null, 2))
@@ -395,6 +433,13 @@
       document.getElementById('btnGuardar').disabled = false;
     }
   }
+
+  document.getElementById('corHeader').addEventListener('input', e => {
+    document.getElementById('corHeaderVal').textContent = e.target.value;
+  });
+  document.getElementById('corRodape').addEventListener('input', e => {
+    document.getElementById('corRodapeVal').textContent = e.target.value;
+  });
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
