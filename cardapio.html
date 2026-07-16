@@ -585,6 +585,56 @@
     content:''; position:absolute; inset:0; z-index:1;
     background:rgba(0,0,0,0.28); pointer-events:none;
   }
+
+  /* ===== Lista de compras ===== */
+  .item .nome{ flex:1; }
+  .btn-add-lista{
+    flex:0 0 auto; width:27px; height:27px; border-radius:50%;
+    border:none; background:var(--dourado); color:#fff; font-size:1.15rem;
+    font-weight:700; cursor:pointer; line-height:1; align-self:center;
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .1s ease, background .15s ease;
+  }
+  .btn-add-lista:hover{ background:var(--dourado-escuro); }
+  .btn-add-lista:active{ transform:scale(0.85); }
+
+  #cartBtn{
+    position:fixed; right:16px; bottom:118px; z-index:200;
+    width:56px; height:56px; border-radius:50%; border:none;
+    background:var(--castanho); color:#fff; font-size:1.5rem; cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center;
+  }
+  #cartBtn .cart-badge{
+    position:absolute; top:-5px; right:-5px; background:var(--dourado);
+    color:#fff; font-size:0.72rem; font-weight:700; min-width:20px; height:20px;
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+    padding:0 5px; border:2px solid var(--branco);
+  }
+  #cartBtn.escondido{ display:none; }
+
+  #cartOverlay{
+    position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.5);
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  #cartOverlay.aberto{ display:flex; }
+  .cart-painel{
+    background:var(--branco); width:100%; max-width:520px; max-height:82vh;
+    border-radius:18px 18px 0 0; padding:18px 16px 26px; overflow-y:auto;
+    animation:cartSobe .2s ease;
+  }
+  @keyframes cartSobe{ from{ transform:translateY(30px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
+  .cart-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); margin-bottom:8px; font-size:1.2rem; }
+  .cart-vazio{ text-align:center; color:var(--castanho-suave); padding:24px 0; font-size:0.9rem; }
+  .cart-linha{ display:flex; align-items:center; gap:10px; padding:10px 2px; border-bottom:1px dotted var(--linha); }
+  .cart-linha .cart-nome{ flex:1; font-size:0.92rem; color:var(--castanho); }
+  .cart-linha .cart-preco{ font-family:'Fredoka',sans-serif; color:var(--dourado); font-size:0.86rem; white-space:nowrap; }
+  .cart-qtd{ display:flex; align-items:center; gap:8px; font-weight:700; color:var(--castanho); }
+  .cart-qtd button{ width:27px; height:27px; border-radius:50%; border:1px solid var(--linha); background:var(--bege); color:var(--castanho); font-size:1.05rem; cursor:pointer; line-height:1; }
+  .cart-total{ display:flex; justify-content:space-between; font-weight:700; font-family:'Fredoka',sans-serif; color:var(--castanho); margin-top:16px; font-size:1.15rem; }
+  .cart-acoes{ display:flex; gap:10px; margin-top:18px; }
+  .cart-acoes button{ flex:1; padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
+  .cart-fechar{ background:var(--bege); color:var(--castanho); }
+  .cart-limpar{ background:var(--castanho); color:#fff; }
 </style>
 
 <!-- Supabase REST API (sem biblioteca) -->
@@ -2013,398 +2063,6 @@
     jogoConteudo.innerHTML = html;
   }
 
-  function menuSalaStop(){
-    let html = '<p style="text-align:center;margin:20px 0;font-size:1.1rem;">Criar ou Entrar?</p>';
-    html += '<button onclick="criarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">➕ Criar Sala</button>';
-    html += '<button onclick="entrarSalaStop()" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">🔑 Entrar com Código</button>';
-    html += '<button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">Voltar</button>';
-    jogoConteudo.innerHTML = html;
-  }
-
-  window.criarSalaStop = async function(){
-    // Verificar se Supabase está pronto
-    if (!window.supabaseClient) {
-      console.error('❌ Supabase não está disponível!', window.supabaseClient);
-      alert('❌ Supabase ainda não carregou. Aguarda uns segundos e tenta de novo!');
-      return;
-    }
-
-    stopSalaId = Math.random().toString(36).substr(2, 4).toUpperCase();
-    console.log('📝 A criar sala:', stopSalaId);
-
-    try {
-      console.log('Chamando Supabase para inserir sala...');
-      const { data, error } = await window.supabaseClient
-        .from('stop_salas')
-        .insert({
-          codigo: stopSalaId,
-          letra: String.fromCharCode(65 + Math.floor(Math.random() * 26)),
-          criador: stopNomeJogador,
-          iniciada: false
-        })
-        .select();
-
-      console.log('Resposta Supabase - Data:', data, 'Error:', error);
-
-      if(error) throw error;
-
-      // Criar entrada do jogador
-      await window.supabaseClient
-        .from('stop_jogadores')
-        .insert({
-          sala_id: stopSalaId,
-          nome: stopNomeJogador,
-          pontos: 0
-        });
-
-      let html = `<p style="text-align:center;font-size:1.1rem;margin:15px 0;">✅ Sala Criada!</p>
-        <p style="text-align:center;font-size:1.4rem;background:var(--bege);padding:15px;border-radius:8px;margin:15px 0;font-weight:bold;">Código: <code style="font-size:1.8rem;color:var(--castanho);">${stopSalaId}</code></p>
-        <p style="text-align:center;font-size:0.9rem;color:var(--castanho);margin:10px 0;">📱 Partilha este código com outro telemóvel!</p>
-        <button onclick="jogarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 16px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:15px;font-size:0.95rem;">Começar Jogo</button>
-        <button onclick="menuSalaStop()" style="background:var(--linha);color:var(--castanho);padding:8px 14px;border:none;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-size:0.9rem;">Voltar</button>`;
-      jogoConteudo.innerHTML = html;
-    } catch(err) {
-      alert('❌ Erro ao criar sala: ' + err.message);
-    }
-  }
-
-  window.entrarSalaStop = async function(){
-    // Verificar se Supabase está pronto
-    if (!window.supabaseClient) {
-      alert('❌ Supabase ainda não carregou. Aguarda e tenta de novo!');
-      return;
-    }
-
-    let codigo = prompt('Cole o código da sala:');
-    if(!codigo) return;
-    codigo = codigo.toUpperCase().trim();
-
-    try {
-      const { data: sala, error: erroSala } = await window.supabaseClient
-        .from('stop_salas')
-        .select('*')
-        .eq('codigo', codigo)
-        .single();
-
-      if(erroSala || !sala) {
-        alert(`❌ Sala "${codigo}" não encontrada!`);
-        return;
-      }
-
-      stopSalaId = codigo;
-
-      // Pedir nome para este jogador (entrada com código)
-      let nomeEntrada = prompt('Qual é o seu nome?', 'Jogador');
-      if(!nomeEntrada) nomeEntrada = 'Jogador';
-      nomeEntrada = nomeEntrada.trim();
-
-      // Criar entrada do jogador com nome específico
-      await window.supabaseClient
-        .from('stop_jogadores')
-        .insert({
-          sala_id: stopSalaId,
-          nome: nomeEntrada,
-          pontos: 0
-        })
-        .then(() => {
-          stopNomeJogador = nomeEntrada; // Atualizar nome global
-          jogarStopMultiplayer();
-        })
-        .catch(() => {
-          stopNomeJogador = nomeEntrada;
-          jogarStopMultiplayer();
-        });
-
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
-  }
-
-  // Nova função para processar entrada com código (fluxo simplificado)
-  window.processarEntradaSalaMultiplayer = async function(){
-    try {
-      const { data: sala, error: erroSala } = await window.supabaseClient
-        .from('stop_salas')
-        .select('*')
-        .eq('codigo', stopSalaId)
-        .single();
-
-      if(erroSala || !sala) {
-        alert(`❌ Sala "${stopSalaId}" não encontrada!`);
-        iniciarStop();
-        return;
-      }
-
-      // Inserir jogador na sala
-      await window.supabaseClient
-        .from('stop_jogadores')
-        .insert({
-          sala_id: stopSalaId,
-          nome: stopNomeJogador,
-          pontos: 0
-        })
-        .catch(() => {
-          console.log('Jogador já inserido ou erro silencioso');
-        });
-
-      // Continuar para o jogo
-      jogarStopMultiplayer();
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-      iniciarStop();
-    }
-  };
-
-  window.jogarStopMultiplayer = async function(){
-    try {
-      const { data: sala } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
-      if(!sala) return;
-
-      // Se é criador, mostra "Começar"
-      if(sala.criador === stopNomeJogador) {
-        jogoConteudo.innerHTML = `<div style="text-align:center;padding:20px;">
-          <p style="font-size:1.2rem;font-weight:bold;color:var(--castanho);margin:20px 0;">👑 VOCÊ É O CRIADOR</p>
-          <button onclick="iniciarStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:15px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:1.1rem;font-weight:bold;">🎮 COMEÇAR JOGO</button>
-        </div>`;
-      } else {
-        // Aguarda pelo sinal do criador
-        jogoConteudo.innerHTML = `<div style="text-align:center;padding:30px;"><p style="font-size:1.1rem;color:var(--castanho);">⏳ Aguardando...</p></div>`;
-
-        // Polling: verificar se criador iniciou
-        let checkInicio = setInterval(async () => {
-          try {
-            const { data: salaCheck } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
-            if(salaCheck && salaCheck.iniciada) {
-              clearInterval(checkInicio);
-              renderGameStop();
-            }
-          } catch(err) {
-            console.error('Erro no polling:', err);
-          }
-        }, 500);
-        window.checkInicioInterval = checkInicio;
-      }
-    } catch(err) { alert('❌ Erro: ' + err.message); }
-  }
-
-  window.iniciarStopMultiplayer = async function(){
-    try {
-      await window.supabaseClient.from('stop_salas').update({ iniciada: true }).eq('codigo', stopSalaId);
-      renderGameStop();
-    } catch(err) { alert('❌ Erro: ' + err.message); }
-  }
-
-  window.renderGameStop = async function(){
-    try {
-      const { data: sala } = await window.supabaseClient.from('stop_salas').select('*').eq('codigo', stopSalaId).single();
-      if(!sala) return;
-
-      let html = `<div style="text-align:center;padding:0;">
-        <p style="font-size:4rem;font-weight:bold;margin:20px 0;color:var(--castanho);font-family:monospace;" id="timerStop">60</p>
-        <p style="font-size:2.5rem;font-weight:bold;margin:15px 0;color:var(--castanho);">${sala.letra}</p>
-        <div id="formStopMulti" style="display:grid;gap:5px;margin:15px 0;"></div>
-        <button onclick="pararStopMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;width:100%;font-weight:bold;">🛑 STOP!</button>
-      </div>`;
-
-      jogoConteudo.innerHTML = html;
-      let form = document.getElementById('formStopMulti');
-      stopCategorias.forEach(cat => {
-        form.innerHTML += `<input type="text" id="stop_${cat}" style="padding:8px;border:1px solid var(--linha);border-radius:6px;font-size:0.95rem;" placeholder="${cat}" onkeypress="if(event.key==='Enter') pararStopMultiplayer()">`;
-      });
-      document.getElementById(`stop_${stopCategorias[0]}`).focus();
-
-      // Timer simples
-      let tempo = 60;
-      let timerInterval = setInterval(() => {
-        tempo--;
-        let el = document.getElementById('timerStop');
-        if(el) el.textContent = tempo;
-        if(tempo <= 0) {
-          clearInterval(timerInterval);
-          pararStopMultiplayer();
-        }
-      }, 1000);
-      window.stopTimerInterval = timerInterval;
-
-      // Polling simples - apenas detectar respostas
-      let polling = setInterval(async () => {
-        const { data: respostas } = await window.supabaseClient.from('stop_respostas').select('*').eq('sala_id', stopSalaId);
-        if(respostas && respostas.length > 0) {
-          clearInterval(timerInterval);
-          clearInterval(polling);
-          window.mostrarResultadosMultiplayer();
-        }
-      }, 200);
-      window.stopPolling = polling;
-    } catch(err) { alert('❌ Erro: ' + err.message); }
-  }
-
-  window.pararStopMultiplayer = async function(){
-    // Parar todos os intervalos
-    if(window.stopTimerInterval) clearInterval(window.stopTimerInterval);
-    if(window.stopPollingTermino) clearInterval(window.stopPollingTermino);
-    if(window.stopPollingCheck) clearInterval(window.stopPollingCheck);
-    if(window.checkInicioInterval) clearInterval(window.checkInicioInterval);
-    if(window.stopPolling) clearInterval(window.stopPolling);
-
-    try {
-      let respostas = {};
-      stopCategorias.forEach(cat => {
-        let inp = document.getElementById(`stop_${cat}`);
-        if(inp) {
-          let val = inp.value.trim().toUpperCase();
-          respostas[cat] = val;
-        }
-      });
-
-      // Inserir respostas no Supabase (mesmo que vazias)
-      for(let cat in respostas){
-        await window.supabaseClient.from('stop_respostas').insert({
-          sala_id: stopSalaId,
-          nome: stopNomeJogador,
-          categoria: cat,
-          resposta: respostas[cat] || '(vazio)'
-        });
-      }
-
-      // Mostrar resultados
-      setTimeout(window.mostrarResultadosMultiplayer, 300);
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
-  };
-
-  window.mostrarResultadosMultiplayer = async function(){
-    try {
-      console.log('🔍 Debugando - stopSalaId:', stopSalaId);
-
-      const respostaRespostas = await window.supabaseClient
-        .from('stop_respostas')
-        .select('*');
-      console.log('Resposta completa (respostas):', respostaRespostas);
-      const { data: respostasTemp } = respostaRespostas;
-      // Filtrar manualmente por sala_id
-      const respostas = respostasTemp ? respostasTemp.filter(r => r.sala_id === stopSalaId) : [];
-
-      const respostaJogadores = await window.supabaseClient
-        .from('stop_jogadores')
-        .select('*');
-      console.log('Resposta completa (jogadores):', respostaJogadores);
-      const { data: jogadoresTemp } = respostaJogadores;
-      // Filtrar manualmente por sala_id
-      const jogadores = jogadoresTemp ? jogadoresTemp.filter(j => j.sala_id === stopSalaId) : [];
-
-      console.log('📊 Respostas:', respostas);
-      console.log('👥 Jogadores:', jogadores);
-
-      // Verificar se dados existem
-      if(!jogadores || jogadores.length === 0) {
-        console.error('❌ Nenhum jogador encontrado!', { jogadores });
-        alert('❌ Erro: Nenhum jogador encontrado!\nVerifica a consola para mais detalhes.');
-        return;
-      }
-
-      // Agrupar respostas por jogador
-      let jogosPorNome = {};
-      jogadores.forEach(j => {
-        jogosPorNome[j.nome] = { pontos: j.pontos, respostas: {} };
-      });
-
-      if(respostas && respostas.length > 0) {
-        respostas.forEach(r => {
-          if(jogosPorNome[r.nome]){
-            jogosPorNome[r.nome].respostas[r.categoria] = r.resposta;
-          }
-        });
-      }
-
-      // Calcular pontos
-      stopCategorias.forEach(cat => {
-        let respostasCategoria = {};
-        Object.keys(jogosPorNome).forEach(nome => {
-          let resp = jogosPorNome[nome].respostas[cat];
-          if(resp) respostasCategoria[nome] = resp;
-        });
-
-        let contagem = {};
-        Object.values(respostasCategoria).forEach(resp => {
-          contagem[resp] = (contagem[resp] || 0) + 1;
-        });
-
-        Object.keys(respostasCategoria).forEach(nome => {
-          let resp = respostasCategoria[nome];
-          let pts = contagem[resp] === 1 ? 10 : 5;
-          jogosPorNome[nome].pontos += pts;
-        });
-      });
-
-      // Atualizar pontos no Supabase
-      for(let nome in jogosPorNome){
-        await window.supabaseClient
-          .from('stop_jogadores')
-          .update({ pontos: jogosPorNome[nome].pontos })
-          .eq('sala_id', stopSalaId)
-          .eq('nome', nome);
-      }
-
-      let html = `<div style="text-align:center;">
-        <p style="font-size:1.1rem;font-weight:bold;color:var(--castanho);margin:15px 0;">📊 Resultados</p>
-        <div style="display:grid;gap:8px;margin:15px 0;">`;
-
-      let nomes = Object.keys(jogosPorNome).sort((a, b) => jogosPorNome[b].pontos - jogosPorNome[a].pontos);
-      nomes.forEach((nome, idx) => {
-        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
-        let destaque = nome === stopNomeJogador ? 'border:2px solid var(--castanho);' : '';
-        html += `<div style="background:var(--bege);padding:8px;border-radius:8px;font-size:0.9rem;${destaque}">
-          <p style="font-weight:bold;margin:3px 0;">${medal} ${nome}: <span style="color:var(--castanho);">${jogosPorNome[nome].pontos} pts</span></p>`;
-
-        stopCategorias.forEach(cat => {
-          let resp = jogosPorNome[nome].respostas[cat] || '(vazio)';
-          html += `<p style="margin:1px 0;font-size:0.8rem;"><strong>${cat}:</strong> ${resp}</p>`;
-        });
-
-        html += `</div>`;
-      });
-
-      html += `</div>
-        <button onclick="novaRondaMultiplayer()" style="background:var(--castanho);color:var(--branco);padding:10px 14px;border:none;border-radius:8px;cursor:pointer;width:100%;margin:8px 0;font-size:0.9rem;">Próxima</button>
-        <button onclick="iniciarStop()" style="background:var(--linha);color:var(--castanho);padding:8px 12px;border:none;border-radius:8px;cursor:pointer;width:100%;font-size:0.9rem;">Menu</button>
-      </div>`;
-
-      jogoConteudo.innerHTML = html;
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
-  }
-
-  window.novaRondaMultiplayer = async function(){
-    try {
-      const { data: sala } = await window.supabaseClient
-        .from('stop_salas')
-        .select('*')
-        .eq('codigo', stopSalaId)
-        .single();
-
-      let novaRonda = sala.ronda + 1;
-      let novaLetra = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-
-      await window.supabaseClient
-        .from('stop_salas')
-        .update({ ronda: novaRonda, letra: novaLetra })
-        .eq('codigo', stopSalaId);
-
-      // Limpar respostas da ronda anterior
-      await window.supabaseClient
-        .from('stop_respostas')
-        .delete()
-        .eq('sala_id', stopSalaId);
-
-      renderStopMultiplayer();
-    } catch(err) {
-      alert('❌ Erro: ' + err.message);
-    }
-  };
-
   // ==========================================================
   //  JOGO DO STOP — MULTIPLAYER (versão nova, Supabase direto)
   // ==========================================================
@@ -2663,6 +2321,139 @@
       abrirJogo(tipos[i]);
     });
   });
+
+  // ==========================================================
+  //  LISTA DE COMPRAS
+  // ==========================================================
+  (function(){
+    const STORAGE_KEY = 'cardapioListaCompras';
+    const EXPIRA_MS = 3 * 60 * 60 * 1000; // 3 horas
+
+    let lista = carregar();
+
+    function carregar(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return [];
+        const obj = JSON.parse(raw);
+        if(!obj || !obj.ts || (Date.now() - obj.ts) > EXPIRA_MS){
+          localStorage.removeItem(STORAGE_KEY); return [];
+        }
+        return obj.itens || [];
+      }catch(e){ return []; }
+    }
+    function guardar(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ ts: Date.now(), itens: lista })); }catch(e){}
+    }
+    function parsePreco(txt){
+      if(!txt) return 0;
+      const m = txt.replace(/\s/g,'').match(/(\d+[.,]?\d*)/);
+      return m ? parseFloat(m[1].replace(',','.')) : 0;
+    }
+
+    window.adicionarALista = function(nome, precoTxt){
+      const ex = lista.find(i => i.nome === nome && i.precoTxt === precoTxt);
+      if(ex) ex.qtd++;
+      else lista.push({ nome:nome, precoTxt:precoTxt, preco:parsePreco(precoTxt), qtd:1 });
+      guardar(); atualizarBadge();
+    };
+
+    // Botão flutuante + overlay
+    const cartBtn = document.createElement('button');
+    cartBtn.id = 'cartBtn';
+    cartBtn.innerHTML = '🛒<span class="cart-badge" id="cartBadge">0</span>';
+    cartBtn.setAttribute('aria-label','Ver lista de compras');
+    document.body.appendChild(cartBtn);
+
+    const overlay = document.createElement('div');
+    overlay.id = 'cartOverlay';
+    overlay.innerHTML = '<div class="cart-painel" id="cartPainel"></div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('aberto'); });
+    cartBtn.addEventListener('click', () => { render(); overlay.classList.add('aberto'); });
+
+    function emJogos(){
+      const mj = document.getElementById('modalJogo');
+      if(mj && mj.classList.contains('aberto')) return true;
+      const painel = document.getElementById('categoriaPainel');
+      const jogos = document.getElementById('jogos');
+      if(painel && painel.classList.contains('aberto') && jogos && jogos.closest('#categoriaPainel')) return true;
+      return false;
+    }
+    function atualizarVisibilidade(){
+      const total = lista.reduce((s,i)=>s+i.qtd,0);
+      if(total === 0 || emJogos()) cartBtn.classList.add('escondido');
+      else cartBtn.classList.remove('escondido');
+    }
+    function atualizarBadge(){
+      const total = lista.reduce((s,i)=>s+i.qtd,0);
+      const badge = document.getElementById('cartBadge');
+      if(badge) badge.textContent = total;
+      atualizarVisibilidade();
+    }
+
+    function render(){
+      const p = document.getElementById('cartPainel');
+      if(lista.length === 0){
+        p.innerHTML = '<h3>A minha lista</h3><div class="cart-vazio">A lista está vazia.<br>Toca no <strong>+</strong> junto a um prato ou bebida para adicionar.</div><div class="cart-acoes"><button class="cart-fechar" id="cartFechar">Fechar</button></div>';
+      } else {
+        let html = '<h3>A minha lista</h3>';
+        let total = 0;
+        lista.forEach((it, idx) => {
+          total += it.preco * it.qtd;
+          html += '<div class="cart-linha">' +
+            '<span class="cart-nome">' + it.nome + '</span>' +
+            (it.precoTxt ? '<span class="cart-preco">' + it.precoTxt + '</span>' : '') +
+            '<span class="cart-qtd"><button data-a="menos" data-i="' + idx + '">−</button>' + it.qtd + '<button data-a="mais" data-i="' + idx + '">+</button></span>' +
+            '</div>';
+        });
+        html += '<div class="cart-total"><span>Total</span><span>' + total.toFixed(2).replace('.',',') + '€</span></div>';
+        html += '<div class="cart-acoes"><button class="cart-fechar" id="cartFechar">Fechar</button><button class="cart-limpar" id="cartLimpar">Limpar lista</button></div>';
+        p.innerHTML = html;
+      }
+      const fechar = document.getElementById('cartFechar');
+      if(fechar) fechar.onclick = () => overlay.classList.remove('aberto');
+      const limpar = document.getElementById('cartLimpar');
+      if(limpar) limpar.onclick = () => { lista = []; guardar(); atualizarBadge(); overlay.classList.remove('aberto'); };
+      p.querySelectorAll('.cart-qtd button').forEach(b => {
+        b.onclick = () => {
+          const i = parseInt(b.dataset.i, 10);
+          if(b.dataset.a === 'mais') lista[i].qtd++;
+          else { lista[i].qtd--; if(lista[i].qtd <= 0) lista.splice(i,1); }
+          guardar(); atualizarBadge(); render();
+        };
+      });
+    }
+
+    // Adicionar botão "+" a cada prato/bebida (exceto na secção de jogos)
+    document.querySelectorAll('main .item').forEach(item => {
+      if(item.closest('#jogos')) return;
+      const nomeEl = item.querySelector('.nome');
+      if(!nomeEl) return;
+      const precoEl = item.querySelector('.preco');
+      const btn = document.createElement('button');
+      btn.className = 'btn-add-lista';
+      btn.type = 'button';
+      btn.textContent = '+';
+      btn.setAttribute('aria-label','Adicionar à lista');
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        adicionarALista(nomeEl.textContent.trim(), precoEl ? precoEl.textContent.trim() : '');
+        btn.textContent = '✓';
+        btn.style.background = '#3b8a4f';
+        setTimeout(() => { btn.textContent = '+'; btn.style.background = ''; }, 700);
+      });
+      item.appendChild(btn);
+    });
+
+    // Esconder/mostrar carrinho quando se entra/sai dos jogos
+    ['categoriaPainel','modalJogo'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) new MutationObserver(atualizarVisibilidade).observe(el, { attributes:true, attributeFilter:['class'] });
+    });
+
+    atualizarBadge();
+  })();
 </script>
 
 </body>
