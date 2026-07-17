@@ -78,5 +78,17 @@
     "fotoPanY": 16.725871129584533,
     "textoX": 30.84228515625,
     "textoY": 88.16490579166133
+  },
+  "adJogos": {
+    "ativo": true,
+    "foto": "imagens/1784304769344-gemini-generated-image-h2pookh2pookh2po.png",
+    "fotoZoom": 141,
+    "fotoPanX": 0.6713867187499998,
+    "fotoPanY": 19.636350319520993,
+    "texto": "O teu negocio pode ser visto aqui!!!",
+    "textoX": 50,
+    "textoY": 80,
+    "cor": "#ffffff",
+    "duracao": 5
   }
 }
