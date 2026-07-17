@@ -1826,12 +1826,21 @@
         if(temFotos){
           rodape.classList.add('tem-foto');
           preencherFotos(document.querySelector('#footerFotos'), config.footer.fotos);
+          // Tamanho e posição da foto
+          const zoom = (config.footer.fotoZoom || 100) / 100;
+          const posX = config.footer.fotoPosX ?? 50;
+          const posY = config.footer.fotoPosY ?? 50;
+          document.querySelectorAll('#footerFotos img').forEach(im => {
+            im.style.objectPosition = posX + '% ' + posY + '%';
+            im.style.transform = 'scale(' + zoom + ')';
+            im.style.transformOrigin = 'center';
+          });
           // Texto por cima da foto: cor clara + sombra para legibilidade
           const cor = config.footer.cor || '#ffffff';
           const sombra = '0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.4)';
           ['footerNome','footerMorada','footerTelefone'].forEach(id => {
             const el = document.getElementById(id);
-            if(el){ el.style.color = cor; el.style.textShadow = sombra; el.style.position='relative'; }
+            if(el){ el.style.color = cor; el.style.textShadow = sombra; }
           });
         } else {
           rodape.classList.remove('tem-foto');
@@ -1841,6 +1850,18 @@
               if(el) el.style.color = config.footer.cor;
             });
           }
+        }
+        // Posição do bloco de texto (arrastável no editor)
+        const ft = document.querySelector('#rodapeFinal .footer-texto');
+        if(ft){
+          const tx = config.footer.textoX ?? 50;
+          const ty = config.footer.textoY ?? 50;
+          ft.style.position = 'absolute';
+          ft.style.left = tx + '%';
+          ft.style.top = ty + '%';
+          ft.style.transform = 'translate(-50%,-50%)';
+          ft.style.width = 'max-content';
+          ft.style.maxWidth = '90%';
         }
       }
     }catch(err){
