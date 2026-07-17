@@ -299,11 +299,28 @@
   .grupo-prato .card-lista{margin-top:10px;}
   .grupo-prato .subtitulo{margin:8px 0 0;}
   .card-lista{
-    background:var(--branco);
-    border-radius:12px;
-    padding:4px 6px;
-    border:1px solid var(--linha);
+    background:linear-gradient(180deg, #ffffff 0%, #fbf8f2 100%);
+    border-radius:14px;
+    padding:6px 10px;
+    border:1px solid rgba(230,220,200,0.7);
+    box-shadow:0 3px 0 rgba(120,95,55,0.10), 0 6px 14px rgba(74,56,32,0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+    margin-bottom:12px;
   }
+
+  /* ===== Cor de fundo por secção (tons suaves harmoniosos) ===== */
+  .categoria-painel[data-sec="entradas"]{ background:#f6ede0; }
+  .categoria-painel[data-sec="sopas-saladas"]{ background:#eef2e6; }
+  .categoria-painel[data-sec="brasa"]{ background:#f7e8de; }
+  .categoria-painel[data-sec="partilhados"]{ background:#f4ecdb; }
+  .categoria-painel[data-sec="infantil"]{ background:#eef0ea; }
+  .categoria-painel[data-sec="individuais"]{ background:#f5efe3; }
+  .categoria-painel[data-sec="peixe"]{ background:#e8eef1; }
+  .categoria-painel[data-sec="carne"]{ background:#f4e7e2; }
+  .categoria-painel[data-sec="vegetariana"]{ background:#ecf1e4; }
+  .categoria-painel[data-sec="snacks"]{ background:#f7f0de; }
+  .categoria-painel[data-sec="sandes"]{ background:#f3ede0; }
+  .categoria-painel[data-sec="domingo"]{ background:#f1e9dc; }
+  .categoria-painel[data-sec="vinhos"]{ background:#f0e8ee; }
   .item{
     display:flex; justify-content:space-between; align-items:flex-start;
     gap:10px;
@@ -660,6 +677,26 @@
   .cart-acoes button{ flex:1; padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
   .cart-fechar{ background:var(--bege); color:var(--castanho); }
   .cart-limpar{ background:var(--castanho); color:#fff; }
+
+  /* ===== Menus dos jogos (centrados e consistentes) ===== */
+  #jogoTitulo{ text-align:center; padding-right:0; }
+  #jogoConteudo{ text-align:center; }
+  .jogo-titulo{ font-size:1.08rem; color:var(--castanho); font-weight:700; margin:14px 0 2px; }
+  .jogo-menu{ display:flex; flex-direction:column; align-items:center; gap:12px; margin:18px 0 6px; }
+  .jogo-btn{
+    display:block; width:100%; max-width:250px;
+    background:linear-gradient(180deg, #5a4629 0%, var(--castanho) 100%);
+    color:#fff; border:none; border-radius:11px; padding:14px 20px; cursor:pointer;
+    font-weight:700; font-family:'Fredoka',sans-serif; font-size:1.02rem;
+    box-shadow:0 3px 0 #2f2415, 0 5px 12px rgba(0,0,0,0.25);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .jogo-btn:hover{ filter:brightness(1.06); }
+  .jogo-btn:active{ transform:translateY(3px); box-shadow:0 1px 0 #2f2415, 0 2px 5px rgba(0,0,0,0.2); }
+  .jogo-btn.claro{
+    background:linear-gradient(180deg, #fbf6ea 0%, var(--bege) 100%);
+    color:var(--castanho); box-shadow:0 3px 0 #d9ccb0, 0 5px 12px rgba(74,56,32,0.15);
+  }
 </style>
 
 <!-- Supabase REST API (sem biblioteca) -->
@@ -1421,6 +1458,7 @@
   function abrirCategoria(tile){
     const target = document.getElementById(tile.dataset.target);
     if(!target) return;
+    painel.setAttribute('data-sec', tile.dataset.target);
 
     const rect = tile.getBoundingClientRect();
     painel.style.setProperty('--origin-x', (rect.left + rect.width / 2) + 'px');
@@ -1744,9 +1782,11 @@
   let velhaModo = null; // 'ia' ou '2jogadores'
   function iniciarVelha(){
     velhaModo = null;
-    let html = '<p style="text-align:center;margin:20px 0;">Escolha o modo:</p>';
-    html += '<button onclick="selecionarVelhaModo(\'ia\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">1 Jogador (vs IA)</button>';
-    html += '<button onclick="selecionarVelhaModo(\'2jogadores\')" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin:10px;width:100%;max-width:200px;">2 Jogadores</button>';
+    let html = '<p class="jogo-titulo">Escolhe o modo:</p>' +
+      '<div class="jogo-menu">' +
+      '<button class="jogo-btn" onclick="selecionarVelhaModo(\'ia\')">1 Jogador (vs IA)</button>' +
+      '<button class="jogo-btn" onclick="selecionarVelhaModo(\'2jogadores\')">2 Jogadores</button>' +
+      '</div>';
     jogoConteudo.innerHTML = html;
   }
   window.selecionarVelhaModo = function(modo){
@@ -1768,7 +1808,7 @@
     } else if(velhaBoard.every(c => c)){
       html += `<p style="text-align:center;font-weight:bold;margin-top:10px;">Empate!</p>`;
     }
-    html += '<button onclick="iniciarVelha()" style="background:var(--castanho);color:var(--branco);padding:10px 20px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;width:100%;">Novo Jogo</button>';
+    html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarVelha()">Novo Jogo</button></div>';
     jogoConteudo.innerHTML = html;
   }
   window.jogarVelha = function(i){
@@ -1879,9 +1919,9 @@
   ];
 
   function iniciarForca(){
-    let html = '<p style="text-align:center;margin:20px 0;font-size:1.1rem;">Escolha uma categoria:</p><div style="display:grid;gap:10px;">';
+    let html = '<p class="jogo-titulo">Escolhe uma categoria:</p><div class="jogo-menu">';
     Object.keys(forcaPalavras).forEach(cat => {
-      html += `<button onclick="comecarForca('${cat}')" style="background:var(--castanho);color:var(--branco);padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:bold;">🎯 ${cat}</button>`;
+      html += `<button class="jogo-btn" onclick="comecarForca('${cat}')">${cat}</button>`;
     });
     html += '</div>';
     jogoConteudo.innerHTML = html;
@@ -2019,9 +2059,11 @@
 
   function iniciarStop(){
     stopModo = null;
-    let html = '<p style="text-align:center;margin:20px 0;font-size:1.1rem;">Escolha o modo:</p>';
-    html += '<button onclick="selecionarStopModo(\'solo\')" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;font-size:1rem;width:100%;max-width:200px;">🎮 Solo</button>';
-    html += '<button onclick="selecionarStopModo(\'multiplayer\')" style="background:var(--castanho);color:var(--branco);padding:12px 24px;border:none;border-radius:8px;cursor:pointer;margin:10px;font-size:1rem;width:100%;max-width:200px;">👥 Multiplayer</button>';
+    let html = '<p class="jogo-titulo">Escolhe o modo:</p>' +
+      '<div class="jogo-menu">' +
+      '<button class="jogo-btn" onclick="selecionarStopModo(\'solo\')">🎮 Solo</button>' +
+      '<button class="jogo-btn" onclick="selecionarStopModo(\'multiplayer\')">👥 Multiplayer</button>' +
+      '</div>';
     jogoConteudo.innerHTML = html;
   }
 
