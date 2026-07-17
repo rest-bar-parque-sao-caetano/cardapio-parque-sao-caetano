@@ -92,6 +92,16 @@
   .ajuda li{margin:4px 0;}
   code{background:var(--bege); padding:1px 5px; border-radius:5px; font-size:0.85em;}
   a.voltar{display:inline-block; margin-bottom:12px; color:var(--castanho-suave); text-decoration:none; font-size:0.85rem;}
+
+  .limpeza-linha{ display:flex; align-items:center; gap:10px; padding:6px 4px; border-bottom:1px dotted var(--linha); }
+  .limpeza-linha img{ width:44px; height:44px; object-fit:cover; border-radius:6px; background:var(--linha); flex:0 0 auto; }
+  .limpeza-linha .nome{ flex:1; font-size:0.76rem; color:var(--castanho-suave); word-break:break-all; }
+  .limpeza-linha input[type=checkbox]{ width:20px; height:20px; flex:0 0 auto; }
+  .limpeza-usada{ opacity:0.55; }
+  .limpeza-tag{ font-size:0.68rem; font-weight:700; padding:1px 6px; border-radius:6px; flex:0 0 auto; }
+  .limpeza-tag.em-uso{ background:#eaf7ee; color:var(--verde); }
+  .limpeza-tag.livre{ background:#fdecea; color:var(--vermelho); }
+  .btn-apagar{ display:block; width:100%; margin-top:12px; padding:13px; background:var(--vermelho); color:#fff; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; }
 </style>
 </head>
 <body>
@@ -312,6 +322,19 @@
 
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
+
+  <!-- LIMPEZA DE FOTOS -->
+  <details id="secLimpeza" style="margin-top:20px;">
+    <summary>🧹 Limpeza de fotos (avançado)</summary>
+    <div class="bloco-conteudo">
+      <div style="font-size:0.82rem; color:var(--castanho-suave); margin-bottom:8px;">
+        Mostra as fotos da pasta <code>imagens/</code> que já <strong>não são usadas</strong> em lado nenhum, para as poderes apagar e libertar espaço.
+        <br><br>⚠️ As fotos que abrem ao <strong>clicar num prato</strong> não aparecem no config — para segurança, só ficam pré-selecionadas as fotos carregadas por este editor.
+      </div>
+      <button type="button" class="acao" id="btnVerLimpeza" style="background:var(--castanho); margin-top:0;">🔍 Verificar fotos não usadas</button>
+      <div id="limpezaResultado" style="margin-top:12px;"></div>
+    </div>
+  </details>
 </div>
 
 <script>
@@ -786,6 +809,80 @@
       txt.style.color = document.getElementById('corFooter').value;
     });
   })();
+
+  // ---- Limpeza de fotos não usadas ----
+  document.getElementById('btnVerLimpeza').addEventListener('click', verificarFotosNaoUsadas);
+
+  async function verificarFotosNaoUsadas(){
+    const token = tokenInput.value.trim();
+    const out = document.getElementById('limpezaResultado');
+    if(!token){ out.innerHTML = '<div style="color:var(--vermelho);font-size:0.85rem;">Cola primeiro o teu token.</div>'; return; }
+    out.innerHTML = 'A analisar…';
+    try{
+      // Fotos usadas (config atual, fresco via API)
+      let usados = [];
+      const cResp = await fetch(CONFIG_API + '?t=' + Date.now(), { headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' } });
+      if(cResp.ok){
+        const cData = await cResp.json();
+        const cfg = JSON.parse(base64ParaUtf8(cData.content));
+        const grp = o => (o && Array.isArray(o.fotos)) ? o.fotos : [];
+        usados = [].concat(grp(cfg.header), grp(cfg.rodape), grp(cfg.footer));
+      }
+      // Listagem da pasta imagens/
+      const lResp = await fetch('https://api.github.com/repos/' + REPO + '/contents/imagens?t=' + Date.now(), { headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' } });
+      if(!lResp.ok){ out.innerHTML = '<div style="color:var(--vermelho);">Não consegui listar a pasta imagens/ (verifica o token).</div>'; return; }
+      const ficheiros = (await lResp.json()).filter(f => f.type === 'file');
+
+      const naoUsadas = ficheiros.filter(f => !usados.includes('imagens/' + f.name));
+      const emUso = ficheiros.length - naoUsadas.length;
+
+      if(naoUsadas.length === 0){
+        out.innerHTML = '<div style="color:var(--verde);font-size:0.9rem;">✓ Não há fotos por limpar. ' + emUso + ' em uso.</div>';
+        return;
+      }
+
+      let html = '<div style="font-size:0.85rem;margin-bottom:8px;">' + ficheiros.length + ' fotos na pasta · <strong>' + emUso + '</strong> em uso · <strong style="color:var(--vermelho);">' + naoUsadas.length + '</strong> não usadas</div>';
+      html += '<div class="limpeza-linha" style="background:var(--bege);border-radius:8px;"><input type="checkbox" id="limpezaTodas" checked><span class="nome" style="font-weight:700;color:var(--castanho);">Selecionar todas</span></div>';
+      naoUsadas.forEach(f => {
+        html += '<div class="limpeza-linha">' +
+          '<input type="checkbox" class="limpeza-check" data-path="' + f.path + '" data-sha="' + f.sha + '" checked>' +
+          '<img src="' + RAW_BASE + f.path + '" alt="" loading="lazy">' +
+          '<span class="nome">' + f.name + '</span>' +
+          '<span class="limpeza-tag livre">livre</span>' +
+          '</div>';
+      });
+      html += '<button type="button" class="btn-apagar" id="btnApagarFotos">🗑️ Apagar selecionadas</button>';
+      out.innerHTML = html;
+      document.getElementById('btnApagarFotos').addEventListener('click', apagarFotosSelecionadas);
+      document.getElementById('limpezaTodas').addEventListener('change', e => {
+        document.querySelectorAll('.limpeza-check').forEach(c => { c.checked = e.target.checked; });
+      });
+    }catch(err){
+      out.innerHTML = '<div style="color:var(--vermelho);">Erro: ' + err.message + '</div>';
+    }
+  }
+
+  async function apagarFotosSelecionadas(){
+    const token = tokenInput.value.trim();
+    const checks = Array.from(document.querySelectorAll('.limpeza-check:checked'));
+    if(checks.length === 0){ alert('Não selecionaste nenhuma foto.'); return; }
+    if(!confirm('Apagar ' + checks.length + ' foto(s) do GitHub?\n\nElas ficam no histórico do Git, mas deixam de estar na pasta.')) return;
+    const btn = document.getElementById('btnApagarFotos');
+    btn.disabled = true;
+    let apagadas = 0;
+    for(const ch of checks){
+      try{
+        const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + ch.dataset.path, {
+          method:'DELETE',
+          headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+          body: JSON.stringify({ message:'Apagar foto não usada: ' + ch.dataset.path, sha: ch.dataset.sha })
+        });
+        if(r.ok) apagadas++;
+      }catch(e){ /* continua */ }
+    }
+    setEstado('🧹 ' + apagadas + ' foto(s) apagada(s).', 'ok');
+    verificarFotosNaoUsadas();
+  }
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
