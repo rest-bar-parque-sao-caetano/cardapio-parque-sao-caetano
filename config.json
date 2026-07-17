@@ -32,8 +32,8 @@
     }
   },
   "footer": {
-    "nome": "Anuncia Aqui",
-    "morada": "Fala comigo para mais informações",
+    "nome": "",
+    "morada": "",
     "telefone": "",
     "cor": "#ffffff",
     "fotosAtivas": false,
