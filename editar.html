@@ -292,19 +292,19 @@
       <input type="file" id="novaFotoFooter" accept="image/*" multiple>
 
       <label style="margin-top:16px;">Posição da foto e do texto</label>
-      <div id="footerPreview" style="position:relative; width:100%; max-width:320px; margin:6px auto; aspect-ratio:3/4; border-radius:12px; overflow:hidden; background:#e6dcc8; touch-action:none; user-select:none; -webkit-user-select:none;">
-        <img id="fpImg" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%; transform-origin:center;">
+      <div id="footerPreview" style="position:relative; width:100%; max-width:320px; margin:6px auto; aspect-ratio:3/4; border-radius:12px; overflow:hidden; background:#4a3820; touch-action:none; user-select:none; -webkit-user-select:none;">
+        <img id="fpImg" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; transform-origin:center;">
         <div id="fpVeu" style="position:absolute; inset:0; background:rgba(0,0,0,0.30); pointer-events:none;"></div>
         <div id="fpTexto" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); color:#fff; text-align:center; cursor:move; padding:6px 8px; text-shadow:0 1px 3px rgba(0,0,0,0.6); line-height:1.25;">
           <div id="fpNome" style="font-weight:800; font-family:'Fredoka',sans-serif;"></div>
           <div id="fpMorada" style="font-size:0.85em;"></div>
           <div id="fpTelefone" style="font-size:0.85em;"></div>
         </div>
-        <div id="fpVazio" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--castanho-suave); font-size:0.85rem;">Adiciona uma foto para posicionar</div>
+        <div id="fpVazio" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#c9b892; font-size:0.85rem; text-align:center; padding:0 20px;">Adiciona uma foto para posicionar</div>
       </div>
       <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
         <span style="font-size:0.82rem; color:var(--castanho-suave); flex:0 0 auto;">Tamanho da foto</span>
-        <input type="range" id="fpZoom" min="100" max="300" step="1" value="100" style="flex:1;">
+        <input type="range" id="fpZoom" min="100" max="400" step="1" value="100" style="flex:1;">
       </div>
       <div style="font-size:0.78rem; color:var(--castanho-suave); margin-top:4px;">Arrasta a <strong>foto</strong> para a posicionar e o <strong>texto</strong> para o colocar onde quiseres.</div>
     </div>
@@ -334,7 +334,7 @@
         { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
         { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
       ] } },
-    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPosX:50, fotoPosY:50, textoX:50, textoY:50 }
+    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
   let configCarregado = false; // só se pode guardar depois de carregar
@@ -446,7 +446,7 @@
         ] };
         const carGuardado = (parsed.rodape && parsed.rodape.carrossel) || {};
         config.rodape.carrossel = { ativo: !!carGuardado.ativo, intervalo: carGuardado.intervalo || 5, inicio: carGuardado.inicio || '', fim: carGuardado.fim || '', slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
-        config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPosX:50, fotoPosY:50, textoX:50, textoY:50 }, parsed.footer || {});
+        config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 }, parsed.footer || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -534,8 +534,7 @@
       img.style.display = 'none';
       vazio.style.display = 'flex';
     }
-    img.style.objectPosition = (f.fotoPosX ?? 50) + '% ' + (f.fotoPosY ?? 50) + '%';
-    img.style.transform = 'scale(' + ((f.fotoZoom || 100) / 100) + ')';
+    img.style.transform = 'translate(' + (f.fotoPanX || 0) + '%, ' + (f.fotoPanY || 0) + '%) scale(' + ((f.fotoZoom || 100) / 100) + ')';
 
     const t = document.getElementById('fpTexto');
     t.style.left = (f.textoX ?? 50) + '%';
@@ -672,8 +671,8 @@
         fotosAtivas: document.getElementById('fotosFooterAtivas').checked,
         fotos: config.footer.fotos,
         fotoZoom: config.footer.fotoZoom || 100,
-        fotoPosX: config.footer.fotoPosX ?? 50,
-        fotoPosY: config.footer.fotoPosY ?? 50,
+        fotoPanX: config.footer.fotoPanX || 0,
+        fotoPanY: config.footer.fotoPanY || 0,
         textoX: config.footer.textoX ?? 50,
         textoY: config.footer.textoY ?? 50
       };
@@ -755,7 +754,7 @@
       dragging = 'foto';
       rect = prev.getBoundingClientRect();
       startX = e.clientX; startY = e.clientY;
-      baseX = config.footer.fotoPosX ?? 50; baseY = config.footer.fotoPosY ?? 50;
+      baseX = config.footer.fotoPanX || 0; baseY = config.footer.fotoPanY || 0;
       try{ prev.setPointerCapture(e.pointerId); }catch(err){}
     });
     document.addEventListener('pointermove', e => {
@@ -768,16 +767,16 @@
         txt.style.left = config.footer.textoX + '%';
         txt.style.top = config.footer.textoY + '%';
       } else {
-        config.footer.fotoPosX = Math.max(0, Math.min(100, baseX - dx));
-        config.footer.fotoPosY = Math.max(0, Math.min(100, baseY - dy));
-        img.style.objectPosition = config.footer.fotoPosX + '% ' + config.footer.fotoPosY + '%';
+        config.footer.fotoPanX = Math.max(-150, Math.min(150, baseX + dx));
+        config.footer.fotoPanY = Math.max(-150, Math.min(150, baseY + dy));
+        img.style.transform = 'translate(' + config.footer.fotoPanX + '%, ' + config.footer.fotoPanY + '%) scale(' + ((config.footer.fotoZoom || 100) / 100) + ')';
       }
     });
     document.addEventListener('pointerup', () => { dragging = null; });
 
     document.getElementById('fpZoom').addEventListener('input', e => {
       config.footer.fotoZoom = parseInt(e.target.value, 10) || 100;
-      img.style.transform = 'scale(' + (config.footer.fotoZoom / 100) + ')';
+      img.style.transform = 'translate(' + (config.footer.fotoPanX || 0) + '%, ' + (config.footer.fotoPanY || 0) + '%) scale(' + (config.footer.fotoZoom / 100) + ')';
     });
 
     ['footerNome','footerMorada','footerTelefone'].forEach(id => {
