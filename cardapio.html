@@ -1408,11 +1408,62 @@
 
   // Texto especial por horário na barra fixa — controlado pelo config.json.
   // window.aplicarEspecialRodape é chamado pelo carregarConfig() depois de ler o config.
+  // Decide o que a barra fixa mostra (carrossel dentro do horário, ou texto normal)
+  function dentroDoHorario(inicio, fim){
+    if(!inicio || !fim) return true; // sem horário definido = sempre
+    const p = s => { const a = String(s).split(':'); return (parseInt(a[0],10)||0)*60 + (parseInt(a[1],10)||0); };
+    const d = new Date(); const agora = d.getHours()*60 + d.getMinutes();
+    const ini = p(inicio), f = p(fim);
+    if(ini === f) return true;
+    if(ini < f) return agora >= ini && agora < f;
+    return agora >= ini || agora < f;
+  }
+
+  function restaurarTextoNormal(cfg){
+    const cont = document.querySelector('.info-fixa-texto');
+    if(!cont) return;
+    if(!document.getElementById('rodapeLinha1')){
+      cont.innerHTML =
+        '<div class="linha-negrito" id="rodapeLinha1"></div>' +
+        '<div class="linha" id="rodapeLinha2"></div>' +
+        '<div class="linha" id="rodapeLinha3"></div>' +
+        '<div class="linha" id="rodapeLinha4"></div>';
+    }
+    const sombraR = cfg.realce !== false ? '0 1px 3px rgba(0,0,0,0.55), 0 0 8px rgba(0,0,0,0.35)' : 'none';
+    ['rodapeLinha1','rodapeLinha2','rodapeLinha3','rodapeLinha4'].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(cfg.cor) el.style.color = cfg.cor;
+      el.style.textShadow = sombraR;
+      if(cfg.realce !== false) el.style.fontWeight = '700';
+    });
+    const normal = { 1:cfg.linha1||'', 2:cfg.linha2||'', 3:cfg.linha3||'', 4:cfg.linha4||'' };
+    if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(cfg.especial, normal);
+  }
+
+  window.atualizarBarraFixa = function(){
+    const cfg = window._rodapeCfg;
+    if(!cfg) return;
+    const car = cfg.carrossel;
+    const usar = car && car.ativo && Array.isArray(car.slides) && car.slides.length && dentroDoHorario(car.inicio, car.fim);
+    const modo = usar ? 'carrossel' : 'normal';
+    if(modo === window._barraFixaModo) return; // já no modo certo, não reiniciar
+    window._barraFixaModo = modo;
+    if(usar){
+      window.iniciarCarrosselRodape(car.slides, cfg.cor, cfg.realce, car.intervalo);
+    } else {
+      if(window._carrosselInterval){ clearInterval(window._carrosselInterval); window._carrosselInterval = null; }
+      restaurarTextoNormal(cfg);
+    }
+  };
+
   // Carrossel da barra fixa (roda em loop pelos slides)
-  window.iniciarCarrosselRodape = function(slides, cor, realce){
+  window.iniciarCarrosselRodape = function(slides, cor, realce, intervaloSeg){
     const cont = document.querySelector('.info-fixa-texto');
     if(!cont || !Array.isArray(slides)) return;
     if(window._carrosselInterval){ clearInterval(window._carrosselInterval); window._carrosselInterval = null; }
+    let intervaloMs = (parseInt(intervaloSeg, 10) || 5) * 1000;
+    if(intervaloMs < 2000) intervaloMs = 2000;
 
     const hoje = new Date().getDay(); // 0 = domingo
     const ativos = slides.filter(s => s && (s.titulo || (s.linhas && s.linhas.length)) && !(s.ocultarDomingo && hoje === 0));
@@ -1446,7 +1497,7 @@
         if(!el) return;
         el.classList.add('sai-esq');
         setTimeout(() => { idx = (idx + 1) % ativos.length; render(idx); }, 400);
-      }, 4500);
+      }, intervaloMs);
     }
   };
 
@@ -1734,24 +1785,13 @@
         }
       }
 
-      // Barra fixa: linhas e fotos
+      // Barra fixa: carrossel (com horário) OU texto normal — gerido por atualizarBarraFixa
       if(config.rodape){
-        const map = { linha1:'rodapeLinha1', linha2:'rodapeLinha2', linha3:'rodapeLinha3', linha4:'rodapeLinha4' };
-        const sombraR = config.rodape.realce !== false ? '0 1px 3px rgba(0,0,0,0.55), 0 0 8px rgba(0,0,0,0.35)' : 'none';
-        Object.keys(map).forEach(k => {
-          const el = document.getElementById(map[k]);
-          if(!el) return;
-          if(config.rodape.cor) el.style.color = config.rodape.cor;
-          el.style.textShadow = sombraR;
-          if(config.rodape.realce !== false) el.style.fontWeight = '700';
-        });
-        // Carrossel (Prato do Dia / Na Brasa / Sugestão) OU texto normal+especial
-        const car = config.rodape.carrossel;
-        if(car && car.ativo && Array.isArray(car.slides) && car.slides.length){
-          if(window.iniciarCarrosselRodape) window.iniciarCarrosselRodape(car.slides, config.rodape.cor, config.rodape.realce);
-        } else {
-          const normal = { 1:config.rodape.linha1||'', 2:config.rodape.linha2||'', 3:config.rodape.linha3||'', 4:config.rodape.linha4||'' };
-          if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(config.rodape.especial, normal);
+        window._rodapeCfg = config.rodape;
+        window._barraFixaModo = null; // forçar reaplicação ao carregar
+        if(window.atualizarBarraFixa) window.atualizarBarraFixa();
+        if(!window._barraFixaScheduler){
+          window._barraFixaScheduler = setInterval(() => { if(window.atualizarBarraFixa) window.atualizarBarraFixa(); }, 30000);
         }
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
