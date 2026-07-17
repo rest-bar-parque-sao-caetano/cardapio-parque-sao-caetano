@@ -11,8 +11,8 @@
     ]
   },
   "rodape": {
-    "linha1": "6.Feira Prato do Dia",
-    "linha2": "Francesinha",
+    "linha1": "",
+    "linha2": "",
     "linha3": "Bifana no Prato",
     "linha4": "Salada de Bacalhau",
     "cor": "#ffffff",
@@ -29,6 +29,36 @@
       "l2": "",
       "l3": "",
       "l4": ""
+    },
+    "carrossel": {
+      "ativo": true,
+      "slides": [
+        {
+          "titulo": "6.Feira Prato do Dia",
+          "linhas": [
+            "Francesinha",
+            "Bifana no Prato",
+            "Salada de Bacalhau"
+          ],
+          "ocultarDomingo": true
+        },
+        {
+          "titulo": "Na Brasa",
+          "linhas": [
+            "Frango assado na Brasa",
+            "Costelelinha na Brasa"
+          ],
+          "ocultarDomingo": false
+        },
+        {
+          "titulo": "Sugestão",
+          "linhas": [
+            "Mini Posta",
+            "Bacalhau à Braga"
+          ],
+          "ocultarDomingo": false
+        }
+      ]
     }
   },
   "footer": {
