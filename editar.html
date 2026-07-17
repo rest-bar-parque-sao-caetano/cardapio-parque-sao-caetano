@@ -199,6 +199,33 @@
         <input type="text" id="especialL4">
       </div>
 
+      <div class="lembrar" style="margin-top:18px;">
+        <input type="checkbox" id="carrosselAtivo">
+        <label for="carrosselAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar slideshow (Prato do Dia / Na Brasa / Sugestão)</label>
+      </div>
+      <div id="blocoCarrossel" style="display:none; margin-top:8px; padding:12px; background:var(--bege); border-radius:10px;">
+        <div style="font-size:0.8rem; color:var(--castanho-suave); margin-bottom:10px;">A barra do fundo passa a rodar entre estes cartões. Escreve um prato por linha.</div>
+
+        <label for="carrTitulo1" style="margin-top:0;">Cartão 1 — título</label>
+        <input type="text" id="carrTitulo1" placeholder="Ex: Prato do Dia">
+        <label for="carrLinhas1">Pratos (um por linha)</label>
+        <textarea id="carrLinhas1" rows="3" placeholder="Francesinha&#10;Bifana no Prato&#10;Salada de Bacalhau" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid var(--linha); font-family:inherit; font-size:0.95rem; resize:vertical;"></textarea>
+        <div class="lembrar" style="margin-top:6px;">
+          <input type="checkbox" id="carrDomingo1" checked>
+          <label for="carrDomingo1" style="margin:0; font-weight:400; color:var(--castanho-suave); display:inline;">Esconder este cartão ao domingo</label>
+        </div>
+
+        <label for="carrTitulo2" style="margin-top:14px;">Cartão 2 — título</label>
+        <input type="text" id="carrTitulo2" placeholder="Ex: Na Brasa">
+        <label for="carrLinhas2">Pratos (um por linha)</label>
+        <textarea id="carrLinhas2" rows="3" placeholder="Picanha&#10;Costelinhas" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid var(--linha); font-family:inherit; font-size:0.95rem; resize:vertical;"></textarea>
+
+        <label for="carrTitulo3" style="margin-top:14px;">Cartão 3 — título</label>
+        <input type="text" id="carrTitulo3" placeholder="Ex: Sugestão">
+        <label for="carrLinhas3">Pratos (um por linha)</label>
+        <textarea id="carrLinhas3" rows="3" placeholder="Bacalhau à Lagareiro&#10;Polvo à Lagareiro" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid var(--linha); font-family:inherit; font-size:0.95rem; resize:vertical;"></textarea>
+      </div>
+
       <label for="corRodape">Cor do texto</label>
       <div class="campo-cor">
         <input type="color" id="corRodape" value="#ffffff">
@@ -269,7 +296,12 @@
   let config = {
     header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
-      especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } },
+      especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' },
+      carrossel:{ ativo:false, slides:[
+        { titulo:'Prato do Dia', linhas:[], ocultarDomingo:true },
+        { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
+        { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
+      ] } },
     footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
@@ -375,6 +407,13 @@
         config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.header || {});
         config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
         config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
+        const carDef = { ativo:false, slides:[
+          { titulo:'Prato do Dia', linhas:[], ocultarDomingo:true },
+          { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
+          { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
+        ] };
+        const carGuardado = (parsed.rodape && parsed.rodape.carrossel) || {};
+        config.rodape.carrossel = { ativo: !!carGuardado.ativo, slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
         config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }, parsed.footer || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
@@ -419,6 +458,18 @@
     document.getElementById('especialL3').value = esp.l3 || '';
     document.getElementById('especialL4').value = esp.l4 || '';
     document.getElementById('blocoEspecial').style.display = esp.ativo ? 'block' : 'none';
+    // Carrossel
+    const car = config.rodape.carrossel || { ativo:false, slides:[] };
+    const sl = car.slides || [];
+    document.getElementById('carrosselAtivo').checked = !!car.ativo;
+    document.getElementById('blocoCarrossel').style.display = car.ativo ? 'block' : 'none';
+    document.getElementById('carrTitulo1').value = (sl[0] && sl[0].titulo) || '';
+    document.getElementById('carrLinhas1').value = (sl[0] && Array.isArray(sl[0].linhas)) ? sl[0].linhas.join('\n') : '';
+    document.getElementById('carrDomingo1').checked = sl[0] ? sl[0].ocultarDomingo !== false : true;
+    document.getElementById('carrTitulo2').value = (sl[1] && sl[1].titulo) || '';
+    document.getElementById('carrLinhas2').value = (sl[1] && Array.isArray(sl[1].linhas)) ? sl[1].linhas.join('\n') : '';
+    document.getElementById('carrTitulo3').value = (sl[2] && sl[2].titulo) || '';
+    document.getElementById('carrLinhas3').value = (sl[2] && Array.isArray(sl[2].linhas)) ? sl[2].linhas.join('\n') : '';
     document.getElementById('footerNome').value = config.footer.nome || '';
     document.getElementById('footerMorada').value = config.footer.morada || '';
     document.getElementById('footerTelefone').value = config.footer.telefone || '';
@@ -528,6 +579,15 @@
         l3: document.getElementById('especialL3').value.trim(),
         l4: document.getElementById('especialL4').value.trim()
       };
+      const linhasDe = id => document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean);
+      config.rodape.carrossel = {
+        ativo: document.getElementById('carrosselAtivo').checked,
+        slides: [
+          { titulo: document.getElementById('carrTitulo1').value.trim(), linhas: linhasDe('carrLinhas1'), ocultarDomingo: document.getElementById('carrDomingo1').checked },
+          { titulo: document.getElementById('carrTitulo2').value.trim(), linhas: linhasDe('carrLinhas2'), ocultarDomingo: false },
+          { titulo: document.getElementById('carrTitulo3').value.trim(), linhas: linhasDe('carrLinhas3'), ocultarDomingo: false }
+        ]
+      };
       config.footer = {
         nome: document.getElementById('footerNome').value.trim(),
         morada: document.getElementById('footerMorada').value.trim(),
@@ -577,6 +637,9 @@
 
   document.getElementById('especialAtivo').addEventListener('change', e => {
     document.getElementById('blocoEspecial').style.display = e.target.checked ? 'block' : 'none';
+  });
+  document.getElementById('carrosselAtivo').addEventListener('change', e => {
+    document.getElementById('blocoCarrossel').style.display = e.target.checked ? 'block' : 'none';
   });
 
   document.getElementById('corHeader').addEventListener('input', e => {
