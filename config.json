@@ -31,10 +31,10 @@
       "l4": ""
     },
     "carrossel": {
-      "ativo": false,
+      "ativo": true,
       "intervalo": 5,
-      "inicio": "",
-      "fim": "",
+      "inicio": "15:12",
+      "fim": "15:14",
       "slides": [
         {
           "titulo": "6.Feira Prato do Dia",
