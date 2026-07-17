@@ -65,13 +65,19 @@
     }
   },
   "footer": {
-    "nome": "Anuncia o que quiseres por aqui",
-    "morada": "Fala comigo!",
-    "telefone": "916254923",
+    "nome": "Anuncia o teu negocio!",
+    "morada": "Para mais informações",
+    "telefone": "Fernando - 916254923",
     "cor": "#ffffff",
     "fotosAtivas": true,
     "fotos": [
-      "imagens/1784294750566-gemini-generated-image-h2pookh2pookh2po.png"
-    ]
+      "imagens/1784294750566-gemini-generated-image-h2pookh2pookh2po.png",
+      "imagens/1784295739465-gemini-generated-image-h2pookh2pookh2po.png"
+    ],
+    "fotoZoom": 100,
+    "fotoPosX": 51.7529296875,
+    "fotoPosY": 47.51890575504001,
+    "textoX": 30.252685546875,
+    "textoY": 89.18297841173347
   }
 }
