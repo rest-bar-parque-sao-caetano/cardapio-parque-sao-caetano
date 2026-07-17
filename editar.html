@@ -206,7 +206,22 @@
       <div id="blocoCarrossel" style="display:none; margin-top:8px; padding:12px; background:var(--bege); border-radius:10px;">
         <div style="font-size:0.8rem; color:var(--castanho-suave); margin-bottom:10px;">A barra do fundo passa a rodar entre estes cartões. Escreve um prato por linha.</div>
 
-        <label for="carrTitulo1" style="margin-top:0;">Cartão 1 — título</label>
+        <label for="carrIntervalo" style="margin-top:0;">Tempo de cada cartão (segundos)</label>
+        <input type="number" id="carrIntervalo" min="2" max="60" step="1" value="5" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+
+        <label style="margin-top:14px;">Passa só neste horário (deixa vazio para passar sempre)</label>
+        <div style="display:flex; gap:12px;">
+          <div style="flex:1;">
+            <label for="carrInicio" style="margin-top:0; font-weight:400; color:var(--castanho-suave);">Início</label>
+            <input type="time" id="carrInicio" style="width:100%; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+          </div>
+          <div style="flex:1;">
+            <label for="carrFim" style="margin-top:0; font-weight:400; color:var(--castanho-suave);">Fim</label>
+            <input type="time" id="carrFim" style="width:100%; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+          </div>
+        </div>
+
+        <label for="carrTitulo1" style="margin-top:14px;">Cartão 1 — título</label>
         <input type="text" id="carrTitulo1" placeholder="Ex: Prato do Dia">
         <label for="carrLinhas1">Pratos (um por linha)</label>
         <textarea id="carrLinhas1" rows="3" placeholder="Francesinha&#10;Bifana no Prato&#10;Salada de Bacalhau" style="width:100%; padding:10px; border-radius:10px; border:1.5px solid var(--linha); font-family:inherit; font-size:0.95rem; resize:vertical;"></textarea>
@@ -297,7 +312,7 @@
     header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
       especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' },
-      carrossel:{ ativo:false, slides:[
+      carrossel:{ ativo:false, intervalo:5, inicio:'', fim:'', slides:[
         { titulo:'Prato do Dia', linhas:[], ocultarDomingo:true },
         { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
         { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
@@ -413,7 +428,7 @@
           { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
         ] };
         const carGuardado = (parsed.rodape && parsed.rodape.carrossel) || {};
-        config.rodape.carrossel = { ativo: !!carGuardado.ativo, slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
+        config.rodape.carrossel = { ativo: !!carGuardado.ativo, intervalo: carGuardado.intervalo || 5, inicio: carGuardado.inicio || '', fim: carGuardado.fim || '', slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
         config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }, parsed.footer || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
@@ -463,6 +478,9 @@
     const sl = car.slides || [];
     document.getElementById('carrosselAtivo').checked = !!car.ativo;
     document.getElementById('blocoCarrossel').style.display = car.ativo ? 'block' : 'none';
+    document.getElementById('carrIntervalo').value = car.intervalo || 5;
+    document.getElementById('carrInicio').value = car.inicio || '';
+    document.getElementById('carrFim').value = car.fim || '';
     document.getElementById('carrTitulo1').value = (sl[0] && sl[0].titulo) || '';
     document.getElementById('carrLinhas1').value = (sl[0] && Array.isArray(sl[0].linhas)) ? sl[0].linhas.join('\n') : '';
     document.getElementById('carrDomingo1').checked = sl[0] ? sl[0].ocultarDomingo !== false : true;
@@ -582,6 +600,9 @@
       const linhasDe = id => document.getElementById(id).value.split('\n').map(s => s.trim()).filter(Boolean);
       config.rodape.carrossel = {
         ativo: document.getElementById('carrosselAtivo').checked,
+        intervalo: parseInt(document.getElementById('carrIntervalo').value, 10) || 5,
+        inicio: document.getElementById('carrInicio').value,
+        fim: document.getElementById('carrFim').value,
         slides: [
           { titulo: document.getElementById('carrTitulo1').value.trim(), linhas: linhasDe('carrLinhas1'), ocultarDomingo: document.getElementById('carrDomingo1').checked },
           { titulo: document.getElementById('carrTitulo2').value.trim(), linhas: linhasDe('carrLinhas2'), ocultarDomingo: false },
