@@ -515,9 +515,6 @@
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
       }
       preencherFormulario();
-      document.getElementById('secHeader').open = true;
-      document.getElementById('secRodape').open = true;
-      document.getElementById('secFooter').open = true;
       configCarregado = true;
       document.getElementById('btnGuardar').disabled = false;
       if(lembrarInput.checked) localStorage.setItem('cardapioEditorToken', token);
