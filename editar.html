@@ -320,6 +320,44 @@
     </div>
   </details>
 
+  <!-- PUBLICIDADE NOS JOGOS -->
+  <details id="secAdJogos">
+    <summary>Publicidade nos jogos</summary>
+    <div class="bloco-conteudo">
+      <div style="font-size:0.82rem; color:var(--castanho-suave); margin-bottom:8px;">Um popup de patrocínio aparece no fim de cada jogo (Stop, Velha, Forca, Adivinhas). Só surge se estiver ativo e tiver foto.</div>
+      <div class="lembrar">
+        <input type="checkbox" id="adjAtivo">
+        <label for="adjAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar publicidade no fim dos jogos</label>
+      </div>
+
+      <label for="adjTexto">Texto do anúncio (opcional)</label>
+      <input type="text" id="adjTexto" placeholder="Ex: O teu negócio aqui!">
+
+      <label for="corAdj">Cor do texto</label>
+      <div class="campo-cor">
+        <input type="color" id="corAdj" value="#ffffff">
+        <span id="corAdjVal">#ffffff</span>
+      </div>
+
+      <label for="adjDuracao">Duração do popup (segundos)</label>
+      <input type="number" id="adjDuracao" min="2" max="20" step="1" value="5" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+
+      <label style="margin-top:14px;">Foto e posição</label>
+      <div id="adjPreview" style="position:relative; width:100%; max-width:320px; margin:6px auto; aspect-ratio:3/4; border-radius:12px; overflow:hidden; background:#4a3820; touch-action:none; user-select:none; -webkit-user-select:none;">
+        <img id="ajImg" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; transform-origin:center;">
+        <div id="ajTexto" style="position:absolute; left:50%; top:80%; transform:translate(-50%,-50%); color:#fff; text-align:center; cursor:move; padding:6px 8px; font-weight:800; font-family:'Fredoka',sans-serif; text-shadow:0 1px 3px rgba(0,0,0,0.6);"></div>
+        <div id="ajVazio" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#c9b892; font-size:0.85rem; text-align:center; padding:0 20px;">Adiciona uma foto para posicionar</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+        <span style="font-size:0.82rem; color:var(--castanho-suave); flex:0 0 auto;">Tamanho da foto</span>
+        <input type="range" id="ajZoom" min="100" max="400" step="1" value="100" style="flex:1;">
+      </div>
+      <div style="font-size:0.78rem; color:var(--castanho-suave); margin-top:4px;">Arrasta a <strong>foto</strong> e o <strong>texto</strong> para os posicionares.</div>
+      <label for="novaFotoAdj" style="margin-top:10px;">Foto do anúncio</label>
+      <input type="file" id="novaFotoAdj" accept="image/*">
+    </div>
+  </details>
+
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
 
@@ -357,7 +395,8 @@
         { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
         { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
       ] } },
-    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 }
+    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 },
+    adJogos: { ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
   let configCarregado = false; // só se pode guardar depois de carregar
@@ -470,6 +509,7 @@
         const carGuardado = (parsed.rodape && parsed.rodape.carrossel) || {};
         config.rodape.carrossel = { ativo: !!carGuardado.ativo, intervalo: carGuardado.intervalo || 5, inicio: carGuardado.inicio || '', fim: carGuardado.fim || '', slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
         config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 }, parsed.footer || {});
+        config.adJogos = Object.assign({ ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 }, parsed.adJogos || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -536,10 +576,39 @@
     document.getElementById('corFooterVal').textContent = cf;
     document.getElementById('fotosFooterAtivas').checked = config.footer.fotosAtivas === true;
     document.getElementById('fpZoom').value = config.footer.fotoZoom || 100;
+    // Publicidade dos jogos
+    const aj = config.adJogos || {};
+    document.getElementById('adjAtivo').checked = !!aj.ativo;
+    document.getElementById('adjTexto').value = aj.texto || '';
+    document.getElementById('adjDuracao').value = aj.duracao || 5;
+    const ca = aj.cor || '#ffffff';
+    document.getElementById('corAdj').value = ca;
+    document.getElementById('corAdjVal').textContent = ca;
+    document.getElementById('ajZoom').value = aj.fotoZoom || 100;
     renderListaFotos('header');
     renderListaFotos('rodape');
     renderListaFotos('footer');
     atualizarPreviewFooter();
+    atualizarPreviewAdj();
+  }
+
+  // ---- Pré-visualização / posicionamento da publicidade dos jogos ----
+  function atualizarPreviewAdj(){
+    const a = config.adJogos;
+    const img = document.getElementById('ajImg');
+    const vazio = document.getElementById('ajVazio');
+    if(a.foto){
+      img.src = RAW_BASE + a.foto;
+      img.style.display = 'block'; vazio.style.display = 'none';
+    } else {
+      img.removeAttribute('src'); img.style.display = 'none'; vazio.style.display = 'flex';
+    }
+    img.style.transform = 'translate(' + (a.fotoPanX || 0) + '%, ' + (a.fotoPanY || 0) + '%) scale(' + ((a.fotoZoom || 100) / 100) + ')';
+    const t = document.getElementById('ajTexto');
+    t.style.left = (a.textoX ?? 50) + '%';
+    t.style.top = (a.textoY ?? 80) + '%';
+    t.style.color = a.cor || '#ffffff';
+    t.textContent = document.getElementById('adjTexto').value || '';
   }
 
   // ---- Pré-visualização / posicionamento do rodapé ----
@@ -594,6 +663,18 @@
 
   // ---- Escolher novos ficheiros (guarda em memória; upload só ao Guardar) ----
   let filasUpload = { header:[], rodape:[], footer:[] };
+  let filaAdj = null;
+  document.getElementById('novaFotoAdj').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    filaAdj = f;
+    const img = document.getElementById('ajImg');
+    img.src = URL.createObjectURL(f);
+    img.style.display = 'block';
+    document.getElementById('ajVazio').style.display = 'none';
+    if(!config.adJogos.foto) config.adJogos._previewLocal = true;
+    setEstado('Foto do anúncio pronta. Clica em Guardar tudo.', 'info');
+  });
   document.getElementById('novaFotoHeader').addEventListener('change', e => {
     filasUpload.header.push(...e.target.files);
     marcarPendentes('header', e.target.files.length);
@@ -647,10 +728,16 @@
         const caminho = await enviarFoto(file, token);
         config.footer.fotos.push(caminho);
       }
+      if(filaAdj){
+        setEstado('A enviar foto do anúncio…', 'info');
+        config.adJogos.foto = await enviarFoto(filaAdj, token);
+        filaAdj = null;
+      }
       filasUpload = { header:[], rodape:[], footer:[] };
       document.getElementById('novaFotoHeader').value = '';
       document.getElementById('novaFotoRodape').value = '';
       document.getElementById('novaFotoFooter').value = '';
+      document.getElementById('novaFotoAdj').value = '';
 
       // 2. Atualizar textos a partir do formulário
       config.header.titulo = document.getElementById('titulo').value.trim();
@@ -698,6 +785,18 @@
         fotoPanY: config.footer.fotoPanY || 0,
         textoX: config.footer.textoX ?? 50,
         textoY: config.footer.textoY ?? 50
+      };
+      config.adJogos = {
+        ativo: document.getElementById('adjAtivo').checked,
+        foto: config.adJogos.foto || '',
+        fotoZoom: config.adJogos.fotoZoom || 100,
+        fotoPanX: config.adJogos.fotoPanX || 0,
+        fotoPanY: config.adJogos.fotoPanY || 0,
+        texto: document.getElementById('adjTexto').value.trim(),
+        textoX: config.adJogos.textoX ?? 50,
+        textoY: config.adJogos.textoY ?? 80,
+        cor: document.getElementById('corAdj').value,
+        duracao: parseInt(document.getElementById('adjDuracao').value, 10) || 5
       };
 
       // 3. Gravar config.json
@@ -810,6 +909,58 @@
     });
   })();
 
+  // ---- Interação da pré-visualização do anúncio dos jogos ----
+  (function(){
+    const prev = document.getElementById('adjPreview');
+    const txt = document.getElementById('ajTexto');
+    const img = document.getElementById('ajImg');
+    let dragging = null, startX, startY, baseX, baseY, rect;
+
+    txt.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      dragging = 'texto';
+      rect = prev.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      baseX = config.adJogos.textoX ?? 50; baseY = config.adJogos.textoY ?? 80;
+      try{ txt.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    prev.addEventListener('pointerdown', e => {
+      if(e.target === txt || txt.contains(e.target)) return;
+      if(!(config.adJogos.foto || config.adJogos._previewLocal)) return;
+      dragging = 'foto';
+      rect = prev.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      baseX = config.adJogos.fotoPanX || 0; baseY = config.adJogos.fotoPanY || 0;
+      try{ prev.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    document.addEventListener('pointermove', e => {
+      if(!dragging || !rect) return;
+      const dx = (e.clientX - startX) / rect.width * 100;
+      const dy = (e.clientY - startY) / rect.height * 100;
+      if(dragging === 'texto'){
+        config.adJogos.textoX = Math.max(2, Math.min(98, baseX + dx));
+        config.adJogos.textoY = Math.max(6, Math.min(94, baseY + dy));
+        txt.style.left = config.adJogos.textoX + '%';
+        txt.style.top = config.adJogos.textoY + '%';
+      } else {
+        config.adJogos.fotoPanX = Math.max(-150, Math.min(150, baseX + dx));
+        config.adJogos.fotoPanY = Math.max(-150, Math.min(150, baseY + dy));
+        img.style.transform = 'translate(' + config.adJogos.fotoPanX + '%, ' + config.adJogos.fotoPanY + '%) scale(' + ((config.adJogos.fotoZoom || 100) / 100) + ')';
+      }
+    });
+    document.addEventListener('pointerup', () => { dragging = null; });
+
+    document.getElementById('ajZoom').addEventListener('input', e => {
+      config.adJogos.fotoZoom = parseInt(e.target.value, 10) || 100;
+      img.style.transform = 'translate(' + (config.adJogos.fotoPanX || 0) + '%, ' + (config.adJogos.fotoPanY || 0) + '%) scale(' + (config.adJogos.fotoZoom / 100) + ')';
+    });
+    document.getElementById('adjTexto').addEventListener('input', () => { txt.textContent = document.getElementById('adjTexto').value; });
+    document.getElementById('corAdj').addEventListener('input', e => {
+      document.getElementById('corAdjVal').textContent = e.target.value;
+      txt.style.color = e.target.value;
+    });
+  })();
+
   // ---- Limpeza de fotos não usadas ----
   document.getElementById('btnVerLimpeza').addEventListener('click', verificarFotosNaoUsadas);
 
@@ -827,6 +978,7 @@
         const cfg = JSON.parse(base64ParaUtf8(cData.content));
         const grp = o => (o && Array.isArray(o.fotos)) ? o.fotos : [];
         usados = [].concat(grp(cfg.header), grp(cfg.rodape), grp(cfg.footer));
+        if(cfg.adJogos && cfg.adJogos.foto) usados.push(cfg.adJogos.foto);
       }
       // Listagem da pasta imagens/
       const lResp = await fetch('https://api.github.com/repos/' + REPO + '/contents/imagens?t=' + Date.now(), { headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' } });
