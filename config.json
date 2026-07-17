@@ -31,7 +31,7 @@
       "l4": ""
     },
     "carrossel": {
-      "ativo": true,
+      "ativo": false,
       "slides": [
         {
           "titulo": "6.Feira Prato do Dia",
