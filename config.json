@@ -69,7 +69,9 @@
     "morada": "Fala comigo!",
     "telefone": "916254923",
     "cor": "#ffffff",
-    "fotosAtivas": false,
-    "fotos": []
+    "fotosAtivas": true,
+    "fotos": [
+      "imagens/1784294750566-gemini-generated-image-h2pookh2pookh2po.png"
+    ]
   }
 }
