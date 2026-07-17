@@ -120,6 +120,31 @@
   }
   .tile.active{ outline:3px solid var(--dourado); outline-offset:-3px; }
 
+  /* Tile dos Jogos — cor de destaque (chama a atenção) */
+  .tile[data-target="jogos"]{
+    background:linear-gradient(180deg, #d98a2b 0%, #b5701d 100%) !important;
+    box-shadow:0 4px 0 #7d4c12, 0 6px 12px rgba(120,70,20,0.4), inset 0 1px 0 rgba(255,255,255,0.35) !important;
+  }
+  .tile[data-target="jogos"] .tile-label{
+    color:#fff !important;
+    text-shadow:1px 1px 0 rgba(0,0,0,0.4), 2px 2px 0 rgba(0,0,0,0.3), 3px 3px 2px rgba(0,0,0,0.25) !important;
+  }
+
+  /* Slogan da secção de jogos */
+  .jogos-slogan{
+    text-align:center;
+    font-family:'Fredoka',sans-serif;
+    font-size:1.15rem;
+    font-weight:600;
+    color:#fff;
+    background:linear-gradient(180deg, #d98a2b 0%, #b5701d 100%);
+    padding:14px 16px;
+    border-radius:12px;
+    margin-bottom:14px;
+    box-shadow:0 3px 8px rgba(120,70,20,0.35);
+    text-shadow:1px 1px 2px rgba(0,0,0,0.3);
+  }
+
   .tile-emoji{display:none;}
   .tile-label{
     font-family:'Fredoka',sans-serif;
@@ -1196,6 +1221,7 @@
   </section>
 
   <section class="categoria" id="jogos">
+    <div class="jogos-slogan" data-en="Play all you want — it's on us!" data-fr="Joue autant que tu veux — c'est offert !" data-es="¡Juega cuanto quieras — es gratis!">🎉 Joga à vontade, que não pagas!</div>
     <details class="grupo-prato">
       <summary data-en="Games" data-fr="Jeux" data-es="Juegos">Jogos</summary>
       <div class="card-lista">
@@ -1730,10 +1756,10 @@
     renderVelha();
   };
   function renderVelha(){
-    let html = `<p style="text-align:center;font-weight:bold;margin:10px 0;">Vez de: <span style="color:var(--castanho);font-size:1.2rem;">${velhaJogadorAtual}</span></p>`;
+    let html = `<p style="text-align:center;font-weight:bold;margin:10px 0;">Vez de: <span style="color:#000;font-size:1.4rem;font-weight:900;">${velhaJogadorAtual}</span></p>`;
     html += '<div style="display:grid;grid-template-columns:repeat(3,80px);gap:10px;margin:20px auto;width:fit-content;">';
     velhaBoard.forEach((cell, i) => {
-      html += `<button onclick="jogarVelha(${i})" style="width:80px;height:80px;font-size:2rem;background:var(--bege);border:2px solid var(--linha);cursor:pointer;${cell?'pointer-events:none;opacity:0.6':''};">${cell}</button>`;
+      html += `<button onclick="jogarVelha(${i})" style="width:80px;height:80px;font-size:2.4rem;font-weight:900;color:#000;background:var(--bege);border:2px solid var(--linha);cursor:pointer;${cell?'pointer-events:none;':''}">${cell}</button>`;
     });
     html += '</div>';
     let vencedor = verificarVencedorVelha();
