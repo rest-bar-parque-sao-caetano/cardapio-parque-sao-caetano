@@ -565,11 +565,11 @@
     min-height:100px;
   }
   .info-fixa-fotos{
-    position:fixed;
-    bottom:0; left:0; right:0;
-    z-index:101;
+    position:absolute;
+    inset:0;
+    z-index:0;
     width:100%;
-    height:100px;
+    height:100%;
     border-radius:0;
     overflow:hidden;
     background:transparent;
@@ -681,6 +681,18 @@
   .cart-acoes button{ flex:1; padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
   .cart-fechar{ background:var(--bege); color:var(--castanho); }
   .cart-limpar{ background:var(--castanho); color:#fff; }
+
+  /* Escolha de tamanho/dose */
+  #escOverlay{ position:fixed; inset:0; z-index:450; background:rgba(0,0,0,0.5); display:none; align-items:flex-end; justify-content:center; }
+  #escOverlay.aberto{ display:flex; }
+  .esc-painel{ background:var(--branco); width:100%; max-width:520px; border-radius:18px 18px 0 0; padding:18px 16px 24px; animation:cartSobe .2s ease; }
+  .esc-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1.1rem; text-align:center; margin-bottom:4px; }
+  .esc-sub{ text-align:center; font-size:0.82rem; color:var(--castanho-suave); margin-bottom:14px; }
+  .esc-lista{ display:flex; flex-direction:column; gap:10px; }
+  .esc-op{ display:flex; justify-content:space-between; align-items:center; width:100%; padding:14px 16px; border:1.5px solid var(--linha); border-radius:11px; background:var(--bege); color:var(--castanho); font-weight:700; font-family:'Fredoka',sans-serif; font-size:1rem; cursor:pointer; }
+  .esc-op span{ color:var(--dourado); }
+  .esc-op:active{ transform:scale(0.98); }
+  .esc-cancelar{ width:100%; margin-top:14px; padding:12px; border:none; border-radius:11px; background:var(--castanho); color:#fff; font-weight:700; font-family:'Fredoka',sans-serif; cursor:pointer; }
 
   /* ===== Menus dos jogos (centrados e consistentes) ===== */
   #jogoTitulo{ text-align:center; padding-right:0; }
@@ -1506,7 +1518,7 @@
     target.classList.add('ativa');
     painelConteudo.appendChild(target);
 
-    document.querySelectorAll('.grupo-prato').forEach(det => { det.open = false; });
+    document.querySelectorAll('.grupo-prato, .grupo-vinho').forEach(det => { det.open = false; });
     const grupo = target.querySelector('.grupo-prato');
     if (grupo) grupo.open = true;
 
@@ -2522,6 +2534,55 @@
       });
     }
 
+    // ---- Escolha de tamanho/dose ----
+    const escOverlay = document.createElement('div');
+    escOverlay.id = 'escOverlay';
+    escOverlay.innerHTML = '<div class="esc-painel" id="escPainel"></div>';
+    document.body.appendChild(escOverlay);
+    escOverlay.addEventListener('click', e => { if(e.target === escOverlay) escOverlay.classList.remove('aberto'); });
+
+    function feedbackBtn(b){
+      b.textContent = '✓'; b.style.background = '#3b8a4f';
+      setTimeout(() => { b.textContent = '+'; b.style.background = ''; }, 700);
+    }
+
+    // Devolve lista de opções [{label, preco}] se o item tiver vários tamanhos/doses; senão null
+    function opcoesDoItem(item, precoEl){
+      const seg = item.nextElementSibling;
+      if(seg && seg.classList && seg.classList.contains('tabela-doses')){
+        const doses = Array.from(seg.querySelectorAll('.dose')).map(td => td.textContent.trim());
+        const precos = Array.from(seg.querySelectorAll('.preco-dose')).map(td => td.textContent.trim());
+        if(doses.length) return doses.map((d, i) => ({ label:d, preco:precos[i] || '' }));
+      }
+      const precoTxt = precoEl ? precoEl.textContent.trim() : '';
+      if(precoTxt.includes('/')){
+        const partes = precoTxt.split('/').map(s => s.trim()).filter(Boolean);
+        if(partes.length === 2) return [{ label:'Meia dose', preco:partes[0] }, { label:'Dose', preco:partes[1] }];
+        if(partes.length > 2) return partes.map((p, i) => ({ label:'Opção ' + (i+1), preco:p }));
+      }
+      return null;
+    }
+
+    function abrirEscolha(nome, ops, btnRef){
+      const p = document.getElementById('escPainel');
+      let html = '<h3>' + nome + '</h3><p class="esc-sub">Escolhe o tamanho:</p><div class="esc-lista">';
+      ops.forEach((o, i) => {
+        html += '<button class="esc-op" data-i="' + i + '">' + o.label + (o.preco ? '<span>' + o.preco + '</span>' : '') + '</button>';
+      });
+      html += '</div><button class="esc-cancelar" id="escCancelar">Cancelar</button>';
+      p.innerHTML = html;
+      p.querySelectorAll('.esc-op').forEach(b => {
+        b.onclick = () => {
+          const o = ops[parseInt(b.dataset.i, 10)];
+          adicionarALista(nome + ' (' + o.label + ')', o.preco);
+          escOverlay.classList.remove('aberto');
+          if(btnRef) feedbackBtn(btnRef);
+        };
+      });
+      document.getElementById('escCancelar').onclick = () => escOverlay.classList.remove('aberto');
+      escOverlay.classList.add('aberto');
+    }
+
     // Adicionar botão "+" a cada prato/bebida (exceto na secção de jogos)
     document.querySelectorAll('main .item').forEach(item => {
       if(item.closest('#jogos')) return;
@@ -2535,10 +2596,13 @@
       btn.setAttribute('aria-label','Adicionar à lista');
       btn.addEventListener('click', e => {
         e.stopPropagation();
-        adicionarALista(nomeEl.textContent.trim(), precoEl ? precoEl.textContent.trim() : '');
-        btn.textContent = '✓';
-        btn.style.background = '#3b8a4f';
-        setTimeout(() => { btn.textContent = '+'; btn.style.background = ''; }, 700);
+        const ops = opcoesDoItem(item, precoEl);
+        if(ops && ops.length){
+          abrirEscolha(nomeEl.textContent.trim(), ops, btn);
+        } else {
+          adicionarALista(nomeEl.textContent.trim(), precoEl ? precoEl.textContent.trim() : '');
+          feedbackBtn(btn);
+        }
       });
       item.appendChild(btn);
     });
