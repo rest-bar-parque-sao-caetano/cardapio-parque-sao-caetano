@@ -3,7 +3,7 @@
 <html lang="pt-PT">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Rest & Bar Parque São Caetano — Cardápio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -28,13 +28,13 @@
     min-height:100vh;
     padding-bottom:96px;
   }
+  html{ background:var(--castanho); }
   header{
-    position:sticky; top:0; z-index:50;
+    position:relative; z-index:50;
     background:var(--castanho);
-    padding:20px 16px 14px;
+    padding:calc(16px + env(safe-area-inset-top)) 16px 14px;
     border-bottom:1px solid var(--castanho);
     text-align:center;
-    position:relative;
   }
   header .brand-mark{
     font-family:'Fredoka',sans-serif;
