@@ -582,7 +582,7 @@
     content:''; position:absolute; inset:0; z-index:1;
     background:rgba(0,0,0,0.28); pointer-events:none;
   }
-  .info-fixa-texto{flex:1; text-align:center; min-width:0; position:relative; z-index:102;}
+  .info-fixa-texto{flex:1; text-align:center; min-width:0; position:relative; z-index:102; transform:translateY(-6px);}
   .info-fixa-texto .linha-negrito{
     font-family:'Fredoka',sans-serif;
     color:var(--branco);
@@ -641,16 +641,16 @@
   .btn-add-lista:active{ transform:scale(0.85); }
 
   #cartBtn{
-    position:fixed; right:16px; bottom:118px; z-index:200;
-    width:56px; height:56px; border-radius:50%; border:none;
-    background:var(--castanho); color:#fff; font-size:1.5rem; cursor:pointer;
-    box-shadow:0 4px 14px rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center;
+    position:fixed; left:14px; bottom:77px; z-index:200;
+    width:46px; height:46px; border-radius:50%; border:none;
+    background:#c0392b; color:#fff; font-size:1.2rem; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;
   }
   #cartBtn .cart-badge{
     position:absolute; top:-5px; right:-5px; background:var(--dourado);
-    color:#fff; font-size:0.72rem; font-weight:700; min-width:20px; height:20px;
-    border-radius:10px; display:flex; align-items:center; justify-content:center;
-    padding:0 5px; border:2px solid var(--branco);
+    color:#fff; font-size:0.68rem; font-weight:700; min-width:18px; height:18px;
+    border-radius:9px; display:flex; align-items:center; justify-content:center;
+    padding:0 4px; border:2px solid var(--branco);
   }
   #cartBtn.escondido{ display:none; }
 
@@ -697,6 +697,43 @@
     background:linear-gradient(180deg, #fbf6ea 0%, var(--bege) 100%);
     color:var(--castanho); box-shadow:0 3px 0 #d9ccb0, 0 5px 12px rgba(74,56,32,0.15);
   }
+
+  /* ===== Botão de partilha / recomendar ===== */
+  #shareBtn{
+    position:fixed; right:14px; bottom:77px; z-index:200;
+    width:46px; height:46px; border-radius:50%; border:none;
+    background:linear-gradient(45deg,#f09433,#dc2743,#bc1888); color:#fff;
+    font-size:1.2rem; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;
+  }
+  #shareBtn.escondido{ display:none; }
+
+  #shareOverlay{
+    position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.5);
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  #shareOverlay.aberto{ display:flex; }
+  .share-painel{
+    background:var(--branco); width:100%; max-width:520px;
+    border-radius:18px 18px 0 0; padding:20px 16px 26px; text-align:center;
+    animation:cartSobe .2s ease;
+  }
+  .share-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1.2rem; margin-bottom:6px; }
+  .share-painel p.sub{ font-size:0.86rem; color:var(--castanho-suave); margin-bottom:12px; }
+  .share-legenda{
+    background:var(--bege); border-radius:10px; padding:12px; font-size:0.86rem;
+    color:var(--castanho); text-align:left; white-space:pre-wrap; line-height:1.45; margin-bottom:14px;
+  }
+  .share-acoes{ display:flex; flex-direction:column; gap:10px; }
+  .share-acoes button, .share-acoes a{
+    display:block; width:100%; padding:13px; border:none; border-radius:11px; cursor:pointer;
+    font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; text-decoration:none; text-align:center;
+  }
+  .share-copiar{ background:var(--castanho); color:#fff; }
+  .share-nativo{ background:var(--dourado); color:#fff; }
+  .share-ig{ background:linear-gradient(45deg,#f09433,#dc2743,#bc1888); color:#fff; }
+  .share-fb{ background:#1877f2; color:#fff; }
+  .share-fechar{ background:var(--bege); color:var(--castanho); }
 </style>
 
 <!-- Supabase REST API (sem biblioteca) -->
@@ -2521,6 +2558,69 @@
     });
 
     atualizarBadge();
+  })();
+
+  // ==========================================================
+  //  BOTÃO DE PARTILHA / RECOMENDAR
+  // ==========================================================
+  (function(){
+    const IG_URL = 'https://www.instagram.com/restbarparquedesaocaetano/';
+    const FB_URL = 'https://www.facebook.com/profile.php?id=61581115361220';
+    const LEGENDA = 'Comi muito bem no Rest & Bar Parque São Caetano! 😋🍽️\n@restbarparquedesaocaetano\n#RestBarParqueSaoCaetano #ParqueSaoCaetano #VilarDoParaiso #VilaNovaDeGaia #Gaia #Restaurante #ComidaPortuguesa #Petiscos';
+
+    const btn = document.createElement('button');
+    btn.id = 'shareBtn';
+    btn.innerHTML = '📣';
+    btn.setAttribute('aria-label','Partilhar e recomendar');
+    document.body.appendChild(btn);
+
+    const overlay = document.createElement('div');
+    overlay.id = 'shareOverlay';
+    overlay.innerHTML = '<div class="share-painel" id="sharePainel"></div>';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('aberto'); });
+    btn.addEventListener('click', abrir);
+
+    function abrir(){
+      const p = document.getElementById('sharePainel');
+      p.innerHTML =
+        '<h3>Gostaste? Partilha! 💛</h3>' +
+        '<p class="sub">Copia a legenda e marca-nos na tua publicação:</p>' +
+        '<div class="share-legenda" id="shareLegenda">' + LEGENDA + '</div>' +
+        '<div class="share-acoes">' +
+        '<button class="share-copiar" id="shareCopiar">📋 Copiar legenda</button>' +
+        (navigator.share ? '<button class="share-nativo" id="shareNativo">Partilhar…</button>' : '') +
+        '<a class="share-ig" href="' + IG_URL + '" target="_blank" rel="noopener">Abrir Instagram</a>' +
+        '<a class="share-fb" href="' + FB_URL + '" target="_blank" rel="noopener">Abrir Facebook</a>' +
+        '<button class="share-fechar" id="shareFechar">Fechar</button>' +
+        '</div>';
+      document.getElementById('shareCopiar').onclick = () => {
+        const b = document.getElementById('shareCopiar');
+        navigator.clipboard.writeText(LEGENDA).then(() => {
+          b.textContent = '✓ Copiado!';
+          setTimeout(() => { b.textContent = '📋 Copiar legenda'; }, 1500);
+        }).catch(() => { alert('Seleciona e copia a legenda manualmente.'); });
+      };
+      const nat = document.getElementById('shareNativo');
+      if(nat) nat.onclick = () => { navigator.share({ text: LEGENDA, url: IG_URL }).catch(() => {}); };
+      document.getElementById('shareFechar').onclick = () => overlay.classList.remove('aberto');
+      overlay.classList.add('aberto');
+    }
+
+    function emJogos(){
+      const mj = document.getElementById('modalJogo');
+      if(mj && mj.classList.contains('aberto')) return true;
+      const painel = document.getElementById('categoriaPainel');
+      const jogos = document.getElementById('jogos');
+      if(painel && painel.classList.contains('aberto') && jogos && jogos.closest('#categoriaPainel')) return true;
+      return false;
+    }
+    function vis(){ if(emJogos()) btn.classList.add('escondido'); else btn.classList.remove('escondido'); }
+    ['categoriaPainel','modalJogo'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) new MutationObserver(vis).observe(el, { attributes:true, attributeFilter:['class'] });
+    });
+    vis();
   })();
 </script>
 
