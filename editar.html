@@ -290,6 +290,23 @@
       <label>Fotos do rodapé (rodam automaticamente)</label>
       <div class="lista-fotos" id="listaFotosFooter"></div>
       <input type="file" id="novaFotoFooter" accept="image/*" multiple>
+
+      <label style="margin-top:16px;">Posição da foto e do texto</label>
+      <div id="footerPreview" style="position:relative; width:100%; max-width:320px; margin:6px auto; aspect-ratio:3/4; border-radius:12px; overflow:hidden; background:#e6dcc8; touch-action:none; user-select:none; -webkit-user-select:none;">
+        <img id="fpImg" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%; transform-origin:center;">
+        <div id="fpVeu" style="position:absolute; inset:0; background:rgba(0,0,0,0.30); pointer-events:none;"></div>
+        <div id="fpTexto" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); color:#fff; text-align:center; cursor:move; padding:6px 8px; text-shadow:0 1px 3px rgba(0,0,0,0.6); line-height:1.25;">
+          <div id="fpNome" style="font-weight:800; font-family:'Fredoka',sans-serif;"></div>
+          <div id="fpMorada" style="font-size:0.85em;"></div>
+          <div id="fpTelefone" style="font-size:0.85em;"></div>
+        </div>
+        <div id="fpVazio" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--castanho-suave); font-size:0.85rem;">Adiciona uma foto para posicionar</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+        <span style="font-size:0.82rem; color:var(--castanho-suave); flex:0 0 auto;">Tamanho da foto</span>
+        <input type="range" id="fpZoom" min="100" max="300" step="1" value="100" style="flex:1;">
+      </div>
+      <div style="font-size:0.78rem; color:var(--castanho-suave); margin-top:4px;">Arrasta a <strong>foto</strong> para a posicionar e o <strong>texto</strong> para o colocar onde quiseres.</div>
     </div>
   </details>
 
@@ -317,7 +334,7 @@
         { titulo:'Na Brasa', linhas:[], ocultarDomingo:false },
         { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
       ] } },
-    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }
+    footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPosX:50, fotoPosY:50, textoX:50, textoY:50 }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
   let configCarregado = false; // só se pode guardar depois de carregar
@@ -429,7 +446,7 @@
         ] };
         const carGuardado = (parsed.rodape && parsed.rodape.carrossel) || {};
         config.rodape.carrossel = { ativo: !!carGuardado.ativo, intervalo: carGuardado.intervalo || 5, inicio: carGuardado.inicio || '', fim: carGuardado.fim || '', slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
-        config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[] }, parsed.footer || {});
+        config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPosX:50, fotoPosY:50, textoX:50, textoY:50 }, parsed.footer || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -495,9 +512,38 @@
     document.getElementById('corFooter').value = cf;
     document.getElementById('corFooterVal').textContent = cf;
     document.getElementById('fotosFooterAtivas').checked = config.footer.fotosAtivas === true;
+    document.getElementById('fpZoom').value = config.footer.fotoZoom || 100;
     renderListaFotos('header');
     renderListaFotos('rodape');
     renderListaFotos('footer');
+    atualizarPreviewFooter();
+  }
+
+  // ---- Pré-visualização / posicionamento do rodapé ----
+  function atualizarPreviewFooter(){
+    const f = config.footer;
+    const img = document.getElementById('fpImg');
+    const vazio = document.getElementById('fpVazio');
+    const temFoto = Array.isArray(f.fotos) && f.fotos.length > 0;
+    if(temFoto){
+      img.src = RAW_BASE + f.fotos[0];
+      img.style.display = 'block';
+      vazio.style.display = 'none';
+    } else {
+      img.removeAttribute('src');
+      img.style.display = 'none';
+      vazio.style.display = 'flex';
+    }
+    img.style.objectPosition = (f.fotoPosX ?? 50) + '% ' + (f.fotoPosY ?? 50) + '%';
+    img.style.transform = 'scale(' + ((f.fotoZoom || 100) / 100) + ')';
+
+    const t = document.getElementById('fpTexto');
+    t.style.left = (f.textoX ?? 50) + '%';
+    t.style.top = (f.textoY ?? 50) + '%';
+    t.style.color = f.cor || '#ffffff';
+    document.getElementById('fpNome').textContent = document.getElementById('footerNome').value || 'Nome';
+    document.getElementById('fpMorada').textContent = document.getElementById('footerMorada').value || 'Morada';
+    document.getElementById('fpTelefone').textContent = document.getElementById('footerTelefone').value || 'Telefone';
   }
 
   function renderListaFotos(qual){
@@ -537,6 +583,15 @@
   document.getElementById('novaFotoFooter').addEventListener('change', e => {
     filasUpload.footer.push(...e.target.files);
     marcarPendentes('footer', e.target.files.length);
+    // Mostrar já a nova foto na pré-visualização (antes de guardar)
+    if(e.target.files[0]){
+      const img = document.getElementById('fpImg');
+      img.src = URL.createObjectURL(e.target.files[0]);
+      img.style.display = 'block';
+      document.getElementById('fpVazio').style.display = 'none';
+      // permitir arrastar a foto mesmo antes de estar em config.footer.fotos
+      if(!(config.footer.fotos && config.footer.fotos.length)) config.footer._previewLocal = true;
+    }
   });
   function marcarPendentes(qual, n){
     const nome = qual==='header'?'Cabeçalho':(qual==='rodape'?'Barra fixa':'Rodapé');
@@ -615,7 +670,12 @@
         telefone: document.getElementById('footerTelefone').value.trim(),
         cor: document.getElementById('corFooter').value,
         fotosAtivas: document.getElementById('fotosFooterAtivas').checked,
-        fotos: config.footer.fotos
+        fotos: config.footer.fotos,
+        fotoZoom: config.footer.fotoZoom || 100,
+        fotoPosX: config.footer.fotoPosX ?? 50,
+        fotoPosY: config.footer.fotoPosY ?? 50,
+        textoX: config.footer.textoX ?? 50,
+        textoY: config.footer.textoY ?? 50
       };
 
       // 3. Gravar config.json
@@ -672,6 +732,61 @@
   document.getElementById('corFooter').addEventListener('input', e => {
     document.getElementById('corFooterVal').textContent = e.target.value;
   });
+
+  // ---- Interação da pré-visualização do rodapé (arrastar foto/texto + zoom) ----
+  (function(){
+    const prev = document.getElementById('footerPreview');
+    const txt = document.getElementById('fpTexto');
+    const img = document.getElementById('fpImg');
+    let dragging = null, startX, startY, baseX, baseY, rect;
+
+    txt.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      dragging = 'texto';
+      rect = prev.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      baseX = config.footer.textoX ?? 50; baseY = config.footer.textoY ?? 50;
+      try{ txt.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    prev.addEventListener('pointerdown', e => {
+      if(e.target === txt || txt.contains(e.target)) return;
+      const temFoto = (config.footer.fotos && config.footer.fotos.length) || config.footer._previewLocal;
+      if(!temFoto) return;
+      dragging = 'foto';
+      rect = prev.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      baseX = config.footer.fotoPosX ?? 50; baseY = config.footer.fotoPosY ?? 50;
+      try{ prev.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    document.addEventListener('pointermove', e => {
+      if(!dragging || !rect) return;
+      const dx = (e.clientX - startX) / rect.width * 100;
+      const dy = (e.clientY - startY) / rect.height * 100;
+      if(dragging === 'texto'){
+        config.footer.textoX = Math.max(2, Math.min(98, baseX + dx));
+        config.footer.textoY = Math.max(6, Math.min(94, baseY + dy));
+        txt.style.left = config.footer.textoX + '%';
+        txt.style.top = config.footer.textoY + '%';
+      } else {
+        config.footer.fotoPosX = Math.max(0, Math.min(100, baseX - dx));
+        config.footer.fotoPosY = Math.max(0, Math.min(100, baseY - dy));
+        img.style.objectPosition = config.footer.fotoPosX + '% ' + config.footer.fotoPosY + '%';
+      }
+    });
+    document.addEventListener('pointerup', () => { dragging = null; });
+
+    document.getElementById('fpZoom').addEventListener('input', e => {
+      config.footer.fotoZoom = parseInt(e.target.value, 10) || 100;
+      img.style.transform = 'scale(' + (config.footer.fotoZoom / 100) + ')';
+    });
+
+    ['footerNome','footerMorada','footerTelefone'].forEach(id => {
+      document.getElementById(id).addEventListener('input', atualizarPreviewFooter);
+    });
+    document.getElementById('corFooter').addEventListener('input', () => {
+      txt.style.color = document.getElementById('corFooter').value;
+    });
+  })();
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
