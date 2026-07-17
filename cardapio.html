@@ -698,42 +698,35 @@
     color:var(--castanho); box-shadow:0 3px 0 #d9ccb0, 0 5px 12px rgba(74,56,32,0.15);
   }
 
-  /* ===== Botão de partilha / recomendar ===== */
-  #shareBtn{
+  /* ===== Photobooth (foto com moldura) ===== */
+  #camBtn{
     position:fixed; right:14px; bottom:77px; z-index:200;
     width:46px; height:46px; border-radius:50%; border:none;
-    background:linear-gradient(45deg,#f09433,#dc2743,#bc1888); color:#fff;
+    background:linear-gradient(180deg, #a8712f 0%, #8a5a24 100%); color:#fff;
     font-size:1.2rem; cursor:pointer;
     box-shadow:0 4px 12px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;
   }
-  #shareBtn.escondido{ display:none; }
-
-  #shareOverlay{
-    position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.5);
-    display:none; align-items:flex-end; justify-content:center;
+  #camBtn.escondido{ display:none; }
+  #camOverlay{
+    position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.72);
+    display:none; align-items:center; justify-content:center; padding:16px;
   }
-  #shareOverlay.aberto{ display:flex; }
-  .share-painel{
-    background:var(--branco); width:100%; max-width:520px;
-    border-radius:18px 18px 0 0; padding:20px 16px 26px; text-align:center;
+  #camOverlay.aberto{ display:flex; }
+  .cam-painel{
+    background:var(--branco); width:100%; max-width:520px; border-radius:16px;
+    padding:16px; text-align:center; max-height:92vh; overflow-y:auto;
     animation:cartSobe .2s ease;
   }
-  .share-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1.2rem; margin-bottom:6px; }
-  .share-painel p.sub{ font-size:0.86rem; color:var(--castanho-suave); margin-bottom:12px; }
-  .share-legenda{
-    background:var(--bege); border-radius:10px; padding:12px; font-size:0.86rem;
-    color:var(--castanho); text-align:left; white-space:pre-wrap; line-height:1.45; margin-bottom:14px;
-  }
-  .share-acoes{ display:flex; flex-direction:column; gap:10px; }
-  .share-acoes button, .share-acoes a{
-    display:block; width:100%; padding:13px; border:none; border-radius:11px; cursor:pointer;
-    font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; text-decoration:none; text-align:center;
-  }
-  .share-copiar{ background:var(--castanho); color:#fff; }
-  .share-nativo{ background:var(--dourado); color:#fff; }
-  .share-ig{ background:linear-gradient(45deg,#f09433,#dc2743,#bc1888); color:#fff; }
-  .share-fb{ background:#1877f2; color:#fff; }
-  .share-fechar{ background:var(--bege); color:var(--castanho); }
+  .cam-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); margin-bottom:10px; }
+  .cam-painel img.preview{ width:100%; border-radius:10px; margin-bottom:12px; display:block; }
+  .cam-acoes{ display:flex; flex-direction:column; gap:10px; }
+  .cam-acoes button{ padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
+  .cam-guardar{ background:var(--dourado); color:#fff; }
+  .cam-partilhar{ background:#c0392b; color:#fff; }
+  .cam-repetir{ background:var(--bege); color:var(--castanho); }
+  .cam-fechar{ background:var(--castanho); color:#fff; }
+  .cam-dica{ font-size:0.8rem; color:var(--castanho-suave); margin-top:10px; }
+
 </style>
 
 <!-- Supabase REST API (sem biblioteca) -->
@@ -2561,52 +2554,122 @@
   })();
 
   // ==========================================================
-  //  BOTÃO DE PARTILHA / RECOMENDAR
+  //  PHOTOBOOTH — foto com moldura do restaurante
   // ==========================================================
   (function(){
-    const IG_URL = 'https://www.instagram.com/restbarparquedesaocaetano/';
-    const FB_URL = 'https://www.facebook.com/profile.php?id=61581115361220';
-    const LEGENDA = 'Comi muito bem no Rest & Bar Parque São Caetano! 😋🍽️\n@restbarparquedesaocaetano\n#RestBarParqueSaoCaetano #ParqueSaoCaetano #VilarDoParaiso #VilaNovaDeGaia #Gaia #Restaurante #ComidaPortuguesa #Petiscos';
+    const NOME = 'Rest & Bar Parque São Caetano';
+    const SOCIAL = '@restbarparquedesaocaetano   ·   fb: Parque São Caetano';
 
     const btn = document.createElement('button');
-    btn.id = 'shareBtn';
-    btn.innerHTML = '📣';
-    btn.setAttribute('aria-label','Partilhar e recomendar');
+    btn.id = 'camBtn';
+    btn.innerHTML = '📸';
+    btn.setAttribute('aria-label','Tirar foto com moldura');
     document.body.appendChild(btn);
 
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.setAttribute('capture','environment');
+    input.style.display = 'none';
+    document.body.appendChild(input);
+
     const overlay = document.createElement('div');
-    overlay.id = 'shareOverlay';
-    overlay.innerHTML = '<div class="share-painel" id="sharePainel"></div>';
+    overlay.id = 'camOverlay';
+    overlay.innerHTML = '<div class="cam-painel" id="camPainel"></div>';
     document.body.appendChild(overlay);
     overlay.addEventListener('click', e => { if(e.target === overlay) overlay.classList.remove('aberto'); });
-    btn.addEventListener('click', abrir);
 
-    function abrir(){
-      const p = document.getElementById('sharePainel');
-      p.innerHTML =
-        '<h3>Gostaste? Partilha! 💛</h3>' +
-        '<p class="sub">Copia a legenda e marca-nos na tua publicação:</p>' +
-        '<div class="share-legenda" id="shareLegenda">' + LEGENDA + '</div>' +
-        '<div class="share-acoes">' +
-        '<button class="share-copiar" id="shareCopiar">📋 Copiar legenda</button>' +
-        (navigator.share ? '<button class="share-nativo" id="shareNativo">Partilhar…</button>' : '') +
-        '<a class="share-ig" href="' + IG_URL + '" target="_blank" rel="noopener">Abrir Instagram</a>' +
-        '<a class="share-fb" href="' + FB_URL + '" target="_blank" rel="noopener">Abrir Facebook</a>' +
-        '<button class="share-fechar" id="shareFechar">Fechar</button>' +
-        '</div>';
-      document.getElementById('shareCopiar').onclick = () => {
-        const b = document.getElementById('shareCopiar');
-        navigator.clipboard.writeText(LEGENDA).then(() => {
-          b.textContent = '✓ Copiado!';
-          setTimeout(() => { b.textContent = '📋 Copiar legenda'; }, 1500);
-        }).catch(() => { alert('Seleciona e copia a legenda manualmente.'); });
+    btn.addEventListener('click', () => input.click());
+    input.addEventListener('change', e => {
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => comporMoldura(ev.target.result);
+      reader.readAsDataURL(file);
+      input.value = '';
+    });
+
+    function comporMoldura(dataUrl){
+      const img = new Image();
+      img.onload = () => {
+        const maxLado = 1200;
+        let w = img.width, h = img.height;
+        if(Math.max(w,h) > maxLado){ const s = maxLado/Math.max(w,h); w = Math.round(w*s); h = Math.round(h*s); }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        const desenhar = () => { desenharMoldura(ctx, w, h); mostrarResultado(canvas); };
+        if(document.fonts && document.fonts.ready) document.fonts.ready.then(desenhar).catch(desenhar);
+        else desenhar();
       };
-      const nat = document.getElementById('shareNativo');
-      if(nat) nat.onclick = () => { navigator.share({ text: LEGENDA, url: IG_URL }).catch(() => {}); };
-      document.getElementById('shareFechar').onclick = () => overlay.classList.remove('aberto');
+      img.src = dataUrl;
+    }
+
+    function desenharMoldura(ctx, w, h){
+      const min = Math.min(w, h);
+      const borda = Math.round(min * 0.035);
+      // Borda castanho
+      ctx.lineWidth = borda;
+      ctx.strokeStyle = '#4a3820';
+      ctx.strokeRect(borda/2, borda/2, w - borda, h - borda);
+      // Linha dourada interior
+      const gap = borda * 1.5;
+      ctx.lineWidth = Math.max(2, Math.round(min * 0.008));
+      ctx.strokeStyle = '#a8712f';
+      ctx.strokeRect(gap, gap, w - gap*2, h - gap*2);
+      // Banner inferior
+      const bannerH = Math.round(h * 0.15);
+      const by = h - bannerH - borda;
+      ctx.fillStyle = 'rgba(74,56,32,0.94)';
+      ctx.fillRect(borda, by, w - borda*2, bannerH);
+      // Nome
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff';
+      const fNome = Math.round(bannerH * 0.36);
+      ctx.font = '700 ' + fNome + "px 'Fredoka', sans-serif";
+      ctx.fillText(NOME, w/2, by + bannerH * 0.44, w - borda*3);
+      // Social
+      ctx.fillStyle = '#e6dcc8';
+      const fSoc = Math.round(bannerH * 0.20);
+      ctx.font = '600 ' + fSoc + "px 'Nunito', sans-serif";
+      ctx.fillText(SOCIAL, w/2, by + bannerH * 0.80, w - borda*3);
+    }
+
+    function mostrarResultado(canvas){
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      const p = document.getElementById('camPainel');
+      p.innerHTML =
+        '<h3>A tua foto 📸</h3>' +
+        '<img class="preview" src="' + dataUrl + '" alt="Foto com moldura">' +
+        '<div class="cam-acoes">' +
+        '<button class="cam-guardar" id="camGuardar">⬇️ Guardar foto</button>' +
+        (navigator.share ? '<button class="cam-partilhar" id="camPartilhar">Partilhar…</button>' : '') +
+        '<button class="cam-repetir" id="camRepetir">Tirar outra</button>' +
+        '<button class="cam-fechar" id="camFechar">Fechar</button>' +
+        '</div>' +
+        '<p class="cam-dica">Guarda a foto e publica marcando-nos! 💛</p>';
+
+      document.getElementById('camGuardar').onclick = () => {
+        const a = document.createElement('a');
+        a.href = dataUrl; a.download = 'parque-sao-caetano.jpg';
+        document.body.appendChild(a); a.click(); a.remove();
+      };
+      const sp = document.getElementById('camPartilhar');
+      if(sp) sp.onclick = async () => {
+        try{
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], 'parque-sao-caetano.jpg', { type:'image/jpeg' });
+          if(navigator.canShare && navigator.canShare({ files:[file] })) await navigator.share({ files:[file] });
+          else await navigator.share({ url:'https://www.instagram.com/restbarparquedesaocaetano/' });
+        }catch(e){}
+      };
+      document.getElementById('camRepetir').onclick = () => { overlay.classList.remove('aberto'); input.click(); };
+      document.getElementById('camFechar').onclick = () => overlay.classList.remove('aberto');
       overlay.classList.add('aberto');
     }
 
+    // Esconder nos jogos
     function emJogos(){
       const mj = document.getElementById('modalJogo');
       if(mj && mj.classList.contains('aberto')) return true;
