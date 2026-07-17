@@ -32,9 +32,9 @@
     }
   },
   "footer": {
-    "nome": "",
-    "morada": "",
-    "telefone": "",
+    "nome": "Anuncia o que o que quiseres por aqui",
+    "morada": "Fala comigo!",
+    "telefone": "916254923",
     "cor": "#ffffff",
     "fotosAtivas": false,
     "fotos": []
