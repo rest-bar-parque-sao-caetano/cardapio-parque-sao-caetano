@@ -31,7 +31,7 @@
       "l4": ""
     },
     "carrossel": {
-      "ativo": true,
+      "ativo": false,
       "intervalo": 5,
       "inicio": "",
       "fim": "",
@@ -71,8 +71,7 @@
     "cor": "#ffffff",
     "fotosAtivas": true,
     "fotos": [
-      "imagens/1784294750566-gemini-generated-image-h2pookh2pookh2po.png",
-      "imagens/1784295739465-gemini-generated-image-h2pookh2pookh2po.png"
+      "imagens/1784294750566-gemini-generated-image-h2pookh2pookh2po.png"
     ],
     "fotoZoom": 139,
     "fotoPanX": -0.340576171875,
