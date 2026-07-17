@@ -586,7 +586,12 @@
     content:''; position:absolute; inset:0; z-index:1;
     background:rgba(0,0,0,0.28); pointer-events:none;
   }
-  .info-fixa-texto{flex:1; text-align:center; min-width:0; position:relative; z-index:102;}
+  .info-fixa-texto{flex:1; text-align:center; min-width:0; position:relative; z-index:102; overflow:hidden;}
+  .carrossel-slide{ transition:transform .4s ease, opacity .4s ease; }
+  .carrossel-slide.entra-dir{ transform:translateX(55px); opacity:0; }
+  .carrossel-slide.sai-esq{ transform:translateX(-55px); opacity:0; }
+  .carr-titulo{ font-family:'Fredoka',sans-serif; color:var(--branco); font-weight:600; font-size:0.86rem; line-height:1.2; }
+  .carr-linha{ font-size:0.72rem; color:var(--bege-claro); line-height:1.2; }
   .info-fixa-texto .linha-negrito{
     font-family:'Fredoka',sans-serif;
     color:var(--branco);
@@ -1403,6 +1408,48 @@
 
   // Texto especial por horário na barra fixa — controlado pelo config.json.
   // window.aplicarEspecialRodape é chamado pelo carregarConfig() depois de ler o config.
+  // Carrossel da barra fixa (roda em loop pelos slides)
+  window.iniciarCarrosselRodape = function(slides, cor, realce){
+    const cont = document.querySelector('.info-fixa-texto');
+    if(!cont || !Array.isArray(slides)) return;
+    if(window._carrosselInterval){ clearInterval(window._carrosselInterval); window._carrosselInterval = null; }
+
+    const hoje = new Date().getDay(); // 0 = domingo
+    const ativos = slides.filter(s => s && (s.titulo || (s.linhas && s.linhas.length)) && !(s.ocultarDomingo && hoje === 0));
+    if(ativos.length === 0){ cont.innerHTML = ''; return; }
+
+    cont.innerHTML = '<div class="carrossel-slide" id="carrosselSlide"></div>';
+    const corTxt = cor || '#ffffff';
+    const sombra = realce !== false ? '0 1px 3px rgba(0,0,0,0.55), 0 0 8px rgba(0,0,0,0.35)' : 'none';
+    let idx = 0;
+
+    function render(i){
+      const s = ativos[i];
+      const el = document.getElementById('carrosselSlide');
+      if(!el) return;
+      let html = '';
+      if(s.titulo) html += '<div class="carr-titulo" style="color:' + corTxt + ';text-shadow:' + sombra + ';">' + s.titulo + '</div>';
+      (s.linhas || []).forEach(l => { if(l && l.trim()) html += '<div class="carr-linha" style="color:' + corTxt + ';text-shadow:' + sombra + ';">' + l + '</div>'; });
+      el.innerHTML = html;
+      el.style.transition = 'none';
+      el.classList.remove('sai-esq');
+      el.classList.add('entra-dir');
+      void el.offsetWidth;
+      el.style.transition = '';
+      el.classList.remove('entra-dir');
+    }
+
+    render(0);
+    if(ativos.length > 1){
+      window._carrosselInterval = setInterval(() => {
+        const el = document.getElementById('carrosselSlide');
+        if(!el) return;
+        el.classList.add('sai-esq');
+        setTimeout(() => { idx = (idx + 1) % ativos.length; render(idx); }, 400);
+      }, 4500);
+    }
+  };
+
   window.aplicarEspecialRodape = function(especial, normal){
     const linhas = {
       1: document.getElementById('rodapeLinha1'),
@@ -1698,9 +1745,14 @@
           el.style.textShadow = sombraR;
           if(config.rodape.realce !== false) el.style.fontWeight = '700';
         });
-        // Texto normal + especial por horário
-        const normal = { 1:config.rodape.linha1||'', 2:config.rodape.linha2||'', 3:config.rodape.linha3||'', 4:config.rodape.linha4||'' };
-        if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(config.rodape.especial, normal);
+        // Carrossel (Prato do Dia / Na Brasa / Sugestão) OU texto normal+especial
+        const car = config.rodape.carrossel;
+        if(car && car.ativo && Array.isArray(car.slides) && car.slides.length){
+          if(window.iniciarCarrosselRodape) window.iniciarCarrosselRodape(car.slides, config.rodape.cor, config.rodape.realce);
+        } else {
+          const normal = { 1:config.rodape.linha1||'', 2:config.rodape.linha2||'', 3:config.rodape.linha3||'', 4:config.rodape.linha4||'' };
+          if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(config.rodape.especial, normal);
+        }
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
         }
