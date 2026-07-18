@@ -2888,6 +2888,13 @@
     return 'Difícil';
   }
   function iniciarQuiz(){
+    let html = '<p class="jogo-titulo">Escolhe o modo:</p><div class="jogo-menu">' +
+      '<button class="jogo-btn" onclick="iniciarQuizSolo()">🎮 Solo</button>' +
+      '<button class="jogo-btn" onclick="quizEntrarOuCriar()">👥 Multiplayer</button>' +
+      '</div>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.iniciarQuizSolo = function(){
     quizSeq = [].concat(
       baralhar(quizFacil.slice()).map(prepararPergunta),
       baralhar(quizMedio.slice()).map(prepararPergunta),
@@ -2895,11 +2902,11 @@
     );
     quizIdx = 0;
     renderQuiz();
-  }
+  };
   function renderQuiz(){
     if(quizIdx >= quizSeq.length){
       let html = '<div class="velha-turno velha-fim">🏆 Incrível! Acertaste todas as ' + quizSeq.length + ' perguntas!</div>';
-      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Jogar outra vez</button></div>';
+      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuizSolo()">Jogar outra vez</button></div>';
       jogoConteudo.innerHTML = html;
       window.mostrarPubJogos(function(){});
       return;
@@ -2926,12 +2933,198 @@
       else {
         let html = '<div class="velha-turno velha-fim">❌ Errado! Chegaste à pergunta ' + (quizIdx + 1) + ' (' + nivelDoIndice(quizIdx) + ')</div>';
         html += '<p style="text-align:center;font-size:0.85rem;color:var(--castanho-suave);margin:6px 0;">A resposta certa era: <strong>' + q.o[q.c] + '</strong></p>';
-        html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Recomeçar do início</button></div>';
+        html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuizSolo()">Recomeçar do início</button></div>';
         jogoConteudo.innerHTML = html;
         window.mostrarPubJogos(function(){});
       }
     }, 950);
   };
+
+  // ==========================================================
+  //  QUIZ ONLINE (estilo Kahoot) — usa Supabase (tabelas quiz_*)
+  // ==========================================================
+  const quizPoolOnline = [].concat(quizFacil, quizMedio, quizDificil);
+  const QZ_TEMPO = 15;
+  let qzSala = '', qzNome = '', qzCriador = false, qzPerguntas = [], qzIdx = 0, qzRespondido = false, qzIntervals = [], qzTimerHost = null;
+  function qzLimpar(){ qzIntervals.forEach(clearInterval); qzIntervals = []; if(qzTimerHost){ clearInterval(qzTimerHost); qzTimerHost = null; } }
+
+  window.quizEntrarOuCriar = function(){
+    let codigo = prompt('Código da sala\n(deixa vazio para CRIAR uma nova):', '');
+    if(codigo === null) return;
+    let nome = prompt('O teu nome:', '');
+    if(!nome || !nome.trim()) return;
+    qzNome = nome.trim();
+    codigo = codigo.trim().toUpperCase();
+    if(codigo === '') qzCriarSala();
+    else qzEntrar(codigo);
+  };
+
+  async function qzCriarSala(){
+    try{
+      qzSala = Math.random().toString(36).substr(2, 4).toUpperCase();
+      qzCriador = true;
+      const indices = baralhar(quizPoolOnline.map((_, i) => i)).slice(0, 8);
+      qzPerguntas = indices.map(i => prepararPergunta(quizPoolOnline[i]));
+      await mpPost('quiz_salas', { codigo:qzSala, estado:'lobby', pergunta:0, criador:qzNome, perguntas: JSON.stringify(qzPerguntas) });
+      await mpPost('quiz_jogadores', { sala_id:qzSala, nome:qzNome, pontos:0 });
+      qzLobby();
+    }catch(err){ alert('❌ Erro ao criar sala: ' + err.message); }
+  }
+
+  async function qzEntrar(codigo){
+    try{
+      const salas = await mpGet('quiz_salas', 'codigo=eq.' + encodeURIComponent(codigo));
+      if(!salas || salas.length === 0){ alert('❌ Sala "' + codigo + '" não encontrada!'); return iniciarQuiz(); }
+      qzSala = codigo; qzCriador = false;
+      qzPerguntas = JSON.parse(salas[0].perguntas || '[]');
+      await mpPost('quiz_jogadores', { sala_id:qzSala, nome:qzNome, pontos:0 });
+      qzLobby();
+    }catch(err){ alert('❌ Erro ao entrar: ' + err.message); }
+  }
+
+  async function qzLista(){
+    try{
+      const js = await mpGet('quiz_jogadores', 'sala_id=eq.' + qzSala);
+      const el = document.getElementById('qzLista');
+      if(el) el.innerHTML = js.length ? js.map(j => '👤 ' + j.nome).join('<br>') : '(ninguém ainda)';
+    }catch(e){}
+  }
+
+  function qzLobby(){
+    qzLimpar();
+    if(qzCriador){
+      jogoConteudo.innerHTML =
+        '<div style="text-align:center;">' +
+        '<p style="font-size:1.05rem;margin:10px 0;">✅ Sala criada!</p>' +
+        '<p style="font-size:1.3rem;background:var(--bege);padding:14px;border-radius:8px;margin:10px 0;font-weight:bold;">Código: <span style="color:var(--castanho);letter-spacing:3px;">' + qzSala + '</span></p>' +
+        '<p style="font-size:0.82rem;color:var(--castanho-suave);">Partilha o código. Na sala:</p>' +
+        '<div id="qzLista" style="margin:8px 0;font-size:0.95rem;"></div>' +
+        '<div class="jogo-menu"><button class="jogo-btn" onclick="qzComecar()">Começar Quiz</button>' +
+        '<button class="jogo-btn claro" onclick="qzSair()">Sair</button></div>' +
+        '</div>';
+      qzLista();
+      qzIntervals.push(setInterval(qzLista, 2000));
+    } else {
+      jogoConteudo.innerHTML =
+        '<div style="text-align:center;padding:10px;">' +
+        '<p style="font-size:1.05rem;margin:10px 0;">Entraste na sala <strong>' + qzSala + '</strong></p>' +
+        '<p style="font-size:0.95rem;color:var(--castanho-suave);">⏳ À espera que o criador comece…</p>' +
+        '<div id="qzLista" style="margin:8px 0;font-size:0.95rem;"></div>' +
+        '<div class="jogo-menu"><button class="jogo-btn claro" onclick="qzSair()">Sair</button></div>' +
+        '</div>';
+      qzLista();
+      qzIntervals.push(setInterval(async () => {
+        qzLista();
+        try{
+          const salas = await mpGet('quiz_salas', 'codigo=eq.' + qzSala);
+          if(salas[0] && salas[0].estado === 'pergunta'){ qzLimpar(); qzIdx = salas[0].pergunta; qzMostrarPergunta(qzIdx); qzPollJogador(); }
+        }catch(e){}
+      }, 1200));
+    }
+  }
+
+  window.qzComecar = async function(){
+    try{
+      await mpDel('quiz_respostas', 'sala_id=eq.' + qzSala);
+      await mpPatch('quiz_salas', 'codigo=eq.' + qzSala, { estado:'pergunta', pergunta:0 });
+      qzIdx = 0;
+      qzMostrarPergunta(0);
+      qzHostTimer();
+    }catch(err){ alert('❌ Erro: ' + err.message); }
+  };
+
+  function qzMostrarPergunta(idx){
+    qzRespondido = false;
+    const q = qzPerguntas[idx];
+    if(!q){ qzResultados(); return; }
+    let html = '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Pergunta ' + (idx + 1) + '/' + qzPerguntas.length + '</p>';
+    html += '<p id="qzTimer" style="text-align:center;font-size:1.7rem;font-weight:900;color:var(--castanho);margin:4px 0;">' + QZ_TEMPO + '</p>';
+    html += '<p class="jogo-titulo" style="font-size:1.02rem;">' + q.p + '</p><div class="jogo-menu" id="qzOpcoes">';
+    q.o.forEach((op, i) => { html += '<button class="jogo-btn" onclick="qzResponder(' + i + ')">' + op + '</button>'; });
+    html += '</div>';
+    jogoConteudo.innerHTML = html;
+    // contador visual (não decide nada; a progressão é do criador)
+    let vt = QZ_TEMPO;
+    const vtiv = setInterval(() => {
+      vt--;
+      const e = document.getElementById('qzTimer');
+      if(e && !qzRespondido) e.textContent = vt > 0 ? vt : '⏱';
+      if(vt <= 0) clearInterval(vtiv);
+    }, 1000);
+    qzIntervals.push(vtiv);
+  }
+
+  window.qzResponder = async function(opcao){
+    if(qzRespondido) return;
+    qzRespondido = true;
+    const bts = document.querySelectorAll('#qzOpcoes .jogo-btn');
+    bts.forEach(b => { b.style.pointerEvents = 'none'; });
+    if(bts[opcao]) bts[opcao].style.background = 'var(--dourado)';
+    const t = document.getElementById('qzTimer'); if(t) t.textContent = '✓ Respondido';
+    try{ await mpPost('quiz_respostas', { sala_id:qzSala, nome:qzNome, pergunta:qzIdx, opcao:opcao }); }catch(e){}
+  };
+
+  function qzPollJogador(){
+    qzIntervals.push(setInterval(async () => {
+      try{
+        const salas = await mpGet('quiz_salas', 'codigo=eq.' + qzSala);
+        const s = salas[0]; if(!s) return;
+        if(s.estado === 'fim'){ qzLimpar(); qzResultados(); return; }
+        if(s.estado === 'pergunta' && s.pergunta !== qzIdx){ qzIdx = s.pergunta; qzMostrarPergunta(qzIdx); }
+      }catch(e){}
+    }, 800));
+  }
+
+  function qzHostTimer(){
+    let t = QZ_TEMPO;
+    qzTimerHost = setInterval(async () => {
+      t--;
+      if(t <= 0){ clearInterval(qzTimerHost); qzTimerHost = null; await qzFecharPergunta(qzIdx); }
+    }, 1000);
+  }
+
+  async function qzFecharPergunta(idx){
+    try{
+      const q = qzPerguntas[idx];
+      const respostas = await mpGet('quiz_respostas', 'sala_id=eq.' + qzSala + '&pergunta=eq.' + idx);
+      const jogadores = await mpGet('quiz_jogadores', 'sala_id=eq.' + qzSala);
+      for(const r of respostas){
+        if(r.opcao === q.c){
+          const j = jogadores.find(x => x.nome === r.nome);
+          const novos = (j ? j.pontos : 0) + 100;
+          await mpPatch('quiz_jogadores', 'sala_id=eq.' + qzSala + '&nome=eq.' + encodeURIComponent(r.nome), { pontos: novos });
+        }
+      }
+      if(idx + 1 < qzPerguntas.length){
+        await mpPatch('quiz_salas', 'codigo=eq.' + qzSala, { pergunta: idx + 1 });
+        qzIdx = idx + 1;
+        qzMostrarPergunta(qzIdx);
+        qzHostTimer();
+      } else {
+        await mpPatch('quiz_salas', 'codigo=eq.' + qzSala, { estado:'fim' });
+        qzResultados();
+      }
+    }catch(err){ console.log('qzFecharPergunta erro', err); }
+  }
+
+  async function qzResultados(){
+    qzLimpar();
+    try{
+      const jogadores = await mpGet('quiz_jogadores', 'sala_id=eq.' + qzSala);
+      jogadores.sort((a, b) => b.pontos - a.pontos);
+      let html = '<div class="velha-turno velha-fim">🏆 Classificação</div><div style="display:grid;gap:8px;margin:12px 0;">';
+      jogadores.forEach((j, i) => {
+        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '▪️';
+        const eu = j.nome === qzNome ? 'border:2px solid var(--castanho);' : '';
+        html += '<div style="background:var(--bege);padding:8px 10px;border-radius:8px;text-align:left;font-weight:bold;' + eu + '">' + medal + ' ' + j.nome + ' — ' + j.pontos + ' pts</div>';
+      });
+      html += '</div><div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Sair</button></div>';
+      jogoConteudo.innerHTML = html;
+      window.mostrarPubJogos(function(){});
+    }catch(err){ jogoConteudo.innerHTML = '<p style="text-align:center;color:#b3402f;padding:20px;">Erro nos resultados: ' + err.message + '</p>'; }
+  }
+
+  window.qzSair = function(){ qzLimpar(); iniciarQuiz(); };
 
   // Cliques nos jogos (grelha de quadrados)
   document.querySelectorAll('.jogos-grid .jogo-tile').forEach(tile => {
