@@ -761,8 +761,8 @@
   .velha-cel.ganha{ background:linear-gradient(180deg,#c3e9c8,#8fd39a); color:#1e5a2a; box-shadow:0 3px 0 #5aa76a; }
 
   /* ===== Jogo da Memória ===== */
-  .mem-board{ display:grid; grid-template-columns:repeat(5, 58px); gap:7px; justify-content:center; margin:16px auto; width:fit-content; }
-  .mem-carta{ width:58px; height:58px; font-size:1.7rem; border:none; border-radius:10px; cursor:pointer; background:linear-gradient(180deg,#5a4629,var(--castanho)); box-shadow:0 3px 0 #2f2415; display:flex; align-items:center; justify-content:center; transition:transform .1s ease; }
+  .mem-board{ display:grid; grid-template-columns:repeat(5, 1fr); gap:7px; margin:16px auto; width:100%; max-width:320px; }
+  .mem-carta{ width:100%; aspect-ratio:1/1; font-size:1.6rem; border:none; border-radius:10px; cursor:pointer; background:linear-gradient(180deg,#5a4629,var(--castanho)); box-shadow:0 3px 0 #2f2415; display:flex; align-items:center; justify-content:center; transition:transform .1s ease; }
   .mem-carta.virada{ background:linear-gradient(180deg,#ffffff,#f5efe2); box-shadow:0 3px 0 #d9ccb0; }
   .mem-carta:active{ transform:scale(0.95); }
 
