@@ -733,6 +733,18 @@
   .velha-cel:active{ transform:translateY(2px); box-shadow:0 1px 0 #d9ccb0; }
   .velha-cel.ganha{ background:linear-gradient(180deg,#c3e9c8,#8fd39a); color:#1e5a2a; box-shadow:0 3px 0 #5aa76a; }
 
+  /* ===== Jogo da Memória ===== */
+  .mem-board{ display:grid; grid-template-columns:repeat(4, 66px); gap:8px; justify-content:center; margin:16px auto; width:fit-content; }
+  .mem-carta{ width:66px; height:66px; font-size:1.9rem; border:none; border-radius:12px; cursor:pointer; background:linear-gradient(180deg,#5a4629,var(--castanho)); box-shadow:0 3px 0 #2f2415; display:flex; align-items:center; justify-content:center; transition:transform .1s ease; }
+  .mem-carta.virada{ background:linear-gradient(180deg,#ffffff,#f5efe2); box-shadow:0 3px 0 #d9ccb0; }
+  .mem-carta:active{ transform:scale(0.95); }
+
+  /* ===== Pedra, Papel, Tesoura / Roleta ===== */
+  .ppt-placar{ text-align:center; font-size:1.05rem; margin:6px 0; color:var(--castanho); }
+  .ppt-vs{ display:flex; justify-content:center; gap:26px; align-items:center; margin:16px 0; font-size:2.6rem; }
+  .roleta-nome{ display:inline-block; background:var(--bege); padding:5px 10px; border-radius:8px; margin:3px; font-size:0.9rem; }
+  .roleta-nome .x{ cursor:pointer; color:#b3402f; font-weight:700; margin-left:4px; }
+
   /* ===== Publicidade no fim dos jogos ===== */
   #adJogosOverlay{ position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; padding:16px; }
   #adJogosOverlay.aberto{ display:flex; }
@@ -1343,6 +1355,18 @@
         </div>
         <div class="item" style="cursor:pointer; text-align:center;">
           <div class="nome">Jogo do Stop</div>
+        </div>
+        <div class="item" style="cursor:pointer; text-align:center;">
+          <div class="nome">Jogo da Memória</div>
+        </div>
+        <div class="item" style="cursor:pointer; text-align:center;">
+          <div class="nome">Pedra, Papel, Tesoura</div>
+        </div>
+        <div class="item" style="cursor:pointer; text-align:center;">
+          <div class="nome">Quem Paga?</div>
+        </div>
+        <div class="item" style="cursor:pointer; text-align:center;">
+          <div class="nome">Quiz</div>
         </div>
       </div>
     </details>
@@ -1984,7 +2008,8 @@
   };
 
   function abrirJogo(tipo){
-    jogoTitulo.textContent = tipo === 'velha' ? '🎯 Jogo da Velha' : tipo === 'forca' ? '📝 Forca' : tipo === 'adivinhas' ? '❓ Adivinhas' : '🛑 Jogo do Stop';
+    const titulos = { velha:'🎯 Jogo da Velha', forca:'📝 Forca', adivinhas:'❓ Adivinhas', stop:'🛑 Jogo do Stop', memoria:'🧠 Jogo da Memória', ppt:'✊ Pedra, Papel, Tesoura', roleta:'💸 Quem Paga?', quiz:'❔ Quiz' };
+    jogoTitulo.textContent = titulos[tipo] || 'Jogo';
     jogoConteudo.innerHTML = '';
     modalJogo.classList.add('aberto');
 
@@ -1992,6 +2017,10 @@
     else if(tipo === 'forca') iniciarForca();
     else if(tipo === 'adivinhas') iniciarAdivinhas();
     else if(tipo === 'stop') iniciarStop();
+    else if(tipo === 'memoria') iniciarMemoria();
+    else if(tipo === 'ppt') iniciarPPT();
+    else if(tipo === 'roleta') iniciarRoleta();
+    else if(tipo === 'quiz') iniciarQuiz();
   }
 
   function fecharJogo(){ modalJogo.classList.remove('aberto'); }
@@ -2677,10 +2706,189 @@
 
   window.stopSairStop = function(){ mpLimpar(); iniciarStop(); };
 
+  // ==========================================================
+  //  JOGO DA MEMÓRIA
+  // ==========================================================
+  const memSimbolos = ['🍕','🍔','🍟','🌭','🍣','🍰'];
+  let memCartas = [], memReveladas = [], memViradas = [], memPares = 0, memJogadas = 0, memBloqueado = false;
+  function iniciarMemoria(){
+    memCartas = [...memSimbolos, ...memSimbolos].sort(() => Math.random() - 0.5);
+    memReveladas = new Array(memCartas.length).fill(false);
+    memViradas = []; memPares = 0; memJogadas = 0; memBloqueado = false;
+    renderMemoria();
+  }
+  function renderMemoria(){
+    let html = '<p class="jogo-titulo">Encontra os pares!</p>';
+    html += '<p style="text-align:center;font-size:0.85rem;color:var(--castanho-suave);">Jogadas: ' + memJogadas + '</p>';
+    html += '<div class="mem-board">';
+    memCartas.forEach((s, i) => {
+      const rev = memReveladas[i];
+      html += '<button class="mem-carta' + (rev ? ' virada' : '') + '" onclick="virarMem(' + i + ')">' + (rev ? s : '') + '</button>';
+    });
+    html += '</div>';
+    if(memPares === memSimbolos.length){
+      html += '<div class="velha-turno velha-fim">🎉 Ganhaste em ' + memJogadas + ' jogadas!</div>';
+      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarMemoria()">Jogar outra vez</button></div>';
+    }
+    jogoConteudo.innerHTML = html;
+  }
+  window.virarMem = function(i){
+    if(memBloqueado || memReveladas[i]) return;
+    memReveladas[i] = true;
+    memViradas.push(i);
+    renderMemoria();
+    if(memViradas.length === 2){
+      memJogadas++;
+      const [a, b] = memViradas;
+      if(memCartas[a] === memCartas[b]){
+        memPares++; memViradas = [];
+        renderMemoria();
+        if(memPares === memSimbolos.length) window.mostrarPubJogos(function(){});
+      } else {
+        memBloqueado = true;
+        setTimeout(() => {
+          memReveladas[a] = false; memReveladas[b] = false;
+          memViradas = []; memBloqueado = false;
+          renderMemoria();
+        }, 800);
+      }
+    }
+  };
+
+  // ==========================================================
+  //  PEDRA, PAPEL, TESOURA (primeiro a 3)
+  // ==========================================================
+  const pptOpc = { pedra:'✊', papel:'✋', tesoura:'✌️' };
+  let pptEu = 0, pptTel = 0, pptAdMostrado = false;
+  function iniciarPPT(){ pptEu = 0; pptTel = 0; pptAdMostrado = false; renderPPT(null, null, null); }
+  function renderPPT(euEsc, telEsc, res){
+    let html = '<p class="jogo-titulo">Pedra, Papel, Tesoura</p>';
+    html += '<p class="ppt-placar">Tu <strong>' + pptEu + '</strong> — <strong>' + pptTel + '</strong> Telemóvel</p>';
+    html += '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Primeiro a 3 vence</p>';
+    if(euEsc){
+      html += '<div class="ppt-vs"><span>' + pptOpc[euEsc] + '</span><span style="font-size:1rem;">vs</span><span>' + pptOpc[telEsc] + '</span></div>';
+      const cor = res === 'ganhou' ? 'green' : (res === 'perdeu' ? '#b3402f' : 'var(--castanho)');
+      const txt = res === 'ganhou' ? 'Ganhaste esta!' : (res === 'perdeu' ? 'Perdeste esta!' : 'Empate!');
+      html += '<p style="text-align:center;font-weight:bold;font-size:1.05rem;color:' + cor + ';">' + txt + '</p>';
+    }
+    const fim = pptEu >= 3 || pptTel >= 3;
+    if(fim){
+      html += '<div class="velha-turno velha-fim">' + (pptEu >= 3 ? '🎉 Ganhaste o jogo!' : '😜 O telemóvel ganhou!') + '</div>';
+      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarPPT()">Jogar outra vez</button></div>';
+    } else {
+      html += '<div class="jogo-menu">';
+      html += '<button class="jogo-btn" onclick="jogarPPT(\'pedra\')">✊ Pedra</button>';
+      html += '<button class="jogo-btn" onclick="jogarPPT(\'papel\')">✋ Papel</button>';
+      html += '<button class="jogo-btn" onclick="jogarPPT(\'tesoura\')">✌️ Tesoura</button>';
+      html += '</div>';
+    }
+    jogoConteudo.innerHTML = html;
+    if(fim && !pptAdMostrado){ pptAdMostrado = true; window.mostrarPubJogos(function(){}); }
+  }
+  window.jogarPPT = function(euEsc){
+    const opcoes = ['pedra','papel','tesoura'];
+    const telEsc = opcoes[Math.floor(Math.random() * 3)];
+    let res;
+    if(euEsc === telEsc) res = 'empate';
+    else if((euEsc === 'pedra' && telEsc === 'tesoura') || (euEsc === 'papel' && telEsc === 'pedra') || (euEsc === 'tesoura' && telEsc === 'papel')){ res = 'ganhou'; pptEu++; }
+    else { res = 'perdeu'; pptTel++; }
+    renderPPT(euEsc, telEsc, res);
+  };
+
+  // ==========================================================
+  //  QUEM PAGA? (roleta / sorteio)
+  // ==========================================================
+  let roletaNomes = [];
+  function iniciarRoleta(){ roletaNomes = []; renderRoletaSetup(); }
+  function renderRoletaSetup(){
+    let html = '<p class="jogo-titulo">Quem paga? 💸</p>';
+    html += '<p style="text-align:center;font-size:0.85rem;color:var(--castanho-suave);margin-bottom:8px;">Adiciona os nomes e roda.</p>';
+    html += '<div style="display:flex;gap:8px;max-width:280px;margin:0 auto;"><input type="text" id="roletaInput" placeholder="Nome" style="flex:1;padding:10px;border:1px solid var(--linha);border-radius:8px;font-size:0.95rem;" onkeypress="if(event.key===\'Enter\') addRoleta()"><button class="jogo-btn" style="width:auto;padding:10px 16px;margin:0;" onclick="addRoleta()">+</button></div>';
+    html += '<div style="margin:12px 0;text-align:center;">';
+    roletaNomes.forEach((n, i) => { html += '<span class="roleta-nome">' + n + '<span class="x" onclick="removeRoleta(' + i + ')">✕</span></span>'; });
+    html += '</div>';
+    if(roletaNomes.length >= 2){
+      html += '<div class="jogo-menu"><button class="jogo-btn" onclick="girarRoleta()">🎯 Rodar!</button></div>';
+    }
+    jogoConteudo.innerHTML = html;
+  }
+  window.addRoleta = function(){
+    const inp = document.getElementById('roletaInput');
+    const v = inp.value.trim();
+    if(v){ roletaNomes.push(v); renderRoletaSetup(); const el = document.getElementById('roletaInput'); if(el) el.focus(); }
+  };
+  window.removeRoleta = function(i){ roletaNomes.splice(i, 1); renderRoletaSetup(); };
+  window.girarRoleta = function(){
+    let voltas = 0;
+    const total = 16 + Math.floor(Math.random() * roletaNomes.length);
+    const iv = setInterval(() => {
+      const atual = roletaNomes[voltas % roletaNomes.length];
+      jogoConteudo.innerHTML = '<div style="text-align:center;padding:36px 0;"><p style="font-size:0.9rem;color:var(--castanho-suave);">A escolher…</p><p style="font-size:2rem;font-weight:900;color:var(--castanho);margin:14px 0;">' + atual + '</p></div>';
+      voltas++;
+      if(voltas > total){
+        clearInterval(iv);
+        const escolhido = roletaNomes[(voltas - 1) % roletaNomes.length];
+        jogoConteudo.innerHTML = '<div style="text-align:center;padding:24px 0;"><p style="font-size:1rem;">E quem paga é…</p><p style="font-size:2.4rem;font-weight:900;color:#b3402f;margin:14px 0;">' + escolhido + ' 💸</p></div><div class="jogo-menu"><button class="jogo-btn claro" onclick="renderRoletaSetup()">Outra vez</button></div>';
+        window.mostrarPubJogos(function(){});
+      }
+    }, 110);
+  };
+  window.renderRoletaSetup = renderRoletaSetup;
+
+  // ==========================================================
+  //  QUIZ
+  // ==========================================================
+  const quizDB = [
+    { p:'A francesinha é típica de que cidade?', o:['Lisboa','Porto','Faro','Braga'], c:1 },
+    { p:'Qual destes é um Vinho Verde?', o:['Porto','Moscatel','Casal Garcia','Mateus'], c:2 },
+    { p:'Quantos jogadores tem uma equipa de futebol em campo?', o:['11','10','9','12'], c:0 },
+    { p:'Qual é a capital de Portugal?', o:['Porto','Coimbra','Lisboa','Braga'], c:2 },
+    { p:'A vitamina C é abundante em qual fruta?', o:['Banana','Laranja','Uva','Pera'], c:1 },
+    { p:'Quantos lados tem um quadrado?', o:['3','5','4','6'], c:2 },
+    { p:'Qual destes é um doce típico português?', o:['Gelado','Bolacha Maria','Chocolate','Pastel de nata'], c:3 },
+    { p:'Com que bebida se faz a sangria?', o:['Vinho','Cerveja','Água','Leite'], c:0 },
+    { p:'Quantos minutos tem uma hora?', o:['30','90','60','100'], c:2 },
+    { p:'O polvo tem quantos tentáculos?', o:['6','8','10','4'], c:1 },
+    { p:'Qual destes é um petisco português?', o:['Sushi','Tacos','Pica-pau','Ramen'], c:2 },
+    { p:'A cortiça vem de que árvore?', o:['Pinheiro','Sobreiro','Oliveira','Eucalipto'], c:1 }
+  ];
+  let quizBaralho = [], quizIdx = 0, quizPontos = 0;
+  function iniciarQuiz(){
+    quizBaralho = [...Array(quizDB.length).keys()].sort(() => Math.random() - 0.5).slice(0, 8);
+    quizIdx = 0; quizPontos = 0;
+    renderQuiz();
+  }
+  function renderQuiz(){
+    if(quizIdx >= quizBaralho.length){
+      let html = '<div class="velha-turno velha-fim">Acabou! ' + quizPontos + '/' + quizBaralho.length + ' certas</div>';
+      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Jogar outra vez</button></div>';
+      jogoConteudo.innerHTML = html;
+      window.mostrarPubJogos(function(){});
+      return;
+    }
+    const q = quizDB[quizBaralho[quizIdx]];
+    let html = '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Pergunta ' + (quizIdx + 1) + '/' + quizBaralho.length + ' · ' + quizPontos + ' pts</p>';
+    html += '<p class="jogo-titulo" style="font-size:1.02rem;">' + q.p + '</p><div class="jogo-menu">';
+    q.o.forEach((op, i) => { html += '<button class="jogo-btn" onclick="responderQuiz(' + i + ')">' + op + '</button>'; });
+    html += '</div>';
+    jogoConteudo.innerHTML = html;
+  }
+  window.responderQuiz = function(i){
+    const q = quizDB[quizBaralho[quizIdx]];
+    if(i === q.c) quizPontos++;
+    const botoes = jogoConteudo.querySelectorAll('.jogo-btn');
+    botoes.forEach((b, idx) => {
+      b.style.pointerEvents = 'none';
+      if(idx === q.c) b.style.background = '#3b8a4f';
+      else if(idx === i) b.style.background = '#b3402f';
+    });
+    setTimeout(() => { quizIdx++; renderQuiz(); }, 950);
+  };
+
   // Cliques nos jogos
   document.querySelectorAll('.categoria#jogos .item').forEach((item, i) => {
     item.addEventListener('click', () => {
-      const tipos = ['velha','forca','adivinhas','stop'];
+      const tipos = ['velha','forca','adivinhas','stop','memoria','ppt','roleta','quiz'];
       abrirJogo(tipos[i]);
     });
   });
