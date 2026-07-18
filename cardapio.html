@@ -724,6 +724,19 @@
     color:var(--castanho); box-shadow:0 3px 0 #d9ccb0, 0 5px 12px rgba(74,56,32,0.15);
   }
 
+  /* ===== Grelha de jogos (quadrados com ícones) ===== */
+  .jogos-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; padding:8px 4px 4px; }
+  .jogo-tile{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+    aspect-ratio:1/1; border:none; border-radius:16px; cursor:pointer; padding:10px;
+    background:linear-gradient(180deg,#ffffff,#f5efe2);
+    box-shadow:0 4px 0 #d9ccb0, 0 6px 14px rgba(74,56,32,0.15);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .jogo-tile:active{ transform:translateY(3px); box-shadow:0 1px 0 #d9ccb0, 0 2px 6px rgba(74,56,32,0.12); }
+  .jogo-tile .ico{ font-size:2.7rem; line-height:1; }
+  .jogo-tile .txt{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:0.92rem; color:var(--castanho); text-align:center; }
+
   /* ===== Jogo do Galo ===== */
   .velha-turno{ font-family:'Fredoka',sans-serif; font-size:1.05rem; color:var(--castanho); margin:14px 0 2px; font-weight:600; text-align:center; }
   .velha-turno.velha-fim{ font-size:1.2rem; }
@@ -734,16 +747,10 @@
   .velha-cel.ganha{ background:linear-gradient(180deg,#c3e9c8,#8fd39a); color:#1e5a2a; box-shadow:0 3px 0 #5aa76a; }
 
   /* ===== Jogo da Memória ===== */
-  .mem-board{ display:grid; grid-template-columns:repeat(4, 66px); gap:8px; justify-content:center; margin:16px auto; width:fit-content; }
-  .mem-carta{ width:66px; height:66px; font-size:1.9rem; border:none; border-radius:12px; cursor:pointer; background:linear-gradient(180deg,#5a4629,var(--castanho)); box-shadow:0 3px 0 #2f2415; display:flex; align-items:center; justify-content:center; transition:transform .1s ease; }
+  .mem-board{ display:grid; grid-template-columns:repeat(5, 58px); gap:7px; justify-content:center; margin:16px auto; width:fit-content; }
+  .mem-carta{ width:58px; height:58px; font-size:1.7rem; border:none; border-radius:10px; cursor:pointer; background:linear-gradient(180deg,#5a4629,var(--castanho)); box-shadow:0 3px 0 #2f2415; display:flex; align-items:center; justify-content:center; transition:transform .1s ease; }
   .mem-carta.virada{ background:linear-gradient(180deg,#ffffff,#f5efe2); box-shadow:0 3px 0 #d9ccb0; }
   .mem-carta:active{ transform:scale(0.95); }
-
-  /* ===== Pedra, Papel, Tesoura / Roleta ===== */
-  .ppt-placar{ text-align:center; font-size:1.05rem; margin:6px 0; color:var(--castanho); }
-  .ppt-vs{ display:flex; justify-content:center; gap:26px; align-items:center; margin:16px 0; font-size:2.6rem; }
-  .roleta-nome{ display:inline-block; background:var(--bege); padding:5px 10px; border-radius:8px; margin:3px; font-size:0.9rem; }
-  .roleta-nome .x{ cursor:pointer; color:#b3402f; font-weight:700; margin-left:4px; }
 
   /* ===== Publicidade no fim dos jogos ===== */
   #adJogosOverlay{ position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.85); display:none; align-items:center; justify-content:center; padding:16px; }
@@ -1341,35 +1348,14 @@
 
   <section class="categoria" id="jogos">
     <div class="jogos-slogan" data-en="Play all you want — it's on us!" data-fr="Joue autant que tu veux — c'est offert !" data-es="¡Juega cuanto quieras — es gratis!">🎉 Joga à vontade, que não pagas!</div>
-    <details class="grupo-prato">
-      <summary data-en="Games" data-fr="Jeux" data-es="Juegos">Jogos</summary>
-      <div class="card-lista">
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Jogo da Velha</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Forca</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Adivinhas</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Jogo do Stop</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Jogo da Memória</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Pedra, Papel, Tesoura</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Quem Paga?</div>
-        </div>
-        <div class="item" style="cursor:pointer; text-align:center;">
-          <div class="nome">Quiz</div>
-        </div>
-      </div>
-    </details>
+    <div class="jogos-grid">
+      <button class="jogo-tile" type="button" data-jogo="velha"><span class="ico">⭕❌</span><span class="txt">Jogo da Velha</span></button>
+      <button class="jogo-tile" type="button" data-jogo="forca"><span class="ico"><svg viewBox="0 0 60 64" width="46" height="49" fill="none" stroke="#4a3820" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="60" x2="34" y2="60"/><line x1="12" y1="60" x2="12" y2="6"/><line x1="12" y1="6" x2="40" y2="6"/><line x1="40" y1="6" x2="40" y2="14" stroke-width="2.5"/><circle cx="40" cy="20" r="6"/><line x1="40" y1="26" x2="40" y2="42"/><line x1="40" y1="30" x2="32" y2="38"/><line x1="40" y1="30" x2="48" y2="38"/><line x1="40" y1="42" x2="33" y2="52"/><line x1="40" y1="42" x2="47" y2="52"/></svg></span><span class="txt">Forca</span></button>
+      <button class="jogo-tile" type="button" data-jogo="adivinhas"><span class="ico">🤔</span><span class="txt">Adivinhas</span></button>
+      <button class="jogo-tile" type="button" data-jogo="stop"><span class="ico">🛑</span><span class="txt">Jogo do Stop</span></button>
+      <button class="jogo-tile" type="button" data-jogo="memoria"><span class="ico">🃏</span><span class="txt">Memória</span></button>
+      <button class="jogo-tile" type="button" data-jogo="quiz"><span class="ico">💡</span><span class="txt">Quiz</span></button>
+    </div>
   </section>
 </main>
 
@@ -2018,8 +2004,6 @@
     else if(tipo === 'adivinhas') iniciarAdivinhas();
     else if(tipo === 'stop') iniciarStop();
     else if(tipo === 'memoria') iniciarMemoria();
-    else if(tipo === 'ppt') iniciarPPT();
-    else if(tipo === 'roleta') iniciarRoleta();
     else if(tipo === 'quiz') iniciarQuiz();
   }
 
@@ -2249,7 +2233,7 @@
     let html = `<div style="text-align:center;">
       <p style="font-size:0.85rem;color:var(--castanho);font-weight:bold;">📂 ${forcaCategoria}</p>
       ${forcaDesenhos[forcaErros]}
-      <div style="font-size:2rem;margin:15px 0;font-weight:bold;font-family:monospace;letter-spacing:5px;color:var(--castanho);">${display}</div>
+      <div style="font-size:clamp(1rem, 5.5vw, 1.8rem);margin:15px 0;font-weight:bold;font-family:monospace;letter-spacing:2px;color:var(--castanho);white-space:nowrap;overflow-x:auto;max-width:100%;">${display}</div>
       <p style="font-size:0.85rem;margin:8px 0;">Letras: ${forcaLetrasTentadas.join(', ') || '(nenhuma)'}</p>
       <p style="font-weight:bold;margin:8px 0;font-size:0.9rem;">Erros: <span style="color:${forcaErros<=2?'green':forcaErros<=4?'orange':'red'};font-size:1rem;">${forcaErros}/6</span></p>`;
 
@@ -2306,7 +2290,32 @@
     { pergunta: 'Qual é a coisa, qual é ela, que voa de flor em flor e faz mel?', resposta: 'ABELHA', dicas: ['Tem ferrão', 'Anda em enxame', 'Vive numa colmeia'] },
     { pergunta: 'Qual é a coisa, qual é ela, que abre e fecha e não é boca?', resposta: 'CHAVE', dicas: ['É de metal', 'Guardas no bolso', 'Abre portas'] },
     { pergunta: 'Qual é a coisa, qual é ela, que abre quando chove e fecha quando faz sol?', resposta: 'GUARDA-CHUVA', dicas: ['Protege da chuva', 'Tem um cabo', 'Dobra-se'] },
-    { pergunta: 'Qual é a coisa, qual é ela, que é redonda, tem gomos e é cor de fogo?', resposta: 'LARANJA', dicas: ['É uma fruta', 'Faz-se sumo dela', 'Tem vitamina C'] }
+    { pergunta: 'Qual é a coisa, qual é ela, que é redonda, tem gomos e é cor de fogo?', resposta: 'LARANJA', dicas: ['É uma fruta', 'Faz-se sumo dela', 'Tem vitamina C'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que te mostra a ti próprio mas não te guarda?', resposta: 'ESPELHO', dicas: ['Está na casa de banho', 'Reflete tudo', 'É de vidro'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem língua e sola mas não fala nem reza?', resposta: 'SAPATO', dicas: ['Usas no pé', 'Vem em par', 'Tem atacadores'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem um olho e por ele passa a linha?', resposta: 'AGULHA', dicas: ['Serve para coser', 'É de metal', 'Tem uma ponta afiada'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem asas e não voa, aquece e não é sol?', resposta: 'PANELA', dicas: ['Está na cozinha', 'Vai ao lume', 'Coze a comida'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que deixa marca no papel e vai ficando mais pequena?', resposta: 'LÁPIS', dicas: ['Serve para desenhar', 'Afias com um afia', 'Tem ponta de grafite'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem língua e não fala, mas dá badaladas?', resposta: 'SINO', dicas: ['Está na igreja', 'Toca as horas', 'É de metal'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem pés e cabeceira mas não anda?', resposta: 'CAMA', dicas: ['Dormes nela', 'Tem lençóis', 'Está no quarto'] },
+    { pergunta: 'Qual é a coisa, qual é ela, cor de laranja, que cresce na terra e o coelho adora?', resposta: 'CENOURA', dicas: ['É um legume', 'Come-se crua ou cozida', 'Boa para a vista'] },
+    { pergunta: 'Qual é a coisa, qual é ela, de cabeça vermelha e corpo de madeira, que risca e dá lume?', resposta: 'FÓSFORO', dicas: ['Serve para acender', 'Vem numa caixa', 'Só arde uma vez'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que limpa a boca à mesa e é de papel ou pano?', resposta: 'GUARDANAPO', dicas: ['Usas a comer', 'Fica ao lado do prato', 'Dobra-se'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem duas pernas e corta, mas não anda?', resposta: 'TESOURA', dicas: ['Serve para cortar', 'É de metal', 'Corta papel'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que anda sempre na cabeça e não é cabelo?', resposta: 'CHAPÉU', dicas: ['Protege do sol', 'Pões na cabeça', 'Tem aba'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que se abre e fecha e deixa entrar a luz?', resposta: 'JANELA', dicas: ['Está na parede', 'Tem vidro', 'Vês a rua por ela'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem degraus e sobe sem andar?', resposta: 'ESCADA', dicas: ['Ajuda a subir', 'Liga andares', 'Pode ser de caracol'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que é água mas está dura e fria?', resposta: 'GELO', dicas: ['Vem do congelador', 'Derrete ao calor', 'Pões na bebida'] },
+    { pergunta: 'Qual é a coisa, qual é ela, branca e fina, que dá gosto à comida?', resposta: 'SAL', dicas: ['Vem do mar', 'Está na cozinha', 'A mais faz mal'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que tem braços e roda com o vento?', resposta: 'MOINHO', dicas: ['Mói o trigo', 'Faz farinha', 'Tem velas grandes'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que anda na água e não é peixe?', resposta: 'BARCO', dicas: ['Tem vela ou motor', 'Flutua', 'Leva pessoas'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que brilha de noite lá no alto?', resposta: 'ESTRELA', dicas: ['Está no céu', 'Vê-se em noites limpas', 'Cintila'] },
+    { pergunta: 'Qual é a coisa, qual é ela, pequenina e trabalhadora, que anda em fila?', resposta: 'FORMIGA', dicas: ['Vive no formigueiro', 'Carrega comida', 'É um inseto'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que põe ovos e faz "có-có-có"?', resposta: 'GALINHA', dicas: ['Vive na capoeira', 'Dá-nos ovos', 'Tem penas'] },
+    { pergunta: 'Qual é a coisa, qual é ela, amarela, feita de leite, que o rato adora?', resposta: 'QUEIJO', dicas: ['Come-se em fatias', 'Vem da vaca ou cabra', 'Às vezes tem buracos'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que passa por cima do rio e não se molha?', resposta: 'PONTE', dicas: ['Liga as margens', 'Passam carros por cima', 'É de pedra ou ferro'] },
+    { pergunta: 'Qual é a coisa, qual é ela, que guarda e só a chave abre?', resposta: 'CADEADO', dicas: ['Fecha portões', 'É de metal', 'Tem uma chave própria'] },
+    { pergunta: 'Qual é a coisa, qual é ela, branca ou cinzenta, que anda no céu e traz chuva?', resposta: 'NUVEM', dicas: ['Está lá no alto', 'Muda de forma', 'Tapa o sol'] }
   ];
   let adivinhaAtual = 0;
   let adivinhaDicaIndex = 0;
@@ -2709,10 +2718,11 @@
   // ==========================================================
   //  JOGO DA MEMÓRIA
   // ==========================================================
-  const memSimbolos = ['🍕','🍔','🍟','🌭','🍣','🍰'];
+  function baralhar(a){ for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  const memSimbolos = ['🍕','🍔','🍟','🌭','🍣','🍰','🍺','🍷','🥗','🍩'];
   let memCartas = [], memReveladas = [], memViradas = [], memPares = 0, memJogadas = 0, memBloqueado = false;
   function iniciarMemoria(){
-    memCartas = [...memSimbolos, ...memSimbolos].sort(() => Math.random() - 0.5);
+    memCartas = baralhar([...memSimbolos, ...memSimbolos]);
     memReveladas = new Array(memCartas.length).fill(false);
     memViradas = []; memPares = 0; memJogadas = 0; memBloqueado = false;
     renderMemoria();
@@ -2756,141 +2766,176 @@
   };
 
   // ==========================================================
-  //  PEDRA, PAPEL, TESOURA (primeiro a 3)
-  // ==========================================================
-  const pptOpc = { pedra:'✊', papel:'✋', tesoura:'✌️' };
-  let pptEu = 0, pptTel = 0, pptAdMostrado = false;
-  function iniciarPPT(){ pptEu = 0; pptTel = 0; pptAdMostrado = false; renderPPT(null, null, null); }
-  function renderPPT(euEsc, telEsc, res){
-    let html = '<p class="jogo-titulo">Pedra, Papel, Tesoura</p>';
-    html += '<p class="ppt-placar">Tu <strong>' + pptEu + '</strong> — <strong>' + pptTel + '</strong> Telemóvel</p>';
-    html += '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Primeiro a 3 vence</p>';
-    if(euEsc){
-      html += '<div class="ppt-vs"><span>' + pptOpc[euEsc] + '</span><span style="font-size:1rem;">vs</span><span>' + pptOpc[telEsc] + '</span></div>';
-      const cor = res === 'ganhou' ? 'green' : (res === 'perdeu' ? '#b3402f' : 'var(--castanho)');
-      const txt = res === 'ganhou' ? 'Ganhaste esta!' : (res === 'perdeu' ? 'Perdeste esta!' : 'Empate!');
-      html += '<p style="text-align:center;font-weight:bold;font-size:1.05rem;color:' + cor + ';">' + txt + '</p>';
-    }
-    const fim = pptEu >= 3 || pptTel >= 3;
-    if(fim){
-      html += '<div class="velha-turno velha-fim">' + (pptEu >= 3 ? '🎉 Ganhaste o jogo!' : '😜 O telemóvel ganhou!') + '</div>';
-      html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarPPT()">Jogar outra vez</button></div>';
-    } else {
-      html += '<div class="jogo-menu">';
-      html += '<button class="jogo-btn" onclick="jogarPPT(\'pedra\')">✊ Pedra</button>';
-      html += '<button class="jogo-btn" onclick="jogarPPT(\'papel\')">✋ Papel</button>';
-      html += '<button class="jogo-btn" onclick="jogarPPT(\'tesoura\')">✌️ Tesoura</button>';
-      html += '</div>';
-    }
-    jogoConteudo.innerHTML = html;
-    if(fim && !pptAdMostrado){ pptAdMostrado = true; window.mostrarPubJogos(function(){}); }
-  }
-  window.jogarPPT = function(euEsc){
-    const opcoes = ['pedra','papel','tesoura'];
-    const telEsc = opcoes[Math.floor(Math.random() * 3)];
-    let res;
-    if(euEsc === telEsc) res = 'empate';
-    else if((euEsc === 'pedra' && telEsc === 'tesoura') || (euEsc === 'papel' && telEsc === 'pedra') || (euEsc === 'tesoura' && telEsc === 'papel')){ res = 'ganhou'; pptEu++; }
-    else { res = 'perdeu'; pptTel++; }
-    renderPPT(euEsc, telEsc, res);
-  };
-
-  // ==========================================================
-  //  QUEM PAGA? (roleta / sorteio)
-  // ==========================================================
-  let roletaNomes = [];
-  function iniciarRoleta(){ roletaNomes = []; renderRoletaSetup(); }
-  function renderRoletaSetup(){
-    let html = '<p class="jogo-titulo">Quem paga? 💸</p>';
-    html += '<p style="text-align:center;font-size:0.85rem;color:var(--castanho-suave);margin-bottom:8px;">Adiciona os nomes e roda.</p>';
-    html += '<div style="display:flex;gap:8px;max-width:280px;margin:0 auto;"><input type="text" id="roletaInput" placeholder="Nome" style="flex:1;padding:10px;border:1px solid var(--linha);border-radius:8px;font-size:0.95rem;" onkeypress="if(event.key===\'Enter\') addRoleta()"><button class="jogo-btn" style="width:auto;padding:10px 16px;margin:0;" onclick="addRoleta()">+</button></div>';
-    html += '<div style="margin:12px 0;text-align:center;">';
-    roletaNomes.forEach((n, i) => { html += '<span class="roleta-nome">' + n + '<span class="x" onclick="removeRoleta(' + i + ')">✕</span></span>'; });
-    html += '</div>';
-    if(roletaNomes.length >= 2){
-      html += '<div class="jogo-menu"><button class="jogo-btn" onclick="girarRoleta()">🎯 Rodar!</button></div>';
-    }
-    jogoConteudo.innerHTML = html;
-  }
-  window.addRoleta = function(){
-    const inp = document.getElementById('roletaInput');
-    const v = inp.value.trim();
-    if(v){ roletaNomes.push(v); renderRoletaSetup(); const el = document.getElementById('roletaInput'); if(el) el.focus(); }
-  };
-  window.removeRoleta = function(i){ roletaNomes.splice(i, 1); renderRoletaSetup(); };
-  window.girarRoleta = function(){
-    let voltas = 0;
-    const total = 16 + Math.floor(Math.random() * roletaNomes.length);
-    const iv = setInterval(() => {
-      const atual = roletaNomes[voltas % roletaNomes.length];
-      jogoConteudo.innerHTML = '<div style="text-align:center;padding:36px 0;"><p style="font-size:0.9rem;color:var(--castanho-suave);">A escolher…</p><p style="font-size:2rem;font-weight:900;color:var(--castanho);margin:14px 0;">' + atual + '</p></div>';
-      voltas++;
-      if(voltas > total){
-        clearInterval(iv);
-        const escolhido = roletaNomes[(voltas - 1) % roletaNomes.length];
-        jogoConteudo.innerHTML = '<div style="text-align:center;padding:24px 0;"><p style="font-size:1rem;">E quem paga é…</p><p style="font-size:2.4rem;font-weight:900;color:#b3402f;margin:14px 0;">' + escolhido + ' 💸</p></div><div class="jogo-menu"><button class="jogo-btn claro" onclick="renderRoletaSetup()">Outra vez</button></div>';
-        window.mostrarPubJogos(function(){});
-      }
-    }, 110);
-  };
-  window.renderRoletaSetup = renderRoletaSetup;
-
-  // ==========================================================
   //  QUIZ
   // ==========================================================
-  const quizDB = [
-    { p:'A francesinha é típica de que cidade?', o:['Lisboa','Porto','Faro','Braga'], c:1 },
-    { p:'Qual destes é um Vinho Verde?', o:['Porto','Moscatel','Casal Garcia','Mateus'], c:2 },
-    { p:'Quantos jogadores tem uma equipa de futebol em campo?', o:['11','10','9','12'], c:0 },
-    { p:'Qual é a capital de Portugal?', o:['Porto','Coimbra','Lisboa','Braga'], c:2 },
-    { p:'A vitamina C é abundante em qual fruta?', o:['Banana','Laranja','Uva','Pera'], c:1 },
-    { p:'Quantos lados tem um quadrado?', o:['3','5','4','6'], c:2 },
-    { p:'Qual destes é um doce típico português?', o:['Gelado','Bolacha Maria','Chocolate','Pastel de nata'], c:3 },
-    { p:'Com que bebida se faz a sangria?', o:['Vinho','Cerveja','Água','Leite'], c:0 },
-    { p:'Quantos minutos tem uma hora?', o:['30','90','60','100'], c:2 },
-    { p:'O polvo tem quantos tentáculos?', o:['6','8','10','4'], c:1 },
-    { p:'Qual destes é um petisco português?', o:['Sushi','Tacos','Pica-pau','Ramen'], c:2 },
-    { p:'A cortiça vem de que árvore?', o:['Pinheiro','Sobreiro','Oliveira','Eucalipto'], c:1 }
+  // Perguntas: a resposta certa é SEMPRE a primeira opção; as posições são baralhadas ao jogar.
+  const quizFacil = [
+    { p:'Qual é a capital de Portugal?', o:['Lisboa','Porto','Faro','Braga'] },
+    { p:'Quantos dias tem uma semana?', o:['7','5','6','8'] },
+    { p:'De que cor é o céu num dia limpo?', o:['Azul','Verde','Vermelho','Amarelo'] },
+    { p:'Quantas patas tem um cão?', o:['4','2','6','3'] },
+    { p:'Que som faz o gato?', o:['Miau','Ão-ão','Mu','Cocorococó'] },
+    { p:'Qual fruta é amarela e curva?', o:['Banana','Maçã','Uva','Melancia'] },
+    { p:'Quantos meses tem um ano?', o:['12','10','11','13'] },
+    { p:'O que bebe normalmente um bebé?', o:['Leite','Café','Vinho','Chá'] },
+    { p:'Quantos dedos tem uma mão?', o:['5','4','6','3'] },
+    { p:'Qual é a estação mais quente do ano?', o:['Verão','Inverno','Outono','Primavera'] },
+    { p:'Onde vivem os peixes?', o:['Água','Terra','Ar','Fogo'] },
+    { p:'Quantas rodas tem um carro normal?', o:['4','3','2','6'] },
+    { p:'Que astro ilumina o dia?', o:['Sol','Lua','Estrela','Nuvem'] },
+    { p:'De que cor é o sangue?', o:['Vermelho','Azul','Verde','Preto'] },
+    { p:'Quantos olhos temos?', o:['2','1','3','4'] },
+    { p:'De onde é típico o pastel de nata?', o:['Belém','Madrid','Roma','Paris'] },
+    { p:'Que animal nos dá lã?', o:['Ovelha','Vaca','Galinha','Cavalo'] },
+    { p:'Que objeto usamos para ver as horas?', o:['Relógio','Sapato','Copo','Livro'] },
+    { p:'Onde guardamos a comida fria?', o:['Frigorífico','Forno','Armário','Gaveta'] },
+    { p:'Quantas cores tem o arco-íris?', o:['7','5','6','8'] },
+    { p:'O que usamos para escrever?', o:['Caneta','Colher','Martelo','Tesoura'] },
+    { p:'De que fruta se faz o vinho?', o:['Uva','Maçã','Laranja','Pera'] },
+    { p:'Qual é a capital de Espanha?', o:['Madrid','Barcelona','Lisboa','Paris'] },
+    { p:'Que animal é o rei da selva?', o:['Leão','Elefante','Girafa','Zebra'] },
+    { p:'O que cai do céu quando chove?', o:['Água','Areia','Folhas','Pedras'] },
+    { p:'Qual meio de transporte voa?', o:['Avião','Carro','Barco','Comboio'] },
+    { p:'Quantos lados tem um triângulo?', o:['3','4','5','6'] },
+    { p:'De que cor é a relva?', o:['Verde','Azul','Roxo','Cor-de-rosa'] },
+    { p:'Que animal faz "cocorococó"?', o:['Galo','Pato','Peru','Ganso'] },
+    { p:'Onde usamos os sapatos?', o:['Nos pés','Na cabeça','Nas mãos','Na cintura'] },
+    { p:'Qual é a refeição da manhã?', o:['Pequeno-almoço','Jantar','Ceia','Lanche'] },
+    { p:'Onde se nada no verão?', o:['Praia','Montanha','Deserto','Floresta'] },
+    { p:'Que animal tem uma tromba comprida?', o:['Elefante','Leão','Tigre','Urso'] },
+    { p:'Qual é o fruto da oliveira?', o:['Azeitona','Uva','Laranja','Maçã'] },
+    { p:'Qual é a capital de França?', o:['Paris','Lyon','Marselha','Nice'] },
+    { p:'Que instrumento tem teclas pretas e brancas?', o:['Piano','Guitarra','Bateria','Flauta'] },
+    { p:'De que animal vem o mel?', o:['Abelha','Vaca','Galinha','Ovelha'] },
+    { p:'Quantas horas tem um dia?', o:['24','12','48','10'] },
+    { p:'Qual é a moeda usada em Portugal?', o:['Euro','Dólar','Libra','Escudo'] },
+    { p:'Que animal ladra?', o:['Cão','Gato','Vaca','Ovelha'] }
   ];
-  let quizBaralho = [], quizIdx = 0, quizPontos = 0;
+  const quizMedio = [
+    { p:'Que rio passa em Lisboa?', o:['Tejo','Douro','Mondego','Guadiana'] },
+    { p:'Quantos oceanos existem na Terra?', o:['5','4','7','3'] },
+    { p:'Quem escreveu "Os Lusíadas"?', o:['Luís de Camões','Fernando Pessoa','Eça de Queirós','José Saramago'] },
+    { p:'Qual é o planeta mais próximo do Sol?', o:['Mercúrio','Vénus','Terra','Marte'] },
+    { p:'Que metal precioso é amarelo?', o:['Ouro','Prata','Ferro','Cobre'] },
+    { p:'Qual é o maior oceano do mundo?', o:['Pacífico','Atlântico','Índico','Ártico'] },
+    { p:'Quantas cordas tem uma guitarra clássica?', o:['6','4','5','7'] },
+    { p:'Em que país fica a Torre Eiffel?', o:['França','Itália','Espanha','Alemanha'] },
+    { p:'Que cor se obtém ao misturar azul e amarelo?', o:['Verde','Roxo','Laranja','Castanho'] },
+    { p:'Qual é o animal mais alto do mundo?', o:['Girafa','Elefante','Avestruz','Cavalo'] },
+    { p:'Qual é a capital de Itália?', o:['Roma','Milão','Veneza','Nápoles'] },
+    { p:'Quantos lados tem um hexágono?', o:['6','5','7','8'] },
+    { p:'Que órgão bombeia o sangue?', o:['Coração','Pulmão','Fígado','Rim'] },
+    { p:'Quantos graus tem um ângulo reto?', o:['90','45','180','60'] },
+    { p:'Qual é a capital do Reino Unido?', o:['Londres','Manchester','Liverpool','Dublin'] },
+    { p:'Que gás respiramos para viver?', o:['Oxigénio','Dióxido de carbono','Hidrogénio','Hélio'] },
+    { p:'Quantos jogadores tem uma equipa de basquetebol em campo?', o:['5','6','7','4'] },
+    { p:'Qual é o maior país do mundo em área?', o:['Rússia','China','EUA','Canadá'] },
+    { p:'Quantos segundos tem um minuto?', o:['60','100','30','90'] },
+    { p:'Qual é a capital da Alemanha?', o:['Berlim','Munique','Frankfurt','Hamburgo'] },
+    { p:'De que planta se faz o chocolate?', o:['Cacau','Café','Chá','Cana'] },
+    { p:'Quantas notas musicais básicas existem?', o:['7','5','8','6'] },
+    { p:'Qual é o planeta conhecido como "planeta vermelho"?', o:['Marte','Júpiter','Vénus','Saturno'] },
+    { p:'Quantos dias tem fevereiro num ano normal?', o:['28','30','31','29'] },
+    { p:'Qual é a capital dos Estados Unidos?', o:['Washington','Nova Iorque','Los Angeles','Chicago'] },
+    { p:'Que instrumento mede a temperatura?', o:['Termómetro','Barómetro','Bússola','Régua'] },
+    { p:'Quantas cores tem a bandeira de Portugal?', o:['2','3','4','1'] },
+    { p:'Qual é o maior planeta do sistema solar?', o:['Júpiter','Saturno','Terra','Marte'] },
+    { p:'Que animal hiberna no inverno?', o:['Urso','Leão','Girafa','Zebra'] },
+    { p:'Quantos continentes existem?', o:['7','5','6','4'] },
+    { p:'Qual é a capital da Rússia?', o:['Moscovo','São Petersburgo','Kiev','Minsk'] },
+    { p:'De que fruta se faz o vinho do Porto?', o:['Uva','Ameixa','Cereja','Framboesa'] },
+    { p:'Quantos lados tem um pentágono?', o:['5','6','4','7'] },
+    { p:'Que metal é usado nas latas de refrigerante?', o:['Alumínio','Ouro','Chumbo','Prata'] },
+    { p:'Que ave é o símbolo da paz?', o:['Pomba','Águia','Corvo','Pardal'] }
+  ];
+  const quizDificil = [
+    { p:'Em que ano foi a Revolução dos Cravos?', o:['1974','1910','1926','1989'] },
+    { p:'Quem pintou a Mona Lisa?', o:['Leonardo da Vinci','Pablo Picasso','Van Gogh','Michelangelo'] },
+    { p:'Qual é o símbolo químico do ouro?', o:['Au','Ag','Fe','O'] },
+    { p:'Qual é a capital da Austrália?', o:['Camberra','Sydney','Melbourne','Perth'] },
+    { p:'Qual é o maior deserto quente do mundo?', o:['Sara','Gobi','Kalahari','Atacama'] },
+    { p:'Quem escreveu "Mensagem"?', o:['Fernando Pessoa','Luís de Camões','Eça de Queirós','Sophia de Mello'] },
+    { p:'Aproximadamente quantos ossos tem o corpo humano adulto?', o:['206','150','300','100'] },
+    { p:'Qual é a capital do Japão?', o:['Tóquio','Osaka','Quioto','Nagoya'] },
+    { p:'Quem escreveu "Romeu e Julieta"?', o:['Shakespeare','Molière','Cervantes','Dante'] },
+    { p:'Qual é o osso mais comprido do corpo humano?', o:['Fémur','Tíbia','Úmero','Rádio'] },
+    { p:'Em que ano o homem chegou à Lua?', o:['1969','1959','1972','1980'] },
+    { p:'Qual é a fórmula química da água?', o:['H₂O','CO₂','O₂','NaCl'] },
+    { p:'Qual é o maior mamífero do mundo?', o:['Baleia-azul','Elefante','Girafa','Hipopótamo'] },
+    { p:'Quantos corações tem um polvo?', o:['3','1','2','4'] },
+    { p:'Em que continente fica o Egito?', o:['África','Ásia','Europa','Oceânia'] },
+    { p:'Quem formulou a lei da gravidade?', o:['Isaac Newton','Albert Einstein','Galileu','Nikola Tesla'] },
+    { p:'Que metal é líquido à temperatura ambiente?', o:['Mercúrio','Ferro','Ouro','Chumbo'] },
+    { p:'Qual é a capital da Grécia?', o:['Atenas','Esparta','Salónica','Creta'] },
+    { p:'Quanto é a soma dos ângulos internos de um triângulo?', o:['180°','90°','360°','270°'] },
+    { p:'Quem pintou "A Noite Estrelada"?', o:['Van Gogh','Monet','Picasso','Dalí'] },
+    { p:'Em que país nasceram os Jogos Olímpicos?', o:['Grécia','Itália','Egito','China'] },
+    { p:'Qual é a montanha mais alta do mundo?', o:['Evereste','K2','Mont Blanc','Kilimanjaro'] },
+    { p:'Quem descobriu a penicilina?', o:['Alexander Fleming','Louis Pasteur','Marie Curie','Charles Darwin'] },
+    { p:'Qual é a velocidade aproximada da luz?', o:['300 000 km/s','3 000 km/s','30 000 km/s','1 000 km/s'] },
+    { p:'Qual é o país mais populoso do mundo?', o:['Índia','China','EUA','Indonésia'] }
+  ];
+
+  let quizSeq = [], quizIdx = 0;
+  function prepararPergunta(q){
+    const correta = q.o[0];
+    const opc = baralhar(q.o.slice());
+    return { p:q.p, o:opc, c:opc.indexOf(correta) };
+  }
+  function nivelDoIndice(i){
+    if(i < quizFacil.length) return 'Fácil';
+    if(i < quizFacil.length + quizMedio.length) return 'Médio';
+    return 'Difícil';
+  }
   function iniciarQuiz(){
-    quizBaralho = [...Array(quizDB.length).keys()].sort(() => Math.random() - 0.5).slice(0, 8);
-    quizIdx = 0; quizPontos = 0;
+    quizSeq = [].concat(
+      baralhar(quizFacil.slice()).map(prepararPergunta),
+      baralhar(quizMedio.slice()).map(prepararPergunta),
+      baralhar(quizDificil.slice()).map(prepararPergunta)
+    );
+    quizIdx = 0;
     renderQuiz();
   }
   function renderQuiz(){
-    if(quizIdx >= quizBaralho.length){
-      let html = '<div class="velha-turno velha-fim">Acabou! ' + quizPontos + '/' + quizBaralho.length + ' certas</div>';
+    if(quizIdx >= quizSeq.length){
+      let html = '<div class="velha-turno velha-fim">🏆 Incrível! Acertaste todas as ' + quizSeq.length + ' perguntas!</div>';
       html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Jogar outra vez</button></div>';
       jogoConteudo.innerHTML = html;
       window.mostrarPubJogos(function(){});
       return;
     }
-    const q = quizDB[quizBaralho[quizIdx]];
-    let html = '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Pergunta ' + (quizIdx + 1) + '/' + quizBaralho.length + ' · ' + quizPontos + ' pts</p>';
+    const q = quizSeq[quizIdx];
+    const nivel = nivelDoIndice(quizIdx);
+    let html = '<p style="text-align:center;font-size:0.8rem;color:var(--castanho-suave);">Pergunta ' + (quizIdx + 1) + ' · Nível: <strong>' + nivel + '</strong></p>';
     html += '<p class="jogo-titulo" style="font-size:1.02rem;">' + q.p + '</p><div class="jogo-menu">';
     q.o.forEach((op, i) => { html += '<button class="jogo-btn" onclick="responderQuiz(' + i + ')">' + op + '</button>'; });
     html += '</div>';
     jogoConteudo.innerHTML = html;
   }
   window.responderQuiz = function(i){
-    const q = quizDB[quizBaralho[quizIdx]];
-    if(i === q.c) quizPontos++;
+    const q = quizSeq[quizIdx];
+    const certo = i === q.c;
     const botoes = jogoConteudo.querySelectorAll('.jogo-btn');
     botoes.forEach((b, idx) => {
       b.style.pointerEvents = 'none';
       if(idx === q.c) b.style.background = '#3b8a4f';
       else if(idx === i) b.style.background = '#b3402f';
     });
-    setTimeout(() => { quizIdx++; renderQuiz(); }, 950);
+    setTimeout(() => {
+      if(certo){ quizIdx++; renderQuiz(); }
+      else {
+        let html = '<div class="velha-turno velha-fim">❌ Errado! Chegaste à pergunta ' + (quizIdx + 1) + ' (' + nivelDoIndice(quizIdx) + ')</div>';
+        html += '<p style="text-align:center;font-size:0.85rem;color:var(--castanho-suave);margin:6px 0;">A resposta certa era: <strong>' + q.o[q.c] + '</strong></p>';
+        html += '<div class="jogo-menu"><button class="jogo-btn claro" onclick="iniciarQuiz()">Recomeçar do início</button></div>';
+        jogoConteudo.innerHTML = html;
+        window.mostrarPubJogos(function(){});
+      }
+    }, 950);
   };
 
-  // Cliques nos jogos
-  document.querySelectorAll('.categoria#jogos .item').forEach((item, i) => {
-    item.addEventListener('click', () => {
-      const tipos = ['velha','forca','adivinhas','stop','memoria','ppt','roleta','quiz'];
-      abrirJogo(tipos[i]);
-    });
+  // Cliques nos jogos (grelha de quadrados)
+  document.querySelectorAll('.jogos-grid .jogo-tile').forEach(tile => {
+    tile.addEventListener('click', () => abrirJogo(tile.dataset.jogo));
   });
 
   // ==========================================================
