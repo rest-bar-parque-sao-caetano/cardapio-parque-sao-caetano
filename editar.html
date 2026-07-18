@@ -358,6 +358,31 @@
     </div>
   </details>
 
+  <!-- EXTRAS: sazonal + fidelidade -->
+  <details id="secExtras">
+    <summary>Extras (decoração e fidelidade)</summary>
+    <div class="bloco-conteudo">
+      <div class="lembrar">
+        <input type="checkbox" id="sazonalAtivo" checked>
+        <label for="sazonalAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Decoração sazonal automática (neve no Natal, etc.)</label>
+      </div>
+
+      <div class="lembrar" style="margin-top:18px;">
+        <input type="checkbox" id="fidAtivo">
+        <label for="fidAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar cartão de fidelidade</label>
+      </div>
+      <div id="blocoFid" style="display:none; margin-top:8px; padding:12px; background:var(--bege); border-radius:10px;">
+        <div style="font-size:0.8rem; color:var(--castanho-suave); margin-bottom:8px;">O cliente junta carimbos. Para carimbar, pede o <strong>código</strong> ao empregado (muda-o de vez em quando por segurança). Só um carimbo por dia por telemóvel.</div>
+        <label for="fidCodigo" style="margin-top:0;">Código do carimbo</label>
+        <input type="text" id="fidCodigo" placeholder="Ex: CAETANO25">
+        <label for="fidTotal">Número de carimbos para o prémio</label>
+        <input type="number" id="fidTotal" min="4" max="16" step="1" value="8" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+        <label for="fidPremio">Prémio</label>
+        <input type="text" id="fidPremio" placeholder="Ex: Uma sobremesa grátis!">
+      </div>
+    </div>
+  </details>
+
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
 
@@ -396,7 +421,9 @@
         { titulo:'Sugestão', linhas:[], ocultarDomingo:false }
       ] } },
     footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 },
-    adJogos: { ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 }
+    adJogos: { ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 },
+    sazonal: true,
+    fidelidade: { ativo:false, codigo:'', total:8, premio:'' }
   };
   let configSha = null; // sha do config.json existente (para atualizar)
   let configCarregado = false; // só se pode guardar depois de carregar
@@ -510,6 +537,8 @@
         config.rodape.carrossel = { ativo: !!carGuardado.ativo, intervalo: carGuardado.intervalo || 5, inicio: carGuardado.inicio || '', fim: carGuardado.fim || '', slides: (Array.isArray(carGuardado.slides) && carGuardado.slides.length) ? carGuardado.slides : carDef.slides };
         config.footer = Object.assign({ nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 }, parsed.footer || {});
         config.adJogos = Object.assign({ ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 }, parsed.adJogos || {});
+        config.sazonal = parsed.sazonal !== false;
+        config.fidelidade = Object.assign({ ativo:false, codigo:'', total:8, premio:'' }, parsed.fidelidade || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -582,6 +611,14 @@
     document.getElementById('corAdj').value = ca;
     document.getElementById('corAdjVal').textContent = ca;
     document.getElementById('ajZoom').value = aj.fotoZoom || 100;
+    // Extras
+    document.getElementById('sazonalAtivo').checked = config.sazonal !== false;
+    const fid = config.fidelidade || {};
+    document.getElementById('fidAtivo').checked = !!fid.ativo;
+    document.getElementById('blocoFid').style.display = fid.ativo ? 'block' : 'none';
+    document.getElementById('fidCodigo').value = fid.codigo || '';
+    document.getElementById('fidTotal').value = fid.total || 8;
+    document.getElementById('fidPremio').value = fid.premio || '';
     renderListaFotos('header');
     renderListaFotos('rodape');
     renderListaFotos('footer');
@@ -795,6 +832,13 @@
         cor: document.getElementById('corAdj').value,
         duracao: parseInt(document.getElementById('adjDuracao').value, 10) || 5
       };
+      config.sazonal = document.getElementById('sazonalAtivo').checked;
+      config.fidelidade = {
+        ativo: document.getElementById('fidAtivo').checked,
+        codigo: document.getElementById('fidCodigo').value.trim(),
+        total: parseInt(document.getElementById('fidTotal').value, 10) || 8,
+        premio: document.getElementById('fidPremio').value.trim()
+      };
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
@@ -839,6 +883,9 @@
   });
   document.getElementById('carrosselAtivo').addEventListener('change', e => {
     document.getElementById('blocoCarrossel').style.display = e.target.checked ? 'block' : 'none';
+  });
+  document.getElementById('fidAtivo').addEventListener('change', e => {
+    document.getElementById('blocoFid').style.display = e.target.checked ? 'block' : 'none';
   });
 
   document.getElementById('corHeader').addEventListener('input', e => {
