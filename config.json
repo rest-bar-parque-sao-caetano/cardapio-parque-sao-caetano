@@ -90,5 +90,12 @@
     "textoY": 88.95024994049037,
     "cor": "#43ba2c",
     "duracao": 5
+  },
+  "sazonal": false,
+  "fidelidade": {
+    "ativo": false,
+    "codigo": "",
+    "total": 8,
+    "premio": ""
   }
 }
