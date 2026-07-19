@@ -91,7 +91,7 @@
     "cor": "#43ba2c",
     "duracao": 5
   },
-  "sazonal": true,
+  "sazonal": false,
   "fidelidade": {
     "ativo": false,
     "codigo": "",
