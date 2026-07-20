@@ -22,13 +22,13 @@
       "imagens/1784241581465-gemini-generated-image-j4r8ccj4r8ccj4r8.png"
     ],
     "especial": {
-      "ativo": false,
-      "inicio": "",
-      "fim": "",
-      "l1": "",
-      "l2": "",
-      "l3": "",
-      "l4": ""
+      "ativo": true,
+      "inicio": "11:00",
+      "fim": "23:59",
+      "l1": "Hoje? Folga",
+      "l2": "Amanhã contamos contigo",
+      "l3": "Avenida de São Caetano nº17 4405-821 Vila Nova de Gaia",
+      "l4": "962202622 / 227130614"
     },
     "carrossel": {
       "ativo": false,
