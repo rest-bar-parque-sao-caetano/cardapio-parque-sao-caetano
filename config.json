@@ -22,7 +22,7 @@
       "imagens/1784241581465-gemini-generated-image-j4r8ccj4r8ccj4r8.png"
     ],
     "especial": {
-      "ativo": true,
+      "ativo": false,
       "inicio": "11:00",
       "fim": "23:59",
       "l1": "Hoje? Folga",
@@ -31,10 +31,10 @@
       "l4": "962202622 / 227130614"
     },
     "carrossel": {
-      "ativo": false,
+      "ativo": true,
       "intervalo": 5,
-      "inicio": "",
-      "fim": "",
+      "inicio": "09:58",
+      "fim": "10:05",
       "slides": [
         {
           "titulo": "6.Feira Prato do Dia",
