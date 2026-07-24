@@ -1732,6 +1732,7 @@
       if(jogosSec) main.insertBefore(sec, jogosSec); else main.appendChild(sec);
     });
     aplicarIdioma(idiomaAtual);
+    if(window.montarBotoesLista) window.montarBotoesLista();
   }
   fetch('menu.json?t=' + Date.now())
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
@@ -3526,28 +3527,33 @@
     }
 
     // Adicionar botão "+" a cada prato/bebida (exceto na secção de jogos)
-    document.querySelectorAll('main .item').forEach(item => {
-      if(item.closest('#jogos')) return;
-      const nomeEl = item.querySelector('.nome');
-      if(!nomeEl) return;
-      const precoEl = item.querySelector('.preco');
-      const btn = document.createElement('button');
-      btn.className = 'btn-add-lista';
-      btn.type = 'button';
-      btn.textContent = '+';
-      btn.setAttribute('aria-label','Adicionar à lista');
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        const ops = opcoesDoItem(item, precoEl);
-        if(ops && ops.length){
-          abrirEscolha(nomeEl.textContent.trim(), ops, btn);
-        } else {
-          adicionarALista(nomeEl.textContent.trim(), precoEl ? precoEl.textContent.trim() : '');
-          feedbackBtn(btn);
-        }
+    // É uma função para poder voltar a correr depois de o menu ser gerado a partir do menu.json
+    window.montarBotoesLista = function(){
+      document.querySelectorAll('main .item').forEach(item => {
+        if(item.closest('#jogos')) return;
+        if(item.querySelector('.btn-add-lista')) return;
+        const nomeEl = item.querySelector('.nome');
+        if(!nomeEl) return;
+        const precoEl = item.querySelector('.preco');
+        const btn = document.createElement('button');
+        btn.className = 'btn-add-lista';
+        btn.type = 'button';
+        btn.textContent = '+';
+        btn.setAttribute('aria-label','Adicionar à lista');
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          const ops = opcoesDoItem(item, precoEl);
+          if(ops && ops.length){
+            abrirEscolha(nomeEl.textContent.trim(), ops, btn);
+          } else {
+            adicionarALista(nomeEl.textContent.trim(), precoEl ? precoEl.textContent.trim() : '');
+            feedbackBtn(btn);
+          }
+        });
+        item.appendChild(btn);
       });
-      item.appendChild(btn);
-    });
+    };
+    window.montarBotoesLista();
 
     // Esconder/mostrar carrinho quando se entra/sai dos jogos
     ['categoriaPainel','modalJogo'].forEach(id => {
