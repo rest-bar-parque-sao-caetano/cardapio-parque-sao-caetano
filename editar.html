@@ -450,6 +450,8 @@
     <div class="bloco-conteudo">
       <div class="subtitulo" style="margin-top:6px;">Edita o menu do cardápio (o <code>menu.json</code>). Usa o mesmo token lá em cima. Carrega, altera e guarda — as alterações aparecem no cardápio dentro de 1-2 minutos.</div>
       <button type="button" class="acao" id="btnCarregarMenu" style="background:var(--castanho); margin-top:6px;">📥 Carregar menu</button>
+      <input type="file" id="fileImportMenu" accept=".json,application/json" style="display:none;">
+      <button type="button" class="acao" id="btnImportarMenu" style="background:var(--dourado-escuro); margin-top:8px;">📁 Importar menu de um ficheiro (.json)</button>
       <div id="menuEditor" style="margin-top:14px;"></div>
       <div id="menuAcoes" style="display:none;">
         <button type="button" class="acao" id="btnGuardarMenu">💾 Guardar menu</button>
@@ -1507,6 +1509,30 @@
 
     document.getElementById('btnCarregarMenu').addEventListener('click', carregarMenu);
     document.getElementById('btnGuardarMenu').addEventListener('click', guardarMenu);
+
+    // Importar um menu.json de um ficheiro local (fica editável; publica-se com "Guardar menu")
+    document.getElementById('btnImportarMenu').addEventListener('click', function(){
+      document.getElementById('fileImportMenu').click();
+    });
+    document.getElementById('fileImportMenu').addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0];
+      if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        try{
+          var dados = JSON.parse(reader.result);
+          if(!dados || !Array.isArray(dados.categorias)) throw new Error('O ficheiro não parece um menu (falta "categorias").');
+          menuData = dados;
+          abertaCi = null;
+          renderEditor();
+          acoesEl.style.display = 'block';
+          setEstadoMenu('Menu importado ✓ — revê e clica em "💾 Guardar menu" para publicar.', 'ok');
+        }catch(err){ setEstadoMenu('Erro a importar: ' + err.message, 'erro'); }
+        e.target.value = '';
+      };
+      reader.onerror = function(){ setEstadoMenu('Não consegui ler o ficheiro.', 'erro'); };
+      reader.readAsText(file);
+    });
   })();
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
