@@ -1,7 +1,7 @@
 {
   "header": {
-    "titulo": "",
-    "subtitulo": "",
+    "titulo": "Rest & Bar Parque de São Caetano",
+    "subtitulo": "Tradição, sabor e conforto à mesa!",
     "cor": "#ffffff",
     "realce": true,
     "fotosAtivas": true,
@@ -99,5 +99,9 @@
     "premio": ""
   },
   "layout": "1",
-  "jogos": false
+  "jogos": false,
+  "redes": {
+    "instagram": "",
+    "facebook": ""
+  }
 }
