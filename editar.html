@@ -102,6 +102,31 @@
   .limpeza-tag.em-uso{ background:#eaf7ee; color:var(--verde); }
   .limpeza-tag.livre{ background:#fdecea; color:var(--vermelho); }
   .btn-apagar{ display:block; width:100%; margin-top:12px; padding:13px; background:var(--vermelho); color:#fff; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; }
+
+  /* ---- Editor visual do cardápio ---- */
+  .mv-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:8px; margin-top:12px; }
+  .mv-tile{ background:var(--bege); border:1.5px solid var(--linha); border-radius:12px; padding:10px 6px; text-align:center; cursor:pointer; color:var(--castanho); }
+  .mv-tile.ativa{ background:var(--dourado); color:#fff; border-color:var(--dourado); }
+  .mv-tile.nova{ background:#eef7ee; border-style:dashed; color:var(--verde); }
+  .mv-tile .em{ font-size:1.5rem; display:block; line-height:1; }
+  .mv-tile .tl{ font-size:0.72rem; margin-top:5px; display:block; line-height:1.15; font-weight:700; }
+  .mv-painel{ margin-top:14px; background:var(--branco); border:1.5px solid var(--linha); border-radius:14px; padding:14px; }
+  .mv-painel-top{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .mv-titulo{ flex:1; font-family:'Fredoka',sans-serif; font-size:1.2rem; color:var(--castanho); border:none; border-bottom:2px dashed var(--linha); background:transparent; padding:4px 2px; }
+  .mv-titulo:focus{ outline:none; border-bottom-color:var(--dourado); }
+  .mv-emoji{ width:48px; text-align:center; font-size:1.2rem; border:1.5px solid var(--linha); border-radius:8px; background:var(--bege-claro); padding:6px 2px; }
+  .mv-item{ display:flex; align-items:center; gap:6px; padding:8px 2px; border-bottom:1px dotted var(--linha); }
+  .mv-nome{ flex:1; min-width:0; border:none; background:transparent; font-size:0.95rem; color:var(--castanho); padding:4px 2px; border-bottom:1px solid transparent; }
+  .mv-nome:focus{ outline:none; border-bottom-color:var(--dourado); }
+  .mv-preco{ width:90px; text-align:right; border:none; background:transparent; font-family:'Fredoka',sans-serif; color:var(--dourado-escuro); font-size:0.9rem; padding:4px 2px; border-bottom:1px solid transparent; }
+  .mv-preco:focus{ outline:none; border-bottom-color:var(--dourado); }
+  .mv-mini{ border:none; background:transparent; cursor:pointer; font-size:1rem; padding:2px 3px; color:var(--castanho-suave); flex:0 0 auto; }
+  .mv-mini.del{ color:var(--vermelho); }
+  .mv-add{ display:block; width:100%; margin-top:10px; padding:11px; background:var(--verde); color:#fff; border:none; border-radius:10px; font-family:'Fredoka',sans-serif; cursor:pointer; font-size:0.95rem; }
+  .mv-barra{ display:flex; gap:6px; }
+  .mv-grupo{ border:1.5px solid var(--linha); border-radius:10px; padding:10px; margin:10px 0; background:var(--bege-claro); }
+  .mv-grupo-tit{ font-family:'Fredoka',sans-serif; color:var(--castanho); border:none; border-bottom:1px dashed var(--linha); background:transparent; width:100%; padding:3px 2px; margin-bottom:4px; font-size:1rem; }
+  .mv-grupo-tit:focus{ outline:none; border-bottom-color:var(--dourado); }
 </style>
 </head>
 <body>
@@ -393,7 +418,6 @@
       <button type="button" class="acao" id="btnCarregarMenu" style="background:var(--castanho); margin-top:6px;">📥 Carregar menu</button>
       <div id="menuEditor" style="margin-top:14px;"></div>
       <div id="menuAcoes" style="display:none;">
-        <button type="button" class="acao" id="btnAddCategoria" style="background:var(--verde);">＋ Nova categoria</button>
         <button type="button" class="acao" id="btnGuardarMenu">💾 Guardar menu</button>
       </div>
       <div class="estado" id="estadoMenu"></div>
@@ -1149,184 +1173,186 @@
       return row;
     }
 
-    // ---- Render de um prato ----
-    function renderItem(g, it, idx){
+    let abertaCi = null; // qual secção está aberta no editor visual
+
+    // ---- Render visual de um prato (nome + preço editáveis na hora) ----
+    function mvItem(g, it, idx){
       it.nome = it.nome || {pt:''};
-      const wrap=document.createElement('div');
-      wrap.style.cssText='border:1.5px solid var(--linha);border-radius:10px;padding:8px 10px;margin:8px 0;background:var(--bege-claro);';
+      const box=document.createElement('div');
 
       if(it.tabela){
-        const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;margin-bottom:4px;';
-        tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(g.itens,idx,-1); renderEditor(); }));
-        tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(g.itens,idx,1); renderEditor(); }));
-        tb.appendChild(mkBtn('🗑','var(--vermelho)',()=>{ g.itens.splice(idx,1); renderEditor(); }));
-        wrap.appendChild(tb);
-        wrap.appendChild(mkLabel('Nome (opcional)'));
-        wrap.appendChild(campoMulti(it.nome,'Nome'));
-        wrap.appendChild(mkLabel('Doses — tamanhos (separados por vírgula)'));
-        wrap.appendChild(mkInput((it.tabela.doses||[]).join(', '),'0,25 L, 0,50 L, 1 L', v=>{ it.tabela.doses=v.split(',').map(s=>s.trim()).filter(Boolean); }));
-        wrap.appendChild(mkLabel('Doses — preços (pela mesma ordem)'));
-        wrap.appendChild(mkInput((it.tabela.precos||[]).join(', '),'2,50€, 3,50€, 7,50€', v=>{ it.tabela.precos=v.split(',').map(s=>s.trim()).filter(Boolean); }));
-        return wrap;
+        box.style.cssText='padding:8px 2px;border-bottom:1px dotted var(--linha);';
+        const t=document.createElement('div'); t.style.cssText='font-size:0.8rem;font-weight:700;color:var(--dourado-escuro);margin-bottom:4px;'; t.textContent='Tabela de doses';
+        box.appendChild(t);
+        box.appendChild(mkLabel('Tamanhos (separados por vírgula)'));
+        box.appendChild(mkInput((it.tabela.doses||[]).join(', '),'0,25 L, 0,50 L, 1 L', v=>{ it.tabela.doses=v.split(',').map(s=>s.trim()).filter(Boolean); }));
+        box.appendChild(mkLabel('Preços (pela mesma ordem)'));
+        box.appendChild(mkInput((it.tabela.precos||[]).join(', '),'2,50€, 3,50€, 7,50€', v=>{ it.tabela.precos=v.split(',').map(s=>s.trim()).filter(Boolean); }));
+        const del=mkBtn('🗑 remover tabela','var(--vermelho)',()=>{ g.itens.splice(idx,1); renderEditor(); }); del.style.marginTop='6px';
+        box.appendChild(del);
+        return box;
       }
 
-      // Linha principal: nome + preço + botões (tudo o que o dono precisa)
-      const linha=document.createElement('div'); linha.style.cssText='display:flex;gap:6px;align-items:center;';
-      const nomeI=mkInput(it.nome.pt,'Nome do prato', v=>{ it.nome.pt=v; }); nomeI.style.flex='1 1 auto'; nomeI.style.minWidth='0';
-      linha.appendChild(nomeI);
-      const precoI=mkInput(it.preco,'Preço', v=>{ it.preco=v; }); precoI.style.flex='0 0 92px'; precoI.style.width='92px';
-      linha.appendChild(precoI);
-      linha.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(g.itens,idx,-1); renderEditor(); }));
-      linha.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(g.itens,idx,1); renderEditor(); }));
-      linha.appendChild(mkBtn('🗑','var(--vermelho)',()=>{ g.itens.splice(idx,1); renderEditor(); }));
-      wrap.appendChild(linha);
+      const row=document.createElement('div'); row.className='mv-item';
+      const nome=document.createElement('input'); nome.className='mv-nome'; nome.value=it.nome.pt||''; nome.placeholder='Nome do prato';
+      nome.addEventListener('input',()=>{ it.nome.pt=nome.value; });
+      const preco=document.createElement('input'); preco.className='mv-preco'; preco.value=(it.preco==null?'':it.preco); preco.placeholder='Preço';
+      preco.addEventListener('input',()=>{ it.preco=preco.value; });
+      const bMais=document.createElement('button'); bMais.className='mv-mini'; bMais.type='button'; bMais.textContent='⋯'; bMais.title='Mais opções';
+      const bDel=document.createElement('button'); bDel.className='mv-mini del'; bDel.type='button'; bDel.textContent='🗑';
+      bDel.addEventListener('click',()=>{ g.itens.splice(idx,1); renderEditor(); });
+      row.appendChild(nome); row.appendChild(preco); row.appendChild(bMais); row.appendChild(bDel);
+      box.appendChild(row);
 
-      // Tudo o resto (opcional) escondido num "Mais"
-      const mais=document.createElement('details'); mais.style.cssText='margin-top:6px;border:none;background:transparent;';
-      const ms=document.createElement('summary'); ms.textContent='Mais (traduções, descrição, foto)';
-      ms.style.cssText='font-size:0.8rem;padding:4px 0;font-family:inherit;color:var(--castanho-suave);';
-      mais.appendChild(ms);
+      const mais=document.createElement('div'); mais.style.cssText='display:none;padding:8px 6px 10px;background:var(--bege-claro);border-radius:8px;margin:4px 0;';
+      bMais.addEventListener('click',()=>{ mais.style.display = (mais.style.display==='none'?'block':'none'); });
+      const barra=document.createElement('div'); barra.className='mv-barra'; barra.style.marginBottom='6px';
+      barra.appendChild(mkBtn('↑ subir','var(--castanho-suave)',()=>{ mover(g.itens,idx,-1); renderEditor(); }));
+      barra.appendChild(mkBtn('↓ descer','var(--castanho-suave)',()=>{ mover(g.itens,idx,1); renderEditor(); }));
+      mais.appendChild(barra);
       mais.appendChild(mkLabel('Nome noutras línguas'));
       mais.appendChild(campoTraducoes(it.nome));
       it.desc = it.desc || {pt:''};
       mais.appendChild(mkLabel('Descrição (opcional)'));
       mais.appendChild(campoMulti(it.desc,'Descrição'));
-      mais.appendChild(mkLabel('Chave do vinho (popup ⓘ, opcional)'));
+      mais.appendChild(mkLabel('Chave do vinho (ⓘ, opcional)'));
       mais.appendChild(mkInput(it.vinho,'ex: monte-velho-tinto', v=>{ v=v.trim(); if(v) it.vinho=v; else delete it.vinho; }));
-      mais.appendChild(mkLabel('Foto (nome do ficheiro em imagens/, sem .jpg)'));
+      mais.appendChild(mkLabel('Foto (imagens/…, sem .jpg)'));
       mais.appendChild(mkInput(it.foto,'ex: francesinha-forno-com-ovo', v=>{ v=v.trim(); if(v) it.foto=v; else delete it.foto; }));
-      if(it.nome.en||it.nome.fr||it.nome.es||(it.desc&&(it.desc.pt||it.desc.en||it.desc.fr||it.desc.es))||it.vinho||it.foto) mais.open=true;
-      wrap.appendChild(mais);
-      return wrap;
+      box.appendChild(mais);
+      return box;
     }
 
-    // ---- Render de um grupo ----
-    function renderGrupo(cat, g, gi){
-      const wrap=document.createElement('div');
-      wrap.style.cssText='border:1.5px solid var(--linha);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--branco);';
-      const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;';
+    // ---- Render visual de um grupo (só para a secção de vinhos) ----
+    function mvGrupo(cat, g, gi){
+      g.summary = g.summary || {pt:''};
+      g.itens = g.itens || [];
+      const wrap=document.createElement('div'); wrap.className='mv-grupo';
+      const tb=document.createElement('div'); tb.className='mv-barra'; tb.style.justifyContent='flex-end'; tb.style.marginBottom='4px';
       tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(cat.grupos,gi,-1); renderEditor(); }));
       tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(cat.grupos,gi,1); renderEditor(); }));
       tb.appendChild(mkBtn('🗑 grupo','var(--vermelho)',()=>{ cat.grupos.splice(gi,1); renderEditor(); }));
       wrap.appendChild(tb);
 
-      g.summary = g.summary || {pt:''};
-      wrap.appendChild(mkLabel('Título do grupo'));
-      wrap.appendChild(campoMulti(g.summary,'Título'));
+      const tit=document.createElement('input'); tit.className='mv-grupo-tit'; tit.value=g.summary.pt||''; tit.placeholder='Título do grupo';
+      tit.addEventListener('input',()=>{ g.summary.pt=tit.value; });
+      wrap.appendChild(tit);
 
-      const sub=document.createElement('details'); sub.style.cssText='margin-top:4px;border:none;background:transparent;';
-      const ssm=document.createElement('summary'); ssm.textContent='Subtítulo (opcional)';
-      ssm.style.cssText='font-size:0.82rem;padding:4px 0;font-family:inherit;color:var(--dourado);';
-      sub.appendChild(ssm);
+      const trd=document.createElement('details'); trd.style.cssText='border:none;background:transparent;';
+      const trs=document.createElement('summary'); trs.textContent='traduções / subtítulo';
+      trs.style.cssText='font-size:0.75rem;padding:2px 0;color:var(--castanho-suave);';
+      trd.appendChild(trs);
+      trd.appendChild(mkLabel('Título noutras línguas'));
+      trd.appendChild(campoTraducoes(g.summary));
       g.subtitulo = g.subtitulo || {pt:''};
-      sub.appendChild(campoMulti(g.subtitulo,'Subtítulo'));
-      if(g.subtitulo.pt) sub.open=true;
-      wrap.appendChild(sub);
+      trd.appendChild(mkLabel('Subtítulo (opcional)'));
+      trd.appendChild(campoMulti(g.subtitulo,'Subtítulo'));
+      wrap.appendChild(trd);
 
       const itensBox=document.createElement('div');
-      g.itens = g.itens || [];
-      g.itens.forEach((it,idx)=> itensBox.appendChild(renderItem(g,it,idx)));
+      g.itens.forEach((it,idx)=> itensBox.appendChild(mvItem(g,it,idx)));
       wrap.appendChild(itensBox);
 
-      const addItem=mkBtn('＋ prato','var(--verde)',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
-      addItem.style.marginTop='6px';
+      const addItem=document.createElement('button'); addItem.className='mv-add'; addItem.type='button'; addItem.textContent='＋ prato';
+      addItem.addEventListener('click',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
       wrap.appendChild(addItem);
-      const addTab=mkBtn('＋ tabela de doses','var(--dourado)',()=>{ g.itens.push({nome:{pt:''},tabela:{doses:[],precos:[]}}); renderEditor(); });
-      addTab.style.marginTop='6px'; addTab.style.marginLeft='6px';
+      const addTab=document.createElement('button'); addTab.className='mv-add'; addTab.type='button'; addTab.textContent='＋ tabela de doses'; addTab.style.cssText='background:var(--dourado);margin-top:6px;';
+      addTab.addEventListener('click',()=>{ g.itens.push({nome:{pt:''},tabela:{doses:[],precos:[]}}); renderEditor(); });
       wrap.appendChild(addTab);
       return wrap;
     }
 
-    // ---- Render de uma secção (categoria) ----
-    function renderCategoria(cat, ci){
+    // ---- Painel de edição de uma secção (abre ao clicar no separador) ----
+    function mvPainel(cat, ci){
       cat.tile = cat.tile || {pt:''};
       cat.tipo = cat.tipo || 'comida';
       cat.grupos = cat.grupos || [];
       if(cat.tipo!=='vinhos' && cat.grupos.length===0) cat.grupos.push({ summary:{pt:''}, itens:[] });
 
-      const tituloMostrar = cat.tipo==='vinhos'
-        ? (cat.tile.pt || '(sem nome)')
-        : ((cat.grupos[0].summary && cat.grupos[0].summary.pt) || '(secção sem título)');
+      const tituloObj = cat.tipo==='vinhos' ? cat.tile : cat.grupos[0].summary;
 
-      const det=document.createElement('details');
-      const sm=document.createElement('summary');
-      sm.textContent=(cat.emoji?cat.emoji+' ':'') + tituloMostrar;
-      det.appendChild(sm);
-      const body=document.createElement('div'); body.className='bloco-conteudo';
+      const p=document.createElement('div'); p.className='mv-painel';
+      const top=document.createElement('div'); top.className='mv-painel-top';
+      const emoji=document.createElement('input'); emoji.className='mv-emoji'; emoji.value=cat.emoji||''; emoji.placeholder='🙂';
+      emoji.addEventListener('input',()=>{ cat.emoji=emoji.value; });
+      const tit=document.createElement('input'); tit.className='mv-titulo'; tit.value=tituloObj.pt||''; tit.placeholder='Título da secção';
+      tit.addEventListener('input',()=>{ tituloObj.pt=tit.value; });
+      const bFechar=document.createElement('button'); bFechar.className='mv-mini'; bFechar.type='button'; bFechar.textContent='✕'; bFechar.title='Fechar';
+      bFechar.addEventListener('click',()=>{ abertaCi=null; renderEditor(); });
+      top.appendChild(emoji); top.appendChild(tit); top.appendChild(bFechar);
+      p.appendChild(top);
 
-      const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;margin-top:8px;';
-      tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,-1); renderEditor(); }));
-      tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,1); renderEditor(); }));
-      tb.appendChild(mkBtn('🗑 secção','var(--vermelho)',()=>{ if(confirm('Apagar a secção "'+tituloMostrar+'"?')){ menuData.categorias.splice(ci,1); renderEditor(); } }));
-      body.appendChild(tb);
+      const barra=document.createElement('div'); barra.className='mv-barra'; barra.style.margin='0 0 8px';
+      barra.appendChild(mkBtn('↑ subir','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,-1); abertaCi=Math.max(0,ci-1); renderEditor(); }));
+      barra.appendChild(mkBtn('↓ descer','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,1); abertaCi=Math.min(menuData.categorias.length-1,ci+1); renderEditor(); }));
+      barra.appendChild(mkBtn('🗑 apagar secção','var(--vermelho)',()=>{ if(confirm('Apagar a secção "'+(tituloObj.pt||'')+'"?')){ menuData.categorias.splice(ci,1); abertaCi=null; renderEditor(); } }));
+      p.appendChild(barra);
 
-      body.appendChild(mkLabel('Emoji (opcional)'));
-      const emojiI=mkInput(cat.emoji,'ex: 🍖', v=>{ cat.emoji=v; }); emojiI.style.width='90px';
-      body.appendChild(emojiI);
+      const trd=document.createElement('details'); trd.style.cssText='border:none;background:transparent;margin-bottom:4px;';
+      const trs=document.createElement('summary'); trs.textContent='traduções do título'; trs.style.cssText='font-size:0.75rem;color:var(--castanho-suave);';
+      trd.appendChild(trs); trd.appendChild(campoTraducoes(tituloObj)); p.appendChild(trd);
 
       if(cat.tipo==='vinhos'){
-        body.appendChild(mkLabel('Nome do separador'));
-        body.appendChild(campoMulti(cat.tile,'Separador'));
-        const av=document.createElement('details'); av.style.marginTop='6px';
+        const av=document.createElement('details'); av.style.margin='6px 0';
         const avs=document.createElement('summary'); avs.textContent='Cabeçalho e nota final'; av.appendChild(avs);
-        const avb=document.createElement('div'); avb.className='bloco-conteudo';
+        const avb=document.createElement('div'); avb.style.padding='6px 2px';
         cat.h2=cat.h2||{pt:''}; avb.appendChild(mkLabel('Título grande')); avb.appendChild(campoMulti(cat.h2,'Título'));
         cat.subtitulo=cat.subtitulo||{pt:''}; avb.appendChild(mkLabel('Subtítulo')); avb.appendChild(campoMulti(cat.subtitulo,'Subtítulo'));
         cat.notaFinal=cat.notaFinal||{pt:''}; avb.appendChild(mkLabel('Nota final (ex: IVA incluído…)')); avb.appendChild(campoMulti(cat.notaFinal,'Nota'));
-        av.appendChild(avb); body.appendChild(av);
-        cat.grupos.forEach((g,gi)=> body.appendChild(renderGrupo(cat,g,gi)));
-        const addG=mkBtn('＋ grupo de vinhos','var(--dourado)',()=>{ cat.grupos.push({summary:{pt:''},itens:[]}); renderEditor(); });
-        addG.style.marginTop='10px'; body.appendChild(addG);
+        av.appendChild(avb); p.appendChild(av);
+        cat.grupos.forEach((g,gi)=> p.appendChild(mvGrupo(cat,g,gi)));
+        const addG=document.createElement('button'); addG.className='mv-add'; addG.type='button'; addG.textContent='＋ grupo de vinhos'; addG.style.background='var(--dourado)';
+        addG.addEventListener('click',()=>{ cat.grupos.push({summary:{pt:''},itens:[]}); renderEditor(); });
+        p.appendChild(addG);
       } else {
-        // COMIDA — título da secção + pratos diretamente (sem "grupos")
-        const g = cat.grupos[0];
-        g.summary = g.summary || {pt:''};
-        g.itens = g.itens || [];
-        body.appendChild(mkLabel('Título da secção'));
-        body.appendChild(campoMulti(g.summary,'Título'));
-
-        const sub=document.createElement('details'); sub.style.cssText='margin-top:4px;border:none;background:transparent;';
-        const ssm=document.createElement('summary'); ssm.textContent='Subtítulo da secção (opcional)';
-        ssm.style.cssText='font-size:0.8rem;padding:4px 0;font-family:inherit;color:var(--dourado);';
-        sub.appendChild(ssm);
-        g.subtitulo = g.subtitulo || {pt:''};
-        sub.appendChild(campoMulti(g.subtitulo,'Subtítulo'));
-        if(g.subtitulo.pt) sub.open=true;
-        body.appendChild(sub);
-
-        body.appendChild(mkLabel('Pratos'));
-        const itensBox=document.createElement('div');
-        g.itens.forEach((it,idx)=> itensBox.appendChild(renderItem(g,it,idx)));
-        body.appendChild(itensBox);
-        const addItem=mkBtn('＋ adicionar prato','var(--verde)',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
-        addItem.style.marginTop='8px'; body.appendChild(addItem);
+        const g = cat.grupos[0]; g.itens = g.itens || [];
+        const sd=document.createElement('details'); sd.style.cssText='border:none;background:transparent;margin:2px 0 6px;';
+        const ss=document.createElement('summary'); ss.textContent='subtítulo (opcional)'; ss.style.cssText='font-size:0.75rem;color:var(--castanho-suave);';
+        sd.appendChild(ss); g.subtitulo=g.subtitulo||{pt:''}; sd.appendChild(campoMulti(g.subtitulo,'Subtítulo')); if(g.subtitulo.pt) sd.open=true; p.appendChild(sd);
+        const lista=document.createElement('div'); g.itens.forEach((it,idx)=> lista.appendChild(mvItem(g,it,idx))); p.appendChild(lista);
+        const add=document.createElement('button'); add.className='mv-add'; add.type='button'; add.textContent='＋ adicionar prato';
+        add.addEventListener('click',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
+        p.appendChild(add);
       }
 
-      // Tipo de secção (raramente mexido) no fundo
-      const tp=document.createElement('details'); tp.style.cssText='margin-top:10px;border:none;background:transparent;';
-      const tps=document.createElement('summary'); tps.textContent='Tipo de secção';
-      tps.style.cssText='font-size:0.78rem;padding:4px 0;font-family:inherit;color:var(--castanho-suave);';
+      const tp=document.createElement('details'); tp.style.cssText='border:none;background:transparent;margin-top:8px;';
+      const tps=document.createElement('summary'); tps.textContent='tipo de secção'; tps.style.cssText='font-size:0.72rem;color:var(--castanho-suave);';
       tp.appendChild(tps);
-      const sel=document.createElement('select');
-      sel.style.cssText='width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linha);background:var(--branco);font-family:inherit;color:var(--castanho);';
-      [['comida','Pratos e preços (normal)'],['vinhos','Vinhos & Bebidas (grupos + doses)']].forEach(([v,t])=>{
-        const o=document.createElement('option'); o.value=v; o.textContent=t; if(cat.tipo===v) o.selected=true; sel.appendChild(o);
-      });
+      const sel=document.createElement('select'); sel.style.cssText='width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linha);background:var(--branco);font-family:inherit;color:var(--castanho);';
+      [['comida','Pratos e preços (normal)'],['vinhos','Vinhos & Bebidas (grupos + doses)']].forEach(([v,t])=>{ const o=document.createElement('option'); o.value=v; o.textContent=t; if(cat.tipo===v) o.selected=true; sel.appendChild(o); });
       sel.addEventListener('change',()=>{ cat.tipo=sel.value; if(cat.tipo!=='vinhos' && cat.grupos.length===0) cat.grupos.push({summary:{pt:''},itens:[]}); renderEditor(); });
-      tp.appendChild(sel); body.appendChild(tp);
+      tp.appendChild(sel); p.appendChild(tp);
 
-      det.appendChild(body);
-      return det;
+      return p;
     }
 
+    // ---- Réplica editável do cardápio: grelha de secções + painel aberto ----
     function renderEditor(){
       editorEl.innerHTML='';
       if(!menuData || !Array.isArray(menuData.categorias)) return;
-      if(menuData.categorias.length===0){
-        const v=document.createElement('div'); v.className='vazio'; v.textContent='Sem categorias. Usa "＋ Nova categoria" para começar.';
-        editorEl.appendChild(v);
-      }
-      menuData.categorias.forEach((cat,ci)=> editorEl.appendChild(renderCategoria(cat,ci)));
+      const grid=document.createElement('div'); grid.className='mv-grid';
+      menuData.categorias.forEach((cat,ci)=>{
+        const t=document.createElement('button'); t.type='button'; t.className='mv-tile'+(abertaCi===ci?' ativa':'');
+        const em=document.createElement('span'); em.className='em'; em.textContent=cat.emoji||'🍽️';
+        const tl=document.createElement('span'); tl.className='tl';
+        tl.textContent = cat.tipo==='vinhos'
+          ? ((cat.tile&&cat.tile.pt)||'Vinhos')
+          : ((cat.grupos&&cat.grupos[0]&&cat.grupos[0].summary&&cat.grupos[0].summary.pt)||'(sem título)');
+        t.appendChild(em); t.appendChild(tl);
+        t.addEventListener('click',()=>{ abertaCi = (abertaCi===ci ? null : ci); renderEditor(); });
+        grid.appendChild(t);
+      });
+      const nova=document.createElement('button'); nova.type='button'; nova.className='mv-tile nova';
+      const ne=document.createElement('span'); ne.className='em'; ne.textContent='＋';
+      const nt=document.createElement('span'); nt.className='tl'; nt.textContent='Nova secção';
+      nova.appendChild(ne); nova.appendChild(nt);
+      nova.addEventListener('click',()=>{
+        menuData.categorias.push({ emoji:'', tipo:'comida', tile:{pt:''}, grupos:[{summary:{pt:''},itens:[]}] });
+        abertaCi = menuData.categorias.length-1; renderEditor();
+      });
+      grid.appendChild(nova);
+      editorEl.appendChild(grid);
+      if(abertaCi!=null && menuData.categorias[abertaCi]) editorEl.appendChild(mvPainel(menuData.categorias[abertaCi], abertaCi));
     }
 
     // ---- Limpar objetos vazios antes de guardar ----
@@ -1397,11 +1423,6 @@
 
     document.getElementById('btnCarregarMenu').addEventListener('click', carregarMenu);
     document.getElementById('btnGuardarMenu').addEventListener('click', guardarMenu);
-    document.getElementById('btnAddCategoria').addEventListener('click', ()=>{
-      if(!menuData){ setEstadoMenu('Carrega o menu primeiro.', 'erro'); return; }
-      menuData.categorias.push({ emoji:'', tipo:'comida', tile:{pt:''}, grupos:[{summary:{pt:''},itens:[]}] });
-      renderEditor();
-    });
   })();
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
