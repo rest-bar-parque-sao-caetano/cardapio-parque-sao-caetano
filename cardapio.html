@@ -1733,6 +1733,13 @@
       }
       if(jogosSec) main.insertBefore(sec, jogosSec); else main.appendChild(sec);
     });
+    // Separador dos Jogos (a secção #jogos é fixa, não vem do menu.json)
+    if(jogosSec){
+      const jt=document.createElement('button'); jt.className='tile'; jt.type='button'; jt.setAttribute('data-target','jogos');
+      const je=document.createElement('span'); je.className='tile-emoji'; je.textContent='🎮';
+      const jl=document.createElement('span'); jl.className='tile-label'; jl.setAttribute('data-en','Games'); jl.setAttribute('data-fr','Jeux'); jl.setAttribute('data-es','Juegos'); jl.textContent='Jogos';
+      jt.appendChild(je); jt.appendChild(jl); grid.appendChild(jt);
+    }
     aplicarIdioma(idiomaAtual);
     if(window.montarBotoesLista) window.montarBotoesLista();
   }
