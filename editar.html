@@ -430,6 +430,18 @@
     </div>
   </details>
 
+  <!-- REDES SOCIAIS -->
+  <details id="secRedes">
+    <summary>Redes sociais (Instagram e Facebook)</summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin-top:6px;">Cola o endereço completo das páginas deste restaurante. Deixa em branco para esconder o ícone.</div>
+      <label for="redeInstagram">Instagram (endereço)</label>
+      <input type="text" id="redeInstagram" placeholder="https://www.instagram.com/oteurestaurante/">
+      <label for="redeFacebook">Facebook (endereço)</label>
+      <input type="text" id="redeFacebook" placeholder="https://www.facebook.com/oteurestaurante">
+    </div>
+  </details>
+
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
 
@@ -461,7 +473,15 @@
 </div>
 
 <script>
-  const REPO = 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
+  // Deteta automaticamente o repositório a partir do endereço (GitHub Pages).
+  // Assim este editor é igual em todos os restaurantes; só muda o site onde está.
+  const REPO = (function(){
+    try{
+      const h = location.hostname, seg = location.pathname.split('/').filter(Boolean);
+      if(h.endsWith('github.io') && seg.length) return h.split('.')[0] + '/' + seg[0];
+    }catch(e){}
+    return 'rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano';
+  })();
   const CONFIG_PATH = 'config.json';
   const CONFIG_API = 'https://api.github.com/repos/' + REPO + '/contents/' + CONFIG_PATH;
   const RAW_BASE = 'https://raw.githubusercontent.com/' + REPO + '/main/';
@@ -485,7 +505,8 @@
     sazonal: true,
     fidelidade: { ativo:false, codigo:'', total:8, premio:'' },
     layout: '1',
-    jogos: true
+    jogos: true,
+    redes: { instagram:'', facebook:'' }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -630,6 +651,7 @@
         layoutSelecionado = config.layout;
         renderLayoutCards();
         config.jogos = parsed.jogos !== false;
+        config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -705,6 +727,8 @@
     // Extras
     document.getElementById('sazonalAtivo').checked = config.sazonal !== false;
     document.getElementById('jogosAtivo').checked = config.jogos !== false;
+    document.getElementById('redeInstagram').value = (config.redes && config.redes.instagram) || '';
+    document.getElementById('redeFacebook').value = (config.redes && config.redes.facebook) || '';
     const fid = config.fidelidade || {};
     document.getElementById('fidAtivo').checked = !!fid.ativo;
     document.getElementById('blocoFid').style.display = fid.ativo ? 'block' : 'none';
@@ -926,6 +950,10 @@
       };
       config.sazonal = document.getElementById('sazonalAtivo').checked;
       config.jogos = document.getElementById('jogosAtivo').checked;
+      config.redes = {
+        instagram: document.getElementById('redeInstagram').value.trim(),
+        facebook: document.getElementById('redeFacebook').value.trim()
+      };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
         codigo: document.getElementById('fidCodigo').value.trim(),
