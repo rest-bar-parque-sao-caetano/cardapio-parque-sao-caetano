@@ -1890,7 +1890,9 @@
   const modalFotoNome = document.getElementById('modalFotoNome');
 
   // ---- Carrega definições do config.json (gerido pelo editar.html) ----
-  const RAW_BASE = 'https://raw.githubusercontent.com/rest-bar-parque-sao-caetano/cardapio-parque-sao-caetano/main/';
+  // Vazio = carrega config.json, menu.json e imagens do próprio site (relativo).
+  // Assim este ficheiro é igual em todos os restaurantes.
+  const RAW_BASE = '';
 
   function preencherFotos(container, fotos){
     if(!container || !Array.isArray(fotos) || fotos.length === 0) return;
