@@ -98,5 +98,6 @@
     "total": 8,
     "premio": ""
   },
-  "layout": "1"
+  "layout": "1",
+  "jogos": false
 }
