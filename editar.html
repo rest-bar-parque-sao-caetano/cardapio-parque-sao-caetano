@@ -405,6 +405,11 @@
     <summary>Extras (decoração e fidelidade)</summary>
     <div class="bloco-conteudo">
       <div class="lembrar">
+        <input type="checkbox" id="jogosAtivo" checked>
+        <label for="jogosAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar a secção de Jogos no cardápio</label>
+      </div>
+
+      <div class="lembrar" style="margin-top:18px;">
         <input type="checkbox" id="sazonalAtivo" checked>
         <label for="sazonalAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Decoração sazonal automática (neve no Natal, etc.)</label>
       </div>
@@ -479,7 +484,8 @@
     adJogos: { ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 },
     sazonal: true,
     fidelidade: { ativo:false, codigo:'', total:8, premio:'' },
-    layout: '1'
+    layout: '1',
+    jogos: true
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -623,6 +629,7 @@
         config.layout = parsed.layout || '1';
         layoutSelecionado = config.layout;
         renderLayoutCards();
+        config.jogos = parsed.jogos !== false;
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -697,6 +704,7 @@
     document.getElementById('ajZoom').value = aj.fotoZoom || 100;
     // Extras
     document.getElementById('sazonalAtivo').checked = config.sazonal !== false;
+    document.getElementById('jogosAtivo').checked = config.jogos !== false;
     const fid = config.fidelidade || {};
     document.getElementById('fidAtivo').checked = !!fid.ativo;
     document.getElementById('blocoFid').style.display = fid.ativo ? 'block' : 'none';
@@ -917,6 +925,7 @@
         duracao: parseInt(document.getElementById('adjDuracao').value, 10) || 5
       };
       config.sazonal = document.getElementById('sazonalAtivo').checked;
+      config.jogos = document.getElementById('jogosAtivo').checked;
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
         codigo: document.getElementById('fidCodigo').value.trim(),
