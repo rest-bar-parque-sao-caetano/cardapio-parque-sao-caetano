@@ -127,6 +127,14 @@
   .mv-grupo{ border:1.5px solid var(--linha); border-radius:10px; padding:10px; margin:10px 0; background:var(--bege-claro); }
   .mv-grupo-tit{ font-family:'Fredoka',sans-serif; color:var(--castanho); border:none; border-bottom:1px dashed var(--linha); background:transparent; width:100%; padding:3px 2px; margin-bottom:4px; font-size:1rem; }
   .mv-grupo-tit:focus{ outline:none; border-bottom-color:var(--dourado); }
+
+  /* ---- Seletor de layout/tema ---- */
+  .layout-cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-top:8px; }
+  .layout-card{ border:2px solid var(--linha); border-radius:12px; padding:10px; cursor:pointer; background:var(--branco); }
+  .layout-card.sel{ border-color:var(--dourado); }
+  .layout-card .nome{ font-weight:700; font-size:0.82rem; margin-bottom:6px; color:var(--castanho); }
+  .layout-card .sws{ display:flex; gap:5px; }
+  .layout-card .sw{ width:24px; height:24px; border-radius:6px; border:1px solid rgba(0,0,0,0.08); }
 </style>
 </head>
 <body>
@@ -159,6 +167,15 @@
   </details>
 
   <button type="button" class="acao" id="btnCarregar" style="background:var(--castanho);">📥 Carregar definições atuais</button>
+
+  <!-- LAYOUT / ASPETO -->
+  <details id="secLayout">
+    <summary>🎨 Aspeto do cardápio (layout)</summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin-top:6px;">Escolhe o visual — cores e tipos de letra. A estrutura é a mesma; muda a "cara" do cardápio.</div>
+      <div id="layoutCards" class="layout-cards"></div>
+    </div>
+  </details>
 
   <!-- CABEÇALHO -->
   <details id="secHeader">
@@ -461,8 +478,34 @@
     footer: { nome:'', morada:'', telefone:'', cor:'#ffffff', fotosAtivas:false, fotos:[], fotoZoom:100, fotoPanX:0, fotoPanY:0, textoX:50, textoY:50 },
     adJogos: { ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 },
     sazonal: true,
-    fidelidade: { ativo:false, codigo:'', total:8, premio:'' }
+    fidelidade: { ativo:false, codigo:'', total:8, premio:'' },
+    layout: '1'
   };
+
+  // Pré-visualização dos layouts (cores principais para o seletor)
+  const LAYOUTS_PREVIEW = {
+    '1': { nome:'Layout 1 — Rústico', cores:['#4a3820','#a8712f','#f5efe2'] },
+    '2': { nome:'Layout 2 — Verde',   cores:['#26402a','#4e8d3f','#e9f2e4'] },
+    '3': { nome:'Layout 3 — Vinho',   cores:['#3f1f24','#9c2b3b','#f3e7e2'] },
+    '4': { nome:'Layout 4 — Azul',    cores:['#1f3550','#2f6fb0','#e6eef7'] }
+  };
+  let layoutSelecionado = '1';
+  function renderLayoutCards(){
+    const box = document.getElementById('layoutCards');
+    if(!box) return;
+    box.innerHTML = '';
+    Object.keys(LAYOUTS_PREVIEW).forEach(k=>{
+      const L = LAYOUTS_PREVIEW[k];
+      const c = document.createElement('div'); c.className = 'layout-card' + (layoutSelecionado===k ? ' sel' : '');
+      const n = document.createElement('div'); n.className='nome'; n.textContent=L.nome; c.appendChild(n);
+      const sws = document.createElement('div'); sws.className='sws';
+      L.cores.forEach(cor=>{ const s=document.createElement('div'); s.className='sw'; s.style.background=cor; sws.appendChild(s); });
+      c.appendChild(sws);
+      c.addEventListener('click',()=>{ layoutSelecionado=k; renderLayoutCards(); });
+      box.appendChild(c);
+    });
+  }
+  renderLayoutCards();
   let configSha = null; // sha do config.json existente (para atualizar)
   let configCarregado = false; // só se pode guardar depois de carregar
 
@@ -577,6 +620,9 @@
         config.adJogos = Object.assign({ ativo:false, foto:'', fotoZoom:100, fotoPanX:0, fotoPanY:0, texto:'', textoX:50, textoY:80, cor:'#ffffff', duracao:5 }, parsed.adJogos || {});
         config.sazonal = parsed.sazonal !== false;
         config.fidelidade = Object.assign({ ativo:false, codigo:'', total:8, premio:'' }, parsed.fidelidade || {});
+        config.layout = parsed.layout || '1';
+        layoutSelecionado = config.layout;
+        renderLayoutCards();
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -877,6 +923,7 @@
         total: parseInt(document.getElementById('fidTotal').value, 10) || 8,
         premio: document.getElementById('fidPremio').value.trim()
       };
+      config.layout = layoutSelecionado;
 
       // 3. Gravar config.json
       setEstado('A guardar definições…', 'info');
