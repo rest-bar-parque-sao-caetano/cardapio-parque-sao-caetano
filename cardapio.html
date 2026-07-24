@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Rest & Bar Parque São Caetano — Cardápio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700&family=Playfair+Display:wght@600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --branco: #ffffff;
@@ -22,10 +22,12 @@
     --castanho-claro: #a8987a;
     --dourado: #a8712f;
     --dourado-escuro: #8a5a24;
+    --fonte-titulo: 'Fredoka', sans-serif;
+    --fonte-texto: 'Nunito', sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
-    font-family:'Nunito',sans-serif;
+    font-family:var(--fonte-texto);
     background:var(--bege-claro);
     color:var(--castanho);
     min-height:100vh;
@@ -40,7 +42,7 @@
     text-align:center;
   }
   header .brand-mark{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--branco);
     font-size:1.7rem;
     font-weight:600;
@@ -137,7 +139,7 @@
   /* Slogan da secção de jogos */
   .jogos-slogan{
     text-align:center;
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     font-size:1.15rem;
     font-weight:600;
     color:#fff;
@@ -151,7 +153,7 @@
 
   .tile-emoji{display:none;}
   .tile-label{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     font-size:1.05rem;
     font-weight:700;
     letter-spacing:0.5px;
@@ -214,7 +216,7 @@
     flex:0 0 auto;
   }
   .categoria-painel-header .titulo{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     font-weight:600;
     color:var(--castanho);
     font-size:0.95rem;
@@ -247,7 +249,7 @@
     to{opacity:1; transform:translateY(0);}
   }
   section.categoria h2{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--dourado);
     display:flex;
     align-items:center;
@@ -274,7 +276,7 @@
 
   .grupo-prato summary{
     cursor:pointer;
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--castanho);
     background:var(--branco);
     position:relative;
@@ -335,7 +337,7 @@
   .item .nome{font-weight:500; font-size:0.96rem; color:var(--castanho);}
   .item .desc{font-size:0.8rem; color:var(--castanho-suave); margin-top:2px; font-style:italic;}
   .item .preco{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     font-weight:600;
     color:var(--dourado);
     white-space:nowrap;
@@ -345,7 +347,7 @@
   .grupo-vinho{margin-top:10px;}
   .grupo-vinho summary{
     cursor:pointer;
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     background:var(--bege);
     color:var(--dourado-escuro);
     padding:9px 14px;
@@ -364,7 +366,7 @@
   .tabela-doses{width:100%; border-collapse:collapse; text-align:center; margin:4px 0;}
   .tabela-doses td{padding:6px 4px; font-size:0.85rem;}
   .tabela-doses .dose{color:var(--castanho-suave); font-size:0.78rem;}
-  .tabela-doses .preco-dose{font-weight:700; color:var(--dourado); font-family:'Fredoka',sans-serif;}
+  .tabela-doses .preco-dose{font-weight:700; color:var(--dourado); font-family:var(--fonte-titulo);}
 
   footer{
     position:relative;
@@ -376,7 +378,7 @@
     border-top:1px solid var(--linha);
     background:var(--branco);
   }
-  footer .nome-rest{font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1rem; margin-bottom:8px; font-weight:600;}
+  footer .nome-rest{font-family:var(--fonte-titulo); color:var(--castanho); font-size:1rem; margin-bottom:8px; font-weight:600;}
   footer a{color:var(--castanho-suave);}
 
   /* Fotos do rodapé final (com cantos arredondados e texto por cima) */
@@ -442,7 +444,7 @@
     padding:4px;
   }
   .modal-vinho h3{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--dourado);
     font-size:1.15rem;
     margin-bottom:10px;
@@ -450,7 +452,7 @@
   }
   .modal-vinho .campo{margin-top:10px;}
   .modal-vinho .campo .rotulo{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     font-size:.72rem;
     text-transform:uppercase;
     letter-spacing:.5px;
@@ -510,7 +512,7 @@
   }
   .modal-foto .foto-placeholder .emoji{font-size:2.2rem;}
   .modal-foto h3{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--dourado);
     font-size:1.1rem;
     margin-top:12px;
@@ -538,7 +540,7 @@
     animation:modalPop .18s ease;
   }
   .ad-popup .ad-texto{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--castanho-suave);
     font-size:clamp(1.4rem,5vw,2.6rem);
     font-weight:600;
@@ -595,10 +597,10 @@
   }
   .carrossel-slide.entra-dir{ transform:translateX(55px); opacity:0; }
   .carrossel-slide.sai-esq{ transform:translateX(-55px); opacity:0; }
-  .carr-titulo{ font-family:'Fredoka',sans-serif; color:var(--branco); font-weight:600; font-size:0.86rem; line-height:1.2; }
+  .carr-titulo{ font-family:var(--fonte-titulo); color:var(--branco); font-weight:600; font-size:0.86rem; line-height:1.2; }
   .carr-linha{ font-size:0.72rem; color:var(--bege-claro); line-height:1.2; }
   .info-fixa-texto .linha-negrito{
-    font-family:'Fredoka',sans-serif;
+    font-family:var(--fonte-titulo);
     color:var(--branco);
     font-weight:600;
     font-size:0.82rem;
@@ -679,16 +681,16 @@
     animation:cartSobe .2s ease;
   }
   @keyframes cartSobe{ from{ transform:translateY(30px); opacity:0; } to{ transform:translateY(0); opacity:1; } }
-  .cart-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); margin-bottom:8px; font-size:1.2rem; }
+  .cart-painel h3{ font-family:var(--fonte-titulo); color:var(--castanho); margin-bottom:8px; font-size:1.2rem; }
   .cart-vazio{ text-align:center; color:var(--castanho-suave); padding:24px 0; font-size:0.9rem; }
   .cart-linha{ display:flex; align-items:center; gap:10px; padding:10px 2px; border-bottom:1px dotted var(--linha); }
   .cart-linha .cart-nome{ flex:1; font-size:0.92rem; color:var(--castanho); }
-  .cart-linha .cart-preco{ font-family:'Fredoka',sans-serif; color:var(--dourado); font-size:0.86rem; white-space:nowrap; }
+  .cart-linha .cart-preco{ font-family:var(--fonte-titulo); color:var(--dourado); font-size:0.86rem; white-space:nowrap; }
   .cart-qtd{ display:flex; align-items:center; gap:8px; font-weight:700; color:var(--castanho); }
   .cart-qtd button{ width:27px; height:27px; border-radius:50%; border:1px solid var(--linha); background:var(--bege); color:var(--castanho); font-size:1.05rem; cursor:pointer; line-height:1; }
-  .cart-total{ display:flex; justify-content:space-between; font-weight:700; font-family:'Fredoka',sans-serif; color:var(--castanho); margin-top:16px; font-size:1.15rem; }
+  .cart-total{ display:flex; justify-content:space-between; font-weight:700; font-family:var(--fonte-titulo); color:var(--castanho); margin-top:16px; font-size:1.15rem; }
   .cart-acoes{ display:flex; gap:10px; margin-top:18px; }
-  .cart-acoes button{ flex:1; padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
+  .cart-acoes button{ flex:1; padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:var(--fonte-titulo); font-size:0.95rem; }
   .cart-fechar{ background:var(--bege); color:var(--castanho); }
   .cart-limpar{ background:var(--castanho); color:#fff; }
 
@@ -696,13 +698,13 @@
   #escOverlay{ position:fixed; inset:0; z-index:450; background:rgba(0,0,0,0.5); display:none; align-items:flex-end; justify-content:center; }
   #escOverlay.aberto{ display:flex; }
   .esc-painel{ background:var(--branco); width:100%; max-width:520px; border-radius:18px 18px 0 0; padding:18px 16px 24px; animation:cartSobe .2s ease; }
-  .esc-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); font-size:1.1rem; text-align:center; margin-bottom:4px; }
+  .esc-painel h3{ font-family:var(--fonte-titulo); color:var(--castanho); font-size:1.1rem; text-align:center; margin-bottom:4px; }
   .esc-sub{ text-align:center; font-size:0.82rem; color:var(--castanho-suave); margin-bottom:14px; }
   .esc-lista{ display:flex; flex-direction:column; gap:10px; }
-  .esc-op{ display:flex; justify-content:space-between; align-items:center; width:100%; padding:14px 16px; border:1.5px solid var(--linha); border-radius:11px; background:var(--bege); color:var(--castanho); font-weight:700; font-family:'Fredoka',sans-serif; font-size:1rem; cursor:pointer; }
+  .esc-op{ display:flex; justify-content:space-between; align-items:center; width:100%; padding:14px 16px; border:1.5px solid var(--linha); border-radius:11px; background:var(--bege); color:var(--castanho); font-weight:700; font-family:var(--fonte-titulo); font-size:1rem; cursor:pointer; }
   .esc-op span{ color:var(--dourado); }
   .esc-op:active{ transform:scale(0.98); }
-  .esc-cancelar{ width:100%; margin-top:14px; padding:12px; border:none; border-radius:11px; background:var(--castanho); color:#fff; font-weight:700; font-family:'Fredoka',sans-serif; cursor:pointer; }
+  .esc-cancelar{ width:100%; margin-top:14px; padding:12px; border:none; border-radius:11px; background:var(--castanho); color:#fff; font-weight:700; font-family:var(--fonte-titulo); cursor:pointer; }
 
   /* ===== Menus dos jogos (centrados e consistentes) ===== */
   #jogoTitulo{ text-align:center; padding-right:0; }
@@ -713,7 +715,7 @@
     display:block; width:100%; max-width:250px;
     background:linear-gradient(180deg, #5a4629 0%, var(--castanho) 100%);
     color:#fff; border:none; border-radius:11px; padding:14px 20px; cursor:pointer;
-    font-weight:700; font-family:'Fredoka',sans-serif; font-size:1.02rem;
+    font-weight:700; font-family:var(--fonte-titulo); font-size:1.02rem;
     box-shadow:0 3px 0 #2f2415, 0 5px 12px rgba(0,0,0,0.25);
     transition:transform .1s ease, box-shadow .1s ease;
   }
@@ -731,7 +733,7 @@
   .fid-stamps{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin:6px 0; }
   .fid-stamp{ aspect-ratio:1/1; border-radius:50%; border:2px dashed var(--linha); display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--castanho-suave); }
   .fid-stamp.on{ background:linear-gradient(180deg,#c79a3b,var(--dourado)); border-style:solid; border-color:var(--dourado); color:#fff; box-shadow:0 2px 4px rgba(74,56,32,0.2); }
-  .fid-fechar{ width:100%; margin-top:10px; padding:11px; border:none; border-radius:10px; background:var(--bege); color:var(--castanho); font-weight:700; font-family:'Fredoka',sans-serif; cursor:pointer; }
+  .fid-fechar{ width:100%; margin-top:10px; padding:11px; border:none; border-radius:10px; background:var(--bege); color:var(--castanho); font-weight:700; font-family:var(--fonte-titulo); cursor:pointer; }
 
   /* ===== Decoração sazonal (queda de emojis) ===== */
   #sazonalOverlay{ position:fixed; inset:0; pointer-events:none; z-index:45; overflow:hidden; }
@@ -749,14 +751,14 @@
   }
   .jogo-tile:active{ transform:translateY(3px); box-shadow:0 1px 0 #d9ccb0, 0 2px 6px rgba(74,56,32,0.12); }
   .jogo-tile .ico{ font-size:2.7rem; line-height:1; }
-  .jogo-tile .txt{ font-family:'Fredoka',sans-serif; font-weight:700; font-size:0.92rem; color:var(--castanho); text-align:center; }
+  .jogo-tile .txt{ font-family:var(--fonte-titulo); font-weight:700; font-size:0.92rem; color:var(--castanho); text-align:center; }
 
   /* ===== Jogo do Galo ===== */
-  .velha-turno{ font-family:'Fredoka',sans-serif; font-size:1.05rem; color:var(--castanho); margin:14px 0 2px; font-weight:600; text-align:center; }
+  .velha-turno{ font-family:var(--fonte-titulo); font-size:1.05rem; color:var(--castanho); margin:14px 0 2px; font-weight:600; text-align:center; }
   .velha-turno.velha-fim{ font-size:1.2rem; }
   .velha-marca{ display:inline-flex; align-items:center; justify-content:center; min-width:32px; height:32px; padding:0 6px; border-radius:8px; background:var(--castanho); color:#fff; font-weight:900; font-size:1.15rem; vertical-align:middle; }
   .velha-board{ display:grid; grid-template-columns:repeat(3, 84px); gap:8px; justify-content:center; margin:18px auto; padding:8px; background:var(--castanho); border-radius:18px; width:fit-content; box-shadow:0 6px 18px rgba(74,56,32,0.32); }
-  .velha-cel{ width:84px; height:84px; font-size:2.6rem; font-weight:900; color:#2a2013; background:linear-gradient(180deg,#ffffff,#f5efe2); border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 0 #d9ccb0; transition:transform .08s ease; font-family:'Fredoka',sans-serif; }
+  .velha-cel{ width:84px; height:84px; font-size:2.6rem; font-weight:900; color:#2a2013; background:linear-gradient(180deg,#ffffff,#f5efe2); border:none; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 0 #d9ccb0; transition:transform .08s ease; font-family:var(--fonte-titulo); }
   .velha-cel:active{ transform:translateY(2px); box-shadow:0 1px 0 #d9ccb0; }
   .velha-cel.ganha{ background:linear-gradient(180deg,#c3e9c8,#8fd39a); color:#1e5a2a; box-shadow:0 3px 0 #5aa76a; }
 
@@ -772,7 +774,7 @@
   .adj-card{ position:relative; width:100%; max-width:340px; aspect-ratio:3/4; border-radius:16px; overflow:hidden; background:var(--castanho); box-shadow:0 12px 40px rgba(0,0,0,0.55); animation:modalPop .2s ease; }
   .adj-foto{ position:absolute; inset:0; overflow:hidden; }
   .adj-foto img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; transform-origin:center; }
-  .adj-texto{ position:absolute; transform:translate(-50%,-50%); text-align:center; font-family:'Fredoka',sans-serif; font-weight:700; font-size:1.1rem; line-height:1.25; text-shadow:0 1px 4px rgba(0,0,0,0.6); padding:0 10px; width:max-content; max-width:88%; }
+  .adj-texto{ position:absolute; transform:translate(-50%,-50%); text-align:center; font-family:var(--fonte-titulo); font-weight:700; font-size:1.1rem; line-height:1.25; text-shadow:0 1px 4px rgba(0,0,0,0.6); padding:0 10px; width:max-content; max-width:88%; }
   .adj-badge{ position:absolute; top:8px; left:8px; background:rgba(0,0,0,0.5); color:#fff; font-size:0.62rem; padding:2px 8px; border-radius:8px; letter-spacing:1px; text-transform:uppercase; }
   .adj-timer{ position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.5); color:#fff; font-size:0.8rem; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; }
 
@@ -787,10 +789,10 @@
     padding:16px; text-align:center; max-height:92vh; overflow-y:auto;
     animation:cartSobe .2s ease;
   }
-  .cam-painel h3{ font-family:'Fredoka',sans-serif; color:var(--castanho); margin-bottom:10px; }
+  .cam-painel h3{ font-family:var(--fonte-titulo); color:var(--castanho); margin-bottom:10px; }
   .cam-painel img.preview{ width:100%; border-radius:10px; margin-bottom:12px; display:block; }
   .cam-acoes{ display:flex; flex-direction:column; gap:10px; }
-  .cam-acoes button{ padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:'Fredoka',sans-serif; font-size:0.95rem; }
+  .cam-acoes button{ padding:13px; border:none; border-radius:11px; cursor:pointer; font-weight:700; font-family:var(--fonte-titulo); font-size:0.95rem; }
   .cam-guardar{ background:var(--dourado); color:#fff; }
   .cam-partilhar{ background:#c0392b; color:#fff; }
   .cam-repetir{ background:var(--bege); color:var(--castanho); }
@@ -1907,12 +1909,45 @@
     }, 30000);
   }
 
+  // ===== Layouts / temas (cores + tipos de letra) =====
+  const TEMAS = {
+    '1': { // Layout 1 — Rústico castanho (original)
+      '--branco':'#ffffff','--bege-claro':'#fbf8f2','--bege':'#f5efe2','--linha':'#e6dcc8','--linha-suave':'#f0e9d8',
+      '--castanho':'#4a3820','--castanho-suave':'#8a7350','--castanho-claro':'#a8987a','--dourado':'#a8712f','--dourado-escuro':'#8a5a24',
+      '--fonte-titulo':"'Fredoka', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '2': { // Layout 2 — Verde natural
+      '--branco':'#ffffff','--bege-claro':'#f6faf4','--bege':'#e9f2e4','--linha':'#d3e5cc','--linha-suave':'#e4f0de',
+      '--castanho':'#26402a','--castanho-suave':'#5f7d5a','--castanho-claro':'#9ab293','--dourado':'#4e8d3f','--dourado-escuro':'#3a6d2f',
+      '--fonte-titulo':"'Poppins', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '3': { // Layout 3 — Vinho / bordô
+      '--branco':'#ffffff','--bege-claro':'#fbf6f3','--bege':'#f3e7e2','--linha':'#e6cfc7','--linha-suave':'#f0ddd6',
+      '--castanho':'#3f1f24','--castanho-suave':'#8a5a5f','--castanho-claro':'#b89aa0','--dourado':'#9c2b3b','--dourado-escuro':'#7a1f2d',
+      '--fonte-titulo':"'Playfair Display', serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '4': { // Layout 4 — Azul moderno
+      '--branco':'#ffffff','--bege-claro':'#f5f8fc','--bege':'#e6eef7','--linha':'#d0deee','--linha-suave':'#e3ecf7',
+      '--castanho':'#1f3550','--castanho-suave':'#5a708c','--castanho-claro':'#97a9be','--dourado':'#2f6fb0','--dourado-escuro':'#245688',
+      '--fonte-titulo':"'Quicksand', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    }
+  };
+  function aplicarTema(nome){
+    const t = TEMAS[String(nome)] || TEMAS['1'];
+    const r = document.documentElement;
+    Object.keys(t).forEach(k => r.style.setProperty(k, t[k]));
+    const meta = document.querySelector('meta[name=theme-color]');
+    if(meta) meta.content = t['--castanho'];
+  }
+
   async function carregarConfig(){
     try{
       const resp = await fetch(RAW_BASE + 'config.json?t=' + Date.now());
       if(!resp.ok) return;
       const config = await resp.json();
       if(!config) return;
+
+      aplicarTema(config.layout || '1');
 
       // Cabeçalho: título e subtítulo
       if(config.header){
