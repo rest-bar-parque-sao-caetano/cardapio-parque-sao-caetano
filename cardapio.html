@@ -1740,6 +1740,7 @@
       const jl=document.createElement('span'); jl.className='tile-label'; jl.setAttribute('data-en','Games'); jl.setAttribute('data-fr','Jeux'); jl.setAttribute('data-es','Juegos'); jl.textContent='Jogos';
       jt.appendChild(je); jt.appendChild(jl); grid.appendChild(jt);
     }
+    if(window.aplicarJogos) window.aplicarJogos(window._jogosAtivos !== false);
     aplicarIdioma(idiomaAtual);
     if(window.montarBotoesLista) window.montarBotoesLista();
   }
@@ -1947,6 +1948,19 @@
     if(meta) meta.content = t['--castanho'];
   }
 
+  // Mostrar/esconder a secção de Jogos consoante o restaurante
+  window._jogosAtivos = true;
+  window.aplicarJogos = function(ativo){
+    const tile = document.querySelector('.tile[data-target="jogos"]');
+    const sec = document.getElementById('jogos');
+    if(tile) tile.style.display = ativo ? '' : 'none';
+    if(!ativo && sec && sec.parentNode && sec.parentNode.id === 'painelConteudo'){
+      // se estiver aberta, fecha
+      const painelEl = document.getElementById('categoriaPainel');
+      if(painelEl) painelEl.classList.remove('aberto');
+    }
+  };
+
   async function carregarConfig(){
     try{
       const resp = await fetch(RAW_BASE + 'config.json?t=' + Date.now());
@@ -1955,6 +1969,8 @@
       if(!config) return;
 
       aplicarTema(config.layout || '1');
+      window._jogosAtivos = config.jogos !== false;
+      if(window.aplicarJogos) window.aplicarJogos(window._jogosAtivos);
 
       // Cabeçalho: título e subtítulo
       if(config.header){
