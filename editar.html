@@ -386,6 +386,20 @@
   <button type="button" class="acao" id="btnGuardar">💾 Guardar tudo</button>
   <div class="estado" id="estado"></div>
 
+  <details id="secMenu" style="margin-top:22px;">
+    <summary>🍽️ Menu — pratos, preços e traduções</summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin-top:6px;">Edita o menu do cardápio (o <code>menu.json</code>). Usa o mesmo token lá em cima. Carrega, altera e guarda — as alterações aparecem no cardápio dentro de 1-2 minutos.</div>
+      <button type="button" class="acao" id="btnCarregarMenu" style="background:var(--castanho); margin-top:6px;">📥 Carregar menu</button>
+      <div id="menuEditor" style="margin-top:14px;"></div>
+      <div id="menuAcoes" style="display:none;">
+        <button type="button" class="acao" id="btnAddCategoria" style="background:var(--verde);">＋ Nova categoria</button>
+        <button type="button" class="acao" id="btnGuardarMenu">💾 Guardar menu</button>
+      </div>
+      <div class="estado" id="estadoMenu"></div>
+    </div>
+  </details>
+
   <!-- LIMPEZA DE FOTOS -->
   <details id="secLimpeza" style="margin-top:20px;">
     <summary>🧹 Limpeza de fotos (avançado)</summary>
@@ -1079,6 +1093,316 @@
     setEstado('🧹 ' + apagadas + ' foto(s) apagada(s).', 'ok');
     verificarFotosNaoUsadas();
   }
+
+  // ================= EDITOR DO MENU (menu.json) =================
+  (function(){
+    const MENU_PATH = 'menu.json';
+    const MENU_API = 'https://api.github.com/repos/' + REPO + '/contents/' + MENU_PATH;
+    const editorEl = document.getElementById('menuEditor');
+    const acoesEl = document.getElementById('menuAcoes');
+    const estadoMenuEl = document.getElementById('estadoMenu');
+    let menuData = null;
+    let menuSha = null;
+
+    function setEstadoMenu(msg, tipo){ estadoMenuEl.className = 'estado ' + (tipo||'info'); estadoMenuEl.textContent = msg; }
+    function slugMenu(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+    function mover(arr,i,dir){ const j=i+dir; if(j<0||j>=arr.length) return; const t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+
+    // ---- Helpers de UI ----
+    function mkInput(val, ph, oninput, small){
+      const i=document.createElement('input'); i.type='text'; i.value=(val==null?'':val); i.placeholder=ph||'';
+      if(small) i.style.fontSize='0.82rem';
+      i.addEventListener('input',()=>oninput(i.value));
+      return i;
+    }
+    function mkBtn(txt, cor, onclick){
+      const b=document.createElement('button'); b.type='button'; b.textContent=txt;
+      b.style.cssText='border:none;border-radius:8px;cursor:pointer;padding:6px 10px;font-weight:700;font-size:0.8rem;color:#fff;background:'+cor+';';
+      b.addEventListener('click',onclick); return b;
+    }
+    function mkLabel(txt){
+      const l=document.createElement('div'); l.textContent=txt;
+      l.style.cssText='font-weight:700;font-size:0.78rem;color:var(--dourado-escuro);margin:8px 0 2px;';
+      return l;
+    }
+    function campoMulti(obj, nome){
+      const box=document.createElement('div'); box.style.margin='2px 0 6px';
+      box.appendChild(mkInput(obj.pt, nome+' (PT)', v=>{ obj.pt=v; }));
+      const row=document.createElement('div'); row.style.cssText='display:flex;gap:6px;margin-top:4px;';
+      [['en','EN'],['fr','FR'],['es','ES']].forEach(([k,lab])=>{
+        const inp=mkInput(obj[k], lab, v=>{ v=v.trim(); if(v) obj[k]=v; else delete obj[k]; }, true);
+        inp.style.flex='1 1 0'; inp.style.minWidth='0';
+        row.appendChild(inp);
+      });
+      box.appendChild(row);
+      return box;
+    }
+
+    // Só EN/FR/ES (o PT fica na linha principal)
+    function campoTraducoes(obj){
+      const row=document.createElement('div'); row.style.cssText='display:flex;gap:6px;';
+      [['en','EN'],['fr','FR'],['es','ES']].forEach(([k,lab])=>{
+        const inp=mkInput(obj[k], lab, v=>{ v=v.trim(); if(v) obj[k]=v; else delete obj[k]; }, true);
+        inp.style.flex='1 1 0'; inp.style.minWidth='0';
+        row.appendChild(inp);
+      });
+      return row;
+    }
+
+    // ---- Render de um prato ----
+    function renderItem(g, it, idx){
+      it.nome = it.nome || {pt:''};
+      const wrap=document.createElement('div');
+      wrap.style.cssText='border:1.5px solid var(--linha);border-radius:10px;padding:8px 10px;margin:8px 0;background:var(--bege-claro);';
+
+      if(it.tabela){
+        const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;margin-bottom:4px;';
+        tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(g.itens,idx,-1); renderEditor(); }));
+        tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(g.itens,idx,1); renderEditor(); }));
+        tb.appendChild(mkBtn('🗑','var(--vermelho)',()=>{ g.itens.splice(idx,1); renderEditor(); }));
+        wrap.appendChild(tb);
+        wrap.appendChild(mkLabel('Nome (opcional)'));
+        wrap.appendChild(campoMulti(it.nome,'Nome'));
+        wrap.appendChild(mkLabel('Doses — tamanhos (separados por vírgula)'));
+        wrap.appendChild(mkInput((it.tabela.doses||[]).join(', '),'0,25 L, 0,50 L, 1 L', v=>{ it.tabela.doses=v.split(',').map(s=>s.trim()).filter(Boolean); }));
+        wrap.appendChild(mkLabel('Doses — preços (pela mesma ordem)'));
+        wrap.appendChild(mkInput((it.tabela.precos||[]).join(', '),'2,50€, 3,50€, 7,50€', v=>{ it.tabela.precos=v.split(',').map(s=>s.trim()).filter(Boolean); }));
+        return wrap;
+      }
+
+      // Linha principal: nome + preço + botões (tudo o que o dono precisa)
+      const linha=document.createElement('div'); linha.style.cssText='display:flex;gap:6px;align-items:center;';
+      const nomeI=mkInput(it.nome.pt,'Nome do prato', v=>{ it.nome.pt=v; }); nomeI.style.flex='1 1 auto'; nomeI.style.minWidth='0';
+      linha.appendChild(nomeI);
+      const precoI=mkInput(it.preco,'Preço', v=>{ it.preco=v; }); precoI.style.flex='0 0 92px'; precoI.style.width='92px';
+      linha.appendChild(precoI);
+      linha.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(g.itens,idx,-1); renderEditor(); }));
+      linha.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(g.itens,idx,1); renderEditor(); }));
+      linha.appendChild(mkBtn('🗑','var(--vermelho)',()=>{ g.itens.splice(idx,1); renderEditor(); }));
+      wrap.appendChild(linha);
+
+      // Tudo o resto (opcional) escondido num "Mais"
+      const mais=document.createElement('details'); mais.style.cssText='margin-top:6px;border:none;background:transparent;';
+      const ms=document.createElement('summary'); ms.textContent='Mais (traduções, descrição, foto)';
+      ms.style.cssText='font-size:0.8rem;padding:4px 0;font-family:inherit;color:var(--castanho-suave);';
+      mais.appendChild(ms);
+      mais.appendChild(mkLabel('Nome noutras línguas'));
+      mais.appendChild(campoTraducoes(it.nome));
+      it.desc = it.desc || {pt:''};
+      mais.appendChild(mkLabel('Descrição (opcional)'));
+      mais.appendChild(campoMulti(it.desc,'Descrição'));
+      mais.appendChild(mkLabel('Chave do vinho (popup ⓘ, opcional)'));
+      mais.appendChild(mkInput(it.vinho,'ex: monte-velho-tinto', v=>{ v=v.trim(); if(v) it.vinho=v; else delete it.vinho; }));
+      mais.appendChild(mkLabel('Foto (nome do ficheiro em imagens/, sem .jpg)'));
+      mais.appendChild(mkInput(it.foto,'ex: francesinha-forno-com-ovo', v=>{ v=v.trim(); if(v) it.foto=v; else delete it.foto; }));
+      if(it.nome.en||it.nome.fr||it.nome.es||(it.desc&&(it.desc.pt||it.desc.en||it.desc.fr||it.desc.es))||it.vinho||it.foto) mais.open=true;
+      wrap.appendChild(mais);
+      return wrap;
+    }
+
+    // ---- Render de um grupo ----
+    function renderGrupo(cat, g, gi){
+      const wrap=document.createElement('div');
+      wrap.style.cssText='border:1.5px solid var(--linha);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--branco);';
+      const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;';
+      tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(cat.grupos,gi,-1); renderEditor(); }));
+      tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(cat.grupos,gi,1); renderEditor(); }));
+      tb.appendChild(mkBtn('🗑 grupo','var(--vermelho)',()=>{ cat.grupos.splice(gi,1); renderEditor(); }));
+      wrap.appendChild(tb);
+
+      g.summary = g.summary || {pt:''};
+      wrap.appendChild(mkLabel('Título do grupo'));
+      wrap.appendChild(campoMulti(g.summary,'Título'));
+
+      const sub=document.createElement('details'); sub.style.cssText='margin-top:4px;border:none;background:transparent;';
+      const ssm=document.createElement('summary'); ssm.textContent='Subtítulo (opcional)';
+      ssm.style.cssText='font-size:0.82rem;padding:4px 0;font-family:inherit;color:var(--dourado);';
+      sub.appendChild(ssm);
+      g.subtitulo = g.subtitulo || {pt:''};
+      sub.appendChild(campoMulti(g.subtitulo,'Subtítulo'));
+      if(g.subtitulo.pt) sub.open=true;
+      wrap.appendChild(sub);
+
+      const itensBox=document.createElement('div');
+      g.itens = g.itens || [];
+      g.itens.forEach((it,idx)=> itensBox.appendChild(renderItem(g,it,idx)));
+      wrap.appendChild(itensBox);
+
+      const addItem=mkBtn('＋ prato','var(--verde)',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
+      addItem.style.marginTop='6px';
+      wrap.appendChild(addItem);
+      const addTab=mkBtn('＋ tabela de doses','var(--dourado)',()=>{ g.itens.push({nome:{pt:''},tabela:{doses:[],precos:[]}}); renderEditor(); });
+      addTab.style.marginTop='6px'; addTab.style.marginLeft='6px';
+      wrap.appendChild(addTab);
+      return wrap;
+    }
+
+    // ---- Render de uma secção (categoria) ----
+    function renderCategoria(cat, ci){
+      cat.tile = cat.tile || {pt:''};
+      cat.tipo = cat.tipo || 'comida';
+      cat.grupos = cat.grupos || [];
+      if(cat.tipo!=='vinhos' && cat.grupos.length===0) cat.grupos.push({ summary:{pt:''}, itens:[] });
+
+      const tituloMostrar = cat.tipo==='vinhos'
+        ? (cat.tile.pt || '(sem nome)')
+        : ((cat.grupos[0].summary && cat.grupos[0].summary.pt) || '(secção sem título)');
+
+      const det=document.createElement('details');
+      const sm=document.createElement('summary');
+      sm.textContent=(cat.emoji?cat.emoji+' ':'') + tituloMostrar;
+      det.appendChild(sm);
+      const body=document.createElement('div'); body.className='bloco-conteudo';
+
+      const tb=document.createElement('div'); tb.style.cssText='display:flex;gap:6px;justify-content:flex-end;margin-top:8px;';
+      tb.appendChild(mkBtn('↑','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,-1); renderEditor(); }));
+      tb.appendChild(mkBtn('↓','var(--castanho-suave)',()=>{ mover(menuData.categorias,ci,1); renderEditor(); }));
+      tb.appendChild(mkBtn('🗑 secção','var(--vermelho)',()=>{ if(confirm('Apagar a secção "'+tituloMostrar+'"?')){ menuData.categorias.splice(ci,1); renderEditor(); } }));
+      body.appendChild(tb);
+
+      body.appendChild(mkLabel('Emoji (opcional)'));
+      const emojiI=mkInput(cat.emoji,'ex: 🍖', v=>{ cat.emoji=v; }); emojiI.style.width='90px';
+      body.appendChild(emojiI);
+
+      if(cat.tipo==='vinhos'){
+        body.appendChild(mkLabel('Nome do separador'));
+        body.appendChild(campoMulti(cat.tile,'Separador'));
+        const av=document.createElement('details'); av.style.marginTop='6px';
+        const avs=document.createElement('summary'); avs.textContent='Cabeçalho e nota final'; av.appendChild(avs);
+        const avb=document.createElement('div'); avb.className='bloco-conteudo';
+        cat.h2=cat.h2||{pt:''}; avb.appendChild(mkLabel('Título grande')); avb.appendChild(campoMulti(cat.h2,'Título'));
+        cat.subtitulo=cat.subtitulo||{pt:''}; avb.appendChild(mkLabel('Subtítulo')); avb.appendChild(campoMulti(cat.subtitulo,'Subtítulo'));
+        cat.notaFinal=cat.notaFinal||{pt:''}; avb.appendChild(mkLabel('Nota final (ex: IVA incluído…)')); avb.appendChild(campoMulti(cat.notaFinal,'Nota'));
+        av.appendChild(avb); body.appendChild(av);
+        cat.grupos.forEach((g,gi)=> body.appendChild(renderGrupo(cat,g,gi)));
+        const addG=mkBtn('＋ grupo de vinhos','var(--dourado)',()=>{ cat.grupos.push({summary:{pt:''},itens:[]}); renderEditor(); });
+        addG.style.marginTop='10px'; body.appendChild(addG);
+      } else {
+        // COMIDA — título da secção + pratos diretamente (sem "grupos")
+        const g = cat.grupos[0];
+        g.summary = g.summary || {pt:''};
+        g.itens = g.itens || [];
+        body.appendChild(mkLabel('Título da secção'));
+        body.appendChild(campoMulti(g.summary,'Título'));
+
+        const sub=document.createElement('details'); sub.style.cssText='margin-top:4px;border:none;background:transparent;';
+        const ssm=document.createElement('summary'); ssm.textContent='Subtítulo da secção (opcional)';
+        ssm.style.cssText='font-size:0.8rem;padding:4px 0;font-family:inherit;color:var(--dourado);';
+        sub.appendChild(ssm);
+        g.subtitulo = g.subtitulo || {pt:''};
+        sub.appendChild(campoMulti(g.subtitulo,'Subtítulo'));
+        if(g.subtitulo.pt) sub.open=true;
+        body.appendChild(sub);
+
+        body.appendChild(mkLabel('Pratos'));
+        const itensBox=document.createElement('div');
+        g.itens.forEach((it,idx)=> itensBox.appendChild(renderItem(g,it,idx)));
+        body.appendChild(itensBox);
+        const addItem=mkBtn('＋ adicionar prato','var(--verde)',()=>{ g.itens.push({nome:{pt:''},preco:''}); renderEditor(); });
+        addItem.style.marginTop='8px'; body.appendChild(addItem);
+      }
+
+      // Tipo de secção (raramente mexido) no fundo
+      const tp=document.createElement('details'); tp.style.cssText='margin-top:10px;border:none;background:transparent;';
+      const tps=document.createElement('summary'); tps.textContent='Tipo de secção';
+      tps.style.cssText='font-size:0.78rem;padding:4px 0;font-family:inherit;color:var(--castanho-suave);';
+      tp.appendChild(tps);
+      const sel=document.createElement('select');
+      sel.style.cssText='width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--linha);background:var(--branco);font-family:inherit;color:var(--castanho);';
+      [['comida','Pratos e preços (normal)'],['vinhos','Vinhos & Bebidas (grupos + doses)']].forEach(([v,t])=>{
+        const o=document.createElement('option'); o.value=v; o.textContent=t; if(cat.tipo===v) o.selected=true; sel.appendChild(o);
+      });
+      sel.addEventListener('change',()=>{ cat.tipo=sel.value; if(cat.tipo!=='vinhos' && cat.grupos.length===0) cat.grupos.push({summary:{pt:''},itens:[]}); renderEditor(); });
+      tp.appendChild(sel); body.appendChild(tp);
+
+      det.appendChild(body);
+      return det;
+    }
+
+    function renderEditor(){
+      editorEl.innerHTML='';
+      if(!menuData || !Array.isArray(menuData.categorias)) return;
+      if(menuData.categorias.length===0){
+        const v=document.createElement('div'); v.className='vazio'; v.textContent='Sem categorias. Usa "＋ Nova categoria" para começar.';
+        editorEl.appendChild(v);
+      }
+      menuData.categorias.forEach((cat,ci)=> editorEl.appendChild(renderCategoria(cat,ci)));
+    }
+
+    // ---- Limpar objetos vazios antes de guardar ----
+    function limparLang(o){ if(!o) return; ['en','fr','es'].forEach(k=>{ if(o[k]!=null && String(o[k]).trim()==='') delete o[k]; }); }
+    function vazioLang(o){ return !o || (!(''+(o.pt||'')).trim() && !o.en && !o.fr && !o.es); }
+    function pruneMenu(){
+      const usados={};
+      menuData.categorias.forEach(cat=>{
+        if(!cat.tipo) cat.tipo='comida';
+        // Nas secções normais, o botão do topo (tile) segue automaticamente o título da secção
+        if(cat.tipo!=='vinhos' && cat.grupos && cat.grupos[0] && cat.grupos[0].summary){
+          cat.tile = JSON.parse(JSON.stringify(cat.grupos[0].summary));
+        }
+        cat.tile = cat.tile || {pt:''};
+        const baseNome = (cat.tile.pt) || (cat.grupos&&cat.grupos[0]&&cat.grupos[0].summary&&cat.grupos[0].summary.pt) || 'seccao';
+        if(!cat.id || !cat.id.trim()) cat.id = slugMenu(baseNome) || 'seccao';
+        let base=cat.id, n=2; while(usados[cat.id]){ cat.id=base+'-'+n; n++; } usados[cat.id]=1;
+        limparLang(cat.tile);
+        if(cat.tipo==='vinhos'){ ['h2','subtitulo','notaFinal'].forEach(k=>{ if(cat[k]){ limparLang(cat[k]); if(vazioLang(cat[k])) delete cat[k]; } }); }
+        else { delete cat.h2; delete cat.subtitulo; delete cat.notaFinal; }
+        (cat.grupos||[]).forEach(g=>{
+          limparLang(g.summary);
+          if(g.subtitulo){ limparLang(g.subtitulo); if(vazioLang(g.subtitulo)) delete g.subtitulo; }
+          (g.itens||[]).forEach(it=>{
+            if(it.nome) limparLang(it.nome);
+            if(it.desc){ limparLang(it.desc); if(vazioLang(it.desc)) delete it.desc; }
+            if(it.preco!=null && String(it.preco).trim()==='') delete it.preco;
+            if(it.vinho!=null && String(it.vinho).trim()==='') delete it.vinho;
+            if(it.foto!=null && String(it.foto).trim()==='') delete it.foto;
+            if(it.tabela){ it.tabela.doses=(it.tabela.doses||[]).filter(Boolean); it.tabela.precos=(it.tabela.precos||[]).filter(Boolean); if(vazioLang(it.nome)) delete it.nome; }
+          });
+        });
+      });
+    }
+
+    async function carregarMenu(){
+      const token = tokenInput.value.trim();
+      if(!token){ setEstadoMenu('Cola primeiro o teu token (lá em cima).', 'erro'); return; }
+      setEstadoMenu('A carregar menu…', 'info');
+      try{
+        const resp = await fetch(MENU_API + '?t=' + Date.now(), { headers:{ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' } });
+        if(resp.status === 404){ menuData = { restaurante:'', categorias:[] }; menuSha = null; setEstadoMenu('Ainda não existe menu.json. Cria categorias e guarda para o criar.', 'info'); }
+        else if(resp.ok){ const data = await resp.json(); menuSha = data.sha; menuData = JSON.parse(base64ParaUtf8(data.content)); if(!Array.isArray(menuData.categorias)) menuData.categorias=[]; setEstadoMenu('Menu carregado ✓', 'ok'); }
+        else throw new Error('HTTP ' + resp.status + ' — verifica o token.');
+        renderEditor();
+        acoesEl.style.display = 'block';
+      }catch(err){ setEstadoMenu('Erro: ' + err.message, 'erro'); }
+    }
+
+    async function guardarMenu(){
+      const token = tokenInput.value.trim();
+      if(!token){ setEstadoMenu('Cola primeiro o teu token.', 'erro'); return; }
+      if(!menuData){ setEstadoMenu('Carrega o menu primeiro.', 'erro'); return; }
+      document.getElementById('btnGuardarMenu').disabled = true;
+      try{
+        pruneMenu();
+        setEstadoMenu('A guardar menu…', 'info');
+        if(!menuSha){ try{ const c=await fetch(MENU_API+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'}}); if(c.ok){ const d=await c.json(); menuSha=d.sha; } }catch(e){} }
+        const corpo = { message:'Atualizar menu.json via editor', content: utf8ParaBase64(JSON.stringify(menuData, null, 2)) };
+        if(menuSha) corpo.sha = menuSha;
+        const resp = await fetch(MENU_API, { method:'PUT', headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','Content-Type':'application/json'}, body: JSON.stringify(corpo) });
+        if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.message || ('HTTP '+resp.status)); }
+        const data = await resp.json(); menuSha = data.content.sha;
+        setEstadoMenu('✅ Menu guardado! Aparece no cardápio dentro de 1-2 minutos.', 'ok');
+      }catch(err){ setEstadoMenu('Erro ao guardar: ' + err.message, 'erro'); }
+      finally{ document.getElementById('btnGuardarMenu').disabled = false; }
+    }
+
+    document.getElementById('btnCarregarMenu').addEventListener('click', carregarMenu);
+    document.getElementById('btnGuardarMenu').addEventListener('click', guardarMenu);
+    document.getElementById('btnAddCategoria').addEventListener('click', ()=>{
+      if(!menuData){ setEstadoMenu('Carrega o menu primeiro.', 'erro'); return; }
+      menuData.categorias.push({ emoji:'', tipo:'comida', tile:{pt:''}, grupos:[{summary:{pt:''},itens:[]}] });
+      renderEditor();
+    });
+  })();
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
