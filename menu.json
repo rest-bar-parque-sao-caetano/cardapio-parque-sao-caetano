@@ -6,7 +6,7 @@
       "emoji": "🥖",
       "tipo": "comida",
       "tile": {
-        "pt": "Entradas",
+        "pt": "ENTRADAS",
         "en": "Starters",
         "fr": "Entrées",
         "es": "Entrada"
@@ -14,7 +14,7 @@
       "grupos": [
         {
           "summary": {
-            "pt": "Entradas",
+            "pt": "ENTRADAS",
             "en": "Starters",
             "fr": "Entrées",
             "es": "Entrada"
@@ -27,7 +27,7 @@
                 "fr": "Pain",
                 "es": "Pan"
               },
-              "preco": "2,00€"
+              "preco": "3,00€"
             },
             {
               "nome": {
