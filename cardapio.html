@@ -187,6 +187,12 @@
       4px 4px 3px rgba(0,0,0,0.3);
   }
 
+  /* ===== Modelo "grelha de cartões" (config.modelo === 'grelha') ===== */
+  body.modelo-grelha .categoria-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(102px, 1fr)); gap:10px; }
+  body.modelo-grelha .tile{ flex-direction:column; aspect-ratio:1 / 1; min-height:0; gap:6px; padding:10px 8px; }
+  body.modelo-grelha .tile-emoji{ display:block; font-size:2rem; line-height:1; }
+  body.modelo-grelha .tile-label{ font-size:0.8rem; letter-spacing:0.3px; }
+
   .categoria-painel{
     position:fixed; inset:0;
     z-index:300;
@@ -2000,6 +2006,7 @@
       if(!config) return;
 
       aplicarTema(config.layout || '1');
+      document.body.classList.toggle('modelo-grelha', (config.modelo || 'lista') === 'grelha');
       window._jogosAtivos = config.jogos !== false;
       if(window.aplicarJogos) window.aplicarJogos(window._jogosAtivos);
 
