@@ -319,6 +319,9 @@
   .grupo-prato[open] summary::after{content:"▴";}
   .grupo-prato .card-lista{margin-top:10px;}
   .grupo-prato .subtitulo{margin:8px 0 0;}
+  /* Menu de Grupo — preço em destaque + descrição multi-linha */
+  .menu-preco{ text-align:center; font-family:var(--fonte-titulo); color:var(--dourado); font-size:1.25rem; font-weight:700; padding:6px 0 6px; }
+  .menu-desc{ white-space:pre-line; color:var(--castanho); font-size:0.92rem; line-height:1.6; padding:2px 14px 12px; text-align:center; }
   .card-lista{
     background:linear-gradient(180deg, #ffffff 0%, #fbf8f2 100%);
     border-radius:14px;
@@ -1745,6 +1748,16 @@
         if(cat.subtitulo){ const s=document.createElement('div'); s.className='subtitulo'; _mLang(s, cat.subtitulo); sec.appendChild(s); }
         (cat.grupos||[]).forEach(g => sec.appendChild(_mGrupo(g, 'grupo-vinho')));
         if(cat.notaFinal){ const nf=document.createElement('div'); nf.className='subtitulo'; nf.style.marginTop='10px'; _mLang(nf, cat.notaFinal); sec.appendChild(nf); }
+      } else if(cat.tipo === 'menus'){
+        if(cat.subtitulo){ const s=document.createElement('div'); s.className='subtitulo'; _mLang(s, cat.subtitulo); sec.appendChild(s); }
+        (cat.menus||[]).forEach(m => {
+          const det=document.createElement('details'); det.className='grupo-prato';
+          const sum=document.createElement('summary'); _mLang(sum, m.nome); det.appendChild(sum);
+          const lista=document.createElement('div'); lista.className='card-lista';
+          if(m.preco){ const p=document.createElement('div'); p.className='menu-preco'; p.textContent=m.preco; lista.appendChild(p); }
+          if(m.desc){ const d=document.createElement('div'); d.className='menu-desc'; _mLang(d, m.desc); lista.appendChild(d); }
+          det.appendChild(lista); sec.appendChild(det);
+        });
       } else {
         (cat.grupos||[]).forEach(g => sec.appendChild(_mGrupo(g, 'grupo-prato')));
       }
