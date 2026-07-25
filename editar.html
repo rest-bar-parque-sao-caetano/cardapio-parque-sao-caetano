@@ -180,6 +180,19 @@
         <option value="lista">Lista (barras) — atual</option>
         <option value="grelha">Grelha de cartões (com emoji)</option>
       </select>
+
+      <label for="fonteSel" style="margin-top:16px;">Tipo de letra dos títulos</label>
+      <select id="fonteSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+        <option value="auto">Automático (o do layout)</option>
+        <option value="fredoka">Fredoka (arredondada)</option>
+        <option value="poppins">Poppins (moderna)</option>
+        <option value="quicksand">Quicksand (suave)</option>
+        <option value="montserrat">Montserrat (limpa)</option>
+        <option value="playfair">Playfair Display (elegante)</option>
+        <option value="bebas">Bebas Neue (maiúsculas altas)</option>
+        <option value="lobster">Lobster (decorativa)</option>
+        <option value="pacifico">Pacifico (manuscrita)</option>
+      </select>
     </div>
   </details>
 
@@ -514,6 +527,7 @@
     fidelidade: { ativo:false, codigo:'', total:8, premio:'' },
     layout: '1',
     modelo: 'lista',
+    fonte: 'auto',
     jogos: true,
     redes: { instagram:'', facebook:'' }
   };
@@ -660,6 +674,7 @@
         layoutSelecionado = config.layout;
         renderLayoutCards();
         config.modelo = parsed.modelo || 'lista';
+        config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
         setEstado('Definições carregadas ✓', 'ok');
@@ -738,6 +753,7 @@
     document.getElementById('sazonalAtivo').checked = config.sazonal !== false;
     document.getElementById('jogosAtivo').checked = config.jogos !== false;
     document.getElementById('modeloSel').value = config.modelo || 'lista';
+    document.getElementById('fonteSel').value = config.fonte || 'auto';
     document.getElementById('redeInstagram').value = (config.redes && config.redes.instagram) || '';
     document.getElementById('redeFacebook').value = (config.redes && config.redes.facebook) || '';
     const fid = config.fidelidade || {};
@@ -962,6 +978,7 @@
       config.sazonal = document.getElementById('sazonalAtivo').checked;
       config.jogos = document.getElementById('jogosAtivo').checked;
       config.modelo = document.getElementById('modeloSel').value;
+      config.fonte = document.getElementById('fonteSel').value;
       config.redes = {
         instagram: document.getElementById('redeInstagram').value.trim(),
         facebook: document.getElementById('redeFacebook').value.trim()
