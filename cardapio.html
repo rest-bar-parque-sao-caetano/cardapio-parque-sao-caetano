@@ -655,6 +655,8 @@
 
   /* ===== Lista de compras ===== */
   .item .nome{ flex:1; }
+  /* O bloco à esquerda (nome, ou nome+descrição) cresce sempre, para o preço encostar à direita */
+  .item > div:first-child{ flex:1; min-width:0; }
   .btn-add-lista{
     flex:0 0 auto; width:27px; height:27px; border-radius:50%;
     border:none; background:var(--dourado); color:#fff; font-size:1.15rem;
@@ -1776,9 +1778,31 @@
   let categoriaPaiOriginal = null;
   let categoriaProximoOriginal = null;
 
+  function restaurarCategoria(){
+    painel.removeEventListener('transitionend', _restaurarPendente);
+    if(categoriaAtual){
+      categoriaAtual.classList.remove('ativa');
+      if(categoriaPaiOriginal){ categoriaPaiOriginal.insertBefore(categoriaAtual, categoriaProximoOriginal); }
+      categoriaAtual = null; categoriaPaiOriginal = null; categoriaProximoOriginal = null;
+    }
+    // Segurança: devolve ao menu qualquer secção que tenha ficado presa no painel
+    var mainEl = document.querySelector('main');
+    var jogosSec = document.getElementById('jogos');
+    painelConteudo.querySelectorAll(':scope > section.categoria').forEach(function(s){
+      s.classList.remove('ativa');
+      if(mainEl){ if(jogosSec) mainEl.insertBefore(s, jogosSec); else mainEl.appendChild(s); }
+    });
+  }
+  function _restaurarPendente(e){
+    if(e.target !== painel || e.propertyName !== 'transform') return;
+    restaurarCategoria();
+  }
+
   function abrirCategoria(tile){
     const target = document.getElementById(tile.dataset.target);
     if(!target) return;
+    // Garante que nenhuma secção anterior fica presa no painel (evita conteúdo trocado com toques rápidos)
+    restaurarCategoria();
     painel.setAttribute('data-sec', tile.dataset.target);
 
     const rect = tile.getBoundingClientRect();
@@ -1809,19 +1833,7 @@
   function fecharCategoria(){
     document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
     painel.classList.remove('aberto');
-
-    const restaurarNaOrigem = (e) => {
-      if(e.target !== painel || e.propertyName !== 'transform') return;
-      if(categoriaAtual){
-        categoriaAtual.classList.remove('ativa');
-        if(categoriaPaiOriginal){
-          categoriaPaiOriginal.insertBefore(categoriaAtual, categoriaProximoOriginal);
-        }
-        categoriaAtual = null;
-      }
-      painel.removeEventListener('transitionend', restaurarNaOrigem);
-    };
-    painel.addEventListener('transitionend', restaurarNaOrigem);
+    painel.addEventListener('transitionend', _restaurarPendente);
   }
 
   document.getElementById('categoriaGrid').addEventListener('click', (e) => {
