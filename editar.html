@@ -260,8 +260,16 @@
         <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
         <label for="introFundo">Fundo da abertura</label>
         <select id="introFundo" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
-          <option value="foto">Foto do cabeçalho (degradê se não houver)</option>
+          <option value="foto">Foto (própria ou do cabeçalho; degradê se não houver)</option>
           <option value="gradiente">Degradê (cor do tema)</option>
+        </select>
+        <label style="margin-top:10px;">Foto própria da abertura (opcional)</label>
+        <div id="introFotoAtual" class="ajuda" style="margin-top:4px;">Sem foto própria — usa a do cabeçalho.</div>
+        <input type="file" id="novaFotoIntro" accept="image/*">
+        <label for="introReveal" style="margin-top:12px;">Efeito de entrada (ao passar para o menu)</label>
+        <select id="introReveal" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+          <option value="slide">Slide — desliza para cima</option>
+          <option value="stripes">Stripes — tiras verticais</option>
         </select>
         <label style="margin-top:14px;">Tamanho do nome</label>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -579,7 +587,7 @@
     fonte: 'auto',
     jogos: true,
     redes: { instagram:'', facebook:'' },
-    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'' }
+    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -727,7 +735,7 @@
         config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
-        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'' }, parsed.intro || {});
+        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -757,6 +765,10 @@
     document.getElementById('introTitulo').value = (config.intro && config.intro.titulo) || '';
     document.getElementById('introSubtitulo').value = (config.intro && config.intro.subtitulo) || '';
     document.getElementById('introBotao').value = (config.intro && config.intro.botao) || '';
+    document.getElementById('introReveal').value = (config.intro && config.intro.reveal) || 'slide';
+    document.getElementById('introFotoAtual').textContent = (config.intro && config.intro.foto)
+      ? ('Tem foto própria: ' + config.intro.foto)
+      : 'Sem foto própria — usa a do cabeçalho.';
     const _it = (config.intro && config.intro.tamanho) || 2.7;
     const _ist = (config.intro && config.intro.subTamanho) || 1.08;
     document.getElementById('introTamanho').value = _it;
@@ -911,6 +923,13 @@
   // ---- Escolher novos ficheiros (guarda em memória; upload só ao Guardar) ----
   let filasUpload = { header:[], rodape:[], footer:[] };
   let filaAdj = null;
+  let filaIntro = null;
+  document.getElementById('novaFotoIntro').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    filaIntro = f;
+    document.getElementById('introFotoAtual').textContent = 'Nova foto escolhida: ' + f.name + ' (guarda para aplicar).';
+  });
   document.getElementById('novaFotoAdj').addEventListener('change', e => {
     const f = e.target.files[0];
     if(!f) return;
@@ -979,6 +998,13 @@
         setEstado('A enviar foto do anúncio…', 'info');
         config.adJogos.foto = await enviarFoto(filaAdj, token);
         filaAdj = null;
+      }
+      if(filaIntro){
+        setEstado('A enviar foto da abertura…', 'info');
+        config.intro = config.intro || {};
+        config.intro.foto = await enviarFoto(filaIntro, token);
+        filaIntro = null;
+        document.getElementById('novaFotoIntro').value = '';
       }
       filasUpload = { header:[], rodape:[], footer:[] };
       document.getElementById('novaFotoHeader').value = '';
@@ -1063,7 +1089,9 @@
         subTamanho: parseFloat(document.getElementById('introSubTamanho').value) || 1.08,
         titulo: document.getElementById('introTitulo').value.trim(),
         subtitulo: document.getElementById('introSubtitulo').value.trim(),
-        botao: document.getElementById('introBotao').value.trim()
+        botao: document.getElementById('introBotao').value.trim(),
+        reveal: document.getElementById('introReveal').value,
+        foto: (config.intro && config.intro.foto) || ''
       };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
