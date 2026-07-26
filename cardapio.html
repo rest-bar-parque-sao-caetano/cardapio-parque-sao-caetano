@@ -16,6 +16,8 @@
   #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
   #introShade{ position:absolute; inset:0; background:rgba(0,0,0,0.4); z-index:1; display:none; }
   #introShade.on{ display:block; }
+  #introStripes{ position:absolute; inset:0; z-index:3; display:none; pointer-events:none; }
+  #introStripes .stripe{ position:absolute; top:0; height:100%; background-repeat:no-repeat; will-change:transform; }
   #introContent{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:12px; }
   #introNome{ font-family:var(--fonte-titulo); color:#fff; font-size:2.7rem; font-weight:700; letter-spacing:1px; line-height:1.1; text-shadow:0 3px 16px rgba(0,0,0,.55); }
   #introNome .letra{ display:inline-block; opacity:0; will-change:transform; }
@@ -34,10 +36,12 @@
 <script>
   // A cortina de abertura cobre o ecrã enquanto os dados carregam (evita o flash de conteúdo).
   // Se o "ecrã de abertura" estiver ligado, vira uma animação com o nome; senão, some assim que carrega.
-  window.__introAtiva = false; window.__menuOk = false; window.__cfgOk = false;
+  window.__introAtiva = false; window.__introReveal = 'slide'; window.__menuOk = false; window.__cfgOk = false;
   window.__esconderIntro = function(){
     var o = document.getElementById('introOverlay');
-    if(!o || o.classList.contains('sair')) return;
+    if(!o || o.dataset.saiu) return;
+    o.dataset.saiu = '1';
+    if(window.__introReveal === 'stripes' && window.__fazerStripes){ window.__fazerStripes(); return; }
     o.classList.add('sair');
     setTimeout(function(){ o.style.display = 'none'; }, 600);
   };
@@ -1014,6 +1018,7 @@
     <div id="introSub"></div>
     <button id="introBtn" type="button">Ver menu ▸</button>
   </div>
+  <div id="introStripes"></div>
 </div>
 
 <div class="ad-popup-overlay" id="adPopup">
@@ -2145,11 +2150,50 @@
           if(nEl && intro.tamanho) nEl.style.fontSize = intro.tamanho + 'rem';
           if(sEl && intro.subTamanho) sEl.style.fontSize = intro.subTamanho + 'rem';
           const fotos = (config.header && config.header.fotos) || [];
-          const usarFoto = (intro.fundo !== 'gradiente') && (config.header && config.header.fotosAtivas !== false) && fotos.length;
+          const fotoIntro = (intro.foto && String(intro.foto).trim()) ? intro.foto
+            : ((config.header && config.header.fotosAtivas !== false && fotos.length) ? fotos[0] : null);
+          const usarFoto = (intro.fundo !== 'gradiente') && fotoIntro;
+          let bgImg;
           if(usarFoto){
-            document.getElementById('introBg').style.backgroundImage = "url('" + RAW_BASE + fotos[0] + "')";
+            bgImg = "url('" + RAW_BASE + fotoIntro + "')";
+            document.getElementById('introBg').style.backgroundImage = bgImg;
             document.getElementById('introShade').classList.add('on');
+          } else {
+            const cs = getComputedStyle(document.documentElement);
+            const c1 = (cs.getPropertyValue('--castanho') || '#3a2c18').trim();
+            const c2 = (cs.getPropertyValue('--dourado-escuro') || '#6b4a1f').trim();
+            const c3 = (cs.getPropertyValue('--dourado') || '#a8712f').trim();
+            bgImg = "linear-gradient(140deg, " + c1 + " 0%, " + c2 + " 55%, " + c3 + " 100%)";
           }
+          window.__introReveal = (intro.reveal === 'stripes') ? 'stripes' : 'slide';
+          window.__introBgImg = bgImg;
+          window.__fazerStripes = function(){
+            const cont = document.getElementById('introStripes');
+            const ovv = document.getElementById('introOverlay');
+            if(!cont){ ovv.style.display = 'none'; return; }
+            const N = 7;
+            cont.innerHTML = '';
+            for(let i=0;i<N;i++){
+              const st = document.createElement('div'); st.className = 'stripe';
+              st.style.left = (i*100/N) + '%'; st.style.width = (100/N + 0.4) + '%';
+              st.style.backgroundImage = window.__introBgImg;
+              st.style.backgroundSize = (100*N) + '% 100%';
+              st.style.backgroundPositionX = (N>1 ? (i/(N-1)*100) : 0) + '%';
+              cont.appendChild(st);
+            }
+            cont.style.display = 'block';
+            ovv.style.background = 'transparent';
+            const bgd = document.getElementById('introBg'); if(bgd) bgd.style.opacity = '0';
+            const shd = document.getElementById('introShade'); if(shd) shd.style.opacity = '0';
+            const cnt = document.getElementById('introContent'); if(cnt){ cnt.style.transition = 'opacity .25s'; cnt.style.opacity = '0'; }
+            requestAnimationFrame(function(){
+              cont.querySelectorAll('.stripe').forEach(function(s, i){
+                s.style.transition = 'transform .7s cubic-bezier(.7,0,.25,1) ' + (i*0.06) + 's';
+                s.style.transform = (i % 2 === 0 ? 'translateY(-101%)' : 'translateY(101%)');
+              });
+            });
+            setTimeout(function(){ ovv.style.display = 'none'; }, 700 + N*60 + 150);
+          };
           ov.classList.add('animar');
           const btn = document.getElementById('introBtn');
           if(btn && intro.botao && String(intro.botao).trim()) btn.textContent = intro.botao;
