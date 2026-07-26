@@ -110,6 +110,7 @@
   },
   "intro": {
     "ativo": true,
-    "duracao": 7
+    "duracao": 7,
+    "fundo": "gradiente"
   }
 }
