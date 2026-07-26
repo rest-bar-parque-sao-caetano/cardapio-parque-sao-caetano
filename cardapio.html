@@ -7,10 +7,10 @@
 <meta name="theme-color" content="#4a3820">
 <style>
   /* ===== Ecrã de abertura / cortina de carregamento ===== */
-  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:hidden;
-    background:linear-gradient(140deg, var(--castanho,#3a2c18) 0%, var(--dourado-escuro,#6b4a1f) 55%, var(--dourado,#a8712f) 100%);
-    background-size:200% 200%; }
-  #introOverlay.animar{ animation:introGrad 9s ease infinite; }
+  /* Enquanto carrega, esconde tudo menos o ecrã de abertura (evita flash da barra fixa/cabeçalho ao abrir a app) */
+  body.carregando > *:not(#introOverlay){ visibility:hidden !important; }
+  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:hidden; background:#1f2530; }
+  #introOverlay.animar{ background:linear-gradient(140deg, var(--castanho,#3a2c18) 0%, var(--dourado-escuro,#6b4a1f) 55%, var(--dourado,#a8712f) 100%); background-size:200% 200%; animation:introGrad 9s ease infinite; }
   @keyframes introGrad{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
   #introOverlay.sair{ transform:translateY(-100%); transition:transform .55s cubic-bezier(.7,0,.25,1); pointer-events:none; }
   #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
@@ -41,6 +41,7 @@
     var o = document.getElementById('introOverlay');
     if(!o || o.dataset.saiu) return;
     o.dataset.saiu = '1';
+    if(document.body) document.body.classList.remove('carregando');
     if(window.__introReveal !== 'slide' && window.__fazerStripes){ window.__fazerStripes(); return; }
     o.classList.add('sair');
     setTimeout(function(){ o.style.display = 'none'; }, 600);
@@ -1014,7 +1015,7 @@
 </script>
 
 </head>
-<body>
+<body class="carregando">
 
 <div id="introOverlay">
   <div id="introBg"></div>
