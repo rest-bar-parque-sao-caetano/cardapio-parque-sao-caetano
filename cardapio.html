@@ -2073,6 +2073,8 @@
             el.style.textShadow = sombra;
             if(peso) el.style.fontWeight = peso;
           });
+          if(t && config.header.tituloTamanho) t.style.fontSize = config.header.tituloTamanho + 'rem';
+          if(s && config.header.subtituloTamanho) s.style.fontSize = config.header.subtituloTamanho + 'rem';
         }
         if(config.header.fotosAtivas !== false){
           preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
