@@ -8,7 +8,9 @@
     "fotos": [
       "imagens/1784242164035-gemini-generated-image-l4woqpl4woqpl4wo.png",
       "imagens/1784242166674-img-1577.jpg"
-    ]
+    ],
+    "tituloTamanho": 1.7,
+    "subtituloTamanho": 0.82
   },
   "rodape": {
     "linha1": "Contamos contigo!",
@@ -105,5 +107,9 @@
   "redes": {
     "instagram": "https://www.instagram.com/restbarparquedesaocaetano/",
     "facebook": "https://www.facebook.com/profile.php?id=61581115361220"
+  },
+  "intro": {
+    "ativo": true,
+    "duracao": 7
   }
 }
