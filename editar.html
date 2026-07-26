@@ -206,6 +206,18 @@
       <label for="subtitulo">Subtítulo</label>
       <input type="text" id="subtitulo" placeholder="Tradição, sabor e conforto à mesa">
 
+      <label style="margin-top:14px;">Tamanho do título</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="tituloTamanho" min="1.2" max="2.8" step="0.05" value="1.7" style="flex:1;">
+        <span id="tituloTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">1.70</span>
+      </div>
+
+      <label style="margin-top:10px;">Tamanho do subtítulo</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="subtituloTamanho" min="0.7" max="1.4" step="0.02" value="0.82" style="flex:1;">
+        <span id="subtituloTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">0.82</span>
+      </div>
+
       <label for="corHeader">Cor do texto</label>
       <div class="campo-cor">
         <input type="color" id="corHeader" value="#ffffff">
@@ -513,7 +525,7 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] },
+    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82 },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
       especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' },
       carrossel:{ ativo:false, intervalo:5, inicio:'', fim:'', slides:[
@@ -656,7 +668,7 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[] }, parsed.header || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82 }, parsed.header || {});
         config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
         config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
         const carDef = { ativo:false, slides:[
@@ -694,6 +706,12 @@
   function preencherFormulario(){
     document.getElementById('titulo').value = config.header.titulo || '';
     document.getElementById('subtitulo').value = config.header.subtitulo || '';
+    const _tt = config.header.tituloTamanho || 1.7;
+    const _st = config.header.subtituloTamanho || 0.82;
+    document.getElementById('tituloTamanho').value = _tt;
+    document.getElementById('tituloTamanhoVal').textContent = Number(_tt).toFixed(2);
+    document.getElementById('subtituloTamanho').value = _st;
+    document.getElementById('subtituloTamanhoVal').textContent = Number(_st).toFixed(2);
     document.getElementById('linha1').value = config.rodape.linha1 || '';
     document.getElementById('linha2').value = config.rodape.linha2 || '';
     document.getElementById('linha3').value = config.rodape.linha3 || '';
@@ -919,6 +937,8 @@
       // 2. Atualizar textos a partir do formulário
       config.header.titulo = document.getElementById('titulo').value.trim();
       config.header.subtitulo = document.getElementById('subtitulo').value.trim();
+      config.header.tituloTamanho = parseFloat(document.getElementById('tituloTamanho').value) || 1.7;
+      config.header.subtituloTamanho = parseFloat(document.getElementById('subtituloTamanho').value) || 0.82;
       config.rodape.linha1 = document.getElementById('linha1').value.trim();
       config.rodape.linha2 = document.getElementById('linha2').value.trim();
       config.rodape.linha3 = document.getElementById('linha3').value.trim();
@@ -1037,6 +1057,13 @@
   });
   document.getElementById('fidAtivo').addEventListener('change', e => {
     document.getElementById('blocoFid').style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  document.getElementById('tituloTamanho').addEventListener('input', e => {
+    document.getElementById('tituloTamanhoVal').textContent = Number(e.target.value).toFixed(2);
+  });
+  document.getElementById('subtituloTamanho').addEventListener('input', e => {
+    document.getElementById('subtituloTamanhoVal').textContent = Number(e.target.value).toFixed(2);
   });
 
   document.getElementById('corHeader').addEventListener('input', e => {
