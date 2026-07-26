@@ -218,21 +218,6 @@
         <span id="subtituloTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">0.82</span>
       </div>
 
-      <div class="lembrar" style="margin-top:16px;">
-        <input type="checkbox" id="introAtivo">
-        <label for="introAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ecrã de abertura (animação com o nome ao entrar)</label>
-      </div>
-      <div id="blocoIntro" style="display:none;">
-        <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado e um botão "Ver menu". Também esconde o carregamento.</div>
-        <label for="introDuracao">Duração (segundos)</label>
-        <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
-        <label for="introFundo">Fundo da abertura</label>
-        <select id="introFundo" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
-          <option value="foto">Foto do cabeçalho (degradê se não houver)</option>
-          <option value="gradiente">Degradê (cor do tema)</option>
-        </select>
-      </div>
-
       <label for="corHeader">Cor do texto</label>
       <div class="campo-cor">
         <input type="color" id="corHeader" value="#ffffff">
@@ -252,6 +237,37 @@
       <label>Fotos do cabeçalho (rodam automaticamente)</label>
       <div class="lista-fotos" id="listaFotosHeader"></div>
       <input type="file" id="novaFotoHeader" accept="image/*" multiple>
+    </div>
+  </details>
+
+  <!-- ABERTURA -->
+  <details id="secAbertura">
+    <summary>🎬 Ecrã de abertura (intro)</summary>
+    <div class="bloco-conteudo">
+      <div class="lembrar" style="margin-top:6px;">
+        <input type="checkbox" id="introAtivo">
+        <label for="introAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar ecrã de abertura</label>
+      </div>
+      <div id="blocoIntro" style="display:none;">
+        <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado (letra a letra) e um botão "Ver menu". Também esconde o carregamento.</div>
+        <label for="introDuracao">Duração (segundos)</label>
+        <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+        <label for="introFundo">Fundo da abertura</label>
+        <select id="introFundo" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+          <option value="foto">Foto do cabeçalho (degradê se não houver)</option>
+          <option value="gradiente">Degradê (cor do tema)</option>
+        </select>
+        <label style="margin-top:14px;">Tamanho do nome</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input type="range" id="introTamanho" min="1.6" max="4.5" step="0.1" value="2.7" style="flex:1;">
+          <span id="introTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">2.7</span>
+        </div>
+        <label style="margin-top:10px;">Tamanho do subtítulo</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input type="range" id="introSubTamanho" min="0.8" max="2" step="0.05" value="1.08" style="flex:1;">
+          <span id="introSubTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">1.08</span>
+        </div>
+      </div>
     </div>
   </details>
 
@@ -557,7 +573,7 @@
     fonte: 'auto',
     jogos: true,
     redes: { instagram:'', facebook:'' },
-    intro: { ativo:false, duracao:7, fundo:'foto' }
+    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08 }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -705,7 +721,7 @@
         config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
-        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto' }, parsed.intro || {});
+        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08 }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -732,6 +748,12 @@
     document.getElementById('introAtivo').checked = !!(config.intro && config.intro.ativo);
     document.getElementById('introDuracao').value = (config.intro && config.intro.duracao) || 7;
     document.getElementById('introFundo').value = (config.intro && config.intro.fundo) || 'foto';
+    const _it = (config.intro && config.intro.tamanho) || 2.7;
+    const _ist = (config.intro && config.intro.subTamanho) || 1.08;
+    document.getElementById('introTamanho').value = _it;
+    document.getElementById('introTamanhoVal').textContent = Number(_it).toFixed(2);
+    document.getElementById('introSubTamanho').value = _ist;
+    document.getElementById('introSubTamanhoVal').textContent = Number(_ist).toFixed(2);
     document.getElementById('blocoIntro').style.display = (config.intro && config.intro.ativo) ? 'block' : 'none';
     document.getElementById('linha1').value = config.rodape.linha1 || '';
     document.getElementById('linha2').value = config.rodape.linha2 || '';
@@ -1027,7 +1049,9 @@
       config.intro = {
         ativo: document.getElementById('introAtivo').checked,
         duracao: parseInt(document.getElementById('introDuracao').value, 10) || 7,
-        fundo: document.getElementById('introFundo').value
+        fundo: document.getElementById('introFundo').value,
+        tamanho: parseFloat(document.getElementById('introTamanho').value) || 2.7,
+        subTamanho: parseFloat(document.getElementById('introSubTamanho').value) || 1.08
       };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
@@ -1087,6 +1111,12 @@
 
   document.getElementById('introAtivo').addEventListener('change', e => {
     document.getElementById('blocoIntro').style.display = e.target.checked ? 'block' : 'none';
+  });
+  document.getElementById('introTamanho').addEventListener('input', e => {
+    document.getElementById('introTamanhoVal').textContent = Number(e.target.value).toFixed(2);
+  });
+  document.getElementById('introSubTamanho').addEventListener('input', e => {
+    document.getElementById('introSubTamanhoVal').textContent = Number(e.target.value).toFixed(2);
   });
   document.getElementById('tituloTamanho').addEventListener('input', e => {
     document.getElementById('tituloTamanhoVal').textContent = Number(e.target.value).toFixed(2);
