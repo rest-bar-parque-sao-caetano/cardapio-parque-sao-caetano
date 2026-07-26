@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#4a3820">
+<meta name="theme-color" content="#1f2530">
 <style>
   /* ===== Ecrã de abertura / cortina de carregamento ===== */
   /* Enquanto carrega, esconde tudo menos o ecrã de abertura (evita flash da barra fixa/cabeçalho ao abrir a app) */
@@ -13,7 +13,9 @@
   #introOverlay.animar{ background:linear-gradient(140deg, var(--castanho,#3a2c18) 0%, var(--dourado-escuro,#6b4a1f) 55%, var(--dourado,#a8712f) 100%); background-size:200% 200%; animation:introGrad 9s ease infinite; }
   @keyframes introGrad{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
   #introOverlay.sair{ transform:translateY(-100%); transition:transform .55s cubic-bezier(.7,0,.25,1); pointer-events:none; }
-  #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
+  #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; transform-origin:center; }
+  #introOverlay.animar #introBg{ animation:introZoom 9s ease-out both; }
+  @keyframes introZoom{ 0%{ transform:scale(1.18); } 100%{ transform:scale(1.04); } }
   #introShade{ position:absolute; inset:0; background:rgba(0,0,0,0.4); z-index:1; display:none; }
   #introShade.on{ display:block; }
   #introStripes{ position:absolute; inset:0; z-index:3; display:none; pointer-events:none; }
@@ -79,7 +81,7 @@
     min-height:100vh;
     padding-bottom:calc(112px + env(safe-area-inset-bottom));
   }
-  html{ background:var(--castanho); }
+  html{ background:#1f2530; }
   header{
     position:relative; z-index:50;
     background:var(--castanho);
@@ -2047,6 +2049,7 @@
     const t = TEMAS[String(nome)] || TEMAS['1'];
     const r = document.documentElement;
     Object.keys(t).forEach(k => r.style.setProperty(k, t[k]));
+    r.style.backgroundColor = t['--castanho'];
     const meta = document.querySelector('meta[name=theme-color]');
     if(meta) meta.content = t['--castanho'];
   }
