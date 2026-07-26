@@ -204,6 +204,8 @@
     text-transform:uppercase;
     text-align:center;
     line-height:1.15;
+    max-width:100%;
+    overflow-wrap:anywhere;
   }
   /* Texto com relevo 3D — linhas bege: 3 camadas; linhas castanho: 4 camadas */
   .tile:nth-child(odd) .tile-label{
@@ -224,9 +226,9 @@
 
   /* ===== Modelo "grelha de cartões" (config.modelo === 'grelha') ===== */
   body.modelo-grelha .categoria-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(102px, 1fr)); gap:10px; }
-  body.modelo-grelha .tile{ flex-direction:column; aspect-ratio:1 / 1; min-height:0; gap:6px; padding:10px 8px; }
+  body.modelo-grelha .tile{ flex-direction:column; aspect-ratio:1 / 1; min-height:0; gap:6px; padding:10px 6px; overflow:hidden; }
   body.modelo-grelha .tile-emoji{ display:block; font-size:2rem; line-height:1; }
-  body.modelo-grelha .tile-label{ font-size:0.8rem; letter-spacing:0.3px; }
+  body.modelo-grelha .tile-label{ font-size:clamp(0.58rem, 2.7vw, 0.82rem); letter-spacing:0.2px; max-width:100%; overflow-wrap:anywhere; word-break:break-word; hyphens:auto; }
 
   .categoria-painel{
     position:fixed; inset:0;
@@ -239,13 +241,14 @@
     opacity:0;
     visibility:hidden;
     pointer-events:none;
-    transition:transform .38s cubic-bezier(.22,.8,.25,1), opacity .28s ease;
+    transition:transform .38s cubic-bezier(.22,.8,.25,1), opacity .28s ease, visibility 0s linear .4s;
   }
   .categoria-painel.aberto{
     transform:scale(1);
     opacity:1;
     visibility:visible;
     pointer-events:auto;
+    transition:transform .38s cubic-bezier(.22,.8,.25,1), opacity .28s ease, visibility 0s;
   }
   .categoria-painel-header{
     position:sticky; top:0; z-index:2;
