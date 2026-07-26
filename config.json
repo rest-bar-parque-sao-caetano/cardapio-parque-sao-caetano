@@ -111,8 +111,11 @@
   "intro": {
     "ativo": true,
     "duracao": 7,
-    "fundo": "gradiente",
+    "fundo": "foto",
     "tamanho": 2,
-    "subTamanho": 1
+    "subTamanho": 1,
+    "titulo": "",
+    "subtitulo": "",
+    "botao": ""
   }
 }
