@@ -249,7 +249,13 @@
         <label for="introAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar ecrã de abertura</label>
       </div>
       <div id="blocoIntro" style="display:none;">
-        <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado (letra a letra) e um botão "Ver menu". Também esconde o carregamento.</div>
+        <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado (letra a letra) e um botão. Também esconde o carregamento.</div>
+        <label for="introTitulo">Título da abertura</label>
+        <input type="text" id="introTitulo" placeholder="(vazio = usa o nome do restaurante)">
+        <label for="introSubtitulo">Subtítulo da abertura</label>
+        <input type="text" id="introSubtitulo" placeholder="(vazio = usa o subtítulo do cabeçalho)">
+        <label for="introBotao">Texto do botão</label>
+        <input type="text" id="introBotao" placeholder="Ver menu ▸">
         <label for="introDuracao">Duração (segundos)</label>
         <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
         <label for="introFundo">Fundo da abertura</label>
@@ -573,7 +579,7 @@
     fonte: 'auto',
     jogos: true,
     redes: { instagram:'', facebook:'' },
-    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08 }
+    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'' }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -721,7 +727,7 @@
         config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
-        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08 }, parsed.intro || {});
+        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'' }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -748,6 +754,9 @@
     document.getElementById('introAtivo').checked = !!(config.intro && config.intro.ativo);
     document.getElementById('introDuracao').value = (config.intro && config.intro.duracao) || 7;
     document.getElementById('introFundo').value = (config.intro && config.intro.fundo) || 'foto';
+    document.getElementById('introTitulo').value = (config.intro && config.intro.titulo) || '';
+    document.getElementById('introSubtitulo').value = (config.intro && config.intro.subtitulo) || '';
+    document.getElementById('introBotao').value = (config.intro && config.intro.botao) || '';
     const _it = (config.intro && config.intro.tamanho) || 2.7;
     const _ist = (config.intro && config.intro.subTamanho) || 1.08;
     document.getElementById('introTamanho').value = _it;
@@ -1051,7 +1060,10 @@
         duracao: parseInt(document.getElementById('introDuracao').value, 10) || 7,
         fundo: document.getElementById('introFundo').value,
         tamanho: parseFloat(document.getElementById('introTamanho').value) || 2.7,
-        subTamanho: parseFloat(document.getElementById('introSubTamanho').value) || 1.08
+        subTamanho: parseFloat(document.getElementById('introSubTamanho').value) || 1.08,
+        titulo: document.getElementById('introTitulo').value.trim(),
+        subtitulo: document.getElementById('introSubtitulo').value.trim(),
+        botao: document.getElementById('introBotao').value.trim()
       };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
