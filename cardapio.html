@@ -5,14 +5,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#4a3820">
-<style>body{opacity:0}</style>
+<style>
+  /* ===== Ecrã de abertura / cortina de carregamento ===== */
+  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; background:#3a2c18; overflow:hidden; }
+  #introOverlay.sair{ opacity:0; transition:opacity .6s ease; pointer-events:none; }
+  #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
+  #introShade{ position:absolute; inset:0; background:rgba(0,0,0,0.45); z-index:1; }
+  #introContent{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  #introNome{ font-family:var(--fonte-titulo); color:#fff; font-size:2.6rem; font-weight:700; letter-spacing:1px; line-height:1.1; text-shadow:0 2px 12px rgba(0,0,0,.55); opacity:0; }
+  #introSub{ font-family:var(--fonte-texto); color:#f3ead9; font-size:1.05rem; font-style:italic; text-shadow:0 1px 6px rgba(0,0,0,.5); opacity:0; }
+  #introBtn{ margin-top:20px; background:var(--dourado,#a8712f); color:#fff; border:none; border-radius:30px; padding:13px 30px; font-family:var(--fonte-titulo); font-size:1.1rem; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.35); opacity:0; }
+  #introOverlay.animar #introNome{ animation:introNomeIn 1s ease .2s forwards; }
+  #introOverlay.animar #introSub{ animation:introSubIn .9s ease 1s forwards; }
+  #introOverlay.animar #introBtn{ animation:introBtnIn .6s ease 1.9s forwards, introPulse 1.7s ease-in-out 2.6s infinite; }
+  @keyframes introNomeIn{ from{ opacity:0; transform:translateY(18px) scale(.95); } to{ opacity:1; transform:none; } }
+  @keyframes introSubIn{ to{ opacity:1; } }
+  @keyframes introBtnIn{ to{ opacity:1; } }
+  @keyframes introPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
+</style>
 <script>
-  // Esconde a página até o menu e as definições deste restaurante estarem aplicados
-  // (evita o "flash" de conteúdo estático). Rede de segurança: revela ao fim de 3,5s.
-  window.__menuOk = false; window.__cfgOk = false;
-  window.__revelar = function(){ if(document.body) document.body.style.opacity = '1'; };
-  window.__tryReveal = function(){ if(window.__menuOk && window.__cfgOk) window.__revelar(); };
-  setTimeout(function(){ window.__revelar(); }, 3500);
+  // A cortina de abertura cobre o ecrã enquanto os dados carregam (evita o flash de conteúdo).
+  // Se o "ecrã de abertura" estiver ligado, vira uma animação com o nome; senão, some assim que carrega.
+  window.__introAtiva = false; window.__menuOk = false; window.__cfgOk = false;
+  window.__esconderIntro = function(){
+    var o = document.getElementById('introOverlay');
+    if(!o || o.classList.contains('sair')) return;
+    o.classList.add('sair');
+    setTimeout(function(){ o.style.display = 'none'; }, 600);
+  };
+  window.__revelar = window.__esconderIntro;
+  window.__tryReveal = function(){ if(window.__introAtiva) return; if(window.__menuOk && window.__cfgOk) window.__esconderIntro(); };
+  setTimeout(function(){ if(!window.__introAtiva) window.__esconderIntro(); }, 8000);
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -974,6 +997,16 @@
 
 </head>
 <body>
+
+<div id="introOverlay">
+  <div id="introBg"></div>
+  <div id="introShade"></div>
+  <div id="introContent">
+    <div id="introNome"></div>
+    <div id="introSub"></div>
+    <button id="introBtn" type="button">Ver menu ▸</button>
+  </div>
+</div>
 
 <div class="ad-popup-overlay" id="adPopup">
   <div class="ad-popup">
@@ -2080,6 +2113,29 @@
           preencherFotos(document.querySelector('#headerFotos'), config.header.fotos);
         }
       }
+
+      // Ecrã de abertura (animação com o nome). Cobre o carregamento; some sozinho ou ao tocar.
+      (function(){
+        const intro = config.intro || {};
+        const ov = document.getElementById('introOverlay');
+        if(!ov) return;
+        if(intro.ativo){
+          window.__introAtiva = true;
+          const nEl = document.getElementById('introNome');
+          const sEl = document.getElementById('introSub');
+          if(nEl) nEl.textContent = (config.header && config.header.titulo) || '';
+          if(sEl) sEl.textContent = (config.header && config.header.subtitulo) || '';
+          const fotos = (config.header && config.header.fotos) || [];
+          if((config.header && config.header.fotosAtivas !== false) && fotos.length){
+            document.getElementById('introBg').style.backgroundImage = "url('" + RAW_BASE + fotos[0] + "')";
+          }
+          ov.classList.add('animar');
+          const btn = document.getElementById('introBtn');
+          if(btn) btn.addEventListener('click', window.__esconderIntro);
+          const dur = (parseInt(intro.duracao, 10) || 7) * 1000;
+          setTimeout(window.__esconderIntro, dur);
+        }
+      })();
 
       // Barra fixa: carrossel (com horário) OU texto normal — gerido por atualizarBarraFixa
       if(config.rodape){
