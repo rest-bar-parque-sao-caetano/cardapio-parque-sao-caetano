@@ -7,20 +7,28 @@
 <meta name="theme-color" content="#4a3820">
 <style>
   /* ===== Ecrã de abertura / cortina de carregamento ===== */
-  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; background:#3a2c18; overflow:hidden; }
+  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:hidden;
+    background:linear-gradient(140deg, var(--castanho,#3a2c18) 0%, var(--dourado-escuro,#6b4a1f) 55%, var(--dourado,#a8712f) 100%);
+    background-size:200% 200%; }
+  #introOverlay.animar{ animation:introGrad 9s ease infinite; }
+  @keyframes introGrad{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
   #introOverlay.sair{ opacity:0; transition:opacity .6s ease; pointer-events:none; }
   #introBg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
-  #introShade{ position:absolute; inset:0; background:rgba(0,0,0,0.45); z-index:1; }
+  #introShade{ position:absolute; inset:0; background:rgba(0,0,0,0.4); z-index:1; display:none; }
+  #introShade.on{ display:block; }
   #introContent{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:12px; }
-  #introNome{ font-family:var(--fonte-titulo); color:#fff; font-size:2.6rem; font-weight:700; letter-spacing:1px; line-height:1.1; text-shadow:0 2px 12px rgba(0,0,0,.55); opacity:0; }
-  #introSub{ font-family:var(--fonte-texto); color:#f3ead9; font-size:1.05rem; font-style:italic; text-shadow:0 1px 6px rgba(0,0,0,.5); opacity:0; }
-  #introBtn{ margin-top:20px; background:var(--dourado,#a8712f); color:#fff; border:none; border-radius:30px; padding:13px 30px; font-family:var(--fonte-titulo); font-size:1.1rem; font-weight:600; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.35); opacity:0; }
-  #introOverlay.animar #introNome{ animation:introNomeIn 1s ease .2s forwards; }
-  #introOverlay.animar #introSub{ animation:introSubIn .9s ease 1s forwards; }
-  #introOverlay.animar #introBtn{ animation:introBtnIn .6s ease 1.9s forwards, introPulse 1.7s ease-in-out 2.6s infinite; }
-  @keyframes introNomeIn{ from{ opacity:0; transform:translateY(18px) scale(.95); } to{ opacity:1; transform:none; } }
-  @keyframes introSubIn{ to{ opacity:1; } }
-  @keyframes introBtnIn{ to{ opacity:1; } }
+  #introNome{ font-family:var(--fonte-titulo); color:#fff; font-size:2.7rem; font-weight:700; letter-spacing:1px; line-height:1.1; text-shadow:0 3px 16px rgba(0,0,0,.55); }
+  #introNome .letra{ display:inline-block; opacity:0; will-change:transform; }
+  #introOverlay.animar #introNome .letra{ animation:letraIn .6s cubic-bezier(.2,.8,.3,1.5) forwards; }
+  #introOverlay.animar #introNome{ animation:nomeFloat 3.2s ease-in-out 1.8s infinite; }
+  #introSub{ font-family:var(--fonte-texto); color:#f7eeda; font-size:1.08rem; font-style:italic; text-shadow:0 1px 8px rgba(0,0,0,.5); opacity:0; }
+  #introOverlay.animar #introSub{ animation:introSubIn 1s cubic-bezier(.2,.8,.3,1.4) 1.2s forwards; }
+  #introBtn{ margin-top:22px; background:var(--dourado,#a8712f); color:#fff; border:none; border-radius:30px; padding:13px 32px; font-family:var(--fonte-titulo); font-size:1.12rem; font-weight:600; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,.4); opacity:0; }
+  #introOverlay.animar #introBtn{ animation:introBtnIn .6s ease 2.1s forwards, introPulse 1.6s ease-in-out 2.8s infinite; }
+  @keyframes letraIn{ 0%{ opacity:0; transform:translateY(-46px) rotate(-10deg) scale(.5); } 60%{ opacity:1; transform:translateY(7px) rotate(3deg) scale(1.08); } 100%{ opacity:1; transform:translateY(0) rotate(0) scale(1); } }
+  @keyframes nomeFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-7px); } }
+  @keyframes introSubIn{ 0%{ opacity:0; transform:translateY(14px); } 100%{ opacity:1; transform:translateY(0); } }
+  @keyframes introBtnIn{ 0%{ opacity:0; transform:scale(.8); } 100%{ opacity:1; transform:scale(1); } }
   @keyframes introPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.06); } }
 </style>
 <script>
@@ -2123,11 +2131,22 @@
           window.__introAtiva = true;
           const nEl = document.getElementById('introNome');
           const sEl = document.getElementById('introSub');
-          if(nEl) nEl.textContent = (config.header && config.header.titulo) || '';
+          const nome = (config.header && config.header.titulo) || '';
+          if(nEl){
+            nEl.innerHTML = '';
+            nome.split('').forEach((ch, i) => {
+              const sp = document.createElement('span'); sp.className = 'letra';
+              sp.textContent = (ch === ' ') ? ' ' : ch;
+              sp.style.animationDelay = (0.3 + i * 0.07) + 's';
+              nEl.appendChild(sp);
+            });
+          }
           if(sEl) sEl.textContent = (config.header && config.header.subtitulo) || '';
           const fotos = (config.header && config.header.fotos) || [];
-          if((config.header && config.header.fotosAtivas !== false) && fotos.length){
+          const usarFoto = (intro.fundo !== 'gradiente') && (config.header && config.header.fotosAtivas !== false) && fotos.length;
+          if(usarFoto){
             document.getElementById('introBg').style.backgroundImage = "url('" + RAW_BASE + fotos[0] + "')";
+            document.getElementById('introShade').classList.add('on');
           }
           ov.classList.add('animar');
           const btn = document.getElementById('introBtn');
