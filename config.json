@@ -99,6 +99,8 @@
     "premio": ""
   },
   "layout": "1",
+  "modelo": "lista",
+  "fonte": "montserrat",
   "jogos": true,
   "redes": {
     "instagram": "https://www.instagram.com/restbarparquedesaocaetano/",
