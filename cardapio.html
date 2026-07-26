@@ -48,6 +48,7 @@
   window.__revelar = window.__esconderIntro;
   window.__tryReveal = function(){ if(window.__introAtiva) return; if(window.__menuOk && window.__cfgOk) window.__esconderIntro(); };
   setTimeout(function(){ if(!window.__introAtiva) window.__esconderIntro(); }, 8000);
+  setTimeout(function(){ var b=document.querySelector('.info-fixa'); if(b) b.style.opacity='1'; }, 9000);
 </script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -622,6 +623,8 @@
     gap:12px;
     padding:4px 14px calc(10px + env(safe-area-inset-bottom));
     min-height:76px;
+    opacity:0;
+    transition:opacity .3s ease;
   }
   .info-fixa-fotos{
     position:absolute;
@@ -2243,6 +2246,8 @@
         if(config.rodape.fotosAtivas !== false){
           preencherFotos(document.querySelector('#infoFixaFotos'), config.rodape.fotos);
         }
+        // Só mostrar a barra fixa depois de estar preenchida (evita o "flash" ao abrir a app)
+        const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.opacity = '1';
       }
 
       // Rodapé final (aparece ao fazer scroll até ao fim)
