@@ -226,6 +226,11 @@
         <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado e um botão "Ver menu". Também esconde o carregamento.</div>
         <label for="introDuracao">Duração (segundos)</label>
         <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+        <label for="introFundo">Fundo da abertura</label>
+        <select id="introFundo" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+          <option value="foto">Foto do cabeçalho (degradê se não houver)</option>
+          <option value="gradiente">Degradê (cor do tema)</option>
+        </select>
       </div>
 
       <label for="corHeader">Cor do texto</label>
@@ -552,7 +557,7 @@
     fonte: 'auto',
     jogos: true,
     redes: { instagram:'', facebook:'' },
-    intro: { ativo:false, duracao:7 }
+    intro: { ativo:false, duracao:7, fundo:'foto' }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -700,7 +705,7 @@
         config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
-        config.intro = Object.assign({ ativo:false, duracao:7 }, parsed.intro || {});
+        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto' }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -726,6 +731,7 @@
     document.getElementById('subtituloTamanhoVal').textContent = Number(_st).toFixed(2);
     document.getElementById('introAtivo').checked = !!(config.intro && config.intro.ativo);
     document.getElementById('introDuracao').value = (config.intro && config.intro.duracao) || 7;
+    document.getElementById('introFundo').value = (config.intro && config.intro.fundo) || 'foto';
     document.getElementById('blocoIntro').style.display = (config.intro && config.intro.ativo) ? 'block' : 'none';
     document.getElementById('linha1').value = config.rodape.linha1 || '';
     document.getElementById('linha2').value = config.rodape.linha2 || '';
@@ -1020,7 +1026,8 @@
       };
       config.intro = {
         ativo: document.getElementById('introAtivo').checked,
-        duracao: parseInt(document.getElementById('introDuracao').value, 10) || 7
+        duracao: parseInt(document.getElementById('introDuracao').value, 10) || 7,
+        fundo: document.getElementById('introFundo').value
       };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
