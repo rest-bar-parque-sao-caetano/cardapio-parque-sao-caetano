@@ -218,6 +218,16 @@
         <span id="subtituloTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">0.82</span>
       </div>
 
+      <div class="lembrar" style="margin-top:16px;">
+        <input type="checkbox" id="introAtivo">
+        <label for="introAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ecrã de abertura (animação com o nome ao entrar)</label>
+      </div>
+      <div id="blocoIntro" style="display:none;">
+        <div class="ajuda" style="margin-top:6px;">Ao abrir o link/QR, mostra um ecrã inteiro com o nome animado e um botão "Ver menu". Também esconde o carregamento.</div>
+        <label for="introDuracao">Duração (segundos)</label>
+        <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
+      </div>
+
       <label for="corHeader">Cor do texto</label>
       <div class="campo-cor">
         <input type="color" id="corHeader" value="#ffffff">
@@ -541,7 +551,8 @@
     modelo: 'lista',
     fonte: 'auto',
     jogos: true,
-    redes: { instagram:'', facebook:'' }
+    redes: { instagram:'', facebook:'' },
+    intro: { ativo:false, duracao:7 }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -689,6 +700,7 @@
         config.fonte = parsed.fonte || 'auto';
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
+        config.intro = Object.assign({ ativo:false, duracao:7 }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -712,6 +724,9 @@
     document.getElementById('tituloTamanhoVal').textContent = Number(_tt).toFixed(2);
     document.getElementById('subtituloTamanho').value = _st;
     document.getElementById('subtituloTamanhoVal').textContent = Number(_st).toFixed(2);
+    document.getElementById('introAtivo').checked = !!(config.intro && config.intro.ativo);
+    document.getElementById('introDuracao').value = (config.intro && config.intro.duracao) || 7;
+    document.getElementById('blocoIntro').style.display = (config.intro && config.intro.ativo) ? 'block' : 'none';
     document.getElementById('linha1').value = config.rodape.linha1 || '';
     document.getElementById('linha2').value = config.rodape.linha2 || '';
     document.getElementById('linha3').value = config.rodape.linha3 || '';
@@ -1003,6 +1018,10 @@
         instagram: document.getElementById('redeInstagram').value.trim(),
         facebook: document.getElementById('redeFacebook').value.trim()
       };
+      config.intro = {
+        ativo: document.getElementById('introAtivo').checked,
+        duracao: parseInt(document.getElementById('introDuracao').value, 10) || 7
+      };
       config.fidelidade = {
         ativo: document.getElementById('fidAtivo').checked,
         codigo: document.getElementById('fidCodigo').value.trim(),
@@ -1059,6 +1078,9 @@
     document.getElementById('blocoFid').style.display = e.target.checked ? 'block' : 'none';
   });
 
+  document.getElementById('introAtivo').addEventListener('change', e => {
+    document.getElementById('blocoIntro').style.display = e.target.checked ? 'block' : 'none';
+  });
   document.getElementById('tituloTamanho').addEventListener('input', e => {
     document.getElementById('tituloTamanhoVal').textContent = Number(e.target.value).toFixed(2);
   });
