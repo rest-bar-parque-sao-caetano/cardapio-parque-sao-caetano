@@ -112,7 +112,7 @@
     "ativo": true,
     "duracao": 7,
     "fundo": "gradiente",
-    "tamanho": 2.2,
-    "subTamanho": 1.1
+    "tamanho": 2,
+    "subTamanho": 1
   }
 }
