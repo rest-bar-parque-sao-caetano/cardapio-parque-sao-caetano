@@ -303,6 +303,11 @@
         <input type="text" id="introSubtitulo" placeholder="(vazio = usa o subtítulo do cabeçalho)">
         <label for="introBotao">Texto do botão</label>
         <input type="text" id="introBotao" placeholder="Ver menu ▸">
+        <label for="corIntro">Cor do texto (nome e subtítulo)</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <input type="color" id="corIntro" value="#ffffff">
+          <span id="corIntroVal" style="font-family:monospace; font-size:0.85rem; color:var(--castanho-suave);">#ffffff</span>
+        </div>
         <label for="introDuracao">Duração (segundos)</label>
         <input type="number" id="introDuracao" min="3" max="15" step="1" value="7" style="width:100px; padding:9px; border-radius:8px; border:1.5px solid var(--linha); font-family:inherit;">
         <label for="introFundo">Fundo da abertura</label>
@@ -639,7 +644,7 @@
     fundo: { tipo:'liso', imagem:'' },
     jogos: true,
     redes: { instagram:'', facebook:'' },
-    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }
+    intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }
   };
 
   // Pré-visualização dos layouts (cores principais para o seletor)
@@ -808,7 +813,7 @@
         config.fundo = Object.assign({ tipo:'liso', imagem:'' }, parsed.fundo || {});
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
-        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }, parsed.intro || {});
+        config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }, parsed.intro || {});
         setEstado('Definições carregadas ✓', 'ok');
       } else {
         throw new Error('HTTP ' + resp.status + ' — verifica o token.');
@@ -837,6 +842,9 @@
     document.getElementById('introFundo').value = (config.intro && config.intro.fundo) || 'foto';
     document.getElementById('introTitulo').value = (config.intro && config.intro.titulo) || '';
     document.getElementById('introSubtitulo').value = (config.intro && config.intro.subtitulo) || '';
+    const _ic = (config.intro && config.intro.cor) || '#ffffff';
+    document.getElementById('corIntro').value = _ic;
+    document.getElementById('corIntroVal').textContent = _ic;
     document.getElementById('introBotao').value = (config.intro && config.intro.botao) || '';
     document.getElementById('introReveal').value = (config.intro && config.intro.reveal) || 'slide';
     document.getElementById('introFotoAtual').textContent = (config.intro && config.intro.foto)
@@ -1230,6 +1238,7 @@
         subTamanho: parseFloat(document.getElementById('introSubTamanho').value) || 1.08,
         titulo: document.getElementById('introTitulo').value.trim(),
         subtitulo: document.getElementById('introSubtitulo').value.trim(),
+        cor: document.getElementById('corIntro').value,
         botao: document.getElementById('introBotao').value.trim(),
         reveal: document.getElementById('introReveal').value,
         foto: (config.intro && config.intro.foto) || ''
@@ -1306,6 +1315,9 @@
     document.getElementById('subtituloTamanhoVal').textContent = Number(e.target.value).toFixed(2);
   });
 
+  document.getElementById('corIntro').addEventListener('input', e => {
+    document.getElementById('corIntroVal').textContent = e.target.value;
+  });
   document.getElementById('corHeader').addEventListener('input', e => {
     document.getElementById('corHeaderVal').textContent = e.target.value;
   });
