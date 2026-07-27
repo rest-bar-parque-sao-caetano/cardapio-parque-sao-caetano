@@ -181,6 +181,13 @@
         <option value="grelha">Grelha de cartões (com emoji)</option>
       </select>
 
+      <label for="tileTamanhoSel" style="margin-top:16px;">Tamanho dos separadores</label>
+      <select id="tileTamanhoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+        <option value="normal">Normal</option>
+        <option value="pequeno">Pequeno (mais por linha)</option>
+        <option value="grande">Grande (destaque)</option>
+      </select>
+
       <label for="fonteSel" style="margin-top:16px;">Tipo de letra dos títulos</label>
       <select id="fonteSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
         <option value="auto">Automático (o do layout)</option>
@@ -193,6 +200,46 @@
         <option value="lobster">Lobster (decorativa)</option>
         <option value="pacifico">Pacifico (manuscrita)</option>
       </select>
+
+      <label for="fonteTextoSel" style="margin-top:16px;">Tipo de letra do texto (pratos)</label>
+      <select id="fonteTextoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+        <option value="auto">Automático (Nunito)</option>
+        <option value="fredoka">Fredoka (arredondada)</option>
+        <option value="poppins">Poppins (moderna)</option>
+        <option value="quicksand">Quicksand (suave)</option>
+        <option value="montserrat">Montserrat (limpa)</option>
+      </select>
+
+      <label style="margin-top:16px; display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="coresPersonalizar" style="width:auto;"> Personalizar cores (por cima do tema)
+      </label>
+      <div id="coresBox" style="display:none; gap:12px; margin-top:10px; padding:12px; border:1.5px solid var(--linha); border-radius:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:0.9rem; color:var(--castanho);">Cor principal (fundo/topo)</span>
+          <input type="color" id="corCastanho" value="#4a3820" style="width:52px; height:34px; padding:0; border:none; background:none; cursor:pointer;">
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:0.9rem; color:var(--castanho);">Cor de destaque (preços/botões)</span>
+          <input type="color" id="corDourado" value="#a8712f" style="width:52px; height:34px; padding:0; border:none; background:none; cursor:pointer;">
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span style="font-size:0.9rem; color:var(--castanho);">Cor de fundo clara</span>
+          <input type="color" id="corBege" value="#f5efe2" style="width:52px; height:34px; padding:0; border:none; background:none; cursor:pointer;">
+        </div>
+        <button type="button" id="corRepor" style="margin-top:10px; width:100%; padding:8px; border-radius:8px; border:1.5px solid var(--linha); background:var(--branco); color:var(--castanho); cursor:pointer; font-size:0.85rem;">↺ Repor cores do tema escolhido</button>
+      </div>
+
+      <label for="fundoTipoSel" style="margin-top:16px;">Fundo do cardápio</label>
+      <select id="fundoTipoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+        <option value="liso">Liso (cor clara do tema)</option>
+        <option value="gradiente">Degradê suave</option>
+        <option value="imagem">Imagem / textura</option>
+      </select>
+      <div id="fundoImagemBox" style="display:none; margin-top:10px;">
+        <div class="subtitulo">Escolhe uma imagem de fundo (fica esbatida por trás dos pratos).</div>
+        <input type="file" id="novaFotoFundo" accept="image/*" style="margin-top:8px;">
+        <div id="fundoImagemAtual" style="font-size:0.82rem; color:var(--castanho-suave); margin-top:6px;"></div>
+      </div>
     </div>
   </details>
 
@@ -586,6 +633,10 @@
     layout: '1',
     modelo: 'lista',
     fonte: 'auto',
+    fonteTexto: 'auto',
+    tileTamanho: 'normal',
+    cores: null,
+    fundo: { tipo:'liso', imagem:'' },
     jogos: true,
     redes: { instagram:'', facebook:'' },
     intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }
@@ -593,10 +644,27 @@
 
   // Pré-visualização dos layouts (cores principais para o seletor)
   const LAYOUTS_PREVIEW = {
-    '1': { nome:'Layout 1 — Rústico', cores:['#4a3820','#a8712f','#f5efe2'] },
-    '2': { nome:'Layout 2 — Verde',   cores:['#26402a','#4e8d3f','#e9f2e4'] },
-    '3': { nome:'Layout 3 — Vinho',   cores:['#3f1f24','#9c2b3b','#f3e7e2'] },
-    '4': { nome:'Layout 4 — Azul',    cores:['#1f3550','#2f6fb0','#e6eef7'] }
+    '1':  { nome:'1 — Rústico',        cores:['#4a3820','#a8712f','#f5efe2'] },
+    '2':  { nome:'2 — Verde',          cores:['#26402a','#4e8d3f','#e9f2e4'] },
+    '3':  { nome:'3 — Vinho',          cores:['#3f1f24','#9c2b3b','#f3e7e2'] },
+    '4':  { nome:'4 — Azul',           cores:['#1f3550','#2f6fb0','#e6eef7'] },
+    '5':  { nome:'5 — Preto & Dourado',cores:['#1a1a1a','#c9a227','#eceae3'] },
+    '6':  { nome:'6 — Terracota',      cores:['#7a3b1f','#d97a34','#f6e6d8'] },
+    '7':  { nome:'7 — Petróleo',       cores:['#123c3c','#1f8a86','#deeeed'] },
+    '8':  { nome:'8 — Roxo',           cores:['#3d1f4d','#8e44ad','#ede2f2'] },
+    '9':  { nome:'9 — Laranja',        cores:['#8a3d0a','#f2761b','#ffe9d1'] },
+    '10': { nome:'10 — Cinza',         cores:['#2b2f36','#546073','#ececef'] },
+    '11': { nome:'11 — Rosa',          cores:['#7a2843','#d64f7c','#f9e2ea'] },
+    '12': { nome:'12 — Azeitona',      cores:['#3a3d1c','#8a8a2e','#ecebd6'] }
+  };
+  // Cores principais de cada tema (para o botão "repor cores do tema")
+  const TEMA_CORES_BASE = {
+    '1':{castanho:'#4a3820',dourado:'#a8712f',bege:'#f5efe2'}, '2':{castanho:'#26402a',dourado:'#4e8d3f',bege:'#e9f2e4'},
+    '3':{castanho:'#3f1f24',dourado:'#9c2b3b',bege:'#f3e7e2'}, '4':{castanho:'#1f3550',dourado:'#2f6fb0',bege:'#e6eef7'},
+    '5':{castanho:'#1a1a1a',dourado:'#c9a227',bege:'#eceae3'}, '6':{castanho:'#7a3b1f',dourado:'#d97a34',bege:'#f6e6d8'},
+    '7':{castanho:'#123c3c',dourado:'#1f8a86',bege:'#deeeed'}, '8':{castanho:'#3d1f4d',dourado:'#8e44ad',bege:'#ede2f2'},
+    '9':{castanho:'#8a3d0a',dourado:'#f2761b',bege:'#ffe9d1'}, '10':{castanho:'#2b2f36',dourado:'#546073',bege:'#ececef'},
+    '11':{castanho:'#7a2843',dourado:'#d64f7c',bege:'#f9e2ea'}, '12':{castanho:'#3a3d1c',dourado:'#8a8a2e',bege:'#ecebd6'}
   };
   let layoutSelecionado = '1';
   function renderLayoutCards(){
@@ -734,6 +802,10 @@
         renderLayoutCards();
         config.modelo = parsed.modelo || 'lista';
         config.fonte = parsed.fonte || 'auto';
+        config.fonteTexto = parsed.fonteTexto || 'auto';
+        config.tileTamanho = parsed.tileTamanho || 'normal';
+        config.cores = (parsed.cores && typeof parsed.cores === 'object') ? parsed.cores : null;
+        config.fundo = Object.assign({ tipo:'liso', imagem:'' }, parsed.fundo || {});
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
         config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'' }, parsed.intro || {});
@@ -837,6 +909,21 @@
     document.getElementById('jogosAtivo').checked = config.jogos !== false;
     document.getElementById('modeloSel').value = config.modelo || 'lista';
     document.getElementById('fonteSel').value = config.fonte || 'auto';
+    document.getElementById('fonteTextoSel').value = config.fonteTexto || 'auto';
+    document.getElementById('tileTamanhoSel').value = config.tileTamanho || 'normal';
+    // Cores personalizadas
+    const temCores = !!(config.cores && typeof config.cores === 'object');
+    const baseC = TEMA_CORES_BASE[layoutSelecionado] || TEMA_CORES_BASE['1'];
+    document.getElementById('coresPersonalizar').checked = temCores;
+    document.getElementById('coresBox').style.display = temCores ? 'block' : 'none';
+    document.getElementById('corCastanho').value = (temCores && config.cores.castanho) || baseC.castanho;
+    document.getElementById('corDourado').value = (temCores && config.cores.dourado) || baseC.dourado;
+    document.getElementById('corBege').value = (temCores && config.cores.bege) || baseC.bege;
+    // Fundo
+    const fundo = config.fundo || { tipo:'liso', imagem:'' };
+    document.getElementById('fundoTipoSel').value = fundo.tipo || 'liso';
+    document.getElementById('fundoImagemBox').style.display = (fundo.tipo === 'imagem') ? 'block' : 'none';
+    document.getElementById('fundoImagemAtual').textContent = fundo.imagem ? ('Imagem atual: ' + fundo.imagem) : 'Sem imagem escolhida.';
     document.getElementById('redeInstagram').value = (config.redes && config.redes.instagram) || '';
     document.getElementById('redeFacebook').value = (config.redes && config.redes.facebook) || '';
     const fid = config.fidelidade || {};
@@ -931,6 +1018,37 @@
     filaIntro = f;
     document.getElementById('introFotoAtual').textContent = 'Nova foto escolhida: ' + f.name + ' (guarda para aplicar).';
   });
+
+  // ---- Aspeto avançado: cores, fundo ----
+  let filaFundo = null;
+  document.getElementById('novaFotoFundo').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    filaFundo = f;
+    document.getElementById('fundoImagemAtual').textContent = 'Nova imagem escolhida: ' + f.name + ' (guarda para aplicar).';
+  });
+  document.getElementById('coresPersonalizar').addEventListener('change', e => {
+    const on = e.target.checked;
+    document.getElementById('coresBox').style.display = on ? 'block' : 'none';
+    if(on){
+      // ao ligar, parte das cores do tema atualmente selecionado
+      const b = TEMA_CORES_BASE[layoutSelecionado] || TEMA_CORES_BASE['1'];
+      if(!config.cores){
+        document.getElementById('corCastanho').value = b.castanho;
+        document.getElementById('corDourado').value = b.dourado;
+        document.getElementById('corBege').value = b.bege;
+      }
+    }
+  });
+  document.getElementById('corRepor').addEventListener('click', () => {
+    const b = TEMA_CORES_BASE[layoutSelecionado] || TEMA_CORES_BASE['1'];
+    document.getElementById('corCastanho').value = b.castanho;
+    document.getElementById('corDourado').value = b.dourado;
+    document.getElementById('corBege').value = b.bege;
+  });
+  document.getElementById('fundoTipoSel').addEventListener('change', e => {
+    document.getElementById('fundoImagemBox').style.display = (e.target.value === 'imagem') ? 'block' : 'none';
+  });
   document.getElementById('novaFotoAdj').addEventListener('change', e => {
     const f = e.target.files[0];
     if(!f) return;
@@ -1007,6 +1125,13 @@
         filaIntro = null;
         document.getElementById('novaFotoIntro').value = '';
       }
+      if(filaFundo){
+        setEstado('A enviar imagem de fundo…', 'info');
+        config.fundo = config.fundo || { tipo:'imagem', imagem:'' };
+        config.fundo.imagem = await enviarFoto(filaFundo, token);
+        filaFundo = null;
+        document.getElementById('novaFotoFundo').value = '';
+      }
       filasUpload = { header:[], rodape:[], footer:[] };
       document.getElementById('novaFotoHeader').value = '';
       document.getElementById('novaFotoRodape').value = '';
@@ -1078,6 +1203,21 @@
       config.jogos = document.getElementById('jogosAtivo').checked;
       config.modelo = document.getElementById('modeloSel').value;
       config.fonte = document.getElementById('fonteSel').value;
+      config.fonteTexto = document.getElementById('fonteTextoSel').value;
+      config.tileTamanho = document.getElementById('tileTamanhoSel').value;
+      if(document.getElementById('coresPersonalizar').checked){
+        config.cores = {
+          castanho: document.getElementById('corCastanho').value,
+          dourado: document.getElementById('corDourado').value,
+          bege: document.getElementById('corBege').value
+        };
+      } else {
+        config.cores = null;
+      }
+      config.fundo = {
+        tipo: document.getElementById('fundoTipoSel').value,
+        imagem: (config.fundo && config.fundo.imagem) || ''
+      };
       config.redes = {
         instagram: document.getElementById('redeInstagram').value.trim(),
         facebook: document.getElementById('redeFacebook').value.trim()
