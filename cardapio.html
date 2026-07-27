@@ -53,6 +53,7 @@
     if(!o || o.dataset.saiu) return;
     o.dataset.saiu = '1';
     if(document.body) document.body.classList.remove('carregando');
+    if(window.__introReveal === 'zoom' && window.__zoomReveal){ window.__zoomReveal(); return; }
     if(window.__introReveal !== 'slide' && window.__fazerStripes){ window.__fazerStripes(); return; }
     o.classList.add('sair');
     setTimeout(function(){ o.style.display = 'none'; }, 600);
@@ -243,12 +244,18 @@
   body.modelo-grelha .tile-emoji{ display:block; font-size:2rem; line-height:1; }
   body.modelo-grelha .tile-label{ font-size:clamp(0.58rem, 2.7vw, 0.82rem); letter-spacing:0.2px; max-width:100%; overflow-wrap:anywhere; word-break:break-word; hyphens:auto; }
 
-  /* Tamanho dos tiles (estrutura) — afeta lista e grelha */
+  /* Tamanho dos tiles (estrutura) — afeta lista e grelha; as letras acompanham */
   body.tiles-pequeno .tile{ min-height:44px; padding:10px 14px; }
+  body.tiles-pequeno .tile-label{ font-size:0.9rem; }
   body.tiles-pequeno.modelo-grelha .categoria-grid{ grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); }
-  body.tiles-grande .tile{ min-height:70px; padding:18px 22px; font-size:1.08rem; }
+  body.tiles-pequeno.modelo-grelha .tile-emoji{ font-size:1.6rem; }
+  body.tiles-pequeno.modelo-grelha .tile-label{ font-size:clamp(0.5rem, 2.3vw, 0.72rem); }
+
+  body.tiles-grande .tile{ min-height:70px; padding:18px 22px; }
+  body.tiles-grande .tile-label{ font-size:1.3rem; }
   body.tiles-grande.modelo-grelha .categoria-grid{ grid-template-columns:repeat(auto-fill, minmax(132px, 1fr)); }
   body.tiles-grande.modelo-grelha .tile-emoji{ font-size:2.6rem; }
+  body.tiles-grande.modelo-grelha .tile-label{ font-size:clamp(0.72rem, 3.3vw, 1.02rem); }
 
   .categoria-painel{
     position:fixed; inset:0;
@@ -2263,12 +2270,14 @@
             bgImg = "url('" + RAW_BASE + fotoIntro + "')";
             document.getElementById('introBg').style.backgroundImage = bgImg;
             document.getElementById('introShade').classList.add('on');
+            window.__introFill = { tipo:'foto', foto: RAW_BASE + fotoIntro };
           } else {
             const cs = getComputedStyle(document.documentElement);
             const c1 = (cs.getPropertyValue('--castanho') || '#3a2c18').trim();
             const c2 = (cs.getPropertyValue('--dourado-escuro') || '#6b4a1f').trim();
             const c3 = (cs.getPropertyValue('--dourado') || '#a8712f').trim();
             bgImg = "linear-gradient(140deg, " + c1 + " 0%, " + c2 + " 55%, " + c3 + " 100%)";
+            window.__introFill = { tipo:'grad', c1:c1, c2:c2, c3:c3 };
           }
           window.__introReveal = intro.reveal || 'slide';
           window.__introBgImg = bgImg;
@@ -2325,6 +2334,26 @@
               setTimeout(function(){ ovv.style.display = 'none'; }, 850);
             }
           };
+          // Reveal "zoom": o nome cresce (zoom in) até encher o ecrã e a abertura dissolve-se
+          window.__zoomReveal = function(){
+            const ovv = document.getElementById('introOverlay');
+            const content = document.getElementById('introContent');
+            const nomeEl = document.getElementById('introNome');
+            const alvo = nomeEl || content;
+            // parar a animação "float" do nome para o zoom ser limpo
+            if(nomeEl){ nomeEl.style.animation = 'none'; }
+            if(alvo){
+              alvo.style.transformOrigin = 'center center';
+              alvo.style.willChange = 'transform';
+              alvo.style.transition = 'transform 1.5s cubic-bezier(.45,0,.7,.3)';
+              requestAnimationFrame(function(){ alvo.style.transform = 'scale(34)'; });
+            }
+            // dissolve de toda a abertura (fundo + nome) revelando o menu
+            ovv.style.transition = 'opacity .7s ease .8s';
+            ovv.style.opacity = '0';
+            setTimeout(function(){ ovv.style.display = 'none'; }, 1600);
+          };
+
           ov.classList.add('animar');
           const btn = document.getElementById('introBtn');
           if(btn && intro.botao && String(intro.botao).trim()) btn.textContent = intro.botao;
