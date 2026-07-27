@@ -2253,6 +2253,7 @@
           if(sEl) sEl.textContent = (intro.subtitulo && String(intro.subtitulo).trim()) ? intro.subtitulo : ((config.header && config.header.subtitulo) || '');
           if(nEl && intro.tamanho) nEl.style.fontSize = intro.tamanho + 'rem';
           if(sEl && intro.subTamanho) sEl.style.fontSize = intro.subTamanho + 'rem';
+          if(intro.cor){ if(nEl) nEl.style.color = intro.cor; if(sEl) sEl.style.color = intro.cor; }
           const fotos = (config.header && config.header.fotos) || [];
           const fotoIntro = (intro.foto && String(intro.foto).trim()) ? intro.foto
             : ((config.header && config.header.fotosAtivas !== false && fotos.length) ? fotos[0] : null);
