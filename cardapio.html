@@ -9,7 +9,7 @@
   /* ===== Ecrã de abertura / cortina de carregamento ===== */
   /* Enquanto carrega, esconde tudo menos o ecrã de abertura (evita flash da barra fixa/cabeçalho ao abrir a app) */
   body.carregando > *:not(#introOverlay){ visibility:hidden !important; }
-  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:hidden; background:#1f2530; }
+  #introOverlay{ position:fixed; inset:0; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; overflow:hidden; background:var(--intro-bg,#1f2530); }
   #introOverlay.animar{ background:linear-gradient(140deg, var(--castanho,#3a2c18) 0%, var(--dourado-escuro,#6b4a1f) 55%, var(--dourado,#a8712f) 100%); background-size:200% 200%; animation:introGrad 9s ease infinite; }
   @keyframes introGrad{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
   #introOverlay.sair{ transform:translateY(-100%); transition:transform .55s cubic-bezier(.7,0,.25,1); pointer-events:none; }
@@ -39,6 +39,15 @@
   // A cortina de abertura cobre o ecrã enquanto os dados carregam (evita o flash de conteúdo).
   // Se o "ecrã de abertura" estiver ligado, vira uma animação com o nome; senão, some assim que carrega.
   window.__introAtiva = false; window.__introReveal = 'slide'; window.__menuOk = false; window.__cfgOk = false;
+  // Pintar o ecrã de carregamento com a cor do tema deste restaurante (guardada da última visita),
+  // para não mostrar o neutro azul num restaurante de outra cor.
+  try{
+    var _tc = localStorage.getItem('temaCor');
+    if(_tc){
+      document.documentElement.style.setProperty('--intro-bg', _tc);
+      var _m = document.querySelector('meta[name=theme-color]'); if(_m) _m.content = _tc;
+    }
+  }catch(e){}
   window.__esconderIntro = function(){
     var o = document.getElementById('introOverlay');
     if(!o || o.dataset.saiu) return;
@@ -81,7 +90,7 @@
     min-height:100vh;
     padding-bottom:calc(112px + env(safe-area-inset-bottom));
   }
-  html{ background:#1f2530; }
+  html{ background:var(--intro-bg,#1f2530); }
   header{
     position:relative; z-index:50;
     background:var(--castanho);
@@ -233,6 +242,13 @@
   body.modelo-grelha .tile{ flex-direction:column; aspect-ratio:1 / 1; min-height:0; gap:6px; padding:10px 6px; overflow:hidden; }
   body.modelo-grelha .tile-emoji{ display:block; font-size:2rem; line-height:1; }
   body.modelo-grelha .tile-label{ font-size:clamp(0.58rem, 2.7vw, 0.82rem); letter-spacing:0.2px; max-width:100%; overflow-wrap:anywhere; word-break:break-word; hyphens:auto; }
+
+  /* Tamanho dos tiles (estrutura) — afeta lista e grelha */
+  body.tiles-pequeno .tile{ min-height:44px; padding:10px 14px; }
+  body.tiles-pequeno.modelo-grelha .categoria-grid{ grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); }
+  body.tiles-grande .tile{ min-height:70px; padding:18px 22px; font-size:1.08rem; }
+  body.tiles-grande.modelo-grelha .categoria-grid{ grid-template-columns:repeat(auto-fill, minmax(132px, 1fr)); }
+  body.tiles-grande.modelo-grelha .tile-emoji{ font-size:2.6rem; }
 
   .categoria-painel{
     position:fixed; inset:0;
@@ -2043,15 +2059,74 @@
       '--branco':'#ffffff','--bege-claro':'#f5f8fc','--bege':'#e6eef7','--linha':'#d0deee','--linha-suave':'#e3ecf7',
       '--castanho':'#1f3550','--castanho-suave':'#5a708c','--castanho-claro':'#97a9be','--dourado':'#2f6fb0','--dourado-escuro':'#245688',
       '--fonte-titulo':"'Quicksand', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '5': { // Layout 5 — Preto & dourado (elegante)
+      '--branco':'#ffffff','--bege-claro':'#f7f5f0','--bege':'#eceae3','--linha':'#dcd8cc','--linha-suave':'#e8e5db',
+      '--castanho':'#1a1a1a','--castanho-suave':'#5a5750','--castanho-claro':'#9a968c','--dourado':'#c9a227','--dourado-escuro':'#a8851b',
+      '--fonte-titulo':"'Playfair Display', serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '6': { // Layout 6 — Terracota / mediterrâneo
+      '--branco':'#ffffff','--bege-claro':'#fdf6f0','--bege':'#f6e6d8','--linha':'#e8cdb8','--linha-suave':'#f0dccb',
+      '--castanho':'#7a3b1f','--castanho-suave':'#a9755a','--castanho-claro':'#cba992','--dourado':'#d97a34','--dourado-escuro':'#b45f22',
+      '--fonte-titulo':"'Poppins', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '7': { // Layout 7 — Petróleo / teal
+      '--branco':'#ffffff','--bege-claro':'#f2f8f8','--bege':'#deeeed','--linha':'#c3dddb','--linha-suave':'#d8e9e8',
+      '--castanho':'#123c3c','--castanho-suave':'#4f7d7c','--castanho-claro':'#93b6b5','--dourado':'#1f8a86','--dourado-escuro':'#166b68',
+      '--fonte-titulo':"'Quicksand', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '8': { // Layout 8 — Roxo / ameixa
+      '--branco':'#ffffff','--bege-claro':'#f9f5fb','--bege':'#ede2f2','--linha':'#dcc9e6','--linha-suave':'#e8dcf0',
+      '--castanho':'#3d1f4d','--castanho-suave':'#75587f','--castanho-claro':'#a996b0','--dourado':'#8e44ad','--dourado-escuro':'#6f2f8a',
+      '--fonte-titulo':"'Poppins', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '9': { // Layout 9 — Laranja vivo (fast food)
+      '--branco':'#ffffff','--bege-claro':'#fff8f0','--bege':'#ffe9d1','--linha':'#ffd3ab','--linha-suave':'#ffe1c4',
+      '--castanho':'#8a3d0a','--castanho-suave':'#b57a4a','--castanho-claro':'#d8b18e','--dourado':'#f2761b','--dourado-escuro':'#cf5e0c',
+      '--fonte-titulo':"'Fredoka', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '10': { // Layout 10 — Cinza moderno / minimal
+      '--branco':'#ffffff','--bege-claro':'#f7f7f8','--bege':'#ececef','--linha':'#dadade','--linha-suave':'#e7e7ea',
+      '--castanho':'#2b2f36','--castanho-suave':'#616772','--castanho-claro':'#9aa0aa','--dourado':'#546073','--dourado-escuro':'#3e4756',
+      '--fonte-titulo':"'Montserrat', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '11': { // Layout 11 — Rosa / pastelaria
+      '--branco':'#ffffff','--bege-claro':'#fdf4f7','--bege':'#f9e2ea','--linha':'#f0c8d6','--linha-suave':'#f6dae4',
+      '--castanho':'#7a2843','--castanho-suave':'#a86277','--castanho-claro':'#cfa0ae','--dourado':'#d64f7c','--dourado-escuro':'#b53963',
+      '--fonte-titulo':"'Pacifico', cursive",'--fonte-texto':"'Nunito', sans-serif"
+    },
+    '12': { // Layout 12 — Verde-azeitona / bistrô
+      '--branco':'#ffffff','--bege-claro':'#f8f8f0','--bege':'#ecebd6','--linha':'#d7d6b6','--linha-suave':'#e5e3c9',
+      '--castanho':'#3a3d1c','--castanho-suave':'#71744e','--castanho-claro':'#a6a882','--dourado':'#8a8a2e','--dourado-escuro':'#6c6c22',
+      '--fonte-titulo':"'Bebas Neue', sans-serif",'--fonte-texto':"'Nunito', sans-serif"
     }
   };
-  function aplicarTema(nome){
-    const t = TEMAS[String(nome)] || TEMAS['1'];
+  // Clareia (pct>0) ou escurece (pct<0) uma cor hex — usado para derivar tons das cores personalizadas
+  function _shade(hex, pct){
+    try{
+      hex = String(hex).replace('#','').trim();
+      if(hex.length === 3) hex = hex.split('').map(c=>c+c).join('');
+      let r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16);
+      const t = pct < 0 ? 0 : 255; const p = Math.abs(pct)/100;
+      r = Math.round((t-r)*p)+r; g = Math.round((t-g)*p)+g; b = Math.round((t-b)*p)+b;
+      return '#' + [r,g,b].map(x=>('0'+Math.max(0,Math.min(255,x)).toString(16)).slice(-2)).join('');
+    }catch(e){ return hex; }
+  }
+  function aplicarTema(nome, cores){
+    const t = Object.assign({}, TEMAS[String(nome)] || TEMAS['1']);
+    // Cores personalizadas: só as 3 principais; os tons restantes são derivados automaticamente
+    if(cores && typeof cores === 'object'){
+      if(cores.castanho){ t['--castanho']=cores.castanho; t['--castanho-suave']=_shade(cores.castanho,32); t['--castanho-claro']=_shade(cores.castanho,58); t['--intro-bg']=cores.castanho; }
+      if(cores.dourado){ t['--dourado']=cores.dourado; t['--dourado-escuro']=_shade(cores.dourado,-18); }
+      if(cores.bege){ t['--bege']=cores.bege; t['--bege-claro']=_shade(cores.bege,45); t['--linha']=_shade(cores.bege,-12); t['--linha-suave']=_shade(cores.bege,-4); }
+    }
     const r = document.documentElement;
-    Object.keys(t).forEach(k => r.style.setProperty(k, t[k]));
+    Object.keys(t).forEach(k => { if(k.indexOf('--')===0) r.style.setProperty(k, t[k]); });
     r.style.backgroundColor = t['--castanho'];
+    r.style.setProperty('--intro-bg', t['--castanho']);
     const meta = document.querySelector('meta[name=theme-color]');
     if(meta) meta.content = t['--castanho'];
+    try{ localStorage.setItem('temaCor', t['--castanho']); }catch(e){}
   }
 
   // Tipo de letra dos títulos, escolhido à parte (sobrepõe-se ao do layout)
@@ -2091,9 +2166,28 @@
       const config = await resp.json();
       if(!config) return;
 
-      aplicarTema(config.layout || '1');
+      aplicarTema(config.layout || '1', config.cores);
       if(config.fonte && config.fonte !== 'auto') aplicarFonte(config.fonte);
+      if(config.fonteTexto && FONTES_TITULO[config.fonteTexto]) document.documentElement.style.setProperty('--fonte-texto', FONTES_TITULO[config.fonteTexto]);
       document.body.classList.toggle('modelo-grelha', (config.modelo || 'lista') === 'grelha');
+      // Tamanho dos tiles (estrutura)
+      document.body.classList.remove('tiles-pequeno','tiles-grande');
+      if(config.tileTamanho === 'pequeno') document.body.classList.add('tiles-pequeno');
+      else if(config.tileTamanho === 'grande') document.body.classList.add('tiles-grande');
+      // Fundo do cardápio (liso / gradiente / imagem)
+      if(config.fundo && config.fundo.tipo){
+        const cs = getComputedStyle(document.documentElement);
+        const bgClaro = (cs.getPropertyValue('--bege-claro')||'#fbf8f2').trim();
+        const bg = (cs.getPropertyValue('--bege')||'#f5efe2').trim();
+        if(config.fundo.tipo === 'gradiente'){
+          document.body.style.background = 'linear-gradient(180deg, ' + bgClaro + ' 0%, ' + bg + ' 100%)';
+          document.body.style.backgroundAttachment = 'fixed';
+        } else if(config.fundo.tipo === 'imagem' && config.fundo.imagem){
+          document.body.style.background = "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('" + RAW_BASE + config.fundo.imagem + "') center/cover fixed";
+        } else {
+          document.body.style.background = bgClaro;
+        }
+      }
       window._jogosAtivos = config.jogos !== false;
       if(window.aplicarJogos) window.aplicarJogos(window._jogosAtivos);
 
