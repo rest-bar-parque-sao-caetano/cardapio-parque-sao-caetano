@@ -323,7 +323,13 @@
           <option value="slide">Slide — desliza para cima</option>
           <option value="cortina">Cortina — abre ao meio</option>
           <option value="stripes">Tiras verticais</option>
+          <option value="zoom">Zoom no nome + dissolve</option>
         </select>
+        <div id="zoomLetraBox" style="display:none; margin-top:10px;">
+          <label>Letra por onde fura</label>
+          <div class="ajuda" style="margin-top:2px;">Clica na letra onde o zoom vai entrar para revelar o menu.</div>
+          <div id="zoomLetraChips" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"></div>
+        </div>
         <label style="margin-top:14px;">Tamanho do nome</label>
         <div style="display:flex; align-items:center; gap:10px;">
           <input type="range" id="introTamanho" min="1.6" max="4.5" step="0.1" value="2.7" style="flex:1;">
@@ -847,6 +853,8 @@
     document.getElementById('corIntroVal').textContent = _ic;
     document.getElementById('introBotao').value = (config.intro && config.intro.botao) || '';
     document.getElementById('introReveal').value = (config.intro && config.intro.reveal) || 'slide';
+    zoomLetraSel = (config.intro && typeof config.intro.zoomLetra === 'number') ? config.intro.zoomLetra : null;
+    renderZoomChips();
     document.getElementById('introFotoAtual').textContent = (config.intro && config.intro.foto)
       ? ('Tem foto própria: ' + config.intro.foto)
       : 'Sem foto própria — usa a do cabeçalho.';
@@ -1241,6 +1249,7 @@
         cor: document.getElementById('corIntro').value,
         botao: document.getElementById('introBotao').value.trim(),
         reveal: document.getElementById('introReveal').value,
+        zoomLetra: (zoomLetraSel === null ? undefined : zoomLetraSel),
         foto: (config.intro && config.intro.foto) || ''
       };
       config.fidelidade = {
@@ -1318,6 +1327,35 @@
   document.getElementById('corIntro').addEventListener('input', e => {
     document.getElementById('corIntroVal').textContent = e.target.value;
   });
+
+  // ---- Escolher a letra por onde o efeito "zoom" fura ----
+  let zoomLetraSel = null; // null = automático (letra do meio)
+  function nomeEfetivoIntro(){
+    const it = (document.getElementById('introTitulo').value || '').trim();
+    if(it) return it;
+    return (document.getElementById('titulo').value || '').trim();
+  }
+  function renderZoomChips(){
+    const box = document.getElementById('zoomLetraBox');
+    const cont = document.getElementById('zoomLetraChips');
+    box.style.display = 'none';
+    return;
+    const nome = nomeEfetivoIntro();
+    cont.innerHTML = '';
+    if(!nome){ cont.innerHTML = '<span class="ajuda">Escreve primeiro o título da abertura ou o nome no cabeçalho.</span>'; return; }
+    for(let i = 0; i < nome.length; i++){
+      const ch = nome[i];
+      if(ch === ' '){ const g = document.createElement('span'); g.style.width = '8px'; cont.appendChild(g); continue; }
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = ch;
+      const ativo = (zoomLetraSel === i);
+      b.style.cssText = 'min-width:32px; height:36px; padding:0 6px; border-radius:8px; cursor:pointer; font-weight:700; font-size:1rem; border:1.5px solid ' + (ativo ? 'var(--dourado)' : 'var(--linha)') + '; background:' + (ativo ? 'var(--dourado)' : 'var(--branco)') + '; color:' + (ativo ? '#fff' : 'var(--castanho)') + ';';
+      b.addEventListener('click', () => { zoomLetraSel = i; renderZoomChips(); });
+      cont.appendChild(b);
+    }
+  }
+  document.getElementById('introReveal').addEventListener('change', renderZoomChips);
+  document.getElementById('introTitulo').addEventListener('input', () => { if(document.getElementById('introReveal').value === 'zoom') renderZoomChips(); });
   document.getElementById('corHeader').addEventListener('input', e => {
     document.getElementById('corHeaderVal').textContent = e.target.value;
   });
