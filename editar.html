@@ -181,6 +181,12 @@
         <option value="grelha">Grelha de cartões (com emoji)</option>
       </select>
 
+      <label for="abrirEfeitoSel" style="margin-top:16px;">Efeito ao abrir os separadores</label>
+      <select id="abrirEfeitoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+        <option value="zoom">Normal (zoom)</option>
+        <option value="flip">Flip 3D — a secção vira ao abrir</option>
+      </select>
+
       <label for="tileTamanhoSel" style="margin-top:16px;">Tamanho dos separadores</label>
       <select id="tileTamanhoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
         <option value="normal">Normal</option>
@@ -643,6 +649,7 @@
     fidelidade: { ativo:false, codigo:'', total:8, premio:'' },
     layout: '1',
     modelo: 'lista',
+    abrirEfeito: 'zoom',
     fonte: 'auto',
     fonteTexto: 'auto',
     tileTamanho: 'normal',
@@ -812,6 +819,7 @@
         layoutSelecionado = config.layout;
         renderLayoutCards();
         config.modelo = parsed.modelo || 'lista';
+        config.abrirEfeito = parsed.abrirEfeito || 'zoom';
         config.fonte = parsed.fonte || 'auto';
         config.fonteTexto = parsed.fonteTexto || 'auto';
         config.tileTamanho = parsed.tileTamanho || 'normal';
@@ -924,6 +932,7 @@
     document.getElementById('sazonalAtivo').checked = config.sazonal !== false;
     document.getElementById('jogosAtivo').checked = config.jogos !== false;
     document.getElementById('modeloSel').value = config.modelo || 'lista';
+    document.getElementById('abrirEfeitoSel').value = config.abrirEfeito || 'zoom';
     document.getElementById('fonteSel').value = config.fonte || 'auto';
     document.getElementById('fonteTextoSel').value = config.fonteTexto || 'auto';
     document.getElementById('tileTamanhoSel').value = config.tileTamanho || 'normal';
@@ -1218,6 +1227,7 @@
       config.sazonal = document.getElementById('sazonalAtivo').checked;
       config.jogos = document.getElementById('jogosAtivo').checked;
       config.modelo = document.getElementById('modeloSel').value;
+      config.abrirEfeito = document.getElementById('abrirEfeitoSel').value;
       config.fonte = document.getElementById('fonteSel').value;
       config.fonteTexto = document.getElementById('fonteTextoSel').value;
       config.tileTamanho = document.getElementById('tileTamanhoSel').value;
