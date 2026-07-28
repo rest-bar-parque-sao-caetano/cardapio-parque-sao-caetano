@@ -1960,6 +1960,8 @@
     if (grupo) grupo.open = true;
 
     painelConteudo.scrollTop = 0;
+    // Esconder a barra fixa e botões flutuantes enquanto a secção está aberta (evita que apareçam durante o flip)
+    ['.info-fixa', '#linkFidelidade'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.visibility = 'hidden'; });
     requestAnimationFrame(() => painel.classList.add('aberto'));
   }
 
@@ -1967,6 +1969,8 @@
     document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
     painel.classList.remove('aberto');
     painel.addEventListener('transitionend', _restaurarPendente);
+    // Repor a barra fixa e botões só depois de a secção fechar (para não aparecerem durante o flip de saída)
+    setTimeout(function(){ ['.info-fixa', '#linkFidelidade'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.visibility = ''; }); }, 520);
   }
 
   document.getElementById('categoriaGrid').addEventListener('click', (e) => {
