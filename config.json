@@ -11,7 +11,7 @@
     ],
     "tituloTamanho": 1.7,
     "subtituloTamanho": 0.82,
-    "encolher": true
+    "encolher": false
   },
   "rodape": {
     "linha1": "Contamos contigo!",
