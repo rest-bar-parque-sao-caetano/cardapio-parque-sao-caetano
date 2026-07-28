@@ -1967,8 +1967,9 @@
     if (grupo) grupo.open = true;
 
     painelConteudo.scrollTop = 0;
-    // Barra fixa e botões flutuantes saem em slide para baixo enquanto a secção está aberta
+    // Barra fixa, cabeçalho e botões saem em slide enquanto a secção está aberta (não aparecem durante o flip)
     const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = 'translateY(130%)';
+    const _hd = document.querySelector('header'); if(_hd){ _hd.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _hd.style.transform = 'translateY(-110%)'; }
     const _fid = document.querySelector('#linkFidelidade'); if(_fid){ _fid.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _fid.style.transform = 'translateY(160%)'; }
     requestAnimationFrame(() => painel.classList.add('aberto'));
   }
@@ -1977,8 +1978,9 @@
     document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
     painel.classList.remove('aberto');
     painel.addEventListener('transitionend', _restaurarPendente);
-    // Barra fixa e botões voltam em slide para cima ao fechar
+    // Barra fixa, cabeçalho e botões voltam em slide ao fechar
     const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = '';
+    const _hd = document.querySelector('header'); if(_hd) _hd.style.transform = '';
     const _fid = document.querySelector('#linkFidelidade'); if(_fid) _fid.style.transform = '';
   }
 
