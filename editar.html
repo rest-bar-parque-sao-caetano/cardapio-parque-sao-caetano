@@ -289,7 +289,7 @@
 
       <div class="lembrar" style="margin-top:16px;">
         <input type="checkbox" id="headerEncolher">
-        <label for="headerEncolher" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Cabeçalho fixo que encolhe ao fazer scroll</label>
+        <label for="headerEncolher" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Cabeçalho fixo no topo (o menu passa por baixo)</label>
       </div>
 
       <label>Fotos do cabeçalho (rodam automaticamente)</label>
@@ -640,7 +640,7 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, encolher:false },
+    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
       especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' },
       carrossel:{ ativo:false, intervalo:5, inicio:'', fim:'', slides:[
@@ -806,7 +806,7 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, encolher:false }, parsed.header || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false }, parsed.header || {});
         config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
         config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
         const carDef = { ativo:false, slides:[
@@ -891,7 +891,7 @@
     document.getElementById('corRodape').value = cr;
     document.getElementById('corRodapeVal').textContent = cr;
     document.getElementById('realceHeader').checked = config.header.realce !== false;
-    document.getElementById('headerEncolher').checked = config.header.encolher === true;
+    document.getElementById('headerEncolher').checked = (config.header.fixo === true) || (config.header.encolher === true);
     document.getElementById('realceRodape').checked = config.rodape.realce !== false;
     const esp = config.rodape.especial || {};
     document.getElementById('especialAtivo').checked = !!esp.ativo;
@@ -1183,7 +1183,8 @@
       config.header.cor = document.getElementById('corHeader').value;
       config.rodape.cor = document.getElementById('corRodape').value;
       config.header.realce = document.getElementById('realceHeader').checked;
-      config.header.encolher = document.getElementById('headerEncolher').checked;
+      config.header.fixo = document.getElementById('headerEncolher').checked;
+      delete config.header.encolher;
       config.rodape.realce = document.getElementById('realceRodape').checked;
       config.rodape.especial = {
         ativo: document.getElementById('especialAtivo').checked,
