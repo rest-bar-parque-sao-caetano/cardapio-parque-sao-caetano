@@ -1970,7 +1970,7 @@
     // Barra fixa, cabeçalho e botões saem em slide enquanto a secção está aberta (não aparecem durante o flip)
     const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = 'translateY(130%)';
     const _hd = document.querySelector('header'); if(_hd){ _hd.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _hd.style.transform = 'translateY(-110%)'; }
-    const _fid = document.querySelector('#linkFidelidade'); if(_fid){ _fid.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _fid.style.transform = 'translateY(160%)'; }
+    ['#linkFidelidade', '#cartBtn'].forEach(function(s){ const el = document.querySelector(s); if(el){ el.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; el.style.transform = 'translateY(180%)'; } });
     requestAnimationFrame(() => painel.classList.add('aberto'));
   }
 
@@ -1981,7 +1981,7 @@
     // Barra fixa, cabeçalho e botões voltam em slide ao fechar
     const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = '';
     const _hd = document.querySelector('header'); if(_hd) _hd.style.transform = '';
-    const _fid = document.querySelector('#linkFidelidade'); if(_fid) _fid.style.transform = '';
+    ['#linkFidelidade', '#cartBtn'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.transform = ''; });
   }
 
   document.getElementById('categoriaGrid').addEventListener('click', (e) => {
