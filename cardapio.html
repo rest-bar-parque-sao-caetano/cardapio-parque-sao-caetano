@@ -99,30 +99,25 @@
     padding:calc(16px + env(safe-area-inset-top)) 16px 14px;
     border-bottom:1px solid var(--castanho);
     text-align:center;
-    transition:padding .3s ease, box-shadow .3s ease;
+    transition:box-shadow .25s ease;
+    will-change:padding;
   }
   body.cabecalho-fixo header{ position:sticky; top:0; }
-  header.compacto{ padding-top:calc(7px + env(safe-area-inset-top)); padding-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.18); }
   header .brand-mark{
     font-family:var(--fonte-titulo);
     color:var(--branco);
     font-size:1.7rem;
     font-weight:600;
     letter-spacing:0.3px;
-    transform-origin:center;
-    transition:transform .3s ease;
+    transform-origin:center top;
   }
-  header.compacto .brand-mark{ transform:scale(0.78); }
   header .brand-sub{
     color:var(--bege-claro);
     font-size:0.82rem;
     font-style:italic;
     margin-top:3px;
-    transition:opacity .25s ease, max-height .3s ease, margin .3s ease;
-    max-height:5rem; opacity:1;
+    overflow:hidden;
   }
-  header.compacto .brand-sub{ opacity:0; max-height:0; margin-top:0; overflow:hidden; }
-  header.compacto .header-icons{ margin-top:6px; }
   .header-icons{
     display:flex; justify-content:space-between; align-items:center;
     margin-top:10px;
@@ -1904,20 +1899,35 @@
       t.addEventListener('pointercancel', repor);
     });
   };
-  // Cabeçalho encolhe ao fazer scroll (fixo no topo)
+  // Cabeçalho fixo que encolhe de forma contínua ao fazer scroll (acompanha o dedo, sem saltos)
   (function(){
     const hdr = document.querySelector('header');
     if(!hdr) return;
+    const mark = hdr.querySelector('.brand-mark');
+    const sub = hdr.querySelector('.brand-sub');
     let tick = false;
-    window.addEventListener('scroll', function(){
-      if(tick) return; tick = true;
-      requestAnimationFrame(function(){
-        if(!document.body.classList.contains('cabecalho-fixo')){ hdr.classList.remove('compacto'); tick = false; return; }
-        const y = window.scrollY || 0;
-        hdr.classList.toggle('compacto', y > 48);
-        tick = false;
-      });
-    }, { passive:true });
+    function atualizar(){
+      tick = false;
+      if(!document.body.classList.contains('cabecalho-fixo')){
+        hdr.style.padding = ''; hdr.style.boxShadow = '';
+        if(mark) mark.style.transform = '';
+        if(sub){ sub.style.opacity = ''; sub.style.maxHeight = ''; sub.style.marginTop = ''; }
+        return;
+      }
+      const y = window.scrollY || 0;
+      const t = Math.max(0, Math.min(1, y / 70));   // 0 = topo, 1 = totalmente compacto
+      hdr.style.paddingTop = 'calc(' + (16 - t*9).toFixed(1) + 'px + env(safe-area-inset-top))';
+      hdr.style.paddingBottom = (14 - t*6).toFixed(1) + 'px';
+      hdr.style.boxShadow = t > 0.03 ? '0 4px 14px rgba(0,0,0,0.18)' : 'none';
+      if(mark) mark.style.transform = 'scale(' + (1 - t*0.22).toFixed(3) + ')';
+      if(sub){
+        sub.style.opacity = Math.max(0, 1 - t*1.7).toFixed(2);
+        sub.style.maxHeight = (Math.max(0, 1 - t*1.4) * 3).toFixed(2) + 'rem';
+        sub.style.marginTop = (3 - t*3).toFixed(1) + 'px';
+      }
+    }
+    window.addEventListener('scroll', function(){ if(tick) return; tick = true; requestAnimationFrame(atualizar); }, { passive:true });
+    atualizar();
   })();
   fetch('menu.json?t=' + Date.now())
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
