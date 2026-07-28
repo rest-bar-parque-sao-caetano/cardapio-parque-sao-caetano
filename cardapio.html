@@ -53,6 +53,7 @@
     if(!o || o.dataset.saiu) return;
     o.dataset.saiu = '1';
     if(document.body) document.body.classList.remove('carregando');
+    setTimeout(function(){ if(window.__animarEntrada) window.__animarEntrada(); }, 140);
     if(window.__introReveal === 'zoom' && window.__zoomReveal){ window.__zoomReveal(); return; }
     if(window.__introReveal !== 'slide' && window.__fazerStripes){ window.__fazerStripes(); return; }
     o.classList.add('sair');
@@ -98,20 +99,30 @@
     padding:calc(16px + env(safe-area-inset-top)) 16px 14px;
     border-bottom:1px solid var(--castanho);
     text-align:center;
+    transition:padding .3s ease, box-shadow .3s ease;
   }
+  body.cabecalho-fixo header{ position:sticky; top:0; }
+  header.compacto{ padding-top:calc(7px + env(safe-area-inset-top)); padding-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.18); }
   header .brand-mark{
     font-family:var(--fonte-titulo);
     color:var(--branco);
     font-size:1.7rem;
     font-weight:600;
     letter-spacing:0.3px;
+    transform-origin:center;
+    transition:transform .3s ease;
   }
+  header.compacto .brand-mark{ transform:scale(0.78); }
   header .brand-sub{
     color:var(--bege-claro);
     font-size:0.82rem;
     font-style:italic;
     margin-top:3px;
+    transition:opacity .25s ease, max-height .3s ease, margin .3s ease;
+    max-height:5rem; opacity:1;
   }
+  header.compacto .brand-sub{ opacity:0; max-height:0; margin-top:0; overflow:hidden; }
+  header.compacto .header-icons{ margin-top:6px; }
   .header-icons{
     display:flex; justify-content:space-between; align-items:center;
     margin-top:10px;
@@ -256,6 +267,11 @@
   body.tiles-grande.modelo-grelha .categoria-grid{ grid-template-columns:repeat(auto-fill, minmax(132px, 1fr)); }
   body.tiles-grande.modelo-grelha .tile-emoji{ font-size:2.6rem; }
   body.tiles-grande.modelo-grelha .tile-label{ font-size:clamp(0.72rem, 3.3vw, 1.02rem); }
+
+  /* Entrada em cascata dos separadores */
+  @keyframes tileEntrar{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+  .tile.tile-espera{ opacity:0; }
+  .tile.tile-entra{ animation:tileEntrar .5s cubic-bezier(.2,.7,.3,1) both; }
 
   .categoria-painel{
     position:fixed; inset:0;
@@ -1816,7 +1832,7 @@
     main.querySelectorAll(':scope > section.categoria').forEach(s => { if(s.id !== 'jogos') s.remove(); });
     menu.categorias.forEach(cat => {
       const btn = document.createElement('button');
-      btn.className = 'tile'; btn.type = 'button';
+      btn.className = 'tile tile-espera'; btn.type = 'button';
       btn.setAttribute('data-target', cat.id);
       const emoji = document.createElement('span'); emoji.className='tile-emoji'; emoji.textContent = cat.emoji || '';
       const label = document.createElement('span'); label.className='tile-label'; _mLang(label, cat.tile);
@@ -1846,7 +1862,7 @@
     });
     // Separador dos Jogos (a secção #jogos é fixa, não vem do menu.json)
     if(jogosSec){
-      const jt=document.createElement('button'); jt.className='tile'; jt.type='button'; jt.setAttribute('data-target','jogos');
+      const jt=document.createElement('button'); jt.className='tile tile-espera'; jt.type='button'; jt.setAttribute('data-target','jogos');
       const je=document.createElement('span'); je.className='tile-emoji'; je.textContent='🎮';
       const jl=document.createElement('span'); jl.className='tile-label'; jl.setAttribute('data-en','Games'); jl.setAttribute('data-fr','Jeux'); jl.setAttribute('data-es','Juegos'); jl.textContent='Jogos';
       jt.appendChild(je); jt.appendChild(jl); grid.appendChild(jt);
@@ -1855,9 +1871,23 @@
     aplicarIdioma(idiomaAtual);
     if(window.montarBotoesLista) window.montarBotoesLista();
     if(window.ligarTilt) window.ligarTilt();
+    // Se o menu já está visível (intro fechada), corre já a cascata; senão corre ao revelar
+    if(!document.body.classList.contains('carregando') && window.__animarEntrada) setTimeout(window.__animarEntrada, 60);
     window.__menuOk = true; window.__tryReveal();
   }
 
+  // Entrada em cascata dos separadores (corre quando o menu fica visível)
+  window.__animarEntrada = function(){
+    if(window.__entradaFeita) return;
+    const tiles = document.querySelectorAll('#categoriaGrid .tile.tile-espera');
+    if(!tiles.length) return; // ainda não há separadores; tenta mais tarde
+    window.__entradaFeita = true;
+    tiles.forEach(function(t, i){
+      t.style.animationDelay = (i * 0.055) + 's';
+      t.classList.remove('tile-espera');
+      t.classList.add('tile-entra');
+    });
+  };
   // Inclinação 3D dos separadores (só no rato — no telemóvel não interferir com o toque/scroll)
   window.ligarTilt = function(){
     document.querySelectorAll('.tile').forEach(function(t){
@@ -1874,17 +1904,17 @@
       t.addEventListener('pointercancel', repor);
     });
   };
-  // Parallax subtil do cabeçalho ao fazer scroll
+  // Cabeçalho encolhe ao fazer scroll (fixo no topo)
   (function(){
+    const hdr = document.querySelector('header');
+    if(!hdr) return;
     let tick = false;
     window.addEventListener('scroll', function(){
       if(tick) return; tick = true;
       requestAnimationFrame(function(){
+        if(!document.body.classList.contains('cabecalho-fixo')){ hdr.classList.remove('compacto'); tick = false; return; }
         const y = window.scrollY || 0;
-        const hf = document.querySelector('#headerFotos');
-        if(hf) hf.style.transform = 'translateY(' + (y*0.35) + 'px) scale(1.05)';
-        const brand = document.querySelector('header .brand');
-        if(brand) brand.style.transform = 'translateY(' + (y*0.12) + 'px)';
+        hdr.classList.toggle('compacto', y > 48);
         tick = false;
       });
     }, { passive:true });
@@ -2220,6 +2250,7 @@
       if(config.fonteTexto && FONTES_TITULO[config.fonteTexto]) document.documentElement.style.setProperty('--fonte-texto', FONTES_TITULO[config.fonteTexto]);
       document.body.classList.toggle('modelo-grelha', (config.modelo || 'lista') === 'grelha');
       document.body.classList.toggle('abrir-flip', config.abrirEfeito === 'flip');
+      document.body.classList.toggle('cabecalho-fixo', !!(config.header && config.header.encolher));
       // Tamanho dos tiles (estrutura)
       document.body.classList.remove('tiles-pequeno','tiles-grande');
       if(config.tileTamanho === 'pequeno') document.body.classList.add('tiles-pequeno');
