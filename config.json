@@ -10,7 +10,8 @@
       "imagens/1784242166674-img-1577.jpg"
     ],
     "tituloTamanho": 1.7,
-    "subtituloTamanho": 0.82
+    "subtituloTamanho": 0.82,
+    "encolher": true
   },
   "rodape": {
     "linha1": "Contamos contigo!",
@@ -102,7 +103,15 @@
   },
   "layout": "1",
   "modelo": "lista",
+  "abrirEfeito": "zoom",
   "fonte": "montserrat",
+  "fonteTexto": "auto",
+  "tileTamanho": "normal",
+  "cores": null,
+  "fundo": {
+    "tipo": "liso",
+    "imagem": ""
+  },
   "jogos": true,
   "redes": {
     "instagram": "https://www.instagram.com/restbarparquedesaocaetano/",
@@ -116,6 +125,9 @@
     "subTamanho": 1,
     "titulo": "",
     "subtitulo": "",
-    "botao": ""
+    "cor": "#ffffff",
+    "botao": "",
+    "reveal": "slide",
+    "foto": ""
   }
 }
