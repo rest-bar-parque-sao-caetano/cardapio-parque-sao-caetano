@@ -653,7 +653,7 @@
     padding:4px 14px calc(10px + env(safe-area-inset-bottom));
     min-height:76px;
     opacity:0;
-    transition:opacity .3s ease;
+    transition:opacity .3s ease, transform .42s cubic-bezier(.22,.8,.25,1);
   }
   .info-fixa-fotos{
     position:absolute;
@@ -1960,8 +1960,9 @@
     if (grupo) grupo.open = true;
 
     painelConteudo.scrollTop = 0;
-    // Esconder a barra fixa e botões flutuantes enquanto a secção está aberta (evita que apareçam durante o flip)
-    ['.info-fixa', '#linkFidelidade'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.visibility = 'hidden'; });
+    // Barra fixa e botões flutuantes saem em slide para baixo enquanto a secção está aberta
+    const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = 'translateY(130%)';
+    const _fid = document.querySelector('#linkFidelidade'); if(_fid){ _fid.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _fid.style.transform = 'translateY(160%)'; }
     requestAnimationFrame(() => painel.classList.add('aberto'));
   }
 
@@ -1969,8 +1970,9 @@
     document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
     painel.classList.remove('aberto');
     painel.addEventListener('transitionend', _restaurarPendente);
-    // Repor a barra fixa e botões só depois de a secção fechar (para não aparecerem durante o flip de saída)
-    setTimeout(function(){ ['.info-fixa', '#linkFidelidade'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.visibility = ''; }); }, 520);
+    // Barra fixa e botões voltam em slide para cima ao fechar
+    const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = '';
+    const _fid = document.querySelector('#linkFidelidade'); if(_fid) _fid.style.transform = '';
   }
 
   document.getElementById('categoriaGrid').addEventListener('click', (e) => {
