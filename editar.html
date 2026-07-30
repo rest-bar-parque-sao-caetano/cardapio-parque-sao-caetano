@@ -287,6 +287,8 @@
           <option value="linho">Linho</option>
           <option value="xadrez">Xadrez</option>
           <option value="favo">Favo</option>
+          <option value="relevo">Relevo 3D (esferas)</option>
+          <option value="almofada">Almofada 3D</option>
         </select>
         <div class="subtitulo" style="margin-top:6px;">A textura usa as cores do tema, por isso combina sempre.</div>
       </div>
@@ -349,6 +351,47 @@
       <label>Fotos do cabeçalho (rodam automaticamente)</label>
       <div class="lista-fotos" id="listaFotosHeader"></div>
       <input type="file" id="novaFotoHeader" accept="image/*" multiple>
+    </div>
+  </details>
+
+  <!-- TEXTO LIVRE -->
+  <details id="secTextoLivre">
+    <summary>✍️ Texto livre (sobre o fundo)</summary>
+    <div class="bloco-conteudo">
+      <div class="lembrar">
+        <input type="checkbox" id="tlAtivo">
+        <label for="tlAtivo" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Ativar texto livre</label>
+      </div>
+      <div class="subtitulo" style="margin:-2px 0 8px;">Um título e subtítulo que podes escrever e posicionar em qualquer sítio no topo da página. Ótimo quando o cabeçalho está desligado.</div>
+      <label for="tlTitulo">Título</label>
+      <input type="text" id="tlTitulo" placeholder="Ex: O Sabor da Serra">
+      <label for="tlSubtitulo">Subtítulo</label>
+      <input type="text" id="tlSubtitulo" placeholder="Ex: Cozinha de tradição">
+      <label for="tlCor">Cor do texto</label>
+      <div class="campo-cor">
+        <input type="color" id="tlCor" value="#4a3820">
+        <span id="tlCorVal">#4a3820</span>
+      </div>
+      <label style="margin-top:12px;">Tamanho do título</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="tlTamanho" min="1.2" max="5" step="0.1" value="2.4" style="flex:1;">
+        <span id="tlTamanhoVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">2.4</span>
+      </div>
+      <label style="margin-top:10px;">Altura da zona (do topo)</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="tlAltura" min="20" max="90" step="1" value="42" style="flex:1;">
+        <span id="tlAlturaVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">42</span>
+      </div>
+      <label style="margin-top:10px;">Posição horizontal ◀▶</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="tlX" min="0" max="100" step="1" value="50" style="flex:1;">
+        <span id="tlXVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">50</span>
+      </div>
+      <label style="margin-top:10px;">Posição vertical ▲▼</label>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="range" id="tlY" min="0" max="100" step="1" value="50" style="flex:1;">
+        <span id="tlYVal" style="font-size:0.82rem; color:var(--castanho-suave); font-family:monospace; min-width:44px;">50</span>
+      </div>
     </div>
   </details>
 
@@ -757,6 +800,7 @@
     tileTamanho: 'normal',
     cores: null,
     fundo: { tipo:'liso', imagem:'', textura:'pontos' },
+    textoLivre: { ativo:false, titulo:'', subtitulo:'', cor:'#4a3820', tamanho:2.4, altura:42, x:50, y:50 },
     jogos: true,
     redes: { instagram:'', facebook:'' },
     intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }
@@ -927,6 +971,7 @@
         config.tileTamanho = parsed.tileTamanho || 'normal';
         config.cores = (parsed.cores && typeof parsed.cores === 'object') ? parsed.cores : null;
         config.fundo = Object.assign({ tipo:'liso', imagem:'', textura:'pontos' }, parsed.fundo || {});
+        config.textoLivre = Object.assign({ ativo:false, titulo:'', subtitulo:'', cor:'#4a3820', tamanho:2.4, altura:42, x:50, y:50 }, parsed.textoLivre || {});
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
         config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }, parsed.intro || {});
@@ -989,6 +1034,17 @@
     document.getElementById('corRodapeVal').textContent = cr;
     document.getElementById('realceHeader').checked = config.header.realce !== false;
     document.getElementById('headerMostrar').checked = config.header.mostrar !== false;
+    // Texto livre
+    const tl = config.textoLivre || {};
+    document.getElementById('tlAtivo').checked = !!tl.ativo;
+    document.getElementById('tlTitulo').value = tl.titulo || '';
+    document.getElementById('tlSubtitulo').value = tl.subtitulo || '';
+    const tlc = tl.cor || '#4a3820';
+    document.getElementById('tlCor').value = tlc; document.getElementById('tlCorVal').textContent = tlc;
+    document.getElementById('tlTamanho').value = tl.tamanho || 2.4; document.getElementById('tlTamanhoVal').textContent = tl.tamanho || 2.4;
+    document.getElementById('tlAltura').value = tl.altura || 42; document.getElementById('tlAlturaVal').textContent = tl.altura || 42;
+    document.getElementById('tlX').value = (tl.x != null ? tl.x : 50); document.getElementById('tlXVal').textContent = (tl.x != null ? tl.x : 50);
+    document.getElementById('tlY').value = (tl.y != null ? tl.y : 50); document.getElementById('tlYVal').textContent = (tl.y != null ? tl.y : 50);
     document.getElementById('headerEncolher').checked = (config.header.fixo === true) || (config.header.encolher === true);
     document.getElementById('realceRodape').checked = config.rodape.realce !== false;
     const esp = config.rodape.especial || {};
@@ -1184,6 +1240,13 @@
     document.getElementById('fundoImagemBox').style.display = (e.target.value === 'imagem') ? 'block' : 'none';
     document.getElementById('fundoTexturaBox').style.display = (e.target.value === 'textura') ? 'block' : 'none';
   });
+
+  // Texto livre: mostradores dos sliders + cor
+  ['tlTamanho','tlAltura','tlX','tlY'].forEach(function(id){
+    const el = document.getElementById(id); if(!el) return;
+    el.addEventListener('input', function(){ const v = document.getElementById(id+'Val'); if(v) v.textContent = el.value; });
+  });
+  (function(){ const c = document.getElementById('tlCor'); if(c) c.addEventListener('input', function(e){ const v = document.getElementById('tlCorVal'); if(v) v.textContent = e.target.value; }); })();
   document.getElementById('novaFotoAdj').addEventListener('change', e => {
     const f = e.target.files[0];
     if(!f) return;
@@ -1303,6 +1366,16 @@
       config.rodape.cor = document.getElementById('corRodape').value;
       config.header.realce = document.getElementById('realceHeader').checked;
       config.header.mostrar = document.getElementById('headerMostrar').checked;
+      config.textoLivre = {
+        ativo: document.getElementById('tlAtivo').checked,
+        titulo: document.getElementById('tlTitulo').value.trim(),
+        subtitulo: document.getElementById('tlSubtitulo').value.trim(),
+        cor: document.getElementById('tlCor').value,
+        tamanho: parseFloat(document.getElementById('tlTamanho').value) || 2.4,
+        altura: parseInt(document.getElementById('tlAltura').value, 10) || 42,
+        x: parseInt(document.getElementById('tlX').value, 10),
+        y: parseInt(document.getElementById('tlY').value, 10)
+      };
       config.header.fixo = document.getElementById('headerEncolher').checked;
       delete config.header.encolher;
       config.rodape.realce = document.getElementById('realceRodape').checked;
