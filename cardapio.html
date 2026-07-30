@@ -272,6 +272,14 @@
   .tile.tile-espera{ opacity:0; }
   .tile.tile-entra{ animation:tileEntrar .5s cubic-bezier(.2,.7,.3,1) both; }
 
+  /* Texturas de fundo (usam as cores do tema; aplicadas ao body via classe) */
+  body.textura-pontos{ background-image:radial-gradient(var(--linha) 1.4px, transparent 1.6px); background-size:18px 18px; background-attachment:fixed; }
+  body.textura-grelha{ background-image:linear-gradient(var(--linha) 1px, transparent 1px), linear-gradient(90deg, var(--linha) 1px, transparent 1px); background-size:24px 24px; background-attachment:fixed; }
+  body.textura-diagonal{ background-image:repeating-linear-gradient(45deg, var(--linha-suave) 0 2px, transparent 2px 15px); background-attachment:fixed; }
+  body.textura-linho{ background-image:repeating-linear-gradient(0deg, var(--linha-suave) 0 1px, transparent 1px 6px), repeating-linear-gradient(90deg, var(--linha-suave) 0 1px, transparent 1px 6px); background-attachment:fixed; }
+  body.textura-xadrez{ background-image:linear-gradient(45deg, var(--linha-suave) 25%, transparent 25% 75%, var(--linha-suave) 75%), linear-gradient(45deg, var(--linha-suave) 25%, transparent 25% 75%, var(--linha-suave) 75%); background-size:30px 30px; background-position:0 0, 15px 15px; background-attachment:fixed; }
+  body.textura-favo{ background-image:radial-gradient(circle at 50% 0, transparent 9px, var(--linha-suave) 9px 10px, transparent 10px), radial-gradient(circle at 0 100%, transparent 9px, var(--linha-suave) 9px 10px, transparent 10px), radial-gradient(circle at 100% 100%, transparent 9px, var(--linha-suave) 9px 10px, transparent 10px); background-size:40px 24px; background-attachment:fixed; }
+
   .categoria-painel{
     position:fixed; inset:0;
     z-index:300;
@@ -2248,7 +2256,8 @@
       document.body.classList.remove('tiles-pequeno','tiles-grande');
       if(config.tileTamanho === 'pequeno') document.body.classList.add('tiles-pequeno');
       else if(config.tileTamanho === 'grande') document.body.classList.add('tiles-grande');
-      // Fundo do cardápio (liso / gradiente / imagem)
+      // Fundo do cardápio (liso / gradiente / imagem / textura)
+      document.body.classList.remove('textura-pontos','textura-grelha','textura-diagonal','textura-linho','textura-xadrez','textura-favo');
       if(config.fundo && config.fundo.tipo){
         const cs = getComputedStyle(document.documentElement);
         const bgClaro = (cs.getPropertyValue('--bege-claro')||'#fbf8f2').trim();
@@ -2258,9 +2267,18 @@
           document.body.style.backgroundAttachment = 'fixed';
         } else if(config.fundo.tipo === 'imagem' && config.fundo.imagem){
           document.body.style.background = "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('" + RAW_BASE + config.fundo.imagem + "') center/cover fixed";
+        } else if(config.fundo.tipo === 'textura'){
+          document.body.style.background = '';
+          document.body.style.backgroundColor = bgClaro;
+          document.body.classList.add('textura-' + (config.fundo.textura || 'pontos'));
         } else {
           document.body.style.background = bgClaro;
         }
+      }
+      // Mostrar/esconder o cabeçalho
+      {
+        const _hdr = document.querySelector('header');
+        if(_hdr) _hdr.style.display = (config.header && config.header.mostrar === false) ? 'none' : '';
       }
       window._jogosAtivos = config.jogos !== false;
       if(window.aplicarJogos) window.aplicarJogos(window._jogosAtivos);
