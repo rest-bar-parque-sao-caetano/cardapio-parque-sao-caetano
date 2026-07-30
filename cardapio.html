@@ -115,6 +115,12 @@
     font-style:italic;
     margin-top:3px;
   }
+  /* Quando uma secção está aberta: cabeçalho e barra saem em slide; carrinho e fidelidade desaparecem em fade (não deslizam para não cruzar a barra) */
+  header{ transition:transform .42s cubic-bezier(.22,.8,.25,1); }
+  body.secao-aberta header{ transform:translateY(-110%); }
+  body.secao-aberta .info-fixa{ transform:translateY(130%); }
+  #cartBtn, #linkFidelidade{ transition:opacity .3s ease, visibility .3s ease; }
+  body.cart-oculto #cartBtn, body.cart-oculto #linkFidelidade{ opacity:0; visibility:hidden; pointer-events:none; }
   .header-icons{
     display:flex; justify-content:space-between; align-items:center;
     margin-top:10px;
@@ -288,6 +294,9 @@
   /* Efeito de abertura "Flip 3D" (config.abrirEfeito === 'flip') */
   body.abrir-flip .categoria-painel{ transform:perspective(1500px) rotateY(-90deg); transform-origin:50% 50%; transition:transform .5s cubic-bezier(.3,.7,.25,1), opacity .3s ease, visibility 0s linear .5s; }
   body.abrir-flip .categoria-painel.aberto{ transform:perspective(1500px) rotateY(0deg); transition:transform .5s cubic-bezier(.3,.7,.25,1), opacity .3s ease, visibility 0s; }
+  /* Efeito de abertura "Cortina vertical" (config.abrirEfeito === 'cortina-v'): abre/fecha ao meio na vertical */
+  body.abrir-cortina-v .categoria-painel{ transform:none; opacity:1; clip-path:inset(0 50% 0 50%); transition:clip-path .55s cubic-bezier(.45,.15,.2,1), visibility 0s linear .55s; }
+  body.abrir-cortina-v .categoria-painel.aberto{ clip-path:inset(0 0 0 0); transition:clip-path .55s cubic-bezier(.45,.15,.2,1), visibility 0s; }
   .categoria-painel-header{
     position:sticky; top:0; z-index:2;
     display:flex; align-items:center; gap:10px;
@@ -1934,7 +1943,8 @@
     });
   }
   function _restaurarPendente(e){
-    if(e.target !== painel || e.propertyName !== 'transform') return;
+    if(e.target !== painel) return;
+    if(e.propertyName !== 'transform' && e.propertyName !== 'clip-path') return;
     restaurarCategoria();
   }
 
@@ -1967,10 +1977,8 @@
     if (grupo) grupo.open = true;
 
     painelConteudo.scrollTop = 0;
-    // Barra fixa, cabeçalho e botões saem em slide enquanto a secção está aberta (não aparecem durante o flip)
-    const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = 'translateY(130%)';
-    const _hd = document.querySelector('header'); if(_hd){ _hd.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; _hd.style.transform = 'translateY(-110%)'; }
-    ['#linkFidelidade', '#cartBtn'].forEach(function(s){ const el = document.querySelector(s); if(el){ el.style.transition = 'transform .42s cubic-bezier(.22,.8,.25,1)'; el.style.transform = 'translateY(180%)'; } });
+    // Barra fixa, cabeçalho e botões saem (gerido por CSS via classe, para não conflituar com a lógica de cada um)
+    document.body.classList.add('secao-aberta', 'cart-oculto');
     requestAnimationFrame(() => painel.classList.add('aberto'));
   }
 
@@ -1978,10 +1986,9 @@
     document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
     painel.classList.remove('aberto');
     painel.addEventListener('transitionend', _restaurarPendente);
-    // Barra fixa, cabeçalho e botões voltam em slide ao fechar
-    const _bf = document.querySelector('.info-fixa'); if(_bf) _bf.style.transform = '';
-    const _hd = document.querySelector('header'); if(_hd) _hd.style.transform = '';
-    ['#linkFidelidade', '#cartBtn'].forEach(function(s){ const el = document.querySelector(s); if(el) el.style.transform = ''; });
+    // Cabeçalho e barra voltam já (acompanham o fecho); carrinho e fidelidade só reaparecem no fim
+    document.body.classList.remove('secao-aberta');
+    setTimeout(function(){ if(!document.body.classList.contains('secao-aberta')) document.body.classList.remove('cart-oculto'); }, 650);
   }
 
   document.getElementById('categoriaGrid').addEventListener('click', (e) => {
@@ -2229,6 +2236,7 @@
       if(config.fonteTexto && FONTES_TITULO[config.fonteTexto]) document.documentElement.style.setProperty('--fonte-texto', FONTES_TITULO[config.fonteTexto]);
       document.body.classList.toggle('modelo-grelha', (config.modelo || 'lista') === 'grelha');
       document.body.classList.toggle('abrir-flip', config.abrirEfeito === 'flip');
+      document.body.classList.toggle('abrir-cortina-v', config.abrirEfeito === 'cortina-v');
       document.body.classList.toggle('cabecalho-fixo', !!(config.header && (config.header.fixo || config.header.encolher)));
       // Tamanho dos tiles (estrutura)
       document.body.classList.remove('tiles-pequeno','tiles-grande');
@@ -2365,6 +2373,26 @@
                 pecas.forEach(function(p){ p.style.transition = 'transform .7s cubic-bezier(.7,0,.25,1) ' + p.dataset.delay + 's'; p.style.transform = 'translateY(' + p.dataset.ty + ')'; });
               });
               setTimeout(function(){ ovv.style.display = 'none'; }, 700 + N*60 + 200);
+            } else if(window.__introReveal === 'cortina-v'){
+              const fazerMetadeV = function(esq){
+                const half = document.createElement('div');
+                half.style.cssText = 'position:absolute;top:0;height:100%;width:50%;overflow:hidden;will-change:transform;';
+                half.style.left = esq ? '0' : '50%';
+                const inner = document.createElement('div');
+                inner.style.cssText = 'position:absolute;top:0;height:100%;width:200%;background-size:cover;background-position:center;';
+                inner.style.backgroundImage = window.__introBgImg;
+                inner.style.left = esq ? '0' : '-100%';
+                half.appendChild(inner);
+                half.dataset.tx = esq ? '-100%' : '100%';
+                return half;
+              };
+              const esq = fazerMetadeV(true), dir = fazerMetadeV(false);
+              cont.appendChild(esq); cont.appendChild(dir);
+              cont.style.display = 'block'; esconderVisuais();
+              requestAnimationFrame(function(){
+                [esq, dir].forEach(function(p){ p.style.transition = 'transform .7s cubic-bezier(.7,0,.2,1)'; p.style.transform = 'translateX(' + p.dataset.tx + ')'; });
+              });
+              setTimeout(function(){ ovv.style.display = 'none'; }, 850);
             } else {
               const fazerMetade = function(topo){
                 const half = document.createElement('div');
