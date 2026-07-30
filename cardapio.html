@@ -1613,10 +1613,19 @@
     if(window.aplicarEspecialRodape) window.aplicarEspecialRodape(cfg.especial, normal);
   }
 
+  function _temConteudo(s){ return s && (s.titulo || (s.linhas && s.linhas.some(l => l && l.trim()))); }
+  // Cartões-base para hoje: modo 'dia' usa a config do dia da semana; senão usa os cartões fixos
+  function slidesEfetivos(car){
+    if(!car) return [];
+    if(car.modo === 'dia'){
+      const d = car.dias && car.dias[new Date().getDay()]; // 0=domingo … 6=sábado
+      return (d && Array.isArray(d.slides)) ? d.slides : [];
+    }
+    return Array.isArray(car.slides) ? car.slides : [];
+  }
   function slidesComConteudo(car){
-    if(!car || !Array.isArray(car.slides)) return [];
     const hoje = new Date().getDay(); // 0 = domingo
-    return car.slides.filter(s => s && (s.titulo || (s.linhas && s.linhas.some(l => l && l.trim()))) && !(s.ocultarDomingo && hoje === 0));
+    return slidesEfetivos(car).filter(s => _temConteudo(s) && s.ativo !== false && !(s.ocultarDomingo && hoje === 0));
   }
 
   window.atualizarBarraFixa = function(){
@@ -1630,7 +1639,7 @@
     if(modo === window._barraFixaModo) return; // já no modo certo, não reiniciar
     window._barraFixaModo = modo;
     if(usar){
-      window.iniciarCarrosselRodape(car.slides, cfg.cor, cfg.realce, car.intervalo);
+      window.iniciarCarrosselRodape(uteis, cfg.cor, cfg.realce, car.intervalo);
     } else {
       if(window._carrosselInterval){ clearInterval(window._carrosselInterval); window._carrosselInterval = null; }
       restaurarTextoNormal(cfg);
@@ -1645,8 +1654,7 @@
     let intervaloMs = (parseInt(intervaloSeg, 10) || 5) * 1000;
     if(intervaloMs < 2000) intervaloMs = 2000;
 
-    const hoje = new Date().getDay(); // 0 = domingo
-    const ativos = slides.filter(s => s && (s.titulo || (s.linhas && s.linhas.some(l => l && l.trim()))) && !(s.ocultarDomingo && hoje === 0));
+    const ativos = slides.filter(function(s){ return s; });
     if(ativos.length === 0){ window._barraFixaModo = 'normal'; restaurarTextoNormal(window._rodapeCfg || {}); return; }
 
     cont.innerHTML = '<div class="carrossel-slide" id="carrosselSlide"></div>';
