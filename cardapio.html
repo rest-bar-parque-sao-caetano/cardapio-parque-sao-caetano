@@ -39,6 +39,7 @@
   // A cortina de abertura cobre o ecrã enquanto os dados carregam (evita o flash de conteúdo).
   // Se o "ecrã de abertura" estiver ligado, vira uma animação com o nome; senão, some assim que carrega.
   window.__introAtiva = false; window.__introReveal = 'slide'; window.__menuOk = false; window.__cfgOk = false;
+  try{ window.__PREVIEW = (new URLSearchParams(location.search)).get('preview') === '1'; }catch(e){ window.__PREVIEW = false; }
   // Pintar o ecrã de carregamento com a cor do tema deste restaurante (guardada da última visita),
   // para não mostrar o neutro azul num restaurante de outra cor.
   try{
@@ -1913,7 +1914,7 @@
       t.addEventListener('pointercancel', repor);
     });
   };
-  fetch('menu.json?t=' + Date.now())
+  if(!window.__PREVIEW) fetch('menu.json?t=' + Date.now())
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
     .then(menu => { window._menu = menu; construirMenu(menu); })
     .catch(err => {
@@ -2232,11 +2233,8 @@
     }
   };
 
-  async function carregarConfig(){
+  function aplicarConfig(config){
     try{
-      const resp = await fetch(RAW_BASE + 'config.json?t=' + Date.now());
-      if(!resp.ok) return;
-      const config = await resp.json();
       if(!config) return;
 
       aplicarTema(config.layout || '1', config.cores);
@@ -2312,7 +2310,7 @@
         const intro = config.intro || {};
         const ov = document.getElementById('introOverlay');
         if(!ov) return;
-        if(intro.ativo){
+        if(intro.ativo && !window.__PREVIEW){
           window.__introAtiva = true;
           const nEl = document.getElementById('introNome');
           const sEl = document.getElementById('introSub');
@@ -2537,11 +2535,39 @@
       const fb = document.getElementById('linkFidelidade');
       if(fb) fb.style.display = window._fidelidade ? 'flex' : 'none';
     }catch(err){
+      console.log('[INFO] Erro ao aplicar config:', err.message);
+    }
+  }
+
+  async function carregarConfig(){
+    if(window.__PREVIEW) return; // em pré-visualização, os dados vêm do editor
+    try{
+      const resp = await fetch(RAW_BASE + 'config.json?t=' + Date.now());
+      if(!resp.ok) return;
+      const config = await resp.json();
+      if(config) aplicarConfig(config);
+    }catch(err){
       console.log('[INFO] Sem config.json ou erro ao carregar:', err.message);
     }
   }
 
   carregarConfig().finally(function(){ window.__cfgOk = true; window.__tryReveal(); });
+
+  // ---- Pré-visualização ao vivo (dentro do editar, via postMessage) ----
+  if(window.__PREVIEW){
+    window.__cfgOk = true; window.__menuOk = true;
+    document.body.classList.remove('carregando');
+    const _ov = document.getElementById('introOverlay'); if(_ov) _ov.style.display = 'none';
+    window.addEventListener('message', function(e){
+      const d = e.data || {};
+      if(d.type !== 'cardapio-preview') return;
+      try{ if(d.config) aplicarConfig(d.config); }catch(err){}
+      try{ if(d.menu){ window._menu = d.menu; construirMenu(d.menu); } }catch(err){}
+      document.body.classList.remove('carregando');
+      const ov = document.getElementById('introOverlay'); if(ov) ov.style.display = 'none';
+    });
+    try{ parent.postMessage({ type:'cardapio-preview-ready' }, '*'); }catch(err){}
+  }
 
   // Decoração sazonal automática (por data)
   function iniciarSazonal(){
