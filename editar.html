@@ -275,8 +275,21 @@
       <select id="fundoTipoSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
         <option value="liso">Liso (cor clara do tema)</option>
         <option value="gradiente">Degradê suave</option>
-        <option value="imagem">Imagem / textura</option>
+        <option value="textura">Textura (padrão)</option>
+        <option value="imagem">Imagem própria</option>
       </select>
+      <div id="fundoTexturaBox" style="display:none; margin-top:10px;">
+        <label for="fundoTexturaSel" style="margin-top:0;">Tipo de textura</label>
+        <select id="fundoTexturaSel" style="width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--linha); background:var(--branco); font-family:inherit; color:var(--castanho); font-size:0.95rem;">
+          <option value="pontos">Pontos</option>
+          <option value="grelha">Grelha</option>
+          <option value="diagonal">Riscas diagonais</option>
+          <option value="linho">Linho</option>
+          <option value="xadrez">Xadrez</option>
+          <option value="favo">Favo</option>
+        </select>
+        <div class="subtitulo" style="margin-top:6px;">A textura usa as cores do tema, por isso combina sempre.</div>
+      </div>
       <div id="fundoImagemBox" style="display:none; margin-top:10px;">
         <div class="subtitulo">Escolhe uma imagem de fundo (fica esbatida por trás dos pratos).</div>
         <input type="file" id="novaFotoFundo" accept="image/*" style="margin-top:8px;">
@@ -289,6 +302,11 @@
   <details id="secHeader">
     <summary>Cabeçalho (topo da página)</summary>
     <div class="bloco-conteudo">
+      <div class="lembrar" style="margin-bottom:10px;">
+        <input type="checkbox" id="headerMostrar" checked>
+        <label for="headerMostrar" style="margin:0; font-weight:700; color:var(--dourado-escuro); display:inline;">Mostrar cabeçalho</label>
+      </div>
+      <div class="subtitulo" style="margin:-4px 0 10px;">Desliga para remover o cabeçalho do topo (útil para outros tipos de página).</div>
       <label for="titulo">Título</label>
       <input type="text" id="titulo" placeholder="Rest & Bar Parque São Caetano">
 
@@ -719,7 +737,7 @@
 
   // Estado em memória
   let config = {
-    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false },
+    header: { titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false, mostrar:true },
     rodape: { linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[],
       especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' },
       carrossel:{ ativo:false, modo:'fixo', intervalo:5, inicio:'', fim:'', slides:[
@@ -738,7 +756,7 @@
     fonteTexto: 'auto',
     tileTamanho: 'normal',
     cores: null,
-    fundo: { tipo:'liso', imagem:'' },
+    fundo: { tipo:'liso', imagem:'', textura:'pontos' },
     jogos: true,
     redes: { instagram:'', facebook:'' },
     intro: { ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }
@@ -885,7 +903,7 @@
         configSha = data.sha;
         const parsed = JSON.parse(base64ParaUtf8(data.content));
         config = Object.assign(config, parsed);
-        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false }, parsed.header || {});
+        config.header = Object.assign({ titulo:'', subtitulo:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], tituloTamanho:1.7, subtituloTamanho:0.82, fixo:false, mostrar:true }, parsed.header || {});
         config.rodape = Object.assign({ linha1:'', linha2:'', linha3:'', linha4:'', cor:'#ffffff', realce:true, fotosAtivas:true, fotos:[], especial:{ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' } }, parsed.rodape || {});
         config.rodape.especial = Object.assign({ ativo:false, inicio:'', fim:'', l1:'', l2:'', l3:'', l4:'' }, (parsed.rodape && parsed.rodape.especial) || {});
         const carDef = { ativo:false, slides:[
@@ -908,7 +926,7 @@
         config.fonteTexto = parsed.fonteTexto || 'auto';
         config.tileTamanho = parsed.tileTamanho || 'normal';
         config.cores = (parsed.cores && typeof parsed.cores === 'object') ? parsed.cores : null;
-        config.fundo = Object.assign({ tipo:'liso', imagem:'' }, parsed.fundo || {});
+        config.fundo = Object.assign({ tipo:'liso', imagem:'', textura:'pontos' }, parsed.fundo || {});
         config.jogos = parsed.jogos !== false;
         config.redes = Object.assign({ instagram:'', facebook:'' }, parsed.redes || {});
         config.intro = Object.assign({ ativo:false, duracao:7, fundo:'foto', tamanho:2.7, subTamanho:1.08, titulo:'', subtitulo:'', botao:'', reveal:'slide', foto:'', cor:'#ffffff' }, parsed.intro || {});
@@ -970,6 +988,7 @@
     document.getElementById('corRodape').value = cr;
     document.getElementById('corRodapeVal').textContent = cr;
     document.getElementById('realceHeader').checked = config.header.realce !== false;
+    document.getElementById('headerMostrar').checked = config.header.mostrar !== false;
     document.getElementById('headerEncolher').checked = (config.header.fixo === true) || (config.header.encolher === true);
     document.getElementById('realceRodape').checked = config.rodape.realce !== false;
     const esp = config.rodape.especial || {};
@@ -1033,9 +1052,11 @@
     document.getElementById('corDourado').value = (temCores && config.cores.dourado) || baseC.dourado;
     document.getElementById('corBege').value = (temCores && config.cores.bege) || baseC.bege;
     // Fundo
-    const fundo = config.fundo || { tipo:'liso', imagem:'' };
+    const fundo = config.fundo || { tipo:'liso', imagem:'', textura:'pontos' };
     document.getElementById('fundoTipoSel').value = fundo.tipo || 'liso';
     document.getElementById('fundoImagemBox').style.display = (fundo.tipo === 'imagem') ? 'block' : 'none';
+    document.getElementById('fundoTexturaBox').style.display = (fundo.tipo === 'textura') ? 'block' : 'none';
+    document.getElementById('fundoTexturaSel').value = fundo.textura || 'pontos';
     document.getElementById('fundoImagemAtual').textContent = fundo.imagem ? ('Imagem atual: ' + fundo.imagem) : 'Sem imagem escolhida.';
     document.getElementById('redeInstagram').value = (config.redes && config.redes.instagram) || '';
     document.getElementById('redeFacebook').value = (config.redes && config.redes.facebook) || '';
@@ -1161,6 +1182,7 @@
   });
   document.getElementById('fundoTipoSel').addEventListener('change', e => {
     document.getElementById('fundoImagemBox').style.display = (e.target.value === 'imagem') ? 'block' : 'none';
+    document.getElementById('fundoTexturaBox').style.display = (e.target.value === 'textura') ? 'block' : 'none';
   });
   document.getElementById('novaFotoAdj').addEventListener('change', e => {
     const f = e.target.files[0];
@@ -1280,6 +1302,7 @@
       config.header.cor = document.getElementById('corHeader').value;
       config.rodape.cor = document.getElementById('corRodape').value;
       config.header.realce = document.getElementById('realceHeader').checked;
+      config.header.mostrar = document.getElementById('headerMostrar').checked;
       config.header.fixo = document.getElementById('headerEncolher').checked;
       delete config.header.encolher;
       config.rodape.realce = document.getElementById('realceRodape').checked;
@@ -1349,7 +1372,8 @@
       }
       config.fundo = {
         tipo: document.getElementById('fundoTipoSel').value,
-        imagem: (config.fundo && config.fundo.imagem) || ''
+        imagem: (config.fundo && config.fundo.imagem) || '',
+        textura: document.getElementById('fundoTexturaSel').value
       };
       config.redes = {
         instagram: document.getElementById('redeInstagram').value.trim(),
