@@ -187,6 +187,22 @@
     </div>
   </details>
 
+  <!-- PRÉ-VISUALIZAÇÃO AO VIVO -->
+  <details id="secPreview">
+    <summary>👁️ Pré-visualização ao vivo</summary>
+    <div class="bloco-conteudo">
+      <div class="subtitulo" style="margin-top:6px;">Vê o cardápio a atualizar enquanto editas — sem publicar. (Carrega o menu primeiro para veres os pratos.)</div>
+      <div style="display:flex; justify-content:flex-end; margin:6px 0;">
+        <button type="button" id="btnAtualizarPreview" style="padding:8px 12px; border-radius:8px; border:1.5px solid var(--linha); background:var(--branco); color:var(--castanho); cursor:pointer;">↻ Atualizar</button>
+      </div>
+      <div style="display:flex; justify-content:center;">
+        <div style="width:100%; max-width:390px; border:8px solid #1f2530; border-radius:28px; overflow:hidden; background:#000; box-shadow:0 8px 24px rgba(0,0,0,0.2);">
+          <iframe id="previewFrame" title="Pré-visualização do cardápio" style="width:100%; height:640px; border:0; display:block; background:#fff;"></iframe>
+        </div>
+      </div>
+    </div>
+  </details>
+
   <!-- LAYOUT / ASPETO -->
   <details id="secLayout">
     <summary>🎨 Aspeto do cardápio (layout)</summary>
@@ -1235,7 +1251,22 @@
       document.getElementById('novaFotoFooter').value = '';
       document.getElementById('novaFotoAdj').value = '';
 
-      // 2. Atualizar textos a partir do formulário
+      // 2. Ler o formulário para o config
+      lerFormularioConfig();
+
+      // 3. Gravar config.json
+      setEstado('A guardar definições…', 'info');
+      await gravarConfigJson(token);
+      document.getElementById('btnGuardar').disabled = false;
+      return;
+    }catch(err){
+      setEstado('Erro ao guardar: ' + err.message, 'erro');
+      document.getElementById('btnGuardar').disabled = false;
+    }
+  }
+
+  // Lê todos os campos do formulário para o objeto config (sem gravar) — usado ao guardar e na pré-visualização
+  function lerFormularioConfig(){
       config.header.titulo = document.getElementById('titulo').value.trim();
       config.header.subtitulo = document.getElementById('subtitulo').value.trim();
       config.header.tituloTamanho = parseFloat(document.getElementById('tituloTamanho').value) || 1.7;
@@ -1345,10 +1376,10 @@
         premio: document.getElementById('fidPremio').value.trim()
       };
       config.layout = layoutSelecionado;
+      return config;
+  }
 
-      // 3. Gravar config.json
-      setEstado('A guardar definições…', 'info');
-
+  async function gravarConfigJson(token){
       // Garantir que temos o sha atual (caso o ficheiro já exista e não tenha sido carregado)
       if(!configSha){
         try{
@@ -1377,11 +1408,6 @@
       renderListaFotos('header');
       renderListaFotos('rodape');
       setEstado('✅ Guardado! As alterações aparecem no cardápio dentro de 1-2 minutos.', 'ok');
-    }catch(err){
-      setEstado('Erro ao guardar: ' + err.message, 'erro');
-    }finally{
-      document.getElementById('btnGuardar').disabled = false;
-    }
   }
 
   document.getElementById('especialAtivo').addEventListener('change', e => {
@@ -2064,6 +2090,8 @@
 
     document.getElementById('btnCarregarMenu').addEventListener('click', carregarMenu);
     document.getElementById('btnGuardarMenu').addEventListener('click', guardarMenu);
+    // Exposto para a pré-visualização ao vivo
+    window.__getMenuPreview = function(){ try{ return menuData || null; }catch(e){ return null; } };
 
     // Importar um menu.json de um ficheiro local (fica editável; publica-se com "Guardar menu")
     document.getElementById('btnImportarMenu').addEventListener('click', function(){
@@ -2092,6 +2120,35 @@
 
   document.getElementById('btnCarregar').addEventListener('click', carregarConfig);
   document.getElementById('btnGuardar').addEventListener('click', guardarTudo);
+
+  // ---- Pré-visualização ao vivo ----
+  (function(){
+    const sec = document.getElementById('secPreview');
+    const frame = document.getElementById('previewFrame');
+    if(!sec || !frame) return;
+    let pronto = false, temporizador = null;
+    function enviar(){
+      if(!pronto || !frame.contentWindow) return;
+      let cfg;
+      try{ cfg = lerFormularioConfig(); }catch(e){ cfg = config; }
+      const msg = { type: 'cardapio-preview' };
+      try{ msg.config = JSON.parse(JSON.stringify(cfg)); }catch(e){ msg.config = cfg; }
+      const menu = (window.__getMenuPreview && window.__getMenuPreview()) || null;
+      if(menu){ try{ msg.menu = JSON.parse(JSON.stringify(menu)); }catch(e){ msg.menu = menu; } }
+      frame.contentWindow.postMessage(msg, '*');
+    }
+    function agendarEnvio(){ if(!sec.open) return; clearTimeout(temporizador); temporizador = setTimeout(enviar, 400); }
+    window.addEventListener('message', function(e){
+      if(e.data && e.data.type === 'cardapio-preview-ready'){ pronto = true; enviar(); }
+    });
+    sec.addEventListener('toggle', function(){
+      if(sec.open){ pronto = false; frame.src = 'cardapio.html?preview=1&t=' + Date.now(); }
+    });
+    document.addEventListener('input', agendarEnvio);
+    document.addEventListener('change', agendarEnvio);
+    const btn = document.getElementById('btnAtualizarPreview');
+    if(btn) btn.addEventListener('click', enviar);
+  })();
 
   // Guardar começa desativado até carregar (evita apagar dados sem querer)
   document.getElementById('btnGuardar').disabled = true;
